@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.reportform.FunRaoYangChanShuiMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.reportform.ReportRaoYangChanShui_Res">
+        <!--<result column="ID" jdbcType="DECIMAL" property="id"/>-->
+        <result column="LOOP_NAME" jdbcType="VARCHAR" property="name"/>
+        <result column="KAI_JING" jdbcType="DECIMAL" property="open_wells"/>
+        <result column="PROD_OIL_V" jdbcType="DECIMAL" property="oil_day"/>
+        <!--<result column="PROD_OIL_W" jdbcType="DECIMAL" property="oil_day"/>-->
+        <result column="PROD_LIQUID_V" jdbcType="DECIMAL" property="liquid_day"/>
+        <!--<result column="PROD_LIQUID_W" jdbcType="DECIMAL" property="liquid_day"/>-->
+        <result column="PROD_WATER_CUT" jdbcType="DECIMAL" property="containing"/>
+        <result column="TEMP_OUT" jdbcType="DECIMAL" property="temp_water"/>
+        <result column="PRESS_OUT" jdbcType="DECIMAL" property="press_water"/>
+        <result column="WATER_VAL" jdbcType="DECIMAL" property="water_val"/>
+        <result column="TEMP_IN" jdbcType="DECIMAL" property="temp_oil"/>
+        <result column="LIQUID_VAL" jdbcType="DECIMAL" property="liquid_val"/>
+    </resultMap>
+    <select id="selectTable" resultMap="BaseResultMap">
+        select
+--                ID,
+               (case when STATION_ID=321 then '楚二站东环北线'
+                     when STATION_ID=215 then '楚二站东环西线'
+                     when STATION_ID=322 then '楚二站东环东线'
+                     else LOOP_NAME  end) LOOP_NAME,
+               STATION_ID,
+               REPROT_ID,
+               TOTAL,
+               KAI_JING,
+               CHANG_TING,
+               ZUO_YE,
+               FEI_ZHENG_CHANG,
+               QI_TA,
+               LOOP_ID,
+               PROD_OIL_V,
+               PROD_OIL_W,
+               PROD_LIQUID_V,
+               PROD_LIQUID_W,
+               PROD_WATER_CUT,
+               REPORT_LOOP_ID,
+               TEMP_OUT,
+               PRESS_OUT,
+               WATER_VAL,
+               TEMP_IN,
+               LIQUID_VAL
+        from (
+             --报表站信息
+             select ID, LOOP_NAME from REPORT_CONF_CLOSEDLOOP where REPORT_STATION_ID in (1, 2, 21))REPORT_CONF_CLOSEDLOOP
+                 left join --总井数，开井数卖场停井，作业井，非正常停井
+                     (select STATION_ID,
+                             (case
+                                  when STATION_ID = 204 then 1
+                                  when STATION_ID = 205 then 2
+                                  when STATION_ID = 206 then 3
+                                  when STATION_ID = 207 then 4
+                                  when STATION_ID = 208 then 5
+                                  when STATION_ID = 209 then 6
+                                  when STATION_ID = 210 then 7
+                                  when STATION_ID = 211 then 8
+                                  when STATION_ID = 212 then 9
+                                  when STATION_ID = 213 then 10
+                                  when STATION_ID = 214 then 11
+                                  when STATION_ID = 215 then 12
+                                  when STATION_ID = 321 then 12
+                                  when STATION_ID = 322 then 12
+                                  when STATION_ID = 216 then 13
+                                  when STATION_ID = 217 then 14
+                                  when STATION_ID = 218 then 15
+                                  when STATION_ID = 219 then 16
+                                  when STATION_ID = 220 then 17
+                                  when STATION_ID = 221 then 18
+                                  when STATION_ID = 222 then 19
+                                  when STATION_ID = 223 then 20
+                                  when STATION_ID = 224 then 21
+                                  when STATION_ID = 225 then 41
+                                     end)                                                              REPROT_ID,
+                             sum(1)                                                                    TOTAL,
+                             sum(case when REMARK = '运行' then 1 else 0 end)                            KAI_JING,
+                             sum(case when REMARK = '长停井' then 1 else 0 end)                           CHANG_TING,
+                             sum(case when REMARK = '作业井' then 1 else 0 end)                           ZUO_YE,
+                             sum(case when REMARK = '停井' then 1 else 0 end)                            FEI_ZHENG_CHANG,
+                             sum(case when REMARK not in ('运行', '长停井', '作业井', '停井') then 1 else 0 end) QI_TA
+                      from (select STATION_ID, ID from WELL_INFO where STATION_ID
+                                                                           in (204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, --楚一 1
+                                                                               215, 321, 322, 216, 217, 218, 219, 220, 221, 222, 223, 224, --楚二 2
+                                                                               225 --拉油点 21
+                                                                               ))WELL_INFO
+                               left join (select WELL_ID, REMARK from (select WELL_ID, REMARK, row_number() over (partition by WELL_ID order by STIME desc) as rn from WELL_DATA_HIS where trunc(STIME) = trunc(TO_DATE(#{searchDate}, 'yyyy-MM-dd'))) WELL_DATA_HIS where rn = 1) WELL_DATA_HIS on WELL_INFO.ID = WELL_DATA_HIS.WELL_ID
+                      group by STATION_ID) STATION_ID on REPORT_CONF_CLOSEDLOOP.ID = STATION_ID.REPROT_ID
+                 left join --日产液，日产油，含水
+                     (select LOOP_ID,--LOOP_NAME,
+                             sum(NVL(PROD_OIL_V, 0)) PROD_OIL_V, sum(NVL(PROD_OIL_W, 0)) PROD_OIL_W, sum(NVL(PROD_LIQUID_V, 0)) PROD_LIQUID_V, sum(NVL(PROD_LIQUID_V, 0)) PROD_LIQUID_W, avg(PROD_WATER_CUT) PROD_WATER_CUT from REPORT_DATA_OIL_WELL where REPORT_STATION_ID in (1, 2)
+                                                                                                                                                                                                                                                                    and REPORT_DATE = #{searchDate} group by LOOP_ID, LOOP_NAME) REPORT_DATA_OIL_WELL on REPORT_CONF_CLOSEDLOOP.ID = REPORT_DATA_OIL_WELL.LOOP_ID
+                 left join --汇管
+                     (select REPORT_LOOP_ID,--REPORT_LOOP_NAME,
+                             sum(NVL(TEMP_OUT, 0)) TEMP_OUT, sum(NVL(PRESS_OUT, 0)) PRESS_OUT, sum(NVL(WATER_VAL, 0)) WATER_VAL, sum(NVL(TEMP_IN, 0)) TEMP_IN, sum(NVL(LIQUID_VAL, 0)) LIQUID_VAL from REPORT_DATA_OWATER_LOOP where REPORT_STATION_ID in (1, 2)
+                                                                                                                                                                                                                                                and REPORT_DATE = #{searchDate} group by REPORT_LOOP_ID, REPORT_LOOP_NAME) REPORT_DATA_OWATER_LOOP on REPORT_CONF_CLOSEDLOOP.ID = REPORT_DATA_OWATER_LOOP.REPORT_LOOP_ID
+        order by ID
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

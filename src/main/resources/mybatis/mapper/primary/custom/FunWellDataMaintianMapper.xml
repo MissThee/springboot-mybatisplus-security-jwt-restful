@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.sysoption.FunWellDataMaintianMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.WellDataMaintian">
+        <result column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="DATA_DATE" jdbcType="VARCHAR" property="dataDate"/>
+        <result column="WELL_ID" jdbcType="DECIMAL" property="wellId"/>
+        <result column="WELL_NAME" jdbcType="VARCHAR" property="wellName"/>
+        <result column="PRESS_CASE" jdbcType="DECIMAL" property="pressCase"/>
+        <result column="PRESS_PIPE" jdbcType="DECIMAL" property="pressPipe"/>
+        <result column="PRESS_BACK" jdbcType="DECIMAL" property="pressBack"/>
+        <result column="PRESS_HOLEDOWN" jdbcType="DECIMAL" property="pressHoledown"/>
+        <result column="LENGTH_HOLEDOWN" jdbcType="DECIMAL" property="lengthHoledown"/>
+        <result column="WATER_RATE" jdbcType="DECIMAL" property="waterRate"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="OP_ID" jdbcType="DECIMAL" property="opId"/>
+        <result column="OP_NAME" jdbcType="VARCHAR" property="opName"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+    </resultMap>
+    <select id="selectWellDataByAreaIds" resultMap="BaseResultMap">
+        select
+        ID,
+        DATA_DATE,
+--         WELL_ID,
+        WELL_NAME,
+        PRESS_CASE,
+        PRESS_PIPE,
+        PRESS_BACK,
+        -- PRESS_HOLEDOWN,
+        LENGTH_HOLEDOWN,
+        WATER_RATE,
+        REMARK
+        -- OP_ID,
+        -- OP_NAME,
+--         MARK
+        -- STIME
+        from WELL_DATA_MAINTIAN
+        where WELL_ID in
+        (select WELL_INFO.ID from WELL_INFO where AREA_ID in
+        <foreach item="item" index="index" collection="areaIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+        order by WELL_NAME
+    </select>
+</mapper>

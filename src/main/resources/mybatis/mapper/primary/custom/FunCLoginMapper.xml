@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.sysoption.FunCLoginMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.CLogin">
+        <result column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="C_LOGINNAME" jdbcType="VARCHAR" property="cLoginname"/>
+        <result column="C_LOGINPWD" jdbcType="VARCHAR" property="cLoginpwd"/>
+        <result column="C_NAME" jdbcType="VARCHAR" property="cName"/>
+        <result column="C_GID" jdbcType="DECIMAL" property="cGid"/>
+        <result column="C_GNO" jdbcType="VARCHAR" property="cGno"/>
+        <result column="C_GNAME" jdbcType="VARCHAR" property="cGname"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="IP_LIMIT_MARK" jdbcType="DECIMAL" property="ipLimitMark"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+        <result column="RTIME" jdbcType="TIMESTAMP" property="rtime"/>
+        <result column="URL_TYPE" jdbcType="DECIMAL" property="urlType"/>
+        <result column="URL_FILE" jdbcType="VARCHAR" property="urlFile"/>
+        <association property="authGroup" jdbcType="DECIMAL" javaType="server.db.primary.model.sysoption.AuthGroup">
+            <result column="G_ID" jdbcType="DECIMAL" property="id"/>
+            <result column="G_GROUP_NO" jdbcType="VARCHAR" property="groupNo"/>
+            <result column="G_GROUP_NAME" jdbcType="VARCHAR" property="groupName"/>
+            <result column="G_GROUP_ROLE_ID" jdbcType="DECIMAL" property="groupRoleId"/>
+            <result column="G_GROUP_ROLE_NO" jdbcType="VARCHAR" property="groupRoleNo"/>
+            <result column="G_GROUP_ROLE_NAME" jdbcType="VARCHAR" property="groupRoleName"/>
+            <result column="G_GROUP_OBJ_ID" jdbcType="DECIMAL" property="groupObjId"/>
+            <result column="G_GROUP_OBJ_NO" jdbcType="VARCHAR" property="groupObjNo"/>
+            <result column="G_GROUP_OBJ_NAME" jdbcType="VARCHAR" property="groupObjName"/>
+            <result column="G_REMARK" jdbcType="VARCHAR" property="remark"/>
+            <result column="G_MARK" jdbcType="DECIMAL" property="mark"/>
+            <result column="G_STIME" jdbcType="TIMESTAMP" property="stime"/>
+            <result column="G_RTIME" jdbcType="TIMESTAMP" property="rtime"/>
+            <association property="authRole" javaType="server.db.primary.model.sysoption.AuthRole">
+                <result column="R_ID" jdbcType="DECIMAL" property="id"/>
+                <result column="R_ROLE_NO" jdbcType="VARCHAR" property="roleNo"/>
+                <result column="R_ROLE_NAME" jdbcType="VARCHAR" property="roleName"/>
+                <result column="R_REMARK" jdbcType="VARCHAR" property="remark"/>
+                <result column="R_ROLE_MARK" jdbcType="DECIMAL" property="roleMark"/>
+                <result column="R_MARK" jdbcType="DECIMAL" property="mark"/>
+                <result column="R_STIME" jdbcType="TIMESTAMP" property="stime"/>
+                <result column="R_RTIME" jdbcType="TIMESTAMP" property="rtime"/>
+                <collection property="permissionList" ofType="server.db.primary.model.sysoption.AuthRolePermission">
+                    <result column="P_ROLE_ID" jdbcType="DECIMAL" property="roleId"/>
+                    <result column="P_PERMISSION_ID" jdbcType="VARCHAR" property="permissionId"/>
+                </collection>
+            </association>
+            <association property="authObj" javaType="server.db.primary.model.sysoption.AuthObj">
+                <result column="O_ID" jdbcType="DECIMAL" property="id"/>
+                <result column="O_OBJ_NO" jdbcType="VARCHAR" property="objNo"/>
+                <result column="O_OBJ_NAME" jdbcType="VARCHAR" property="objName"/>
+                <result column="O_REMARK" jdbcType="VARCHAR" property="remark"/>
+                <result column="O_LOGO_PNG" jdbcType="VARCHAR" property="logoPng"/>
+                <result column="O_MARK" jdbcType="DECIMAL" property="mark"/>
+                <result column="O_STIME" jdbcType="TIMESTAMP" property="stime"/>
+                <result column="O_RTIME" jdbcType="TIMESTAMP" property="rtime"/>
+                <collection property="areaInfoList" ofType="server.db.primary.model.sysoption.AreaInfo">
+                    <id column="A_ID" jdbcType="DECIMAL" property="id"/>
+                    <result column="A_AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+                    <result column="A_AREA_NAME_ALIAS" jdbcType="VARCHAR" property="areaNameAlias"/>
+                    <result column="A_CO_ID" jdbcType="DECIMAL" property="coId"/>
+                    <result column="A_CO_NAME" jdbcType="VARCHAR" property="coName"/>
+                    <result column="A_A11_CODE" jdbcType="VARCHAR" property="a11Code"/>
+                    <result column="A_A11_CODE_FATHER" jdbcType="VARCHAR" property="a11CodeFather"/>
+                    <result column="A_REMARK" jdbcType="VARCHAR" property="remark"/>
+                    <result column="A_MARK" jdbcType="DECIMAL" property="mark"/>
+                    <result column="A_STIME" jdbcType="TIMESTAMP" property="stime"/>
+                </collection>
+            </association>
+        </association>
+    </resultMap>
+    <sql id="sqlUserLogin">
+        select C_LOGIN.ID,
+               C_LOGIN.C_LOGINNAME,
+               C_LOGIN.C_LOGINPWD,
+               C_LOGIN.C_NAME,
+                --             C_LOGIN.C_GID,
+                --             C_LOGIN.C_GNO,
+                --             C_LOGIN.C_GNAME,
+               C_LOGIN.REMARK,
+               C_LOGIN.IP_LIMIT_MARK,
+               C_LOGIN.MARK,
+                --             C_LOGIN.STIME,
+                --             C_LOGIN.RTIME,
+               C_LOGIN.URL_TYPE,
+               C_LOGIN.URL_FILE,
+               AUTH_GROUP.ID                      G_ID,
+               AUTH_GROUP.GROUP_NO                G_GROUP_NO,
+               AUTH_GROUP.GROUP_NAME              G_GROUP_NAME,
+                --             AUTH_GROUP.GROUP_ROLE_ID   G_GROUP_ROLE_ID,
+                --             AUTH_GROUP.GROUP_ROLE_NO   G_GROUP_ROLE_NO,
+                --             AUTH_GROUP.GROUP_ROLE_NAME G_GROUP_ROLE_NAME,
+                --             AUTH_GROUP.GROUP_OBJ_ID    G_GROUP_OBJ_ID,
+                --             AUTH_GROUP.GROUP_OBJ_NO    G_GROUP_OBJ_NO,
+                --             AUTH_GROUP.GROUP_OBJ_NAME  G_GROUP_OBJ_NAME,
+               AUTH_GROUP.REMARK                  G_REMARK,
+               AUTH_GROUP.MARK                    G_MARK,
+                --             AUTH_GROUP.STIME           G_STIME,
+                --             AUTH_GROUP.RTIME           G_RTIME,
+               AUTH_ROLE.ID                       R_ID,
+               AUTH_ROLE.ROLE_NO                  R_ROLE_NO,
+               AUTH_ROLE.ROLE_NAME                R_ROLE_NAME,
+               AUTH_ROLE.REMARK                   R_REMARK,
+               AUTH_ROLE.ROLE_MARK                R_ROLE_MARK,
+               AUTH_ROLE.MARK                     R_MARK,
+                --             AUTH_ROLE.STIME            R_STIME,
+                --             AUTH_ROLE.RTIME            R_RTIME,
+               AUTH_OBJ.ID                        O_ID,
+               AUTH_OBJ.OBJ_NO                    O_OBJ_NO,
+               AUTH_OBJ.OBJ_NAME                  O_OBJ_NAME,
+               AUTH_OBJ.REMARK                    O_REMARK,
+               AUTH_OBJ.LOGO_PNG                  O_LOGO_PNG,
+               AUTH_OBJ.MARK                      O_MARK,
+               AREA_INFO.ID                       A_ID,
+               AREA_INFO.AREA_NAME                A_AREA_NAME,
+                --             AUTH_OBJ.STIME             O_STIME,
+                --             AUTH_OBJ.RTIME             O_RTIME
+               AUTH_ROLE_PERMISSION.PERMISSION_ID P_PERMISSION_ID
+        from OILDB.C_LOGIN
+                 left join AUTH_GROUP on C_LOGIN.C_GID = AUTH_GROUP.ID
+                 left join AUTH_ROLE on AUTH_GROUP.GROUP_ROLE_ID = AUTH_ROLE.ID
+                 left join AUTH_ROLE_PERMISSION on AUTH_ROLE.ID = AUTH_ROLE_PERMISSION.ROLE_ID
+                 left join AUTH_OBJ on AUTH_GROUP.GROUP_OBJ_ID = AUTH_OBJ.ID
+                 left join AUTH_OBJ_STATION on AUTH_OBJ.ID = AUTH_OBJ_STATION.OBJ_ID
+                 left join AREA_INFO on AUTH_OBJ_STATION.STATION_ID = AREA_INFO.ID and AUTH_OBJ_STATION.STATION_TYPE = 2
+
+    </sql>
+    <select id="selectUserByUsername" resultMap="BaseResultMap">
+        <include refid="sqlUserLogin"></include>
+        where C_LOGIN.C_LOGINNAME=#{username}
+    </select>
+    <select id="selectUserById" resultMap="BaseResultMap">
+        <include refid="sqlUserLogin"></include>
+        where C_LOGIN.ID=#{id}
+    </select>
+    <select id="selectUserTable" resultMap="BaseResultMap">
+        select C_LOGIN.ID,
+               C_LOGIN.C_LOGINNAME,
+               C_LOGIN.C_LOGINPWD,
+               C_LOGIN.C_NAME,
+                --             C_LOGIN.C_GID,
+                --             C_LOGIN.C_GNO,
+                --             C_LOGIN.C_GNAME,
+               C_LOGIN.REMARK,
+               C_LOGIN.IP_LIMIT_MARK,
+               C_LOGIN.MARK,
+               C_LOGIN.STIME,
+               C_LOGIN.RTIME,
+               C_LOGIN.URL_TYPE,
+               C_LOGIN.URL_FILE,
+                --             AUTH_GROUP.ID         G_ID,
+                --             AUTH_GROUP.GROUP_NO   G_GROUP_NO,
+               AUTH_GROUP.GROUP_NAME G_GROUP_NAME
+                --             AUTH_GROUP.GROUP_ROLE_ID   G_GROUP_ROLE_ID,
+                --             AUTH_GROUP.GROUP_ROLE_NO   G_GROUP_ROLE_NO,
+                --             AUTH_GROUP.GROUP_ROLE_NAME G_GROUP_ROLE_NAME,
+                --             AUTH_GROUP.GROUP_OBJ_ID    G_GROUP_OBJ_ID,
+                --             AUTH_GROUP.GROUP_OBJ_NO    G_GROUP_OBJ_NO,
+                --             AUTH_GROUP.GROUP_OBJ_NAME  G_GROUP_OBJ_NAME,
+                --             AUTH_GROUP.REMARK          G_REMARK,
+                --             AUTH_GROUP.MARK            G_MARK,
+                --             AUTH_GROUP.STIME           G_STIME,
+                --             AUTH_GROUP.RTIME           G_RTIME,
+                --             AUTH_ROLE.ID               R_ID,
+                --             AUTH_ROLE.ROLE_NO          R_ROLE_NO,
+                --             AUTH_ROLE.ROLE_NAME        R_ROLE_NAME,
+                --             AUTH_ROLE.REMARK           R_REMARK,
+                --             AUTH_ROLE.ROLE_MARK        R_ROLE_MARK,
+                --             AUTH_ROLE.MARK             R_MARK,
+                --             AUTH_ROLE.STIME            R_STIME,
+                --             AUTH_ROLE.RTIME            R_RTIME,
+                --             AUTH_OBJ.ID                O_ID,
+                --             AUTH_OBJ.OBJ_NO            O_OBJ_NO,
+                --             AUTH_OBJ.OBJ_NAME          O_OBJ_NAME,
+                --             AUTH_OBJ.REMARK            O_REMARK,
+                --             AUTH_OBJ.LOGO_PNG          O_LOGO_PNG,
+                --             AUTH_OBJ.MARK              O_MARK
+                --             AUTH_OBJ.STIME             O_STIME,
+                --             AUTH_OBJ.RTIME             O_RTIME
+        from OILDB.C_LOGIN
+                 left join AUTH_GROUP on C_LOGIN.C_GID = AUTH_GROUP.ID
+        --             left join OILDB.AUTH_ROLE on AUTH_GROUP.GROUP_ROLE_ID = AUTH_ROLE.ID
+        --             left join OILDB.AUTH_OBJ on AUTH_GROUP.GROUP_OBJ_ID = AUTH_OBJ.ID
+    </select>
+    <select id="selectUserOneById" resultMap="BaseResultMap">
+        select C_LOGIN.ID,
+               C_LOGIN.C_LOGINNAME,
+               C_LOGIN.C_LOGINPWD,
+               C_LOGIN.C_NAME,
+                --             C_LOGIN.C_GID,
+                --             C_LOGIN.C_GNO,
+                --             C_LOGIN.C_GNAME,
+               C_LOGIN.REMARK,
+               C_LOGIN.IP_LIMIT_MARK,
+               C_LOGIN.MARK,
+                --             C_LOGIN.STIME,
+                --             C_LOGIN.RTIME,
+               C_LOGIN.URL_TYPE,
+               C_LOGIN.URL_FILE,
+               AUTH_GROUP.ID G_ID
+                --             AUTH_GROUP.GROUP_NO   G_GROUP_NO,
+                --             AUTH_GROUP.GROUP_NAME G_GROUP_NAME
+                --             AUTH_GROUP.GROUP_ROLE_ID   G_GROUP_ROLE_ID,
+                --             AUTH_GROUP.GROUP_ROLE_NO   G_GROUP_ROLE_NO,
+                --             AUTH_GROUP.GROUP_ROLE_NAME G_GROUP_ROLE_NAME,
+                --             AUTH_GROUP.GROUP_OBJ_ID    G_GROUP_OBJ_ID,
+                --             AUTH_GROUP.GROUP_OBJ_NO    G_GROUP_OBJ_NO,
+                --             AUTH_GROUP.GROUP_OBJ_NAME  G_GROUP_OBJ_NAME,
+                --             AUTH_GROUP.REMARK          G_REMARK,
+                --             AUTH_GROUP.MARK            G_MARK,
+                --             AUTH_GROUP.STIME           G_STIME,
+                --             AUTH_GROUP.RTIME           G_RTIME,
+                --             AUTH_ROLE.ID               R_ID,
+                --             AUTH_ROLE.ROLE_NO          R_ROLE_NO,
+                --             AUTH_ROLE.ROLE_NAME        R_ROLE_NAME,
+                --             AUTH_ROLE.REMARK           R_REMARK,
+                --             AUTH_ROLE.ROLE_MARK        R_ROLE_MARK,
+                --             AUTH_ROLE.MARK             R_MARK,
+                --             AUTH_ROLE.STIME            R_STIME,
+                --             AUTH_ROLE.RTIME            R_RTIME,
+                --             AUTH_OBJ.ID                O_ID,
+                --             AUTH_OBJ.OBJ_NO            O_OBJ_NO,
+                --             AUTH_OBJ.OBJ_NAME          O_OBJ_NAME,
+                --             AUTH_OBJ.REMARK            O_REMARK,
+                --             AUTH_OBJ.LOGO_PNG          O_LOGO_PNG,
+                --             AUTH_OBJ.MARK              O_MARK
+                --             AUTH_OBJ.STIME             O_STIME,
+                --             AUTH_OBJ.RTIME             O_RTIME
+        from OILDB.C_LOGIN
+                 left join AUTH_GROUP on C_LOGIN.C_GID = AUTH_GROUP.ID
+                --             left join OILDB.AUTH_ROLE on AUTH_GROUP.GROUP_ROLE_ID = AUTH_ROLE.ID
+                --             left join OILDB.AUTH_OBJ on AUTH_GROUP.GROUP_OBJ_ID = AUTH_OBJ.ID
+        where C_LOGIN.ID = #{id}
+    </select>
+</mapper>

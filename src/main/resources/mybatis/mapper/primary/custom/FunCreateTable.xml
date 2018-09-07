@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.runonstart.FunCreateTableMapper">
+    <update id="createTable_AUTH_ROLE_PERMISSION">
+        CREATE TABLE "OILDB"."AUTH_ROLE_PERMISSION" (
+            "ROLE_ID" NUMBER(18) ,
+            "PERMISSION_ID" VARCHAR2(255 BYTE)
+        )
+    </update>
+    <update id="createTable_SEQ_C_LOGIN_RESPONSIBLE">
+        CREATE SEQUENCE  SEQ_C_LOGIN_RESPONSIBLE INCREMENT BY 1 START WITH 1 MINVALUE 1 CACHE 20
+    </update>
+    <update id="createTable_C_LOGIN_RESPONSIBLE">
+        CREATE TABLE "C_LOGIN_RESPONSIBLE" (
+            "ID"  NUMBER(18) ,
+            "ROLE_ID" NUMBER(18) ,
+            "PERMISSION_ID" VARCHAR2(255 BYTE)
+        )
+    </update>
+    <update id="createTable_SEQ_C_LOGIN_RESPONSIBLE1">
+        ALTER TABLE  "C_LOGIN_RESPONSIBLE" ADD CONSTRAINT "SYS_C0012287" PRIMARY KEY ("ID")
+    </update>
+    <update id="createTable_TRG_C_LOGIN_RESPONSIBLE" statementType="STATEMENT" >
+        create or replace trigger  TRG_C_LOGIN_RESPONSIBLE
+            before insert on  C_LOGIN_RESPONSIBLE
+            for each row
+            begin
+                select SEQ_C_LOGIN_RESPONSIBLE.nextval into :new.id from dual;
+            end TRG_C_LOGIN_RESPONSIBLE;
+    </update>
+<update id="createTable_FACTORY_INFO" statementType="STATEMENT" >
+    CREATE TABLE  "FACTORY_INFO" (
+        "ID" NUMBER(18) NOT NULL ,
+        "NAME" VARCHAR2(255 BYTE) ,
+        "A11_CODE_FATHER" VARCHAR2(255 BYTE)
+    )
+    ALTER TABLE "OILDB"."FACTORY_INFO" ADD CONSTRAINT "SYS_C0011249" PRIMARY KEY ("ID");
+    ALTER TABLE "OILDB"."FACTORY_INFO" ADD CONSTRAINT "SYS_C0011248" CHECK ("ID" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+    INSERT INTO "OILDB"."FACTORY_INFO" VALUES ('1', '采油一厂', 'B01');
+    INSERT INTO "OILDB"."FACTORY_INFO" VALUES ('2', '采油二厂', 'B02');
+    INSERT INTO "OILDB"."FACTORY_INFO" VALUES ('3', '采油三厂', 'B03');
+    INSERT INTO "OILDB"."FACTORY_INFO" VALUES ('4', '采油四厂', 'B04');
+    INSERT INTO "OILDB"."FACTORY_INFO" VALUES ('5', '采油五厂', 'B05');
+    INSERT INTO "OILDB"."FACTORY_INFO" VALUES ('6', '二连分公司' , 'B06');
+</update>
+</mapper>

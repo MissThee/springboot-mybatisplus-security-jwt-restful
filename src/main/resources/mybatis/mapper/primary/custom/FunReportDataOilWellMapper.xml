@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.reportform.FunReportDataOilWellMapper">
+  <resultMap id="BaseResultMap" type="server.db.primary.model.reportform.ReportDataOilWell">
+    <result column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="REPORT_DATE" jdbcType="VARCHAR" property="reportDate" />
+    <result column="REPORT_WELL_ID" jdbcType="DECIMAL" property="reportWellId" />
+    <result column="REPORT_WELL_NAME" jdbcType="VARCHAR" property="reportWellName" />
+    <result column="REPORT_WELL_NUM" jdbcType="DECIMAL" property="reportWellNum" />
+    <result column="WELL_ID" jdbcType="DECIMAL" property="wellId" />
+    <result column="WELL_NAME" jdbcType="VARCHAR" property="wellName" />
+    <result column="LOOP_ID" jdbcType="DECIMAL" property="loopId" />
+    <result column="LOOP_NAME" jdbcType="VARCHAR" property="loopName" />
+    <result column="REPORT_STATION_ID" jdbcType="DECIMAL" property="reportStationId" />
+    <result column="REPORT_STATION_NAME" jdbcType="VARCHAR" property="reportStationName" />
+    <result column="AREA_ID" jdbcType="DECIMAL" property="areaId" />
+    <result column="AREA_NAME" jdbcType="VARCHAR" property="areaName" />
+    <result column="DUMP_DIAMETER" jdbcType="DECIMAL" property="dumpDiameter" />
+    <result column="DUMP_LENGTH" jdbcType="DECIMAL" property="dumpLength" />
+    <result column="WELL_STROKE" jdbcType="DECIMAL" property="wellStroke" />
+    <result column="JIG_FREQUENCY" jdbcType="DECIMAL" property="jigFrequency" />
+    <result column="PROD_LIQUID_V" jdbcType="DECIMAL" property="prodLiquidV" />
+    <result column="PROD_LIQUID_W" jdbcType="DECIMAL" property="prodLiquidW" />
+    <result column="PROD_OIL_V" jdbcType="DECIMAL" property="prodOilV" />
+    <result column="PROD_OIL_W" jdbcType="DECIMAL" property="prodOilW" />
+    <result column="PROD_WATER_CUT" jdbcType="DECIMAL" property="prodWaterCut" />
+    <result column="I_UPPER" jdbcType="DECIMAL" property="iUpper" />
+    <result column="I_LOWER" jdbcType="DECIMAL" property="iLower" />
+    <result column="EVENT_WELL_SWITCH" jdbcType="VARCHAR" property="eventWellSwitch" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="MARK" jdbcType="DECIMAL" property="mark" />
+    <result column="STIME" jdbcType="TIMESTAMP" property="stime" />
+    <result column="STROKE_FREQUENCY" jdbcType="VARCHAR" property="strokeFrequency" />
+  </resultMap>
+</mapper>

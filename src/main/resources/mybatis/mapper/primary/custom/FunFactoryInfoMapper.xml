@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.sysoption.FunFactoryInfoMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.FactoryInfo">
+        <id column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="NAME" jdbcType="VARCHAR" property="name"/>
+        <result column="A11_CODE_FATHER" jdbcType="VARCHAR" property="a11CodeFather"/>
+        <collection property="areaInfoList" ofType="server.db.primary.model.sysoption.AreaInfo">
+            <id column="A_ID" jdbcType="DECIMAL" property="id"/>
+            <result column="A_AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+            <result column="A_AREA_NAME_ALIAS" jdbcType="VARCHAR" property="areaNameAlias"/>
+            <result column="A_CO_ID" jdbcType="DECIMAL" property="coId"/>
+            <result column="A_CO_NAME" jdbcType="VARCHAR" property="coName"/>
+            <result column="A_A11_CODE" jdbcType="VARCHAR" property="a11Code"/>
+            <result column="A_A11_CODE_FATHER" jdbcType="VARCHAR" property="a11CodeFather"/>
+            <result column="A_REMARK" jdbcType="VARCHAR" property="remark"/>
+            <result column="A_MARK" jdbcType="DECIMAL" property="mark"/>
+            <result column="A_STIME" jdbcType="TIMESTAMP" property="stime"/>
+            <collection property="stationInfoList" ofType="server.db.primary.model.sysoption.StationInfo">
+                <id column="S_ID" jdbcType="DECIMAL" property="id"/>
+                <result column="S_STATION_NAME" jdbcType="VARCHAR" property="stationName"/>
+                <result column="S_STATION_NAME_ALIAS" jdbcType="VARCHAR" property="stationNameAlias"/>
+                <result column="S_CO_ID" jdbcType="DECIMAL" property="coId"/>
+                <result column="S_CO_NAME" jdbcType="VARCHAR" property="coName"/>
+                <result column="S_AREA_ID" jdbcType="DECIMAL" property="areaId"/>
+                <result column="S_AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+                <result column="S_STATION_TYPE" jdbcType="DECIMAL" property="stationType"/>
+                <result column="S_STATION_TYPE_NAME" jdbcType="VARCHAR" property="stationTypeName"/>
+                <result column="S_STATION_LONG" jdbcType="DECIMAL" property="stationLong"/>
+                <result column="S_STATION_LAT" jdbcType="DECIMAL" property="stationLat"/>
+                <result column="S_AUTO_MARK" jdbcType="DECIMAL" property="autoMark"/>
+                <result column="S_PLC_IPADDR" jdbcType="VARCHAR" property="plcIpaddr"/>
+                <result column="S_V_MARK" jdbcType="DECIMAL" property="vMark"/>
+                <result column="S_POINT_COUNT" jdbcType="DECIMAL" property="pointCount"/>
+                <result column="S_OPC_TOPIC" jdbcType="VARCHAR" property="opcTopic"/>
+                <result column="S_STATION_NUM" jdbcType="DECIMAL" property="stationNum"/>
+                <result column="S_A11_CODE" jdbcType="VARCHAR" property="a11Code"/>
+                <result column="S_A11_CODE_FATHER" jdbcType="VARCHAR" property="a11CodeFather"/>
+                <result column="S_REMARK" jdbcType="VARCHAR" property="remark"/>
+                <result column="S_MARK" jdbcType="DECIMAL" property="mark"/>
+                <result column="S_STIME" jdbcType="TIMESTAMP" property="stime"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="selectUnitTree" resultMap="BaseResultMap">
+        select
+            FACTORY_INFO.ID,
+            FACTORY_INFO.NAME,
+--             FACTORY_INFO.A11_CODE_FATHER,
+            AREA_INFO.ID                     A_ID,
+            AREA_INFO.AREA_NAME              A_AREA_NAME,
+--             AREA_INFO.AREA_NAME_ALIAS        A_AREA_NAME_ALIAS,
+--             AREA_INFO.CO_ID                  A_CO_ID,
+--             AREA_INFO.CO_NAME                A_CO_NAME,
+--             AREA_INFO.A11_CODE               A_A11_CODE,
+--             AREA_INFO.A11_CODE_FATHER        A_A11_CODE_FATHER,
+--             AREA_INFO.REMARK                 A_REMARK,
+--             AREA_INFO.MARK                   A_MARK,
+--             AREA_INFO.STIME                  A_STIME,
+            STATION_INFO.ID                  S_ID,
+            STATION_INFO.STATION_NAME        S_STATION_NAME
+--             STATION_INFO.STATION_NAME_ALIAS  S_STATION_NAME_ALIAS,
+--             STATION_INFO.CO_ID               S_CO_ID,
+--             STATION_INFO.CO_NAME             S_CO_NAME,
+--             STATION_INFO.AREA_ID             S_AREA_ID,
+--             STATION_INFO.AREA_NAME           S_AREA_NAME,
+--             STATION_INFO.STATION_TYPE        S_STATION_TYPE,
+--             STATION_INFO.STATION_TYPE_NAME   S_STATION_TYPE_NAME,
+--             STATION_INFO.STATION_LONG        S_STATION_LONG,
+--             STATION_INFO.STATION_LAT         S_STATION_LAT,
+--             STATION_INFO.AUTO_MARK           S_AUTO_MARK,
+--             STATION_INFO.PLC_IPADDR          S_PLC_IPADDR,
+--             STATION_INFO.V_MARK              S_V_MARK,
+--             STATION_INFO.POINT_COUNT         S_POINT_COUNT,
+--             STATION_INFO.OPC_TOPIC           S_OPC_TOPIC,
+--             STATION_INFO.STATION_NUM         S_STATION_NUM,
+--             STATION_INFO.A11_CODE            S_A11_CODE,
+--             STATION_INFO.A11_CODE_FATHER     S_A11_CODE_FATHER,
+--             STATION_INFO.PLC_TYPE            S_PLC_TYPE,
+--             STATION_INFO.REMARK              S_REMARK,
+--             STATION_INFO.MARK                S_MARK,
+--             STATION_INFO.STIME               S_STIME,
+--             STATION_INFO.STATION_PROGRAM_PIC S_STATION_PROGRAM_PIC,
+--             STATION_INFO.OILWELL_MARK        S_OILWELL_MARK,
+--             STATION_INFO.WATERWELL_MARK      S_WATERWELL_MARK,
+--             STATION_INFO.WATERFLOODING_MARK  S_WATERFLOODING_MARK
+        from FACTORY_INFO
+            left join AREA_INFO on FACTORY_INFO.ID = AREA_INFO.CO_ID
+            left join STATION_INFO on AREA_INFO.ID = STATION_INFO.AREA_ID
+    </select>
+
+    <select id="selecFactoryAreaTree" resultMap="BaseResultMap">
+        select
+            FACTORY_INFO.ID,
+            FACTORY_INFO.NAME,
+            AREA_INFO.ID                     A_ID,
+            AREA_INFO.AREA_NAME              A_AREA_NAME
+        from FACTORY_INFO
+            left join AREA_INFO on FACTORY_INFO.ID = AREA_INFO.CO_ID
+    </select>
+</mapper>

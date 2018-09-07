@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.sysoption.FunAuthRoleMapper">
+  <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.AuthRole">
+    <result column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ROLE_NO" jdbcType="VARCHAR" property="roleNo" />
+    <result column="ROLE_NAME" jdbcType="VARCHAR" property="roleName" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="ROLE_MARK" jdbcType="DECIMAL" property="roleMark" />
+    <result column="MARK" jdbcType="DECIMAL" property="mark" />
+    <result column="STIME" jdbcType="TIMESTAMP" property="stime" />
+    <result column="RTIME" jdbcType="TIMESTAMP" property="rtime" />
+  </resultMap>
+</mapper>

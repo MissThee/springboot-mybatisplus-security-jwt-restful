@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.reportform.FunReportConfStationMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.reportform.ReportConfStation">
+        <result column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="REPORT_STATION_NAME" jdbcType="VARCHAR" property="reportStationName"/>
+        <result column="AREA_ID" jdbcType="DECIMAL" property="areaId"/>
+        <result column="AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+    </resultMap>
+    <resultMap id="Group" type="server.db.primary.model.reportform.ReportConfStation_Group">
+        <result column="AREA_ID" jdbcType="DECIMAL" property="id"/>
+        <result column="AREA_NAME" jdbcType="VARCHAR" property="label"/>
+        <collection property="child" ofType="server.db.primary.model.reportform.ReportConfStation_Group$ReportConfStation_Child">
+            <result column="ID" jdbcType="DECIMAL" property="id"/>
+            <result column="REPORT_STATION_NAME" jdbcType="VARCHAR" property="label"/>
+        </collection>
+    </resultMap>
+    <sql id="SqlSelectReportConfStationGroup">
+        select
+        g.AREA_ID,
+        g.AREA_NAME,
+        REPORT_CONF_STATION.ID ,
+        REPORT_CONF_STATION.REPORT_STATION_NAME
+        from (
+        select AREA_ID, AREA_NAME
+        from REPORT_CONF_STATION
+        where 1=1
+        <if test="areaIds!=null">
+            and AREA_ID in
+            <foreach item="item" index="index" collection="areaIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        group by AREA_ID, AREA_NAME
+        ) g
+        left join REPORT_CONF_STATION on g.AREA_ID=REPORT_CONF_STATION.AREA_ID
+    </sql>
+    <select id="selectReportConfStationGroup" resultMap="Group">
+        <include refid="SqlSelectReportConfStationGroup"></include>
+    </select>
+    <select id="selectReportConfStationGroupInIdRange" resultMap="Group">
+        <include refid="SqlSelectReportConfStationGroup"></include>
+        where REPORT_CONF_STATION.ID &lt;= #{id}
+    </select>
+
+</mapper>

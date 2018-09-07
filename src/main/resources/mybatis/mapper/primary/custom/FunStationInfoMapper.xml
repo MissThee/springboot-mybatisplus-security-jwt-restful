@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.sysoption.FunStationInfoMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.StationInfo">
+        <id column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName"/>
+        <result column="STATION_NAME_ALIAS" jdbcType="VARCHAR" property="stationNameAlias"/>
+        <result column="CO_ID" jdbcType="DECIMAL" property="coId"/>
+        <result column="CO_NAME" jdbcType="VARCHAR" property="coName"/>
+        <result column="AREA_ID" jdbcType="DECIMAL" property="areaId"/>
+        <result column="AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+        <result column="STATION_TYPE" jdbcType="DECIMAL" property="stationType"/>
+        <result column="STATION_TYPE_NAME" jdbcType="VARCHAR" property="stationTypeName"/>
+        <result column="STATION_LONG" jdbcType="DECIMAL" property="stationLong"/>
+        <result column="STATION_LAT" jdbcType="DECIMAL" property="stationLat"/>
+        <result column="AUTO_MARK" jdbcType="DECIMAL" property="autoMark"/>
+        <result column="PLC_IPADDR" jdbcType="VARCHAR" property="plcIpaddr"/>
+        <result column="V_MARK" jdbcType="DECIMAL" property="vMark"/>
+        <result column="POINT_COUNT" jdbcType="DECIMAL" property="pointCount"/>
+        <result column="OPC_TOPIC" jdbcType="VARCHAR" property="opcTopic"/>
+        <result column="STATION_NUM" jdbcType="DECIMAL" property="stationNum"/>
+        <result column="A11_CODE" jdbcType="VARCHAR" property="a11Code"/>
+        <result column="A11_CODE_FATHER" jdbcType="VARCHAR" property="a11CodeFather"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+    </resultMap>
+    <resultMap id="PageTable" type="server.db.primary.model.sysoption.StationInfo">
+        <id column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName"/>
+        <result column="STATION_NAME_ALIAS" jdbcType="VARCHAR" property="stationNameAlias"/>
+        <result column="CO_ID" jdbcType="DECIMAL" property="coId"/>
+        <result column="CO_NAME" jdbcType="VARCHAR" property="coName"/>
+        <result column="AREA_ID" jdbcType="DECIMAL" property="areaId"/>
+        <result column="AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+        <result column="STATION_TYPE" jdbcType="DECIMAL" property="stationType"/>
+        <result column="STATION_TYPE_NAME" jdbcType="VARCHAR" property="stationTypeName"/>
+        <result column="STATION_LONG" jdbcType="DECIMAL" property="stationLong"/>
+        <result column="STATION_LAT" jdbcType="DECIMAL" property="stationLat"/>
+        <result column="AUTO_MARK" jdbcType="DECIMAL" property="autoMark"/>
+        <result column="PLC_IPADDR" jdbcType="VARCHAR" property="plcIpaddr"/>
+        <result column="V_MARK" jdbcType="DECIMAL" property="vMark"/>
+        <result column="POINT_COUNT" jdbcType="DECIMAL" property="pointCount"/>
+        <result column="OPC_TOPIC" jdbcType="VARCHAR" property="opcTopic"/>
+        <result column="STATION_NUM" jdbcType="DECIMAL" property="stationNum"/>
+        <result column="A11_CODE" jdbcType="VARCHAR" property="a11Code"/>
+        <result column="A11_CODE_FATHER" jdbcType="VARCHAR" property="a11CodeFather"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+        <collection property="stationInfoVideo" ofType="server.db.primary.model.sysoption.StationInfoVideo" select="selectStationInfoTablePerIp" column="id">
+        </collection>
+    </resultMap>
+    <select id="selectStationInfoTable" resultMap="PageTable">
+        select STATION_INFO.ID,
+        STATION_INFO.STATION_NAME,
+        STATION_INFO.CO_NAME,
+        STATION_INFO.AREA_NAME,
+        STATION_INFO.STATION_TYPE_NAME,
+        STATION_INFO.STATION_LONG,
+        STATION_INFO.STATION_LAT,
+        STATION_INFO.AUTO_MARK,
+        STATION_INFO.PLC_IPADDR,
+        STATION_INFO.A11_CODE,
+        STATION_INFO.A11_CODE_FATHER,
+        STATION_INFO.PLC_TYPE,
+        STATION_INFO.MARK,
+        STATION_INFO.STIME
+        from STATION_INFO
+        where STATION_TYPE=#{stationType}
+        <if test="searchFactoryId!=null">
+            and CO_ID=#{searchFactoryId}
+        </if>
+        <if test="searchAreaId!=null">
+            and AREA_ID=#{searchAreaId}
+        </if>
+        <if test="searchMark!=null">
+            and MARK=#{searchMark}
+        </if>
+        <if test="searchAutoMark!=null">
+            and AUTO_MARK=#{searchAutoMark}
+        </if>
+        and AREA_ID in
+        <foreach item="item" index="index" collection="areaIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <!--<choose>-->
+        <!--<when test="idList!=null and idList.size()>0">-->
+        <!--and STATION_INFO.ID in-->
+        <!--<foreach collection="idList" item="id" open="(" separator="," close=")">-->
+        <!--#{id}-->
+        <!--</foreach>-->
+        <!--</when>-->
+        <!--<otherwise>-->
+        <!--and 1=2-->
+        <!--</otherwise>-->
+        <!--</choose>-->
+        order by STATION_INFO.STATION_NUM,
+        STATION_INFO.A11_CODE_FATHER,
+        STATION_INFO.A11_CODE,
+        STATION_INFO.STATION_NAME
+    </select>
+    <select id="selectStationInfoTablePerIp" resultMap="server.db.primary.mapper.sysoption.FunStationInfoVideoMapper.BaseResultMap">
+        select V_IPADDR
+        from STATION_INFO_VIDEO
+        where STATION_ID = #{id}
+    </select>
+    <select id="selectStationInfoTableOneById" resultMap="BaseResultMap">
+        select STATION_INFO.ID,
+               STATION_INFO.STATION_NAME,
+               STATION_INFO.STATION_NAME_ALIAS,
+               STATION_INFO.CO_ID,
+               STATION_INFO.AREA_ID,
+               STATION_INFO.STATION_LONG,
+               STATION_INFO.STATION_LAT,
+               STATION_INFO.AUTO_MARK,
+               STATION_INFO.PLC_IPADDR,
+               STATION_INFO.A11_CODE,
+               STATION_INFO.A11_CODE_FATHER,
+               STATION_INFO.PLC_TYPE,
+               STATION_INFO.MARK,
+               STATION_INFO.REMARK
+        from STATION_INFO
+        where ID = #{id}
+    </select>
+</mapper>

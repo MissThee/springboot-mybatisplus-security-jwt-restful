@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.WellDataCurMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.WellDataCur">
+        <id column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="RTU_IPADDR" jdbcType="VARCHAR" property="rtuIpaddr"/>
+        <result column="RTU_CONF_ID" jdbcType="DECIMAL" property="rtuConfId"/>
+        <result column="WELL_ID" jdbcType="DECIMAL" property="wellId"/>
+        <result column="WELL_NAME" jdbcType="VARCHAR" property="wellName"/>
+        <result column="WELL_TYPE" jdbcType="DECIMAL" property="wellType"/>
+        <result column="WELL_NUM" jdbcType="DECIMAL" property="wellNum"/>
+        <result column="AREA_ID" jdbcType="DECIMAL" property="areaId"/>
+        <result column="AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+        <result column="STATION_ID" jdbcType="DECIMAL" property="stationId"/>
+        <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName"/>
+        <result column="PRESS_OIL" jdbcType="DECIMAL" property="pressOil"/>
+        <result column="PRESS_CASE" jdbcType="DECIMAL" property="pressCase"/>
+        <result column="PRESS_BACK" jdbcType="DECIMAL" property="pressBack"/>
+        <result column="TEMP_WELLHEAD" jdbcType="DECIMAL" property="tempWellhead"/>
+        <result column="LOAD_CUR" jdbcType="DECIMAL" property="loadCur"/>
+        <result column="POSITION_CUR" jdbcType="DECIMAL" property="positionCur"/>
+        <result column="RUN_HAND_AUTO" jdbcType="DECIMAL" property="runHandAuto"/>
+        <result column="RUN_STATE" jdbcType="DECIMAL" property="runState"/>
+        <result column="DOOR_STATE" jdbcType="DECIMAL" property="doorState"/>
+        <result column="DI3" jdbcType="DECIMAL" property="di3"/>
+        <result column="DI4" jdbcType="DECIMAL" property="di4"/>
+        <result column="U_A" jdbcType="DECIMAL" property="uA"/>
+        <result column="U_B" jdbcType="DECIMAL" property="uB"/>
+        <result column="U_C" jdbcType="DECIMAL" property="uC"/>
+        <result column="I_A" jdbcType="DECIMAL" property="iA"/>
+        <result column="I_B" jdbcType="DECIMAL" property="iB"/>
+        <result column="I_C" jdbcType="DECIMAL" property="iC"/>
+        <result column="E_P" jdbcType="DECIMAL" property="eP"/>
+        <result column="E_Q" jdbcType="DECIMAL" property="eQ"/>
+        <result column="E_S" jdbcType="DECIMAL" property="eS"/>
+        <result column="E_COS" jdbcType="DECIMAL" property="eCos"/>
+        <result column="E_E" jdbcType="DECIMAL" property="eE"/>
+        <result column="E_FREQUENCY" jdbcType="DECIMAL" property="eFrequency"/>
+        <result column="JIG_FREQUENCY" jdbcType="DECIMAL" property="jigFrequency"/>
+        <result column="WELL_STROKE" jdbcType="DECIMAL" property="wellStroke"/>
+        <result column="PUMP_STAT" jdbcType="DECIMAL" property="pumpStat"/>
+        <result column="GT_ID" jdbcType="DECIMAL" property="gtId"/>
+        <result column="LOAD_MAX" jdbcType="DECIMAL" property="loadMax"/>
+        <result column="LOAD_MIN" jdbcType="DECIMAL" property="loadMin"/>
+        <result column="LOAD_BAT" jdbcType="DECIMAL" property="loadBat"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="BATTERY_RATE" jdbcType="DECIMAL" property="batteryRate"/>
+        <result column="COMM_MARK" jdbcType="DECIMAL" property="commMark"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+        <result column="GT_DIAG_INFO" jdbcType="VARCHAR" property="gtDiagInfo"/>
+        <result column="GT_PROD" jdbcType="DECIMAL" property="gtProd"/>
+        <result column="LENGTH_HOLEDOWN" jdbcType="DECIMAL" property="lengthHoledown"/>
+        <result column="LOAD_DATA" jdbcType="VARCHAR" property="loadData"/>
+        <result column="I_DATA" jdbcType="VARCHAR" property="iData"/>
+        <result column="P_DATA" jdbcType="VARCHAR" property="pData"/>
+    </resultMap>
+    <resultMap id="OneToOneResultMap" type="server.db.primary.model.WellDataCur">
+        <id column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="RTU_IPADDR" jdbcType="VARCHAR" property="rtuIpaddr"/>
+        <result column="RTU_CONF_ID" jdbcType="DECIMAL" property="rtuConfId"/>
+        <result column="WELL_ID" jdbcType="DECIMAL" property="wellId"/>
+        <result column="WELL_NAME" jdbcType="VARCHAR" property="wellName"/>
+        <result column="WELL_TYPE" jdbcType="DECIMAL" property="wellType"/>
+        <result column="WELL_NUM" jdbcType="DECIMAL" property="wellNum"/>
+        <result column="AREA_ID" jdbcType="DECIMAL" property="areaId"/>
+        <result column="AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+        <result column="STATION_ID" jdbcType="DECIMAL" property="stationId"/>
+        <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName"/>
+        <result column="PRESS_OIL" jdbcType="DECIMAL" property="pressOil"/>
+        <result column="PRESS_CASE" jdbcType="DECIMAL" property="pressCase"/>
+        <result column="PRESS_BACK" jdbcType="DECIMAL" property="pressBack"/>
+        <result column="TEMP_WELLHEAD" jdbcType="DECIMAL" property="tempWellhead"/>
+        <result column="LOAD_CUR" jdbcType="DECIMAL" property="loadCur"/>
+        <result column="POSITION_CUR" jdbcType="DECIMAL" property="positionCur"/>
+        <result column="RUN_HAND_AUTO" jdbcType="DECIMAL" property="runHandAuto"/>
+        <result column="RUN_STATE" jdbcType="DECIMAL" property="runState"/>
+        <result column="DI3" jdbcType="DECIMAL" property="di3"/>
+        <result column="DI4" jdbcType="DECIMAL" property="di4"/>
+        <result column="U_A" jdbcType="DECIMAL" property="uA"/>
+        <result column="U_B" jdbcType="DECIMAL" property="uB"/>
+        <result column="U_C" jdbcType="DECIMAL" property="uC"/>
+        <result column="I_A" jdbcType="DECIMAL" property="iA"/>
+        <result column="I_B" jdbcType="DECIMAL" property="iB"/>
+        <result column="I_C" jdbcType="DECIMAL" property="iC"/>
+        <result column="E_P" jdbcType="DECIMAL" property="eP"/>
+        <result column="E_Q" jdbcType="DECIMAL" property="eQ"/>
+        <result column="E_S" jdbcType="DECIMAL" property="eS"/>
+        <result column="E_COS" jdbcType="DECIMAL" property="eCos"/>
+        <result column="E_E" jdbcType="DECIMAL" property="eE"/>
+        <result column="E_FREQUENCY" jdbcType="DECIMAL" property="eFrequency"/>
+        <result column="JIG_FREQUENCY" jdbcType="DECIMAL" property="jigFrequency"/>
+        <result column="WELL_STROKE" jdbcType="DECIMAL" property="wellStroke"/>
+        <result column="PUMP_STAT" jdbcType="DECIMAL" property="pumpStat"/>
+        <result column="GT_ID" jdbcType="DECIMAL" property="gtId"/>
+        <result column="LOAD_MAX" jdbcType="DECIMAL" property="loadMax"/>
+        <result column="LOAD_MIN" jdbcType="DECIMAL" property="loadMin"/>
+        <result column="LOAD_BAT" jdbcType="DECIMAL" property="loadBat"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="BATTERY_RATE" jdbcType="DECIMAL" property="batteryRate"/>
+        <result column="COMM_MARK" jdbcType="DECIMAL" property="commMark"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+        <result column="GT_DIAG_INFO" jdbcType="VARCHAR" property="gtDiagInfo"/>
+        <result column="GT_PROD" jdbcType="DECIMAL" property="gtProd"/>
+        <result column="LENGTH_HOLEDOWN" jdbcType="DECIMAL" property="lengthHoledown"/>
+
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+    ID, RTU_IPADDR, RTU_CONF_ID, WELL_ID, WELL_NAME, WELL_TYPE, WELL_NUM, AREA_ID, AREA_NAME,
+    STATION_ID, STATION_NAME, PRESS_OIL, PRESS_CASE, PRESS_BACK, TEMP_WELLHEAD, LOAD_CUR,
+    POSITION_CUR, RUN_HAND_AUTO, RUN_STATE, DI3, DI4, U_A, U_B, U_C, I_A, I_B, I_C, E_P,
+    E_Q, E_S, E_COS, E_E, E_FREQUENCY, JIG_FREQUENCY, WELL_STROKE, PUMP_STAT, GT_ID,
+    LOAD_MAX, LOAD_MIN, LOAD_BAT, REMARK, BATTERY_RATE, COMM_MARK, MARK, STIME, GT_DIAG_INFO,
+    GT_PROD, LENGTH_HOLEDOWN, LOAD_DATA, I_DATA, P_DATA
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from OILDB.WELL_DATA_CUR
+        where ID = #{id,jdbcType=DECIMAL}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from OILDB.WELL_DATA_CUR
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+    <insert id="insert" parameterType="server.db.primary.model.WellDataCur">
+    insert into OILDB.WELL_DATA_CUR (ID, RTU_IPADDR, RTU_CONF_ID, 
+      WELL_ID, WELL_NAME, WELL_TYPE, 
+      WELL_NUM, AREA_ID, AREA_NAME, 
+      STATION_ID, STATION_NAME, PRESS_OIL, 
+      PRESS_CASE, PRESS_BACK, TEMP_WELLHEAD, 
+      LOAD_CUR, POSITION_CUR, RUN_HAND_AUTO, 
+      RUN_STATE, DI3, DI4, 
+      U_A, U_B, U_C, I_A, 
+      I_B, I_C, E_P, E_Q, 
+      E_S, E_COS, E_E, E_FREQUENCY, 
+      JIG_FREQUENCY, WELL_STROKE, PUMP_STAT, 
+      GT_ID, LOAD_MAX, LOAD_MIN, 
+      LOAD_BAT, REMARK, BATTERY_RATE, 
+      COMM_MARK, MARK, STIME, 
+      GT_DIAG_INFO, GT_PROD, LENGTH_HOLEDOWN
+      )
+    values (#{id,jdbcType=DECIMAL}, #{rtuIpaddr,jdbcType=VARCHAR}, #{rtuConfId,jdbcType=DECIMAL}, 
+      #{wellId,jdbcType=DECIMAL}, #{wellName,jdbcType=VARCHAR}, #{wellType,jdbcType=DECIMAL}, 
+      #{wellNum,jdbcType=DECIMAL}, #{areaId,jdbcType=DECIMAL}, #{areaName,jdbcType=VARCHAR}, 
+      #{stationId,jdbcType=DECIMAL}, #{stationName,jdbcType=VARCHAR}, #{pressOil,jdbcType=DECIMAL}, 
+      #{pressCase,jdbcType=DECIMAL}, #{pressBack,jdbcType=DECIMAL}, #{tempWellhead,jdbcType=DECIMAL}, 
+      #{loadCur,jdbcType=DECIMAL}, #{positionCur,jdbcType=DECIMAL}, #{runHandAuto,jdbcType=DECIMAL}, 
+      #{runState,jdbcType=DECIMAL}, #{di3,jdbcType=DECIMAL}, #{di4,jdbcType=DECIMAL}, 
+      #{uA,jdbcType=DECIMAL}, #{uB,jdbcType=DECIMAL}, #{uC,jdbcType=DECIMAL}, #{iA,jdbcType=DECIMAL}, 
+      #{iB,jdbcType=DECIMAL}, #{iC,jdbcType=DECIMAL}, #{eP,jdbcType=DECIMAL}, #{eQ,jdbcType=DECIMAL}, 
+      #{eS,jdbcType=DECIMAL}, #{eCos,jdbcType=DECIMAL}, #{eE,jdbcType=DECIMAL}, #{eFrequency,jdbcType=DECIMAL}, 
+      #{jigFrequency,jdbcType=DECIMAL}, #{wellStroke,jdbcType=DECIMAL}, #{pumpStat,jdbcType=DECIMAL}, 
+      #{gtId,jdbcType=DECIMAL}, #{loadMax,jdbcType=DECIMAL}, #{loadMin,jdbcType=DECIMAL}, 
+      #{loadBat,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR}, #{batteryRate,jdbcType=DECIMAL}, 
+      #{commMark,jdbcType=DECIMAL}, #{mark,jdbcType=DECIMAL}, #{stime,jdbcType=TIMESTAMP}, 
+      #{gtDiagInfo,jdbcType=VARCHAR}, #{gtProd,jdbcType=DECIMAL}, #{lengthHoledown,jdbcType=DECIMAL}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="server.db.primary.model.WellDataCur">
+        insert into OILDB.WELL_DATA_CUR
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="rtuIpaddr != null">
+                RTU_IPADDR,
+            </if>
+            <if test="rtuConfId != null">
+                RTU_CONF_ID,
+            </if>
+            <if test="wellId != null">
+                WELL_ID,
+            </if>
+            <if test="wellName != null">
+                WELL_NAME,
+            </if>
+            <if test="wellType != null">
+                WELL_TYPE,
+            </if>
+            <if test="wellNum != null">
+                WELL_NUM,
+            </if>
+            <if test="areaId != null">
+                AREA_ID,
+            </if>
+            <if test="areaName != null">
+                AREA_NAME,
+            </if>
+            <if test="stationId != null">
+                STATION_ID,
+            </if>
+            <if test="stationName != null">
+                STATION_NAME,
+            </if>
+            <if test="pressOil != null">
+                PRESS_OIL,
+            </if>
+            <if test="pressCase != null">
+                PRESS_CASE,
+            </if>
+            <if test="pressBack != null">
+                PRESS_BACK,
+            </if>
+            <if test="tempWellhead != null">
+                TEMP_WELLHEAD,
+            </if>
+            <if test="loadCur != null">
+                LOAD_CUR,
+            </if>
+            <if test="positionCur != null">
+                POSITION_CUR,
+            </if>
+            <if test="runHandAuto != null">
+                RUN_HAND_AUTO,
+            </if>
+            <if test="runState != null">
+                RUN_STATE,
+            </if>
+            <if test="di3 != null">
+                DI3,
+            </if>
+            <if test="di4 != null">
+                DI4,
+            </if>
+            <if test="uA != null">
+                U_A,
+            </if>
+            <if test="uB != null">
+                U_B,
+            </if>
+            <if test="uC != null">
+                U_C,
+            </if>
+            <if test="iA != null">
+                I_A,
+            </if>
+            <if test="iB != null">
+                I_B,
+            </if>
+            <if test="iC != null">
+                I_C,
+            </if>
+            <if test="eP != null">
+                E_P,
+            </if>
+            <if test="eQ != null">
+                E_Q,
+            </if>
+            <if test="eS != null">
+                E_S,
+            </if>
+            <if test="eCos != null">
+                E_COS,
+            </if>
+            <if test="eE != null">
+                E_E,
+            </if>
+            <if test="eFrequency != null">
+                E_FREQUENCY,
+            </if>
+            <if test="jigFrequency != null">
+                JIG_FREQUENCY,
+            </if>
+            <if test="wellStroke != null">
+                WELL_STROKE,
+            </if>
+            <if test="pumpStat != null">
+                PUMP_STAT,
+            </if>
+            <if test="gtId != null">
+                GT_ID,
+            </if>
+            <if test="loadMax != null">
+                LOAD_MAX,
+            </if>
+            <if test="loadMin != null">
+                LOAD_MIN,
+            </if>
+            <if test="loadBat != null">
+                LOAD_BAT,
+            </if>
+            <if test="remark != null">
+                REMARK,
+            </if>
+            <if test="batteryRate != null">
+                BATTERY_RATE,
+            </if>
+            <if test="commMark != null">
+                COMM_MARK,
+            </if>
+            <if test="mark != null">
+                MARK,
+            </if>
+            <if test="stime != null">
+                STIME,
+            </if>
+            <if test="gtDiagInfo != null">
+                GT_DIAG_INFO,
+            </if>
+            <if test="gtProd != null">
+                GT_PROD,
+            </if>
+            <if test="lengthHoledown != null">
+                LENGTH_HOLEDOWN,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=DECIMAL},
+            </if>
+            <if test="rtuIpaddr != null">
+                #{rtuIpaddr,jdbcType=VARCHAR},
+            </if>
+            <if test="rtuConfId != null">
+                #{rtuConfId,jdbcType=DECIMAL},
+            </if>
+            <if test="wellId != null">
+                #{wellId,jdbcType=DECIMAL},
+            </if>
+            <if test="wellName != null">
+                #{wellName,jdbcType=VARCHAR},
+            </if>
+            <if test="wellType != null">
+                #{wellType,jdbcType=DECIMAL},
+            </if>
+            <if test="wellNum != null">
+                #{wellNum,jdbcType=DECIMAL},
+            </if>
+            <if test="areaId != null">
+                #{areaId,jdbcType=DECIMAL},
+            </if>
+            <if test="areaName != null">
+                #{areaName,jdbcType=VARCHAR},
+            </if>
+            <if test="stationId != null">
+                #{stationId,jdbcType=DECIMAL},
+            </if>
+            <if test="stationName != null">
+                #{stationName,jdbcType=VARCHAR},
+            </if>
+            <if test="pressOil != null">
+                #{pressOil,jdbcType=DECIMAL},
+            </if>
+            <if test="pressCase != null">
+                #{pressCase,jdbcType=DECIMAL},
+            </if>
+            <if test="pressBack != null">
+                #{pressBack,jdbcType=DECIMAL},
+            </if>
+            <if test="tempWellhead != null">
+                #{tempWellhead,jdbcType=DECIMAL},
+            </if>
+            <if test="loadCur != null">
+                #{loadCur,jdbcType=DECIMAL},
+            </if>
+            <if test="positionCur != null">
+                #{positionCur,jdbcType=DECIMAL},
+            </if>
+            <if test="runHandAuto != null">
+                #{runHandAuto,jdbcType=DECIMAL},
+            </if>
+            <if test="runState != null">
+                #{runState,jdbcType=DECIMAL},
+            </if>
+            <if test="di3 != null">
+                #{di3,jdbcType=DECIMAL},
+            </if>
+            <if test="di4 != null">
+                #{di4,jdbcType=DECIMAL},
+            </if>
+            <if test="uA != null">
+                #{uA,jdbcType=DECIMAL},
+            </if>
+            <if test="uB != null">
+                #{uB,jdbcType=DECIMAL},
+            </if>
+            <if test="uC != null">
+                #{uC,jdbcType=DECIMAL},
+            </if>
+            <if test="iA != null">
+                #{iA,jdbcType=DECIMAL},
+            </if>
+            <if test="iB != null">
+                #{iB,jdbcType=DECIMAL},
+            </if>
+            <if test="iC != null">
+                #{iC,jdbcType=DECIMAL},
+            </if>
+            <if test="eP != null">
+                #{eP,jdbcType=DECIMAL},
+            </if>
+            <if test="eQ != null">
+                #{eQ,jdbcType=DECIMAL},
+            </if>
+            <if test="eS != null">
+                #{eS,jdbcType=DECIMAL},
+            </if>
+            <if test="eCos != null">
+                #{eCos,jdbcType=DECIMAL},
+            </if>
+            <if test="eE != null">
+                #{eE,jdbcType=DECIMAL},
+            </if>
+            <if test="eFrequency != null">
+                #{eFrequency,jdbcType=DECIMAL},
+            </if>
+            <if test="jigFrequency != null">
+                #{jigFrequency,jdbcType=DECIMAL},
+            </if>
+            <if test="wellStroke != null">
+                #{wellStroke,jdbcType=DECIMAL},
+            </if>
+            <if test="pumpStat != null">
+                #{pumpStat,jdbcType=DECIMAL},
+            </if>
+            <if test="gtId != null">
+                #{gtId,jdbcType=DECIMAL},
+            </if>
+            <if test="loadMax != null">
+                #{loadMax,jdbcType=DECIMAL},
+            </if>
+            <if test="loadMin != null">
+                #{loadMin,jdbcType=DECIMAL},
+            </if>
+            <if test="loadBat != null">
+                #{loadBat,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="batteryRate != null">
+                #{batteryRate,jdbcType=DECIMAL},
+            </if>
+            <if test="commMark != null">
+                #{commMark,jdbcType=DECIMAL},
+            </if>
+            <if test="mark != null">
+                #{mark,jdbcType=DECIMAL},
+            </if>
+            <if test="stime != null">
+                #{stime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gtDiagInfo != null">
+                #{gtDiagInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="gtProd != null">
+                #{gtProd,jdbcType=DECIMAL},
+            </if>
+            <if test="lengthHoledown != null">
+                #{lengthHoledown,jdbcType=DECIMAL},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="server.db.primary.model.WellDataCur">
+        update OILDB.WELL_DATA_CUR
+        <set>
+            <if test="rtuIpaddr != null">
+                RTU_IPADDR = #{rtuIpaddr,jdbcType=VARCHAR},
+            </if>
+            <if test="rtuConfId != null">
+                RTU_CONF_ID = #{rtuConfId,jdbcType=DECIMAL},
+            </if>
+            <if test="wellId != null">
+                WELL_ID = #{wellId,jdbcType=DECIMAL},
+            </if>
+            <if test="wellName != null">
+                WELL_NAME = #{wellName,jdbcType=VARCHAR},
+            </if>
+            <if test="wellType != null">
+                WELL_TYPE = #{wellType,jdbcType=DECIMAL},
+            </if>
+            <if test="wellNum != null">
+                WELL_NUM = #{wellNum,jdbcType=DECIMAL},
+            </if>
+            <if test="areaId != null">
+                AREA_ID = #{areaId,jdbcType=DECIMAL},
+            </if>
+            <if test="areaName != null">
+                AREA_NAME = #{areaName,jdbcType=VARCHAR},
+            </if>
+            <if test="stationId != null">
+                STATION_ID = #{stationId,jdbcType=DECIMAL},
+            </if>
+            <if test="stationName != null">
+                STATION_NAME = #{stationName,jdbcType=VARCHAR},
+            </if>
+            <if test="pressOil != null">
+                PRESS_OIL = #{pressOil,jdbcType=DECIMAL},
+            </if>
+            <if test="pressCase != null">
+                PRESS_CASE = #{pressCase,jdbcType=DECIMAL},
+            </if>
+            <if test="pressBack != null">
+                PRESS_BACK = #{pressBack,jdbcType=DECIMAL},
+            </if>
+            <if test="tempWellhead != null">
+                TEMP_WELLHEAD = #{tempWellhead,jdbcType=DECIMAL},
+            </if>
+            <if test="loadCur != null">
+                LOAD_CUR = #{loadCur,jdbcType=DECIMAL},
+            </if>
+            <if test="positionCur != null">
+                POSITION_CUR = #{positionCur,jdbcType=DECIMAL},
+            </if>
+            <if test="runHandAuto != null">
+                RUN_HAND_AUTO = #{runHandAuto,jdbcType=DECIMAL},
+            </if>
+            <if test="runState != null">
+                RUN_STATE = #{runState,jdbcType=DECIMAL},
+            </if>
+            <if test="di3 != null">
+                DI3 = #{di3,jdbcType=DECIMAL},
+            </if>
+            <if test="di4 != null">
+                DI4 = #{di4,jdbcType=DECIMAL},
+            </if>
+            <if test="uA != null">
+                U_A = #{uA,jdbcType=DECIMAL},
+            </if>
+            <if test="uB != null">
+                U_B = #{uB,jdbcType=DECIMAL},
+            </if>
+            <if test="uC != null">
+                U_C = #{uC,jdbcType=DECIMAL},
+            </if>
+            <if test="iA != null">
+                I_A = #{iA,jdbcType=DECIMAL},
+            </if>
+            <if test="iB != null">
+                I_B = #{iB,jdbcType=DECIMAL},
+            </if>
+            <if test="iC != null">
+                I_C = #{iC,jdbcType=DECIMAL},
+            </if>
+            <if test="eP != null">
+                E_P = #{eP,jdbcType=DECIMAL},
+            </if>
+            <if test="eQ != null">
+                E_Q = #{eQ,jdbcType=DECIMAL},
+            </if>
+            <if test="eS != null">
+                E_S = #{eS,jdbcType=DECIMAL},
+            </if>
+            <if test="eCos != null">
+                E_COS = #{eCos,jdbcType=DECIMAL},
+            </if>
+            <if test="eE != null">
+                E_E = #{eE,jdbcType=DECIMAL},
+            </if>
+            <if test="eFrequency != null">
+                E_FREQUENCY = #{eFrequency,jdbcType=DECIMAL},
+            </if>
+            <if test="jigFrequency != null">
+                JIG_FREQUENCY = #{jigFrequency,jdbcType=DECIMAL},
+            </if>
+            <if test="wellStroke != null">
+                WELL_STROKE = #{wellStroke,jdbcType=DECIMAL},
+            </if>
+            <if test="pumpStat != null">
+                PUMP_STAT = #{pumpStat,jdbcType=DECIMAL},
+            </if>
+            <if test="gtId != null">
+                GT_ID = #{gtId,jdbcType=DECIMAL},
+            </if>
+            <if test="loadMax != null">
+                LOAD_MAX = #{loadMax,jdbcType=DECIMAL},
+            </if>
+            <if test="loadMin != null">
+                LOAD_MIN = #{loadMin,jdbcType=DECIMAL},
+            </if>
+            <if test="loadBat != null">
+                LOAD_BAT = #{loadBat,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null">
+                REMARK = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="batteryRate != null">
+                BATTERY_RATE = #{batteryRate,jdbcType=DECIMAL},
+            </if>
+            <if test="commMark != null">
+                COMM_MARK = #{commMark,jdbcType=DECIMAL},
+            </if>
+            <if test="mark != null">
+                MARK = #{mark,jdbcType=DECIMAL},
+            </if>
+            <if test="stime != null">
+                STIME = #{stime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gtDiagInfo != null">
+                GT_DIAG_INFO = #{gtDiagInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="gtProd != null">
+                GT_PROD = #{gtProd,jdbcType=DECIMAL},
+            </if>
+            <if test="lengthHoledown != null">
+                LENGTH_HOLEDOWN = #{lengthHoledown,jdbcType=DECIMAL},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=DECIMAL}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="server.db.primary.model.WellDataCur">
+    update OILDB.WELL_DATA_CUR
+    set RTU_IPADDR = #{rtuIpaddr,jdbcType=VARCHAR},
+      RTU_CONF_ID = #{rtuConfId,jdbcType=DECIMAL},
+      WELL_ID = #{wellId,jdbcType=DECIMAL},
+      WELL_NAME = #{wellName,jdbcType=VARCHAR},
+      WELL_TYPE = #{wellType,jdbcType=DECIMAL},
+      WELL_NUM = #{wellNum,jdbcType=DECIMAL},
+      AREA_ID = #{areaId,jdbcType=DECIMAL},
+      AREA_NAME = #{areaName,jdbcType=VARCHAR},
+      STATION_ID = #{stationId,jdbcType=DECIMAL},
+      STATION_NAME = #{stationName,jdbcType=VARCHAR},
+      PRESS_OIL = #{pressOil,jdbcType=DECIMAL},
+      PRESS_CASE = #{pressCase,jdbcType=DECIMAL},
+      PRESS_BACK = #{pressBack,jdbcType=DECIMAL},
+      TEMP_WELLHEAD = #{tempWellhead,jdbcType=DECIMAL},
+      LOAD_CUR = #{loadCur,jdbcType=DECIMAL},
+      POSITION_CUR = #{positionCur,jdbcType=DECIMAL},
+      RUN_HAND_AUTO = #{runHandAuto,jdbcType=DECIMAL},
+      RUN_STATE = #{runState,jdbcType=DECIMAL},
+      DI3 = #{di3,jdbcType=DECIMAL},
+      DI4 = #{di4,jdbcType=DECIMAL},
+      U_A = #{uA,jdbcType=DECIMAL},
+      U_B = #{uB,jdbcType=DECIMAL},
+      U_C = #{uC,jdbcType=DECIMAL},
+      I_A = #{iA,jdbcType=DECIMAL},
+      I_B = #{iB,jdbcType=DECIMAL},
+      I_C = #{iC,jdbcType=DECIMAL},
+      E_P = #{eP,jdbcType=DECIMAL},
+      E_Q = #{eQ,jdbcType=DECIMAL},
+      E_S = #{eS,jdbcType=DECIMAL},
+      E_COS = #{eCos,jdbcType=DECIMAL},
+      E_E = #{eE,jdbcType=DECIMAL},
+      E_FREQUENCY = #{eFrequency,jdbcType=DECIMAL},
+      JIG_FREQUENCY = #{jigFrequency,jdbcType=DECIMAL},
+      WELL_STROKE = #{wellStroke,jdbcType=DECIMAL},
+      PUMP_STAT = #{pumpStat,jdbcType=DECIMAL},
+      GT_ID = #{gtId,jdbcType=DECIMAL},
+      LOAD_MAX = #{loadMax,jdbcType=DECIMAL},
+      LOAD_MIN = #{loadMin,jdbcType=DECIMAL},
+      LOAD_BAT = #{loadBat,jdbcType=DECIMAL},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      BATTERY_RATE = #{batteryRate,jdbcType=DECIMAL},
+      COMM_MARK = #{commMark,jdbcType=DECIMAL},
+      MARK = #{mark,jdbcType=DECIMAL},
+      STIME = #{stime,jdbcType=TIMESTAMP},
+      GT_DIAG_INFO = #{gtDiagInfo,jdbcType=VARCHAR},
+      GT_PROD = #{gtProd,jdbcType=DECIMAL},
+      LENGTH_HOLEDOWN = #{lengthHoledown,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+
+    <select id="selectByWellId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select a.*,b.LOAD_DATA,b.I_DATA,b.P_DATA
+    from OILDB.WELL_DATA_CUR a
+    left join WELL_GT_DATA b on a.GT_ID=b.ID
+    where a.Well_ID = #{wellId}
+  </select>
+
+    <select id="CountAuto" parameterType="String" resultType="java.lang.Integer">
+        ${value}
+    </select>
+
+    <select id="selectBySql" parameterType="String" resultMap="BaseResultMap">
+       select well_id,well_name,area_name from well_data_cur where 1=1
+        <if test="value!=null and value!=''">
+            and  ${value}
+        </if>
+        <if test="areaId!=null and areaId!=''">
+        and   AREA_ID = #{areaId,jdbcType=DECIMAL}
+        </if>
+    </select>
+
+</mapper>

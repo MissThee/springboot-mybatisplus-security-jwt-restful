@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.sysoption.FunStationInfoWaterwellMapper">
+  <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.StationInfoWaterwell">
+    <result column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="STATION_ID" jdbcType="DECIMAL" property="stationId" />
+    <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName" />
+    <result column="WELL_WATER_NAME" jdbcType="VARCHAR" property="wellWaterName" />
+    <result column="WELL_WATER_NUM" jdbcType="DECIMAL" property="wellWaterNum" />
+    <result column="AREA_ID" jdbcType="DECIMAL" property="areaId" />
+    <result column="AREA_NAME" jdbcType="VARCHAR" property="areaName" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="MARK" jdbcType="DECIMAL" property="mark" />
+    <result column="STIME" jdbcType="TIMESTAMP" property="stime" />
+  </resultMap>
+
+</mapper>

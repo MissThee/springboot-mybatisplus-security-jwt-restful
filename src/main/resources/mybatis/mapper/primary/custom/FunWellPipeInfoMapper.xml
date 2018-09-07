@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.sysoption.FunWellPipeInfoMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.WellPipeInfo">
+        <result column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="PIPE_NODE" jdbcType="VARCHAR" property="pipeNode"/>
+        <result column="PIPE_NODE_NUM" jdbcType="DECIMAL" property="pipeNodeNum"/>
+        <result column="PIPE_NODE_SORT" jdbcType="DECIMAL" property="pipeNodeSort"/>
+        <result column="PIPE_LONG" jdbcType="DECIMAL" property="pipeLong"/>
+        <result column="PIPE_LATI" jdbcType="DECIMAL" property="pipeLati"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+    </resultMap>
+    <resultMap id="Group" type="server.db.primary.model.sysoption.WellPipeInfo_Group">
+        <result column="PIPE_NODE_NUM" jdbcType="DECIMAL" property="pipeNodeNum"/>
+        <collection property="wellPipeInfoList" ofType="server.db.primary.model.sysoption.WellPipeInfo">
+            <result column="ID" jdbcType="DECIMAL" property="id"/>
+            <result column="PIPE_NODE" jdbcType="VARCHAR" property="pipeNode"/>
+            <!--<result column="PIPE_NODE_NUM" jdbcType="DECIMAL" property="pipeNodeNum"/>-->
+            <result column="PIPE_NODE_SORT" jdbcType="DECIMAL" property="pipeNodeSort"/>
+            <result column="PIPE_LONG" jdbcType="DECIMAL" property="pipeLong"/>
+            <result column="PIPE_LATI" jdbcType="DECIMAL" property="pipeLati"/>
+            <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+            <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+            <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+        </collection>
+    </resultMap>
+    <select id="selectPipeGroup" resultMap="Group">
+        select WELL_PIPE_INFO_NUM.PIPE_NODE_NUM,
+               ID,
+--                PIPE_NODE,
+--                PIPE_NODE_SORT,
+               PIPE_LONG,
+               PIPE_LATI
+        from (select PIPE_NODE_NUM from WELL_PIPE_INFO group by PIPE_NODE_NUM) WELL_PIPE_INFO_NUM
+                 left join WELL_PIPE_INFO on WELL_PIPE_INFO_NUM.PIPE_NODE_NUM = WELL_PIPE_INFO.PIPE_NODE_NUM
+        order by PIPE_NODE_NUM,PIPE_NODE_SORT
+    </select>
+</mapper>

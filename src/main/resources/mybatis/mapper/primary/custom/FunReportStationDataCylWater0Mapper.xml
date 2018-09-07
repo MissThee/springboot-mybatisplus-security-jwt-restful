@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.reportform.FunReportStationDataCylWater0Mapper">
+  <resultMap id="BaseResultMap" type="server.db.primary.model.reportform.ReportStationDataCylWater0">
+    <result column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="REPORT_DATE" jdbcType="VARCHAR" property="reportDate" />
+    <result column="REPORT_HOUR" jdbcType="VARCHAR" property="reportHour" />
+    <result column="FCX_GH" jdbcType="VARCHAR" property="fcxGh" />
+    <result column="FCX_PL" jdbcType="VARCHAR" property="fcxPl" />
+    <result column="REPORT_HOUR1" jdbcType="VARCHAR" property="reportHour1" />
+    <result column="SY_CYG" jdbcType="VARCHAR" property="syCyg" />
+    <result column="SY_TJG" jdbcType="VARCHAR" property="syTjg" />
+    <result column="SY_WSC" jdbcType="VARCHAR" property="syWsc" />
+    <result column="YQLS_XFW" jdbcType="DECIMAL" property="yqlsXfw" />
+    <result column="YQLS_HY" jdbcType="DECIMAL" property="yqlsHy" />
+    <result column="YQLS_HT" jdbcType="DECIMAL" property="yqlsHt" />
+    <result column="LH_XFW" jdbcType="DECIMAL" property="lhXfw" />
+    <result column="LH_HY" jdbcType="DECIMAL" property="lhHy" />
+    <result column="LH_HT" jdbcType="DECIMAL" property="lhHt" />
+    <result column="WSB_XFW" jdbcType="DECIMAL" property="wsbXfw" />
+    <result column="WSB_HY" jdbcType="DECIMAL" property="wsbHy" />
+    <result column="WSB_HT" jdbcType="DECIMAL" property="wsbHt" />
+    <result column="BZ" jdbcType="VARCHAR" property="bz" />
+    <result column="MARK" jdbcType="DECIMAL" property="mark" />
+    <result column="STIME" jdbcType="TIMESTAMP" property="stime" />
+  </resultMap>
+</mapper>

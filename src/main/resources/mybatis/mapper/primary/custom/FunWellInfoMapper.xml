@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="server.db.primary.mapper.sysoption.FunWellInfoMapper">
+    <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.WellInfo">
+        <id column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="WELL_NAME" jdbcType="VARCHAR" property="wellName"/>
+        <result column="WELL_NAME_ALIAS" jdbcType="VARCHAR" property="wellNameAlias"/>
+        <result column="AREA_ID" jdbcType="DECIMAL" property="areaId"/>
+        <result column="AREA_NAME" jdbcType="VARCHAR" property="areaName"/>
+        <result column="STATION_ID" jdbcType="DECIMAL" property="stationId"/>
+        <result column="STATION_NAME" jdbcType="VARCHAR" property="stationName"/>
+        <result column="WELL_LONG" jdbcType="DECIMAL" property="wellLong"/>
+        <result column="WELL_LAT" jdbcType="DECIMAL" property="wellLat"/>
+        <result column="W_PROPERTY" jdbcType="DECIMAL" property="wProperty"/>
+        <result column="W_PROPERTY_NAME" jdbcType="VARCHAR" property="wPropertyName"/>
+        <result column="WELL_TYPE" jdbcType="DECIMAL" property="wellType"/>
+        <result column="WELL_TYPE_NAME" jdbcType="VARCHAR" property="wellTypeName"/>
+        <result column="PUMP_TYPE" jdbcType="DECIMAL" property="pumpType"/>
+        <result column="PUMP_TYPE_NAME" jdbcType="VARCHAR" property="pumpTypeName"/>
+        <result column="WELL_ICO" jdbcType="VARCHAR" property="wellIco"/>
+        <result column="COMM_MARK" jdbcType="DECIMAL" property="commMark"/>
+        <result column="RTU_TYPE" jdbcType="DECIMAL" property="rtuType"/>
+        <result column="RTU_IPADDR" jdbcType="VARCHAR" property="rtuIpaddr"/>
+        <result column="WELL_NUM" jdbcType="DECIMAL" property="wellNum"/>
+        <result column="INVESTMENT_DATE" jdbcType="TIMESTAMP" property="investmentDate"/>
+        <result column="GROUP_NAME" jdbcType="VARCHAR" property="groupName"/>
+        <result column="WELL_STROKE" jdbcType="DECIMAL" property="wellStroke"/>
+        <result column="V_MARK" jdbcType="DECIMAL" property="vMark"/>
+        <result column="V_IPADDR" jdbcType="VARCHAR" property="vIpaddr"/>
+        <result column="ELEC_BASE_V" jdbcType="DECIMAL" property="elecBaseV"/>
+        <result column="AUTO_MARK" jdbcType="DECIMAL" property="autoMark"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="MARK" jdbcType="DECIMAL" property="mark"/>
+        <result column="STIME" jdbcType="TIMESTAMP" property="stime"/>
+        <result column="V_VIRTUAL_PORT" jdbcType="DECIMAL" property="vVirtualPort"/>
+        <result column="COMM_TYPE" jdbcType="DECIMAL" property="commType"/>
+        <result column="COMM_TYPE_NAME" jdbcType="VARCHAR" property="commTypeName"/>
+        <result column="BLOCK_ID" jdbcType="DECIMAL" property="blockId"/>
+        <result column="BLOCK_NAME" jdbcType="VARCHAR" property="blockName"/>
+        <result column="OIL_STORAGE_TYPE" jdbcType="DECIMAL" property="oilStorageType"/>
+        <result column="OIL_STORAGE_NAME" jdbcType="VARCHAR" property="oilStorageName"/>
+        <result column="RUN_STATE" jdbcType="VARCHAR" property="runState"/>
+        <result column="A11_CODE" jdbcType="VARCHAR" property="a11Code"/>
+        <result column="A11_CODE_FATHER" jdbcType="VARCHAR" property="a11CodeFather"/>
+        <result column="WELL_ADDR" jdbcType="DECIMAL" property="wellAddr"/>
+        <result column="ELEC_ADDR" jdbcType="DECIMAL" property="elecAddr"/>
+        <result column="LOAD_ADDR" jdbcType="DECIMAL" property="loadAddr"/>
+    </resultMap>
+    <select id="selectWellForListNotInWellGtConfig" resultMap="BaseResultMap">
+        select WELL_INFO.ID, WELL_INFO.WELL_NAME
+        from WELL_INFO
+        where AREA_ID in
+        <foreach item="item" index="index" collection="areaIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and WELL_INFO.ID not in (select WELL_ID from WELL_GT_CONFIG where WELL_ID is not null)
+        order by WELL_INFO.WELL_NAME
+    </select>
+    <select id="selectWellForListNotInWellStateMan" resultMap="BaseResultMap">
+        select WELL_INFO.ID, WELL_INFO.WELL_NAME
+        from WELL_INFO
+        where AREA_ID in
+        <foreach item="item" index="index" collection="areaIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and WELL_INFO.ID not in (select WELL_ID from WELL_STATE_MAN where WELL_ID is not null)
+        order by WELL_INFO.WELL_NAME
+    </select>
+</mapper>
