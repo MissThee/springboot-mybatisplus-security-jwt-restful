@@ -37,7 +37,7 @@ public class ShiroConfig {
         filterMap.put("refreshToken", new RefreshTokenFilter());//token刷新。有token且快到期时，刷新token；无token，或token已过期无动作。
         factoryBean.setFilters(filterMap);
         factoryBean.setSecurityManager(securityManager);
-        Map<String, String> filterRuleMap = new LinkedHashMap<>();
+        Map<String, String> filterRuleMap = new LinkedHashMap<>();//因路由拦截认证需保证设置的先后顺序，此处需使用可保证顺序的对象
 
         //可在此处添加路由拦截，若无需身份认证则也无法获取当前操作的用户信息
         //jwt  ： 需登录访问
