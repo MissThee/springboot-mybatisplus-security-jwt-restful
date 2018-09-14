@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 import server.db.common.OrderStr;
 import server.db.primary.mapper.sheet.FunReportDataOwaterLoopDayResMapper;
 import server.db.primary.model.sheet.ReportDataOwaterLoop_Day_Res;
-import server.service.FunReportDataOwaterLoopService;
+import server.service.SheetSimpleService;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class FunReportDataOwaterLoopImp implements FunReportDataOwaterLoopService {
+public class SheetSimpleImp implements SheetSimpleService {
     @Autowired
     FunReportDataOwaterLoopDayResMapper funReportDataOwaterLoopResMapper;
 

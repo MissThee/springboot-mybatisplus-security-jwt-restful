@@ -1,4 +1,4 @@
-package server.db.primary.model.reportform;
+package server.db.primary.model.sheet;
 
 import lombok.Data;
 

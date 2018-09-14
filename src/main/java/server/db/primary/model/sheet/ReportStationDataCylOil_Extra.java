@@ -1,10 +1,10 @@
-package server.db.primary.model.reportform;
+package server.db.primary.model.sheet;
 
 import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
-import java.util.Date;
+
 @Data
 @Table(name = "REPORT_STATION_DATA_CYL_OIL")
 public class ReportStationDataCylOil_Extra {

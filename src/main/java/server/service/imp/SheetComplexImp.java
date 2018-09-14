@@ -9,7 +9,7 @@ import server.db.primary.mapper.sheet.FunReportStationDataCylOilExtraMapper;
 import server.db.primary.model.sheet.ReportStationDataCez0_Res;
 import server.db.primary.model.sheet.ReportStationDataCez_Res;
 import server.db.primary.model.sheet.ReportStationDataCylOil_Extra;
-import server.service.FunReportStationDataCezService;
+import server.service.SheetComplexService;
 import server.tool.ExcelUtils;
 import server.tool.ListCompute;
 import tk.mybatis.mapper.entity.Example;
@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-public class FunReportStationDataCezImp implements FunReportStationDataCezService {
+public class SheetComplexImp implements SheetComplexService {
     @Autowired
     FunReportStationDataCezResMapper funReportStationDataCezResMapper;
     @Autowired
