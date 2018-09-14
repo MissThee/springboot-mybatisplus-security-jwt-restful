@@ -8,9 +8,6 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import server.security.Filter.MyJWTFilter;
-import server.security.Filter.RefreshTokenFilter;
-//import server.shiro.myfunction.MySessionManager;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -34,33 +31,11 @@ public class ShiroConfig {
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<>();
         filterMap.put("jwt", new MyJWTFilter());
-        filterMap.put("refreshToken", new RefreshTokenFilter());//token刷新。有token且快到期时，刷新token；无token，或token已过期无动作。
         factoryBean.setFilters(filterMap);
         factoryBean.setSecurityManager(securityManager);
-        Map<String, String> filterRuleMap = new LinkedHashMap<>();//因路由拦截认证需保证设置的先后顺序，此处需使用可保证顺序的对象
-
-        //可在此处添加路由拦截，若无需身份认证则也无法获取当前操作的用户信息
-        //jwt  ： 需登录访问
-        filterRuleMap.put("/auth/**", "jwt");//             /main/路径的请求需通过验证
-
-        //系统管理相关接口加入身份验证
-        filterRuleMap.put("/group/**", "jwt");
-        filterRuleMap.put("/obj/**", "jwt");
-        filterRuleMap.put("/role/**", "jwt");
-        filterRuleMap.put("/user/**", "jwt");
-        filterRuleMap.put("/meterStation/**", "jwt");
-        filterRuleMap.put("/valve/**", "jwt");
-        filterRuleMap.put("/waterwell/**", "jwt");
-        filterRuleMap.put("/area/**", "jwt");
-        filterRuleMap.put("/factory/**", "jwt");
-        filterRuleMap.put("/unionStation/**", "jwt");
-        filterRuleMap.put("/wellDataMaintian/**", "jwt");
-        filterRuleMap.put("/wellGtConfig/**", "jwt");
-        filterRuleMap.put("/wellInfo/**", "jwt");
-        filterRuleMap.put("/wellPipe/**", "jwt");
-//        filterRuleMap.put("/reportForm/**", "jwt");
-        filterRuleMap.put("/**","refreshToken");
-
+        Map<String, String> filterRuleMap = new LinkedHashMap<>();//因路由拦截认证需保证设置的先后顺序，若有多个过滤规则，此处需使用可保证顺序的对象
+        filterRuleMap.put("/files", "anon");
+        filterRuleMap.put("/**", "jwt");
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
         return factoryBean;
     }

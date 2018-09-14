@@ -15,6 +15,7 @@ import java.io.IOException;
 public class FileRec {
     private static String rootPath;
     private static int fileMaxSize;
+    private static String webPath;
 
     @Value("${custom-config.upload.path}")
     public void setRootPath(String a) {
@@ -30,6 +31,11 @@ public class FileRec {
             size *= Integer.parseInt(s);
         }
         fileMaxSize = size;
+    }
+
+    @Value("${custom-config.server.host-port}")
+    public void setWebPath(String a) {
+        webPath = a;
     }
 
     //上传至/files/upload/
@@ -72,7 +78,7 @@ public class FileRec {
             //BASE64Encoder encoder = new BASE64Encoder();
             //String data = encoder.encode(file.getBytes());
             // 将反斜杠转换为正斜杠
-            String data = "http://119.90.248.38:18080/third_oil_web/"+dataDirectory.replaceAll("\\\\", "/") + fileName;
+            String data = webPath + dataDirectory.replaceAll("\\\\", "/") + fileName;
             res.put("result", true);
             res.put("data", data);
             res.put("msg", "上传成功");

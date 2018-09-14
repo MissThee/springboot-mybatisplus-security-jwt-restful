@@ -23,8 +23,7 @@ public class CustomErrorController implements ErrorController {
         return "error";
     }
 
-    //自定义异常返回，及@RestControllerAdvice不拦截的异常
-    //应为@RestControllerAdvice仅拦截controller中异常，现过滤器中的异常由此返回
+    //自定义异常返回
     @RequestMapping(value = "/error")
     public Object error(HttpServletRequest request, HttpServletResponse response) throws IOException {
         JSONObject jO = new JSONObject();

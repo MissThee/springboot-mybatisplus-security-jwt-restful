@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="server.db.primary.mapper.sysoption.FunAuthRolePermissionMapper">
-  <resultMap id="BaseResultMap" type="server.db.primary.model.sysoption.AuthRolePermission">
-    <result column="ROLE_ID" jdbcType="DECIMAL" property="roleId" />
-    <result column="PERMISSION_ID" jdbcType="VARCHAR" property="permissionId" />
-  </resultMap>
-</mapper>

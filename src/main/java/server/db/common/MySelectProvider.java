@@ -16,6 +16,5 @@ public class MySelectProvider extends MapperTemplate {
     public String selectSeq(MappedStatement ms) {
         Class<?> entityClass = this.getEntityClass(ms);
         return (" SELECT SEQ_" + this.tableName(entityClass).toUpperCase() + ".currval as ID from dual");
-//        return (" SELECT " + seqName.toUpperCase() + ".currval as ID from dual");
     }
 }

@@ -66,9 +66,9 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <!--<dependency>-->
-            <!--<groupId>com.google.code.gson</groupId>-->
-            <!--<artifactId>gson</artifactId>-->
-            <!--<version>2.8.5</version>-->
+        <!--<groupId>com.google.code.gson</groupId>-->
+        <!--<artifactId>gson</artifactId>-->
+        <!--<version>2.8.5</version>-->
         <!--</dependency>-->
 
         <!--<dependency>-->
@@ -152,9 +152,9 @@
         <!-- https://mvnrepository.com/artifact/ma.glasnost.orika/orika-core -->
         <!--对象拷贝工具-->
         <!--<dependency>-->
-            <!--<groupId>ma.glasnost.orika</groupId>-->
-            <!--<artifactId>orika-core</artifactId>-->
-            <!--<version>1.5.2</version>-->
+        <!--<groupId>ma.glasnost.orika</groupId>-->
+        <!--<artifactId>orika-core</artifactId>-->
+        <!--<version>1.5.2</version>-->
         <!--</dependency>-->
 
     </dependencies>
@@ -165,7 +165,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <!--generator生成实体类，打包时注释掉-->
+            <!--generator生成实体类mybatis-generator:generate，打包时注释掉，或者在设置中设置不生成文件.(打包时会自动运行一次生成方法)-->
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>
@@ -173,12 +173,12 @@
                 <configuration>
                     <verbose>true</verbose>
                     <overwrite>true</overwrite>
-                    <configurationFile>src/main/resources/generatorPrimaryConfig.xml</configurationFile>
+                    <configurationFile>src/main/resources/generatorConfig.xml</configurationFile>
                 </configuration>
                 <executions>
                     <execution>
                         <id>Generate MyBatis Artifacts</id>
-                        <phase>package</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -216,20 +216,15 @@
                     <include>**/*.jar</include>
                 </includes>
             </resource>
-            <!-- 某些情况下，打包后运行不起来需要打开注释 -->
-            <!-- <resource>
+            <resource>
                 <directory>src/main/resources</directory>
-                <targetPath>BOOT-INF/classes/</targetPath>
-            </resource> -->
-
-            <!--生成mybatis的mapper时取消一下注解，运行springboot 时添加注解-->
-            <!--<resource>-->
-            <!--<directory>src/main/resources</directory>-->
-            <!--<includes>-->
-            <!--<include>**/*.properties</include>-->
-            <!--</includes>-->
-            <!--</resource>-->
-            <!--注释截止-->
+                <!--默认在打包时放置到此目录-->
+                <!--<targetPath>BOOT-INF/classes/</targetPath>-->
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 </project>

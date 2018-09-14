@@ -11,13 +11,4 @@ public class MyWebSessionManager extends DefaultWebSessionManager {
         setSessionIdCookieEnabled(false);
         setSessionIdUrlRewritingEnabled(false);
     }
-
-//    public DefaultWebSessionManager MyWebSessionManager() {
-//        DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
-//        defaultWebSessionManager.setSessionValidationSchedulerEnabled(false);
-//        defaultWebSessionManager.setSessionIdCookieEnabled(false);
-//        defaultWebSessionManager.setSessionIdUrlRewritingEnabled(false);
-//        return defaultWebSessionManager;
-//    }
-
 }

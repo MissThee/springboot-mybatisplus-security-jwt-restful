@@ -11,21 +11,9 @@
 <div><button onclick="loginHandler()">登录</button>当前token：<input  id="token" value=""></div>
 <div>&nbsp; </div>
 <div>日期：<input id="searchDate" value="2018-08-24"/></div>
-<div>stationId：<input id="stationId" value="1"/></div>
-<div>areaId：<input id="areaId" value="1"/></div>
 <div>导出类型：</div>
-<div><input type="radio" name="radio" value="/reportForm/oilWell/excel">油井【2018-08-24】</div>
-<div><input type="radio" name="radio" value="/reportForm/waterWell/excel">水井【2017-05-14】</div>
-<div><input type="radio" name="radio" value="/reportForm/owater/excel">掺水回压【2018-08-23】</div>
-<div><input type="radio" name="radio" value="/reportForm/owaterDay/excel">掺水阀组日报【2018-08-24】</div>
-<div><input type="radio" name="radio" value="/reportForm/owaterMonth1/excel">掺水阀组月报-楚一【2018-08】</div>
-<div><input type="radio" name="radio" value="/reportForm/owaterMonth2/excel">掺水阀组月报-楚二【2018-08】</div>
-<div><input type="radio" name="radio" value="/reportForm/ChuYiLianJiShu/excel">联合站 - 楚一联集输【2018-08-24】</div>
-<div><input type="radio" name="radio" value="/reportForm/ChuYiLianReLi/excel">联合站 - 楚一联热力【2018-08-24】</div>
-<div><input type="radio" name="radio" value="/reportForm/ChuYiLianZhuShui/excel">联合站 - 楚一连注水【2018-08-24】</div>
-<div><input type="radio" name="radio" value="/reportForm/ChuErZhuanJie/excel">联合站 - 楚二站转接【2018-08-24】</div>
-<div><input type="radio" name="radio" value="/reportForm/RaoYangZongHe/excel">综合日报【2018-08-24】</div>
-<div><input type="radio" name="radio" value="/reportForm/RaoYangChanShui/excel">掺水阀组报表【2018-08-24】</div>
+<div><input type="radio" name="radio" value="/sheet/simple/excel">简单表【2018-08-24】</div>
+<div><input type="radio" name="radio" value="/sheet/complex/excel">复杂表【2018-08-24】</div>
 <button onclick="downLoadHandler()">下载excel</button>
 <div id="msg"></div>
 </body>
@@ -37,18 +25,10 @@
         return document.getElementById('searchDate').value
     }
 
-    function getAreaId() {
-        return document.getElementById('areaId').value
-    }
-
-    function getStationId() {
-        return document.getElementById('stationId').value
-    }
-
-	function getHost(){ 
+	function getHost(){
 		return 'http://'+document.getElementById('host').value+':'+document.getElementById('port').value
 	}
-	
+
     function getUrl() {
         var obj = document.getElementsByName('radio'); //这个是以标签的name来取控件
         for (i = 0; i < obj.length; i++) {
@@ -90,8 +70,6 @@
         axios.post(
             getUrl(), 						//参数：请求url
             {
-                areaId: getAreaId(),			//参数：工区id
-                stationId: getStationId(),	//参数：站id
                 searchDate: getDate()		//参数：日期
             },
             {

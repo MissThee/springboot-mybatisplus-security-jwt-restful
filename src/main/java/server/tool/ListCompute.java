@@ -1,7 +1,5 @@
 package server.tool;
 
-import server.db.primary.model.reportform.ReportStationDataCez_Res;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;

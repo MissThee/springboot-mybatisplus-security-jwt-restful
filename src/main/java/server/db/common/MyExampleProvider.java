@@ -51,26 +51,22 @@ public class MyExampleProvider extends MapperTemplate {
     }
 
     private static String exampleSelectColumns(Class<?> entityClass, String sumFunctionStr) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("<choose>");
-        sql.append("<when test=\"@tk.mybatis.mapper.util.OGNL@hasSelectColumns(_parameter)\">");
-        sql.append("<foreach collection=\"_parameter.selectColumns\" item=\"selectColumn\" separator=\",\">");
-        sql.append(sumFunctionStr.trim() + "(${selectColumn}) ${selectColumn}");
-        sql.append("</foreach>");
-        sql.append("</when>");
-        sql.append("<otherwise>");
-        sql.append(getAllColumns(entityClass));
-        sql.append("</otherwise>");
-        sql.append("</choose>");
-        return sql.toString();
+        return "<choose>" +
+                "<when test=\"@tk.mybatis.mapper.util.OGNL@hasSelectColumns(_parameter)\">" +
+                "<foreach collection=\"_parameter.selectColumns\" item=\"selectColumn\" separator=\",\">" +
+                sumFunctionStr.trim() + "(${selectColumn}) ${selectColumn}" +
+                "</foreach>" +
+                "</when>" +
+                "<otherwise>" +
+                getAllColumns(entityClass) +
+                "</otherwise>" +
+                "</choose>";
     }
 
     private static String getAllColumns(Class<?> entityClass) {
         Set<EntityColumn> columnSet = EntityHelper.getColumns(entityClass);
         StringBuilder sql = new StringBuilder();
-        Iterator var3 = columnSet.iterator();
-        while (var3.hasNext()) {
-            EntityColumn entityColumn = (EntityColumn) var3.next();
+        for (EntityColumn entityColumn : columnSet) {
             sql.append(entityColumn.getColumn()).append(",");
         }
         return sql.substring(0, sql.length() - 1);

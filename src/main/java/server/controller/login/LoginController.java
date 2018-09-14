@@ -3,14 +3,12 @@ package server.controller.login;
 import io.swagger.annotations.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import server.db.primary.model.sysoption.AuthRolePermission;
-import server.db.primary.model.sysoption.CLogin;
-import server.db.primary.model.sysoption.CLoginIplimit;
+import server.db.primary.model.Permission;
+import server.db.primary.model.Role;
+import server.db.primary.model.User;
 import server.security.JavaJWT;
-import server.service.FunCLoginIplimitService;
-import server.service.FunCLoginService;
+import server.service.UserService;
 import server.tool.Res;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,70 +20,30 @@ import java.util.*;
 public class LoginController {
 
     @Autowired
-    FunCLoginService funCLoginService;
-    @Autowired
-    FunCLoginIplimitService funCLoginIplimitService;
-    @Value("${custom-config.logo-png-web-path}")
-    private String logoWebPath;
+    UserService userService;
 
     @ApiOperation(value = "登录", notes = "账号密码登录，获取token及用户信息")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "username1", value = "账号", required = true, dataType = "string"),
-//            @ApiImplicitParam(name = "password12", value = "密码", required = true, dataType = "string")
-//    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "账号", required = true, dataType = "string", example = "admin"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string", example = "123")
+    })
     @PostMapping("/login")
     public Res login(HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest, @RequestBody LoginModel loginModel) {
         String username = loginModel.getUsername();
         String password = loginModel.getPassword();
-        CLogin cLogin = funCLoginService.selectUserByUsername(username);
+        User user = userService.selectUserByUsername(username);
         //登录密码校验
-        if (cLogin == null) {
+        if (user == null) {
             return Res.failureMsg("无此用户");
-        } else if (!cLogin.getCLoginpwd().equals(password)) {
+        } else if (!user.getPassword().equals(password)) {
             return Res.failureMsg("密码错误");
         }
-        //登录ip限制检测
-        if (cLogin.getIpLimitMark() == 1L || cLogin.getIpLimitMark() == 2L) {
-            boolean isInLimit = false;
-            String userIp = httpServletRequest.getRemoteAddr();
-            List<CLoginIplimit> iplimitList = funCLoginIplimitService.selectIplimitByUserId(cLogin.getId());
-            for (CLoginIplimit cLoginIplimit : iplimitList) {
-                if (userIp.equals(cLoginIplimit.getIpAddr().trim())) {
-                    isInLimit = true;
-                }
-            }
-            if (!isInLimit) {
-                return Res.failureMsg("登录失败，该用户允许登录的ip中不包含当前ip");
-            }
-        }
+        Map<String, List<String>> userInfoMap = getUserInfo(user);
         //添加token
-        if (loginModel.sevenDaysLogin) {
-            httpServletResponse.setHeader("Authorization", JavaJWT.createToken(cLogin, 7));
-        } else {
-            httpServletResponse.setHeader("Authorization", JavaJWT.createToken(cLogin));
-        }
+        httpServletResponse.setHeader("Authorization", JavaJWT.createToken(user.getId(), userInfoMap.get("roleList"), userInfoMap.get("permissionList"), loginModel.sevenDaysLogin ? 7 : 1));
         Map<String, Object> map = new HashMap<>();
-        cLogin.setCLoginpwd(null);
-
-        try {
-            List<String> permissionIdList = new ArrayList<>();
-            List<AuthRolePermission> authRolePermissionList = cLogin.getAuthGroup().getAuthRole().getPermissionList();
-            for (AuthRolePermission anAuthRolePermissionList : authRolePermissionList) {
-                permissionIdList.add(anAuthRolePermissionList.getPermissionId());
-            }
-            cLogin.setPermissionIdList(permissionIdList);
-        } catch (Exception e) {
-            cLogin.setPermissionIdList(new ArrayList<>());
-        }
-
-        try {
-            cLogin.getAuthGroup().getAuthObj().setLogoPng(logoWebPath + cLogin.getAuthGroup().getAuthObj().getLogoPng().substring(cLogin.getAuthGroup().getAuthObj().getLogoPng().lastIndexOf('/')));
-        } catch (Exception e) {
-            cLogin.getAuthGroup().getAuthObj().setLogoPng("/default_petrochinalogo.png");
-        }
-
-        map.put("user", cLogin);
-
+        user.setPassword(null);
+        map.put("user", user);
         return Res.success(map, "登录成功");
     }
 
@@ -94,10 +52,24 @@ public class LoginController {
     private static class LoginModel {
         @ApiModelProperty(value = "账号", required = true, example = "admin")
         private String username;
-        @ApiModelProperty(value = "密码", required = true, example = "123456")
+        @ApiModelProperty(value = "密码", required = true, example = "123")
         private String password;
         private Boolean sevenDaysLogin = false;
     }
 
+    private Map<String, List<String>> getUserInfo(User user) {
+        Map<String, List<String>> map = new HashMap<>();
+        List<String> roleList = new ArrayList<>();
+        List<String> permissionList = new ArrayList<>();
+        for (Role role : user.getRoleList()) {
+            roleList.add(role.getRole());
+            for (Permission permission : role.getPermissionList()) {
+                permissionList.add(permission.getPermission());
+            }
+        }
+        map.put("roleList", roleList);
+        map.put("permissionList", permissionList);
+        return map;
+    }
 }
 

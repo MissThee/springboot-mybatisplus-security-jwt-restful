@@ -24,11 +24,9 @@ public class MyInsertProvider extends MapperTemplate {
         sql.append(SqlHelper.insertColumns(entityClass, true, false, false));
         sql.append("<trim prefix=\"VALUES(\" suffix=\")\" suffixOverrides=\",\">");
         Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
-        Iterator var5 = columnList.iterator();
-        while (var5.hasNext()) {
-            EntityColumn column = (EntityColumn) var5.next();
+        for (EntityColumn column : columnList) {
             if (!column.isId() && column.isInsertable()) {
-                sql.append(column.getColumnHolder("record") + ",");
+                sql.append(column.getColumnHolder("record")).append(",");
             }
         }
         sql.append("</trim>");

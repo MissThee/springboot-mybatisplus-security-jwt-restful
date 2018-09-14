@@ -419,18 +419,13 @@ public class ExcelUtils {
             this.headerName = headerName;
             this.width = 1;
         }
-
+        //通用mapper中，可使用此值判断是否查询此字段（表格中不需要出现此列，但须查询出数据来做计算等其他用途时使用）
         public DataColumn setNoDataBaseColumn() {
             this.isDBColumn = false;
             return this;
         }
-
+        //通用mapper中，可使用此值判断是否查询此字段；表格生成方法中，使用此值判断是否插入此列数据（当需要显示此列表头，但不插入实际数据时使用）
         public DataColumn setEmptyData() {
-            this.isEmptyData = true;
-            return this;
-        }
-
-        public DataColumn setComputeType() {
             this.isEmptyData = true;
             return this;
         }

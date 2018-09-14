@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="server.db.primary.mapper">
-
+    <!--放置一个mapper文件，运行时避免因为无任何mapper文件报错-->
 </mapper>

@@ -7,13 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
-import server.db.primary.model.sysoption.AreaInfo;
-import server.db.primary.model.sysoption.CLogin;
-//import server.db.primary.model.sysoption.SysPermission;
-//import server.db.primary.model.sysoption.SysRole;
-//import server.db.primary.model.sysoption.SysUser;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -24,40 +18,19 @@ public class JavaJWT {
     private static final String secret = "secret20180718";       //发布者
 
     /**
-     * @param cLogin            用户
      * @param expiresDayFromNow 有效时间（天）
      */
-    public static String createToken(CLogin cLogin, int expiresDayFromNow) {
+    public static String createToken(Integer id, List<String> roleList, List<String> permissionList, int expiresDayFromNow) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTCreator.Builder builder = JWT.create();
             //添加发布人信息【可直接解析】
             builder.withIssuer(issuer);
             builder.withExpiresAt(now(expiresDayFromNow));
-            //添加附加信息【可直接解析】
-            builder.withClaim("id", cLogin.getId());
-            builder.withClaim("ipLimitMark", cLogin.getIpLimitMark());
-            try {
-                builder.withClaim("groupId", cLogin.getAuthGroup().getId());
-            } catch (Exception e) {
-            }
-
-            List<Long> areaIdList = new ArrayList<>();
-            try {
-                builder.withClaim("objId", cLogin.getAuthGroup().getAuthObj().getId());
-                List<AreaInfo> areaInfoList = cLogin.getAuthGroup().getAuthObj().getAreaInfoList();
-                for (AreaInfo areaInfo : areaInfoList) {
-                    areaIdList.add(areaInfo.getId());
-                }
-            } catch (Exception e) {
-            }
-//            areaIdList.add(-1L);
-            builder.withClaim("areaIds", Joiner.on(',').join(areaIdList));
-            try {
-                builder.withClaim("roleId", cLogin.getAuthGroup().getAuthRole().getId());
-            } catch (Exception e) {
-            }
-
+            //添加claim附加信息【可直接解析】
+            builder.withClaim("id", id);
+            builder.withArrayClaim("roleList", roleList.toArray(new String[]{}));
+            builder.withArrayClaim("permissionList", permissionList.toArray(new String[]{}));
             //添加header键值对【可直接解析】
             //Map<String, Object> headerClaims = new HashMap();
             //headerClaims.put("userId", "1234");
@@ -73,14 +46,8 @@ public class JavaJWT {
         return "";
     }
 
-    /**
-     * @param cLogin 用户 有效时间固定
-     */
-//    public static String createToken(SysUser user) {
-//        return createToken(user, 1);
-//    }
-    public static String createToken(CLogin cLogin) {
-        return createToken(cLogin, 1);
+    public static String createToken(Integer id, List<String> roleList, List<String> permissionList) {
+        return createToken(id, roleList, permissionList, 1);
     }
 
     public static String updateToken(String token, int expiresDayFromNow) {
@@ -92,25 +59,19 @@ public class JavaJWT {
             DecodedJWT decodedJWT = JWT.decode(token);
 
             for (String claimKey : decodedJWT.getClaims().keySet()) {
-                if (claimKey.equals("iss") || claimKey.equals("exp")) {
-
-                } else if (claimKey.equals("areaIds")) {
-                    builder.withClaim(claimKey, decodedJWT.getClaim(claimKey).asString());
-                } else {
-                    builder.withClaim(claimKey, decodedJWT.getClaim(claimKey).asInt());
+                switch (claimKey) {
+                    case "exp":
+                    case "iss":
+                        break;
+                    case "id":
+                        builder.withClaim(claimKey, decodedJWT.getClaim(claimKey).asInt());
+                        break;
+                    case "roleList":
+                    case "permissionList":
+                        builder.withArrayClaim(claimKey, decodedJWT.getClaim(claimKey).asList(String.class).toArray(new String[]{}));
+                        break;
                 }
             }
-
-//            builder.withClaim("id", decodedJWT.getClaim("id").asInt());
-//            builder.withArrayClaim("roleList", decodedJWT.getClaim("roleList").asArray(String.class));
-//            builder.withArrayClaim("permissionList", decodedJWT.getClaim("permissionList").asArray(String.class));
-//            builder.withClaim("groupId", decodedJWT.getClaim("groupId").asInt());
-//            builder.withClaim("objId", decodedJWT.getClaim("objId").asInt());
-//              int c= decodedJWT.getClaim("roleId").asInt();
-//              builder.withClaim("roleId", decodedJWT.getClaim("roleId").asInt());
-//            builder.withClaim("unitId", decodedJWT.getClaim("unitId").asInt());
-//            builder.withClaim("unitType", decodedJWT.getClaim("unitType").asString());
-
             String newToken = builder.sign(algorithm);
             log.info("REFRESH TOKEN：" + newToken);
             return newToken;
@@ -147,31 +108,19 @@ public class JavaJWT {
         return false;
     }
 
-    public static Map<String, Object> verifyTokenResult(String token) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("result", false);
-        map.put("msg", "");
+    public static boolean verifyTokenResult(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(issuer)
                     .build();
             verifier.verify(token);
-            log.info("CHECK TOEKN: Fine");
-            map.put("result", true);
-        } catch (UnsupportedEncodingException e) {
-            log.info("CHECK TOEKN-ERROR: " + e);
-            map.put("result", false);
-            map.put("msg", "token格式有误。" + e);
-        } catch (JWTVerificationException e) {
-            map.put("result", false);
-            map.put("msg", "token已过期。" + e);
+            log.info("CHECK TOEKN: 通过");
+            return true;
         } catch (Exception e) {
             log.info("CHECK TOEKN-ERROR: " + e);
-            map.put("result", false);
-            map.put("msg", "token校验未通过。" + e);
+            return false;
         }
-        return map;
     }
 
     /**
@@ -186,82 +135,21 @@ public class JavaJWT {
         return dateDiff(now(), jwt.getExpiresAt(), 3);
     }
 
-//    public static List<String> getRoleList(String token) {
-//        DecodedJWT jwt = JWT.decode(token);
-//        return jwt.getClaim("roleList").asList(String.class);
-//    }
-//
-//    public static List<String> getPermissionList(String token) {
-//        DecodedJWT jwt = JWT.decode(token);
-//        return jwt.getClaim("permissionList").asList(String.class);
-//    }
-
     public static Long getId(String token) {
-        try {
-            DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("id").asLong();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        DecodedJWT jwt = JWT.decode(token);
+        return jwt.getClaim("id").asLong();
     }
 
-    public static Long getGroupId(String token) {
-        try {
-            DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("groupId").asLong();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public static List<String> getRoleList(String token) {
+        DecodedJWT jwt = JWT.decode(token);
+        return jwt.getClaim("roleList").asList(String.class);
     }
 
-    public static Long getObjId(String token) {
-        try {
-            DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("objId").asLong();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public static List<String> getPermissionList(String token) {
+        DecodedJWT jwt = JWT.decode(token);
+        return jwt.getClaim("permissionList").asList(String.class);
     }
 
-    public static Long getIpLimitMark(String token) {
-        try {
-            DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("ipLimitMark").asLong();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static List<Long> getAreaIds(String token) {
-        List<Long> areaIds = new ArrayList<>();
-        try {
-            DecodedJWT jwt = JWT.decode(token);
-            String areaIdstr = jwt.getClaim("areaIds").asString();
-            if (areaIdstr != null) {
-                for (String areaId : Arrays.asList(areaIdstr.split(","))) {
-                    areaIds.add(Long.parseLong(areaId));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        areaIds.add(-1L);
-        return areaIds;
-    }
-
-    public static Long getRoleId(String token) {
-        try {
-            DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("roleId").asLong();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     //---------------------以下为时间工具方法-----------------------
     private static Date now(int i) {
