@@ -1,7 +1,11 @@
+
+
 # springboot-mybatis-shiro-jwt-restful
 springboot，mybatis多数据库，shiro，jwt，restful 项目基础文件
   
 # 简介
+
+使用TestDB.sql文件可导入项目所需基础表，及表格导出示例表
 ## 基础结构
 ```shell
 src
