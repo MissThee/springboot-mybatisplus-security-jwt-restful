@@ -156,7 +156,12 @@
         <!--<artifactId>orika-core</artifactId>-->
         <!--<version>1.5.2</version>-->
         <!--</dependency>-->
-
+        <!-- netty-socketio依赖-->
+        <dependency>
+            <groupId>com.corundumstudio.socketio</groupId>
+            <artifactId>netty-socketio</artifactId>
+            <version>1.7.11</version>
+        </dependency>
     </dependencies>
 
     <build>
