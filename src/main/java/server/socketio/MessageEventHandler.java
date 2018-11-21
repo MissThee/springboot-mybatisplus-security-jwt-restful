@@ -41,26 +41,31 @@ public class MessageEventHandler {
     @OnEvent(value = "event")
     public void onEvent(SocketIOClient client, AckRequest request, MessageInfo data) {
         log.info("event发来消息：" + data.getContent());
-        socketIoServer.getClient(client.getSessionId()).sendEvent("event", "event 成功");
+        messageReceipt(client, "event succeed");
     }
 
     @OnEvent(value = "message")
     public void onMessage(SocketIOClient client, AckRequest request, MessageInfo data) {
         log.info("message发来消息：" + data.getContent());
-        socketIoServer.getClient(client.getSessionId()).sendEvent("message", "message 成功");
+        messageReceipt(client, "message succeed");
     }
 
     @OnEvent(value = "broadcast")
     public void onBroadcast(SocketIOClient client, AckRequest request, MessageInfo data) {
         log.info("broadcast发来消息：" + data.getContent());
-        socketIoServer.getBroadcastOperations().sendEvent("broadcast", "广播消息："+data.getContent());
+        messageReceipt(client, "broadcast succeed");
+        socketIoServer.getBroadcastOperations().sendEvent("broadcast", data.getContent());
     }
 
     public static void sendBuyLogEvent() {   //这里就是向客户端推消息了
         String dateTime = new Date().toString();
         for (UUID clientId : listClient) {
             if (socketIoServer.getClient(clientId) == null) continue;
-            socketIoServer.getClient(clientId).sendEvent("event", dateTime );
+            socketIoServer.getClient(clientId).sendEvent("event", dateTime);
         }
+    }
+
+    private void messageReceipt(SocketIOClient client, String msg) {
+        socketIoServer.getClient(client.getSessionId()).sendEvent("messageReceipt", msg);
     }
 }

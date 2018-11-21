@@ -21,6 +21,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/test")
 public class ExampleController {
+
+
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
     public Res getInfo(@RequestHeader("Authorization") String token) {
