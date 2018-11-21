@@ -9,18 +9,17 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import server.socketio.model.InitInfo;
+import server.socketio.model.MessageInfo;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @Slf4j
 public class MessageEventHandler {
 
     private static SocketIOServer socketIoServer;
-    private static ArrayList<UUID> listClient = new ArrayList<>();
-    static final int limitSeconds = 60;
+    private static Map<String, List<UUID>> clientMap = new HashMap<>();
 
     @Autowired
     public MessageEventHandler(SocketIOServer server) {
@@ -29,13 +28,24 @@ public class MessageEventHandler {
 
     @OnConnect
     public void onConnect(SocketIOClient client) {
-        listClient.add(client.getSessionId());
         log.info("客户端:  " + client.getSessionId() + "  已连接");
     }
 
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
         log.info("客户端:  " + client.getSessionId() + "  断开连接");
+        UUID sessionId = client.getSessionId();
+        removeUserInfo(sessionId);
+    }
+
+    @OnEvent(value = "initInfo")
+    public void initInfo(SocketIOClient client, AckRequest request, InitInfo data) {
+        log.info("initInfo用户信息：" + data.getUserId());
+        String userId = data.getUserId();
+        UUID sessionId = client.getSessionId();
+        addUserInfo(userId, sessionId);
+
+        messageReceipt(client, "initInfo succeed");
     }
 
     @OnEvent(value = "event")
@@ -59,13 +69,35 @@ public class MessageEventHandler {
 
     public static void sendBuyLogEvent() {   //这里就是向客户端推消息了
         String dateTime = new Date().toString();
-        for (UUID clientId : listClient) {
-            if (socketIoServer.getClient(clientId) == null) continue;
-            socketIoServer.getClient(clientId).sendEvent("event", dateTime);
-        }
+//        for (UUID clientId : listClient) {
+//            if (socketIoServer.getClient(clientId) == null) continue;
+//            socketIoServer.getClient(clientId).sendEvent("event", dateTime);
+//        }
     }
 
     private void messageReceipt(SocketIOClient client, String msg) {
         socketIoServer.getClient(client.getSessionId()).sendEvent("messageReceipt", msg);
+    }
+
+    private void addUserInfo(String userId, UUID sessionId) {
+        if (clientMap.containsKey(userId)) {
+            clientMap.get(userId).add(sessionId);
+        } else {
+            clientMap.put(userId, new ArrayList<UUID>() {{
+                add(sessionId);
+            }});
+        }
+        System.out.println("clientMap:" + clientMap);
+    }
+
+    private void removeUserInfo(UUID sessionId) {
+        for (String key : clientMap.keySet()) {
+            List UUIDList = clientMap.get(key);
+            UUIDList.remove(sessionId);
+            if (UUIDList.size() == 0) {
+                clientMap.remove(key);
+            }
+        }
+        System.out.println("clientMap:" + clientMap);
     }
 }

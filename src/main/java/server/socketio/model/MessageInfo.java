@@ -1,4 +1,4 @@
-package server.socketio;
+package server.socketio.model;
 
 import lombok.Data;
 
