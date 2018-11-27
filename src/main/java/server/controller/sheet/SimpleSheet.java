@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import server.db.primary.model.sheet.ReportDataOwaterLoop_Day_Res;
 import server.service.SheetSimpleService;
-import server.tool.ExcelUtils;
+import server.tool.ExcelExport;
 import server.tool.Res;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,19 +44,19 @@ public class SimpleSheet {
         List<ReportDataOwaterLoop_Day_Res> reportDataOilWell = getData(bodyJO);
         JSONObject jO = new JSONObject();
         jO.put("Production", reportDataOilWell);
-        return Res.successData(jO);
+        return Res.success(jO);
     }
 
     @PatchMapping()
     public Res dataEdit(@RequestBody JSONObject bodyJO) {
         ReportDataOwaterLoop_Day_Res reportData = bodyJO.getJSONObject("editData").toJavaObject(ReportDataOwaterLoop_Day_Res.class);
         if (reportData.getId() == null) {
-            return Res.failureMsg("修改失败，无id");
+            return Res.failure("修改失败，无id");
         }
         if (sheetSimpleService.updateOwaterDayData(reportData)) {
-            return Res.successMsg("修改成功");
+            return Res.success("修改成功");
         } else {
-            return Res.failureMsg("修改失败");
+            return Res.failure("修改失败");
         }
     }
 
@@ -67,12 +67,12 @@ public class SimpleSheet {
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
         String fileName = "简单报表（" + searchDateStr + "）";
-        List<ExcelUtils.HeaderCell> extraHeaderCell = new ArrayList<ExcelUtils.HeaderCell>() {{
-            add(new ExcelUtils.HeaderCell("", 3));
-            add(new ExcelUtils.HeaderCell("掺水汇管（出站）", 5));
-            add(new ExcelUtils.HeaderCell("集油汇管（进站）", 5));
+        List<ExcelExport.HeaderCell> extraHeaderCell = new ArrayList<ExcelExport.HeaderCell>() {{
+            add(new ExcelExport.HeaderCell("", 3));
+            add(new ExcelExport.HeaderCell("掺水汇管（出站）", 5));
+            add(new ExcelExport.HeaderCell("集油汇管（进站）", 5));
         }};
-        ExcelUtils.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
+        ExcelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
     }
 
     private List<ReportDataOwaterLoop_Day_Res> getData(JSONObject bodyJO) {

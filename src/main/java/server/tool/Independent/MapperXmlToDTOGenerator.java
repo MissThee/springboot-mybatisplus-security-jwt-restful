@@ -1,4 +1,4 @@
-package server.tool;
+package server.tool.Independent;
 
 import com.google.common.base.Joiner;
 import org.dom4j.*;

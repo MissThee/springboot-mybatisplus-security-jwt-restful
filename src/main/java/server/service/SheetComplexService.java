@@ -2,7 +2,7 @@ package server.service;
 
 import server.db.primary.model.sheet.ReportStationDataCez0_Res;
 import server.db.primary.model.sheet.ReportStationDataCez_Res;
-import server.tool.ExcelUtils;
+import server.tool.ExcelExport;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -13,7 +13,7 @@ import java.util.Map;
 public interface SheetComplexService {
     boolean updateReportData(ReportStationDataCez_Res reportData);
 
-    List<ReportStationDataCez_Res> selectReportData(String searchDateStr, ArrayList<ExcelUtils.DataColumn> columnMap) throws ParseException, NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+    List<ReportStationDataCez_Res> selectReportData(String searchDateStr, ArrayList<ExcelExport.DataColumn> columnMap) throws ParseException, NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     boolean updateReportForm(ReportStationDataCez0_Res reportData);
 

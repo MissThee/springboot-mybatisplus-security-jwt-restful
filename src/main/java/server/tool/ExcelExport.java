@@ -19,7 +19,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.util.StringUtils;
 
 //通用简单表格导出工具，调用本工具的Controller返回类型需为void
-public class ExcelUtils {
+public class ExcelExport {
     /**
      * @param wb               HSSFWorkbook对象
      * @param sheetIndex       表格下标，0开始(一般为0)

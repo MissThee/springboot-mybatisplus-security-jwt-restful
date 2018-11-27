@@ -34,9 +34,9 @@ public class LoginController {
         User user = userService.selectUserByUsername(username);
         //登录密码校验
         if (user == null) {
-            return Res.failureMsg("无此用户");
+            return Res.failure("无此用户");
         } else if (!user.getPassword().equals(password)) {
-            return Res.failureMsg("密码错误");
+            return Res.failure("密码错误");
         }
         Map<String, List<String>> userInfoMap = getUserInfo(user);
         //添加token

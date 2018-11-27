@@ -10,7 +10,7 @@ import server.db.primary.model.sheet.ReportStationDataCez0_Res;
 import server.db.primary.model.sheet.ReportStationDataCez_Res;
 import server.db.primary.model.sheet.ReportStationDataCylOil_Extra;
 import server.service.SheetComplexService;
-import server.tool.ExcelUtils;
+import server.tool.ExcelExport;
 import server.tool.ListCompute;
 import tk.mybatis.mapper.entity.Example;
 
@@ -35,10 +35,10 @@ public class SheetComplexImp implements SheetComplexService {
     }
 
     @Override
-    public List<ReportStationDataCez_Res> selectReportData(String searchDateStr, ArrayList<ExcelUtils.DataColumn> columnList) throws ParseException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public List<ReportStationDataCez_Res> selectReportData(String searchDateStr, ArrayList<ExcelExport.DataColumn> columnList) throws ParseException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<ReportStationDataCez_Res> resList = new ArrayList<>();
         Set<String> columnKeyTemp = new HashSet<>();
-        for (ExcelUtils.DataColumn dataColumn : columnList) {
+        for (ExcelExport.DataColumn dataColumn : columnList) {
             if (!dataColumn.getIsEmptyData() && dataColumn.getIsDBColumn()) {
                 columnKeyTemp.add(dataColumn.getDataStr());
             }
@@ -140,7 +140,7 @@ public class SheetComplexImp implements SheetComplexService {
         resList.remove(0);
         {
             Set<String> columnKeyTemp1 = new HashSet<>();
-            for (ExcelUtils.DataColumn dataColumn : columnList) {
+            for (ExcelExport.DataColumn dataColumn : columnList) {
                 if (!"".equals(dataColumn.getDataStr())) {
                     columnKeyTemp1.add(dataColumn.getDataStr());
                 }
