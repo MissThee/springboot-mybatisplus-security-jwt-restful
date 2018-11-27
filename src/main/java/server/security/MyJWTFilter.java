@@ -11,6 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -41,7 +42,7 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
             }
         }
 
-        if (!JavaJWT.verifyTokenResult(token)) {
+        if (token == null || Objects.equals(token, "") || !JavaJWT.verifyTokenResult(token)) {
             return false;
         } else {
             SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
