@@ -21,8 +21,12 @@ import java.util.*;
 @RequestMapping("/sheet/complex")
 @RestController()
 public class ComplexSheet {
+    private final SheetComplexService sheetComplexService;
+
     @Autowired
-    SheetComplexService sheetComplexService;
+    public ComplexSheet(SheetComplexService sheetComplexService) {
+        this.sheetComplexService = sheetComplexService;
+    }
 
     private ArrayList<ExcelExport.DataColumn> getColumnMap() {
         //前端网页数据所需的列，与后台导出excel所需的列统一在此设置

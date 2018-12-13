@@ -1,4 +1,4 @@
-package server.exception;
+package server.config.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

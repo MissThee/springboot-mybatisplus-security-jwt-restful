@@ -1,4 +1,4 @@
-package server.db.primary.model;
+package server.db.primary.model.basic;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,7 +13,6 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-@CacheNamespace
 @Entity
 public class User implements Serializable {
     @Id

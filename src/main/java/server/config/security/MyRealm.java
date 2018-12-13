@@ -1,4 +1,4 @@
-package server.security;
+package server.config.security;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;

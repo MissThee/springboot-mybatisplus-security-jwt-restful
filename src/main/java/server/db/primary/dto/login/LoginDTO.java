@@ -1,10 +1,8 @@
-package server.dto.login;
+package server.db.primary.dto.login;
 
 import lombok.Data;
-import server.db.primary.model.Role;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 @Data

@@ -7,13 +7,12 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import server.security.JavaJWT;
+import server.config.security.JavaJWT;
 import server.tool.FileRec;
 import server.tool.Res;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @ApiIgnore
@@ -27,12 +26,12 @@ public class ExampleController {
     @PostMapping("infoByHeader")
     public Res getInfo(@RequestHeader("Authorization") String token) {
         Long id = JavaJWT.getId(token);
-        List roleList = JavaJWT.getRoleList(token);
-        List permissionList = JavaJWT.getPermissionList(token);
+//        List roleList = JavaJWT.getRoleList(token);
+//        List permissionList = JavaJWT.getPermissionList(token);
         Map<String, Object> map = new HashMap<>();
         map.put("id", id);
-        map.put("roleList", roleList);
-        map.put("permissionList", permissionList);
+//        map.put("roleList", roleList);
+//        map.put("permissionList", permissionList);
         return Res.success(map);
     }
 

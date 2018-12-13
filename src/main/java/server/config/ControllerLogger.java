@@ -1,4 +1,4 @@
-package server.config.log;
+package server.config;
 
 
 import org.aspectj.lang.JoinPoint;
@@ -20,7 +20,7 @@ import java.util.Enumeration;
 
 @Component
 @Aspect
-public class ControllerLog {
+public class ControllerLogger {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Pointcut("execution(public * server.controller..*.*(..))")

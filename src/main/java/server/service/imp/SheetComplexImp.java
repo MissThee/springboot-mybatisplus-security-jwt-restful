@@ -21,10 +21,15 @@ import java.util.*;
 
 @Service
 public class SheetComplexImp implements SheetComplexService {
+    private final FunReportStationDataCezResMapper funReportStationDataCezResMapper;
+    private final FunReportStationDataCylOilExtraMapper funReportStationDataCylOilMapper;
+
     @Autowired
-    FunReportStationDataCezResMapper funReportStationDataCezResMapper;
-    @Autowired
-    FunReportStationDataCylOilExtraMapper funReportStationDataCylOilMapper;
+    public SheetComplexImp(FunReportStationDataCezResMapper funReportStationDataCezResMapper, FunReportStationDataCylOilExtraMapper funReportStationDataCylOilMapper, FunReportStationDataCez0ResMapper funReportStationDataCez0ResMapper) {
+        this.funReportStationDataCezResMapper = funReportStationDataCezResMapper;
+        this.funReportStationDataCylOilMapper = funReportStationDataCylOilMapper;
+        this.funReportStationDataCez0ResMapper = funReportStationDataCez0ResMapper;
+    }
 
     @Override
     public boolean updateReportData(ReportStationDataCez_Res reportData) {
@@ -154,8 +159,7 @@ public class SheetComplexImp implements SheetComplexService {
         return resList;
     }
 
-    @Autowired
-    FunReportStationDataCez0ResMapper funReportStationDataCez0ResMapper;
+    private final FunReportStationDataCez0ResMapper funReportStationDataCez0ResMapper;
 
     @Override
     public boolean updateReportForm(ReportStationDataCez0_Res reportData) {

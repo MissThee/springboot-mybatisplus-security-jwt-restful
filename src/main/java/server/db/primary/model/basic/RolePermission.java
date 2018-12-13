@@ -1,4 +1,4 @@
-package server.db.primary.model;
+package server.db.primary.model.basic;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 
 @Data
 @Accessors(chain = true)
-@CacheNamespace
 @Entity
 public class RolePermission implements Serializable {
     @Id

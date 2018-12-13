@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class FastJsonConfiguration {
+public class SpringJsonConfig {
     @Bean
     public HttpMessageConverters fastJsonHttpMessageConverters() {
         FastJsonHttpMessageConverter fastConvert = new FastJsonHttpMessageConverter();

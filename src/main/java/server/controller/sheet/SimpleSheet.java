@@ -15,8 +15,12 @@ import java.util.*;
 @RequestMapping("/sheet/simple")
 @RestController()
 public class SimpleSheet {
+    private final SheetSimpleService sheetSimpleService;
+
     @Autowired
-    SheetSimpleService sheetSimpleService;
+    public SimpleSheet(SheetSimpleService sheetSimpleService) {
+        this.sheetSimpleService = sheetSimpleService;
+    }
 
     private Map<String, String> getColumnMap() {
         //前端网页数据所需的列，与后台导出excel所需的列统一在此设置

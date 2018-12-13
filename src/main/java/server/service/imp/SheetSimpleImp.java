@@ -13,8 +13,12 @@ import java.util.Map;
 
 @Service
 public class SheetSimpleImp implements SheetSimpleService {
+    private final FunReportDataOwaterLoopDayResMapper funReportDataOwaterLoopResMapper;
+
     @Autowired
-    FunReportDataOwaterLoopDayResMapper funReportDataOwaterLoopResMapper;
+    public SheetSimpleImp(FunReportDataOwaterLoopDayResMapper funReportDataOwaterLoopResMapper) {
+        this.funReportDataOwaterLoopResMapper = funReportDataOwaterLoopResMapper;
+    }
 
     @Override
     public boolean updateOwaterDayData(ReportDataOwaterLoop_Day_Res reportData) {

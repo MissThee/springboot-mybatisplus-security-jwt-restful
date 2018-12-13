@@ -7,24 +7,28 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-
 @Getter
 @Setter
 @Component
 @NoArgsConstructor
 public class Res<T> {
-
     private Res(Boolean result, T data, String msg) {
         this.result = result;
-        if (data == null) {
-            data = (T) new JSONObject();
-        }
+        data = data == null ? (T) new JSONObject() : data;
         this.data = data;
         this.msg = StringUtils.isEmpty(msg) ? "" : msg;
     }
 
     public static <T> Res<T> res(Boolean result, T data, String msg) {
         return new Res<>(result, data, msg);
+    }
+
+    public static <T> Res<T> res(Boolean result, T data) {
+        return new Res<>(result, data, "");
+    }
+
+    public static <T> Res<T> res(Boolean result, String msg) {
+        return new Res<>(result, null, "");
     }
 
     public static <T> Res<T> res(Boolean result) {

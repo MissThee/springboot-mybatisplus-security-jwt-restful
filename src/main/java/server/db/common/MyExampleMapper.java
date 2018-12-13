@@ -8,10 +8,9 @@ import java.util.List;
 
 @RegisterMapper
 public interface MyExampleMapper<T> {
-    @SelectProvider(
-            type = MyExampleProvider.class,
-            method = "dynamicSQL"
-    )
+    @SelectProvider(type = MyExampleProvider.class, method = "dynamicSQL")
     T selectAvgByExample(Object var1);
+
+    @SelectProvider(type = MyExampleProvider.class, method = "dynamicSQL")
     T selectSumByExample(Object var1);
 }
