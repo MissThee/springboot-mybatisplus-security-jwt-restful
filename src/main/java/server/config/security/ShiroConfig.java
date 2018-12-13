@@ -8,6 +8,7 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import server.service.LoginService;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -26,11 +27,11 @@ public class ShiroConfig {
     }
 
     @Bean("shiroFilter")
-    public ShiroFilterFactoryBean factory(DefaultWebSecurityManager securityManager) {
+    public ShiroFilterFactoryBean factory(DefaultWebSecurityManager securityManager, LoginService loginService) {
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<>();
-        filterMap.put("jwt", new MyJWTFilter());
+        filterMap.put("jwt", new MyJWTFilter(loginService));
         factoryBean.setFilters(filterMap);
         factoryBean.setSecurityManager(securityManager);
         Map<String, String> filterRuleMap = new LinkedHashMap<>();//因路由拦截认证需保证设置的先后顺序，若有多个过滤规则，此处需使用可保证顺序的对象

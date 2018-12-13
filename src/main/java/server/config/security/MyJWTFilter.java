@@ -4,8 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import server.dto.login.LoginDTO;
+import server.service.LoginService;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -16,10 +19,17 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class MyJWTFilter extends BasicHttpAuthenticationFilter {
+    private final LoginService loginService;
+
+    @Autowired
+    public MyJWTFilter(LoginService loginService) {
+        this.loginService = loginService;
+    }
+
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         executeLogin(request, response);
-        return true;
+        return true;//使匿名用户可以通过验证
     }
 
     @Override
@@ -42,12 +52,19 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
             }
         }
 
-        if (token == null || Objects.equals(token, "") || !JavaJWT.verifyTokenResult(token)) {
+
+        if (StringUtils.isEmpty(token)  || !JavaJWT.verifyTokenResult(token)){
             return false;
-        } else {
+        } else{
             SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-            simpleAuthorizationInfo.addRoles(JavaJWT.getRoleList(token));                           //将token中携带的角色信息写入shiro身份对象
-            simpleAuthorizationInfo.addStringPermissions(JavaJWT.getPermissionList(token));         //将token中携带的权限信息写入shiro身份对象
+//          于缓存中获取用户信息
+            LoginDTO loginDTO = loginService.selectUserById(JavaJWT.getId(token));
+            simpleAuthorizationInfo.addRoles(loginDTO.getRoleValueList());
+            simpleAuthorizationInfo.addStringPermissions(loginDTO.getPermissionValueList());
+
+//          使用token中存储的角色、权限信息，需在登录时将相关信息写入token中
+//            simpleAuthorizationInfo.addRoles(JavaJWT.getRoleList(token));                           //将token中携带的角色信息写入shiro身份对象
+//            simpleAuthorizationInfo.addStringPermissions(JavaJWT.getPermissionList(token));         //将token中携带的权限信息写入shiro身份对象
             AuthenticationToken authenticationToken = new AuthenticationToken() {
                 @Override
                 public Object getPrincipal() { //将用户权限放置getPrincipal

@@ -20,7 +20,7 @@ public class JavaJWT {
     /**
      * @param expiresDayFromNow 有效时间（天）
      */
-    public static String createToken(Integer id, List<String> roleList, List<String> permissionList, int expiresDayFromNow) {
+    public static String createToken(Integer id,  int expiresDayFromNow) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTCreator.Builder builder = JWT.create();
@@ -29,8 +29,8 @@ public class JavaJWT {
             builder.withExpiresAt(now(expiresDayFromNow));
             //添加claim附加信息【可直接解析】
             builder.withClaim("id", id);
-            builder.withArrayClaim("roleList", roleList.toArray(new String[]{}));
-            builder.withArrayClaim("permissionList", permissionList.toArray(new String[]{}));
+//            builder.withArrayClaim("roleList", roleList.toArray(new String[]{}));
+//            builder.withArrayClaim("permissionList", permissionList.toArray(new String[]{}));
             //添加header键值对【可直接解析】
             //Map<String, Object> headerClaims = new HashMap();
             //headerClaims.put("userId", "1234");
@@ -47,7 +47,7 @@ public class JavaJWT {
     }
 
     public static String createToken(Integer id, List<String> roleList, List<String> permissionList) {
-        return createToken(id, roleList, permissionList, 1);
+        return createToken(id,   1);
     }
 
     public static String updateToken(String token, int expiresDayFromNow) {
@@ -66,10 +66,10 @@ public class JavaJWT {
                     case "id":
                         builder.withClaim(claimKey, decodedJWT.getClaim(claimKey).asInt());
                         break;
-                    case "roleList":
-                    case "permissionList":
-                        builder.withArrayClaim(claimKey, decodedJWT.getClaim(claimKey).asList(String.class).toArray(new String[]{}));
-                        break;
+//                    case "roleList":
+//                    case "permissionList":
+//                        builder.withArrayClaim(claimKey, decodedJWT.getClaim(claimKey).asList(String.class).toArray(new String[]{}));
+//                        break;
                 }
             }
             String newToken = builder.sign(algorithm);
@@ -140,15 +140,15 @@ public class JavaJWT {
         return jwt.getClaim("id").asLong();
     }
 
-    public static List<String> getRoleList(String token) {
-        DecodedJWT jwt = JWT.decode(token);
-        return jwt.getClaim("roleList").asList(String.class);
-    }
-
-    public static List<String> getPermissionList(String token) {
-        DecodedJWT jwt = JWT.decode(token);
-        return jwt.getClaim("permissionList").asList(String.class);
-    }
+//    public static List<String> getRoleList(String token) {
+//        DecodedJWT jwt = JWT.decode(token);
+//        return jwt.getClaim("roleList").asList(String.class);
+//    }
+//
+//    public static List<String> getPermissionList(String token) {
+//        DecodedJWT jwt = JWT.decode(token);
+//        return jwt.getClaim("permissionList").asList(String.class);
+//    }
 
 
     //---------------------以下为时间工具方法-----------------------

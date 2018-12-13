@@ -1,4 +1,4 @@
-package server.log;
+package server.config.log;
 
 
 import org.aspectj.lang.JoinPoint;
