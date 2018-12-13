@@ -8,7 +8,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-
+//excel 文件格式读取工具，用于生成表头代码，供导出使用
 public class ExcelReadTool {
     public static void main(String[] args) {
         try {

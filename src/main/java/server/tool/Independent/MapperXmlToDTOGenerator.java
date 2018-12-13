@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.util.*;
-
+//使用mapper.xml的resultMap生成实体类
 public class MapperXmlToDTOGenerator {
     private static StringBuilder currentFileSB;
     private static String currentFileName;

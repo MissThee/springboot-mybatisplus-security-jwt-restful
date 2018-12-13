@@ -3,7 +3,7 @@ package server.tool;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-
+//list中实体对象，指定字段平均、合计计算工具
 public class ListCompute {
     /**
      * @Param startIndex 开始行下标

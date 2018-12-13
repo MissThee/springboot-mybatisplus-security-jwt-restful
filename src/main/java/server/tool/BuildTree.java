@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+//树形数据构建工具
 public class BuildTree {
     /**
      * 遍历id含parentId树形数据结构的数据

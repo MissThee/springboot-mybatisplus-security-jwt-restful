@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-@Component
+//简单表格导入工具
 public class ExcelImport {
     /**
      * @Param file 接收的Excel文件
