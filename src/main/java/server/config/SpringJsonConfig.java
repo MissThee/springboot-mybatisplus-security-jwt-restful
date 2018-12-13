@@ -25,7 +25,7 @@ public class SpringJsonConfig {
                 SerializerFeature.WriteMapNullValue,
                 SerializerFeature.DisableCircularReferenceDetect
         );
-        fastJsonConfig.setDateFormat("yyyy-MM-dd hh:mm:ss");
+        fastJsonConfig.setDateFormat("yyyy-MM-dd HH:mm:ss");
         //处理中文乱码问题
         List<MediaType> fastMediaTypes = new ArrayList<>();
         fastMediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
