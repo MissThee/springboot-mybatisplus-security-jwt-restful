@@ -13,14 +13,35 @@
     </style>
 </head>
 <body>
-<div><input id="userId"/></div>
-<input type="button" onclick="sendMsg()" value="发送消息[message]"/>
-<input type="button" onclick="emitEvent()" value="发送消息[event]"/>
-<input type="button" onclick="emitBroadcast()" value="广播消息[broadcast]"/>
-<br/>
-<div id="statePoint" class="point-shape"></div>
-<input type="button" onclick="closeSocketIO()" value="断开连接"/>
-<input type="button" onclick="connectSocketIO()" value="建立连接"/>
+
+<form>
+    <fieldset>
+        <legend>初始化</legend>
+        <div>本用户：<input id="userId" value=""/></div>
+        <div>
+            <input type="button" onclick="closeSocketIO()" value="断开"/>
+            <input type="button" onclick="connectSocketIO()" value="连接"/>
+            <span>状态：</span><span id="statePoint" class="point-shape" style="background-color:gray"></span>
+        </div>
+    </fieldset>
+    <br>
+    <fieldset>
+        <legend>控制台输出测试</legend>
+        <input type="button" onclick="sendMsg()" value="发送消息[message]"/>
+        <input type="button" onclick="emitEvent()" value="发送消息[event]"/>
+        <input type="button" onclick="emitBroadcast()" value="广播消息[broadcast]"/>
+    </fieldset>
+    <br>
+    <fieldset>
+        <legend>单用户推送测试</legend>
+        <div>发消息：<input id="msg"/></div>
+        <div>接收人：<input id="receiverId"/></div>
+        <input type="button" onclick="sendMessageToUser()" value="发送消息给用户"/>
+        <br/>
+        <div id="receiveMsg"></div>
+    </fieldset>
+
+</form>
 <script>//socketio.min.js
 !function (e) {
     if ("object" == typeof exports && "undefined" != typeof module) module.exports = e(); else if ("function" == typeof define && define.amd) define([], e); else {
@@ -3938,8 +3959,15 @@
 });
 </script>
 <script>
-    const socket = io('http://localhost:8094');  //本地测试环境
-    window.onload = function initSocket() {
+    let statePointEl = document.getElementById("statePoint");
+    let userIdEl = document.getElementById("userId");
+    let msgEl = document.getElementById("msg");
+    let receiverIdEl = document.getElementById("receiverId");
+    let receiveMsgEl = document.getElementById("receiveMsg");
+    let socket;
+
+    function initSocket() {
+        socket = io.connect('http://localhost:8097');//本地测试环境
         socket.on('connect', function () {
             console.log('socket连接成功');
             changeColor("lightgreen");
@@ -3973,9 +4001,6 @@
         // 当第一次连接时，事件触发顺序为：connecting->connect；
         // 当失去连接时，事件触发顺序为：disconnect->reconnecting（可能多次）->reconnect->connect。
 
-        socket.on('messageReceipt', function (data) {
-            console.log('发送回执：', data);
-        });
         socket.on('event', function (data) {
             console.log('event消息接收：', data);
         });
@@ -3985,37 +4010,75 @@
         socket.on('broadcast', function (data) {
             console.log('broadcast消息接收：', data);
         });
-    };
+        socket.on('msgToMe', function (data, ackServerCallback, arg1) {
+            showReceiveMsg(data);
+            if (ackServerCallback) {
+                ackServerCallback('客户端已接收消息');
+            }
+        });
+    }
 
     function sendMsg() {
-        socket.send({"content": "message事件测试"})
+        socket.send({"content": "message事件测试"}, function (data) {
+            console.log('message事件测试回执：', data);
+        })
         //同socket.emit('message', {"content": "message事件测试"})
     }
 
     function emitEvent() {
-        socket.emit('event', {"content": "event事件测试"})
+        socket.emit('event', {"content": "event事件测试"}, function (data) {
+            console.log('event事件测试回执：', data);
+        })
     }
 
     function emitBroadcast() {
-        socket.emit('broadcast', {"content": "广播消息"})
+        socket.emit('broadcast', {"content": "广播消息"}, function (data) {
+            console.log('广播消息回执：', data);
+        })
+    }
+
+    function sendMessageToUser() {
+        let receiverId = receiverIdEl.value;
+        let msg = msgEl.value;
+        socket.emit('toOneUserByUserId', {"content": "指定用户消息测试", "toId": receiverId, "msg": msg}, function (data) {
+            console.log('toOneUserByUserId事件测试回执：', data);
+        })
     }
 
     function closeSocketIO() {
+        userIdCanEdit(true);
         socket.close();
     }
 
     function connectSocketIO() {
-        socket.connect();
+        userIdCanEdit(false);
+        if (socket === undefined) {
+            initSocket();
+        } else {
+            socket.connect();
+        }
     }
 
     function emitInitInfo() {
-        let userId = document.getElementById("userId").value;
-        socket.emit('initInfo', {userId})
+        let userId = userIdEl.value;
+        socket.emit('initInfo', {userId}, function (data) {
+            console.log('初始化用户信息回执：', data);
+        })
     }
 
+
     function changeColor(color) {
-        let statePoint = document.getElementById("statePoint");
-        statePoint.style.cssText = "background-color:" + color;
+        statePointEl.style.cssText = "background-color:" + color;
+    }
+
+    function userIdCanEdit(canEdit) {
+        userIdEl.disabled = canEdit ? "" : "disabled";
+    }
+
+    function showReceiveMsg(data) {
+        let node = document.createElement("div");
+        node.innerText = data.fromId + " → " + data.toId + "[" + data.time + "]" + " : " + data.msg;
+        receiveMsgEl.appendChild(node);
     }
 </script>
 

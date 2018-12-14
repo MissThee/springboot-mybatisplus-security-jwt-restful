@@ -31,7 +31,7 @@ public class SocketIOServerConfig {
         //类似过滤器
         config.setAuthorizationListener(data -> {
             //http://localhost:8081?username=test&password=test
-            //例如果使用上面的链接进行connect，可以使用如下代码获取用户密码信息，本文不做身份验证
+            //例如果使用上面的链接进行connect，可以使用如下代码获取用户密码信息。暂不做身份验证
             // String username = data.getSingleUrlParam("username");
             // String password = data.getSingleUrlParam("password");
             return true;
