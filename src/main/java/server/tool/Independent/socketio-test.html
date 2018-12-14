@@ -10,6 +10,11 @@
             border-radius: 5px;
             display: inline-block;
         }
+
+        .show-inline div {
+            display: inline-block;
+            padding-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -22,6 +27,28 @@
             <input type="button" onclick="closeSocketIO()" value="断开"/>
             <input type="button" onclick="connectSocketIO()" value="连接"/>
             <span>状态：</span><span id="statePoint" class="point-shape" style="background-color:gray"></span>
+            <div class="show-inline">
+                <div>
+                    <span class="point-shape" style="background-color:gray"></span>
+                    <span>连接断开</span>
+                </div>
+                <div>
+                    <span class="point-shape" style="background-color:lightgreen"></span>
+                    <span>连接成功</span>
+                </div>
+                <div>
+                    <span class="point-shape" style="background-color:red"></span>
+                    <span>连接出错</span>
+                </div>
+                <div>
+                    <span class="point-shape" style="background-color:orange"></span>
+                    <span>正在重连</span>
+                </div>
+                <div>
+                    <span class="point-shape" style="background-color:purple"></span>
+                    <span>连接失败</span>
+                </div>
+            </div>
         </div>
     </fieldset>
     <br>
@@ -34,9 +61,10 @@
     <br>
     <fieldset>
         <legend>单用户推送测试</legend>
+        <!--<div>接收人：<input id="receiverId"/></div>-->
+        <div>接收人： <span id="receiverList"></span></div>
         <div>发消息：<input id="msg"/></div>
-        <div>接收人：<input id="receiverId"/></div>
-        <input type="button" onclick="sendMessageToUser()" value="发送消息给用户"/>
+        <input type="button" onclick="sendMessageToUser()" value="发送"/>
         <br/>
         <div id="receiveMsg" style="height: 300px;overflow-y: scroll;overflow-x: hidden;"></div>
     </fieldset>
@@ -3962,8 +3990,9 @@
     let statePointEl = document.getElementById("statePoint");
     let userIdEl = document.getElementById("userId");
     let msgEl = document.getElementById("msg");
-    let receiverIdEl = document.getElementById("receiverId");
+    // let receiverIdEl = document.getElementById("receiverId");
     let receiveMsgEl = document.getElementById("receiveMsg");
+    let receiverListEl=document.getElementById("receiverList");
     let socket;
 
     function initSocket() {
@@ -3975,15 +4004,16 @@
         });
         socket.on('disconnect', function () {
             console.log('socket连接断开');
-            changeColor("gray")
+            changeColor("gray");
+            updateOnlineReceiver([]);
         });
         socket.on('connect_failed', function () {
             console.log('socket连接失败');
-            changeColor("red")
+            changeColor("purple");
         });
         socket.on('error', function () {
             console.log('socket错误发生，并且无法被其他事件类型所处理');
-            changeColor("red")
+            changeColor("red");
         });
         socket.on('anything', function () {
             console.log('socket收到任何事件时触发');
@@ -3993,7 +4023,7 @@
         });
         socket.on('reconnecting', function () {
             console.log('socket正在重连');
-            changeColor("orange")
+            changeColor("orange");
         });
         socket.on('reconnect_failed', function () {
             console.log('socket重连失败');
@@ -4009,6 +4039,10 @@
         });
         socket.on('broadcast', function (data) {
             console.log('broadcast消息接收：', data);
+        });
+        socket.on('onlineUser', function (data) {
+            console.log('onlineUser消息接收：', data);
+            updateOnlineReceiver(data);
         });
         socket.on('msgToMe', function (data, ackServerCallback, arg1) {
             showReceiveMsg(data);
@@ -4038,7 +4072,14 @@
     }
 
     function sendMessageToUser() {
-        let receiverId = receiverIdEl.value;
+        // let receiverId = receiverIdEl.value;
+        let receiverId;
+        let onlineUserListRadioEls=document.getElementsByName("onlineUserListRadio");
+        for(let onlineUserListRadioEl of onlineUserListRadioEls){
+           if( onlineUserListRadioEl.checked){
+               receiverId=onlineUserListRadioEl.value;
+           }
+        }
         let msg = msgEl.value;
         socket.emit('toOneUserByUserId', {"content": "指定用户消息测试", "toId": receiverId, "msg": msg}, function (data) {
             console.log('toOneUserByUserId事件测试回执：', data);
@@ -4077,10 +4118,26 @@
 
     function showReceiveMsg(data) {
         let node = document.createElement("div");
-        node.innerText = data.fromId + " → " + data.toId + "[" + data.time + "]" + " : " + data.msg;
+        node.innerText = data.fromId + " → " + data.toId + " [" + data.time + "] " + " : " + data.msg;
         receiveMsgEl.appendChild(node);
-        receiveMsgEl.scrollTop=receiveMsgEl.scrollHeight;
+        receiveMsgEl.scrollTop = receiveMsgEl.scrollHeight;
     }
+
+    function updateOnlineReceiver(userIdList) {
+        receiverListEl.innerHTML="";
+        for(let userId of userIdList){
+            let node = document.createElement("input");
+            node.type = "radio";
+            node.name = "onlineUserListRadio";
+            node.value = userId;
+            let nodeText=document.createTextNode(userId);
+            let nodeBr=document.createElement("br");
+            receiverListEl.appendChild(nodeBr);
+            receiverListEl.appendChild(node);
+            receiverListEl.appendChild(nodeText);
+        }
+    }
+
 </script>
 
 </body>

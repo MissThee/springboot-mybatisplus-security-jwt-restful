@@ -16,6 +16,7 @@ import server.socketio.model.MessageInfo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -40,6 +41,8 @@ public class MessageEventHandler {
         log.info("客户端:  " + client.getSessionId() + "  断开连接");
         UUID sessionId = client.getSessionId();
         removeUserInfo(sessionId);
+        updateUserListForWeb();
+
     }
 
     @OnEvent(value = "initInfo")
@@ -51,6 +54,7 @@ public class MessageEventHandler {
         if (ackRequest.isAckRequested()) {
             ackRequest.sendAckData("服务器已接收");
         }
+        updateUserListForWeb();
     }
 
     @OnEvent(value = "event")
@@ -107,6 +111,10 @@ public class MessageEventHandler {
         }
     }
 
+    private void updateUserListForWeb() {
+        socketIoServer.getBroadcastOperations().sendEvent("onlineUser", UUIDUserMap.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toSet()));
+    }
+
     private void addUserInfo(String userId, UUID uuid) {
         UUIDUserMap.put(uuid, userId);
         {
@@ -122,14 +130,13 @@ public class MessageEventHandler {
     }
 
     private void removeUserInfo(UUID uuid) {
+        String userId = UUIDUserMap.get(uuid);
         UUIDUserMap.remove(uuid);
         {
-            for (String key : userUUIDsMap.keySet()) {
-                List UUIDList = userUUIDsMap.get(key);
-                UUIDList.remove(uuid);
-                if (UUIDList.size() == 0) {
-                    userUUIDsMap.remove(key);
-                }
+            List UUIDList = userUUIDsMap.get(userId);
+            UUIDList.remove(uuid);
+            if (UUIDList.size() == 0) {
+                userUUIDsMap.remove(userId);
             }
         }
         System.out.println("userUUIDsMap:" + userUUIDsMap);
