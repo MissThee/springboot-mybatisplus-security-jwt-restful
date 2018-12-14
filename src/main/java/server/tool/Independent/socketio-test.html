@@ -38,7 +38,7 @@
         <div>接收人：<input id="receiverId"/></div>
         <input type="button" onclick="sendMessageToUser()" value="发送消息给用户"/>
         <br/>
-        <div id="receiveMsg"></div>
+        <div id="receiveMsg" style="height: 300px;overflow-y: scroll;overflow-x: hidden;"></div>
     </fieldset>
 
 </form>
@@ -4079,6 +4079,7 @@
         let node = document.createElement("div");
         node.innerText = data.fromId + " → " + data.toId + "[" + data.time + "]" + " : " + data.msg;
         receiveMsgEl.appendChild(node);
+        receiveMsgEl.scrollTop=receiveMsgEl.scrollHeight;
     }
 </script>
 
