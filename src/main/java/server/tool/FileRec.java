@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 //接收上传文件
 @Component
@@ -38,7 +39,7 @@ public class FileRec {
         webPath = a;
     }
 
-    //上传至/files/upload/
+    //上传至 setRootPath 变量设置的目录中
     ///返回0成功 1出错 2没有文件 3文件过大
     public static JSONObject fileUpload(MultipartFile file, String path) {
         JSONObject res = new JSONObject();
@@ -51,21 +52,23 @@ public class FileRec {
             res.put("msg", "单个文件不能超过" + fileMaxSize / (1024 * 1024) + "M");
         }
         try {
-            // 获取文件名
-            String fileName = file.getOriginalFilename();
+            // 获取完整文件名
+            String fileName = file.getOriginalFilename() == null ? "未命名文件" + LocalDateTime.now() : file.getOriginalFilename();
             // 获取扩展名
-            String extensionName = fileName.substring(fileName.lastIndexOf("."));
-            System.out.println("extensionName:" + extensionName);
-            // 文件在静态资源文件夹中路径   必须使用files作为根目录，files已做拦截白名单处理
-            String dataDirectory = "files" + File.separator + "upload" + File.separator + (StringUtils.isEmpty(path) ? "" : (path + File.separator));
-            // 上传完整路径
+            String extensionName = fileName.lastIndexOf(".") >= 0 ? fileName.substring(fileName.lastIndexOf(".")) : "";
+            // 文件在静态资源文件夹中路径
+            String dataDirectory = File.separator + "files" + File.separator + "upload" + File.separator + (StringUtils.isEmpty(path) ? "" : (path + File.separator));
+            // 拼接设置的额外静态资源目录路径
             String filePath = rootPath.concat(dataDirectory);
             File dest = new File(filePath, fileName);
+            //目录已存在
             if (dest.getParentFile().exists()) {
+                //文件已存在，重命名，加时间戳
                 if (dest.exists()) {
                     fileName = fileName.substring(0, fileName.lastIndexOf(".")) + String.valueOf(System.currentTimeMillis()) + "." + extensionName;
                     dest = new File(filePath, fileName);
                 }
+                //目录不存在,创建目录
             } else {
                 if (!dest.getParentFile().mkdirs()) {
                     throw new IOException("创建目录失败");
@@ -73,11 +76,11 @@ public class FileRec {
             }
             // 上传到指定目录
             file.transferTo(dest);
-//                dest.renameTo(new File(dest.getParent()+"/111") );
-            // 将图片流转换进行BASE64加码
+            //dest.renameTo(new File(dest.getParent()+"/111") );
+            //将图片流转换进行BASE64加码
             //BASE64Encoder encoder = new BASE64Encoder();
             //String data = encoder.encode(file.getBytes());
-            // 将反斜杠转换为正斜杠
+            //修url分隔符
             String data = webPath + dataDirectory.replaceAll("\\\\", "/") + fileName;
             res.put("result", true);
             res.put("data", data);
@@ -85,7 +88,7 @@ public class FileRec {
         } catch (IOException e) {
             e.printStackTrace();
             res.put("result", false);
-            res.put("msg", "上传出错。详情：" + e.toString());
+            res.put("msg", "上传出错。详情：" + e);
         }
         return res;
     }

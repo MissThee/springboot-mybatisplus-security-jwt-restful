@@ -31,13 +31,6 @@ public class SheetComplexImp implements SheetComplexService {
         this.funReportStationDataCez0ResMapper = funReportStationDataCez0ResMapper;
     }
 
-    @Override
-    public boolean updateReportData(ReportStationDataCez_Res reportData) {
-        Example example = new Example(ReportStationDataCez_Res.class);
-        example.createCriteria()
-                .andEqualTo("id", reportData.getId());
-        return funReportStationDataCezResMapper.updateByExampleSelective(reportData, example) > 0;
-    }
 
     @Override
     public List<ReportStationDataCez_Res> selectReportData(String searchDateStr, ArrayList<ExcelExport.DataColumn> columnList) throws ParseException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {

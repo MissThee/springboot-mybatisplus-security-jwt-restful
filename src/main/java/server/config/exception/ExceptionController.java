@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ExceptionController {
 
-    //访问无权限接口异常
+    //访问无权限接口
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.FORBIDDEN)

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface SheetComplexService {
-    boolean updateReportData(ReportStationDataCez_Res reportData);
-
     List<ReportStationDataCez_Res> selectReportData(String searchDateStr, ArrayList<ExcelExport.DataColumn> columnMap) throws ParseException, NoSuchMethodException, InvocationTargetException, IllegalAccessException;
 
     boolean updateReportForm(ReportStationDataCez0_Res reportData);

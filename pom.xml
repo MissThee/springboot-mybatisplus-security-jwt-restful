@@ -8,8 +8,8 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>demo</name>
-    <description>Demo project for Spring Boot</description>
+    <name>springboot-demo</name>
+    <description>Demo project for Spring Boot with many plugins</description>
     <!--阿里云仓库-->
     <!--<repositories>-->
     <!--<repository>-->
@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.3.RELEASE</version>
+        <version>2.1.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <properties>
@@ -167,11 +167,16 @@
             <artifactId>orika-spring-boot-starter</artifactId>
             <version>1.8.0</version>
         </dependency>
-        <!--netty-socketio依赖-->
+        <!--netty-socket.io依赖-->
         <dependency>
             <groupId>com.corundumstudio.socketio</groupId>
             <artifactId>netty-socketio</artifactId>
             <version>1.7.11</version>
+        </dependency>
+        <!--springboot test依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <!--暂未使用-->
 
@@ -193,15 +198,6 @@
         <!--<artifactId>junit</artifactId>-->
         <!--<version>4.12</version>-->
         <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.boot</groupId>-->
-        <!--<artifactId>spring-boot-starter-test</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework</groupId>-->
-        <!--<artifactId>spring-test</artifactId>-->
-        <!--<version>4.3.6.RELEASE</version>-->
         <!--</dependency>-->
         <!--&lt;!&ndash;quartz依赖&ndash;&gt;-->
         <!--<dependency>-->

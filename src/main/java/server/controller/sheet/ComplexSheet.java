@@ -87,38 +87,17 @@ public class ComplexSheet {
         }};
     }
 
-    @PostMapping()
-    public Res dataTable(@RequestBody JSONObject bodyJO) throws ParseException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        List<ReportStationDataCez_Res> reportDataWaterWell = getData(bodyJO);
-        JSONObject jO = new JSONObject();
-        jO.put("Production", reportDataWaterWell);
-        return Res.success(jO);
-    }
-
-    @PatchMapping()
-    public Res dataEdit(@RequestBody JSONObject bodyJO) {
-        ReportStationDataCez_Res reportData = bodyJO.getJSONObject("editData").toJavaObject(ReportStationDataCez_Res.class);
-        if (reportData.getId() == null) {
-            return Res.failure("修改失败，无id");
-        }
-        if (sheetComplexService.updateReportData(reportData)) {
-            return Res.success("修改成功");
-        } else {
-            return Res.failure("修改失败");
-        }
-    }
-
     @PostMapping("/excel")
     public void excel(@RequestBody() JSONObject bodyJO, HttpServletResponse response) throws Exception {
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet sheet = wb.createSheet();
         int rowNum = 0;
-        List<ReportStationDataCez_Res> reportData = getData(bodyJO);
+        List<ReportStationDataCez_Res> reportData = getData();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
         String fileName = "复杂报表（" + searchDateStr + "）";
-        //以下表头格式使用ExcelReadTool类生成，代码打印在控制台，手动复制到本处
+        //以下表头格式extraHeaderCell，使用ExcelReadTool类生成，代码打印在控制台，手动复制到本处
         List<ExcelExport.HeaderCell> extraHeaderCell = new ArrayList<ExcelExport.HeaderCell>() {{
 //行分隔
             add(new ExcelExport.HeaderCell("项目", 0, 0, 1, 2));
@@ -232,7 +211,7 @@ public class ComplexSheet {
         ExcelExport.LastRowColumnNum lastRowColumnNum = ExcelExport.addRowsByData(wb, 0, 0, 0, fileName, getColumnMap(), false, reportData, false, extraHeaderCell);
         rowNum = lastRowColumnNum.getRowNum();
 
-        List<ReportStationDataCez0_Res> formData = getFormData(bodyJO);
+        List<ReportStationDataCez0_Res> formData = getFormData();
         if (formData != null) {
             StringBuilder allNote = new StringBuilder();
             for (ReportStationDataCez0_Res res : formData) {
@@ -367,59 +346,19 @@ public class ComplexSheet {
         ExcelExport.responseOut(response, wb, fileName);
     }
 
-    private List<ReportStationDataCez_Res> getData(JSONObject bodyJO) throws ParseException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Date searchDate = bodyJO.getDate("searchDate");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
-
-        searchDateStr = "2018-08-24";
-
-        return sheetComplexService.selectReportData(searchDateStr, getColumnMap());
+    private List<ReportStationDataCez_Res> getData() {
+        List<ReportStationDataCez_Res> list = new ArrayList<>();
+        ReportStationDataCez_Res reportStationDataCez_res = new ReportStationDataCez_Res();
+        reportStationDataCez_res.setReport_time("00:00");
+        list.add(reportStationDataCez_res);
+        return list;
     }
 
-
-
-
-    private Map<String, String> getFormColumnMap() {
-        //前端网页数据所需的列，与后台导出excel所需的列统一在此设置
-        //前端数据列，取map的id集合
-        //excel数据列，取value非空值
-        return new LinkedHashMap<String, String>() {{
-            put("id", "");
-            put("report_hour", "1");
-            put("wsl", "1");
-            put("rql", "1");
-            put("xyl", "1");
-            put("jyl", "1");
-            put("bz", "1");
-        }};
-    }
-
-    @PostMapping("/form")
-    public Res formDataTable(@RequestBody JSONObject bodyJO) {
-        List<ReportStationDataCez0_Res> res = getFormData(bodyJO);
-        JSONObject jO = new JSONObject();
-        jO.put("Production", res);
-        return Res.success(jO);
-    }
-
-    @PatchMapping("/form")
-    public Res formDataEdit(@RequestBody JSONObject bodyJO) {
-        ReportStationDataCez0_Res reportData = bodyJO.getJSONObject("editData").toJavaObject(ReportStationDataCez0_Res.class);
-        if (reportData.getId() == null) {
-            return Res.failure("修改失败，无id");
-        }
-        if (sheetComplexService.updateReportForm(reportData)) {
-            return Res.success("修改成功");
-        } else {
-            return Res.failure("修改失败");
-        }
-    }
-
-    private List<ReportStationDataCez0_Res> getFormData(JSONObject bodyJO) {
-        Date searchDate = bodyJO.getDate("searchDate");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
-        return sheetComplexService.selectReportForm(searchDateStr, getFormColumnMap());
+    private List<ReportStationDataCez0_Res> getFormData() {
+        List<ReportStationDataCez0_Res> list = new ArrayList<>();
+        ReportStationDataCez0_Res reportStationDataCez0_res = new ReportStationDataCez0_Res();
+        reportStationDataCez0_res.setReport_hour("0");
+        list.add(reportStationDataCez0_res);
+        return list;
     }
 }

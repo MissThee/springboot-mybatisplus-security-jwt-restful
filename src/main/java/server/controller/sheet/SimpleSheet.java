@@ -43,30 +43,9 @@ public class SimpleSheet {
         }};
     }
 
-    @PostMapping()
-    public Res dataTable(@RequestBody JSONObject bodyJO) {
-        List<ReportDataOwaterLoop_Day_Res> reportDataOilWell = getData(bodyJO);
-        JSONObject jO = new JSONObject();
-        jO.put("Production", reportDataOilWell);
-        return Res.success(jO);
-    }
-
-    @PatchMapping()
-    public Res dataEdit(@RequestBody JSONObject bodyJO) {
-        ReportDataOwaterLoop_Day_Res reportData = bodyJO.getJSONObject("editData").toJavaObject(ReportDataOwaterLoop_Day_Res.class);
-        if (reportData.getId() == null) {
-            return Res.failure("修改失败，无id");
-        }
-        if (sheetSimpleService.updateOwaterDayData(reportData)) {
-            return Res.success("修改成功");
-        } else {
-            return Res.failure("修改失败");
-        }
-    }
-
     @PostMapping("/excel")
     public void excel(@RequestBody() JSONObject bodyJO, HttpServletResponse response) throws Exception {
-        List<ReportDataOwaterLoop_Day_Res> reportData = getData(bodyJO);
+        List<ReportDataOwaterLoop_Day_Res> reportData = getData( );
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
@@ -79,15 +58,11 @@ public class SimpleSheet {
         ExcelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
     }
 
-    private List<ReportDataOwaterLoop_Day_Res> getData(JSONObject bodyJO) {
-        Long stationId = bodyJO.getLong("stationId");
-        Date searchDate = bodyJO.getDate("searchDate");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
-
-        searchDateStr = "2018-08-24";
-        stationId = 1L;
-
-        return sheetSimpleService.selectReportDataDay(stationId, searchDateStr, getColumnMap());
+    private List<ReportDataOwaterLoop_Day_Res> getData( ) {
+        List<ReportDataOwaterLoop_Day_Res> list=new ArrayList<>();
+        ReportDataOwaterLoop_Day_Res reportDataOwaterLoop_day_res=new ReportDataOwaterLoop_Day_Res();
+        reportDataOwaterLoop_day_res.setReportDate("00:00");
+        list.add(reportDataOwaterLoop_day_res);
+        return list;
     }
 }
