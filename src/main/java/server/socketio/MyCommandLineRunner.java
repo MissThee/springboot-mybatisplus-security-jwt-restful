@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(value = 1)
 public class MyCommandLineRunner implements CommandLineRunner {
-    private final SocketIOServer server;
+    private final SocketIOServer socketIOServer;
 
     @Autowired
     public MyCommandLineRunner(SocketIOServer server) {
-        this.server = server;
+        this.socketIOServer = server;
     }
 
     @Override
     public void run(String... args) {
-        server.start();
+        socketIOServer.start();
     }
 }

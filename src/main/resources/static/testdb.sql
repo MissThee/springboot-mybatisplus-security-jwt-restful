@@ -11,7 +11,7 @@
  Target Server Version : 50720
  File Encoding         : 65001
 
- Date: 13/12/2018 09:07:44
+ Date: 18/12/2018 15:09:58
 */
 
 SET NAMES utf8mb4;
@@ -84,13 +84,14 @@ CREATE TABLE `user`  (
   `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
 INSERT INTO `user` VALUES (1, '管理员', 'admin', '123');
-INSERT INTO `user` VALUES (2, '用户', 'user', '123');
+INSERT INTO `user` VALUES (2, '用户1', 'user1', '123');
+INSERT INTO `user` VALUES (3, '用户2', 'user2', '123');
 
 -- ----------------------------
 -- Table structure for user_role

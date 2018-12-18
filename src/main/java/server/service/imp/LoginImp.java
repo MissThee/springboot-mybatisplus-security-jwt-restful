@@ -57,7 +57,7 @@ public class LoginImp implements LoginService {
     }
 
     @Override
-    public LoginDTO selectUserById(Long id) {
+    public LoginDTO selectUserById(Integer id) {
         //查找用户
         User user;
         {

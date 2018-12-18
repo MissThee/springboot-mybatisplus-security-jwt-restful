@@ -1,5 +1,7 @@
 package server.service;
 
-public interface UserService {
+import server.db.primary.model.basic.User;
 
+public interface UserService {
+    User selectOneById(Integer userId);
 }

@@ -8,7 +8,7 @@ import java.util.Set;
 @Data
 public class LoginDTO implements Serializable {
     private Integer id;
-    private String name;
+    private String nickname;
     private String username;
     private Set<String> roleValueList;
     private Set<String> permissionValueList;

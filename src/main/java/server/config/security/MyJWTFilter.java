@@ -57,7 +57,7 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
         } else{
             SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 //          于缓存中获取用户信息
-            LoginDTO loginDTO = loginService.selectUserById(JavaJWT.getId(token));
+            LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(JavaJWT.getId(token)));
             simpleAuthorizationInfo.addRoles(loginDTO.getRoleValueList());
             simpleAuthorizationInfo.addStringPermissions(loginDTO.getPermissionValueList());
 

@@ -3,10 +3,12 @@ package server.socketio;
 import com.corundumstudio.socketio.AuthorizationListener;
 import com.corundumstudio.socketio.HandshakeData;
 import com.corundumstudio.socketio.SocketIOServer;
+import com.corundumstudio.socketio.Transport;
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import server.config.security.JavaJWT;
 
 @Configuration
 public class SocketIOServerConfig {
@@ -28,13 +30,16 @@ public class SocketIOServerConfig {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setHostname(hostname);
         config.setPort(port);
-        //类似过滤器
-        config.setAuthorizationListener(data -> {
-            //http://localhost:8081?username=test&password=test
-            //例如果使用上面的链接进行connect，可以使用如下代码获取用户密码信息。暂不做身份验证
-            // String username = data.getSingleUrlParam("username");
-            // String password = data.getSingleUrlParam("password");
-            return true;
+        config.setAuthorizationListener(data -> {//身份验证，直接使用jwt验证token
+//            String token = data.getHttpHeaders().get("Authorization");
+            String token = data.getSingleUrlParam("token");
+            boolean result = false;
+            try {
+                result = JavaJWT.verifyToken(token);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return result;
         });
 
         return new SocketIOServer(config);

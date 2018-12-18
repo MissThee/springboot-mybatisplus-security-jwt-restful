@@ -25,7 +25,7 @@ public class ExampleController {
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
     public Res getInfo(@RequestHeader("Authorization") String token) {
-        Long id = JavaJWT.getId(token);
+        String id = JavaJWT.getId(token);
 //        List roleList = JavaJWT.getRoleList(token);
 //        List permissionList = JavaJWT.getPermissionList(token);
         Map<String, Object> map = new HashMap<>();

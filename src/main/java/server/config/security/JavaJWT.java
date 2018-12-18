@@ -20,7 +20,7 @@ public class JavaJWT {
     /**
      * @param expiresDayFromNow 有效时间（天）
      */
-    public static String createToken(Integer id,  int expiresDayFromNow) {
+    public static String createToken(String id,  int expiresDayFromNow) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTCreator.Builder builder = JWT.create();
@@ -46,7 +46,7 @@ public class JavaJWT {
         return "";
     }
 
-    public static String createToken(Integer id, List<String> roleList, List<String> permissionList) {
+    public static String createToken(String id, List<String> roleList, List<String> permissionList) {
         return createToken(id,   1);
     }
 
@@ -64,7 +64,7 @@ public class JavaJWT {
                     case "iss":
                         break;
                     case "id":
-                        builder.withClaim(claimKey, decodedJWT.getClaim(claimKey).asInt());
+                        builder.withClaim(claimKey, decodedJWT.getClaim(claimKey).asString());
                         break;
 //                    case "roleList":
 //                    case "permissionList":
@@ -135,9 +135,9 @@ public class JavaJWT {
         return dateDiff(now(), jwt.getExpiresAt(), 3);
     }
 
-    public static Long getId(String token) {
+    public static String getId(String token) {
         DecodedJWT jwt = JWT.decode(token);
-        return jwt.getClaim("id").asLong();
+        return jwt.getClaim("id").asString();
     }
 
 //    public static List<String> getRoleList(String token) {

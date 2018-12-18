@@ -25,8 +25,8 @@ public class IndexController {
     @PostMapping("/info")
     @RequiresAuthentication
     public Res<loginRes> info(@RequestHeader(value = "Authorization", required = false) String token) {
-        Long id = JavaJWT.getId(token);
-        LoginDTO loginDTO = loginService.selectUserById(id);
+        String id = JavaJWT.getId(token);
+        LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(id));
 
         return Res.success(new loginRes(loginDTO), "登录成功");
     }

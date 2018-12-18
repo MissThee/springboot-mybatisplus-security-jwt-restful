@@ -10,135 +10,137 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import server.socketio.model.InitInfo;
-import server.socketio.model.MessageInfo;
+import server.config.security.JavaJWT;
+import server.db.primary.model.basic.User;
+import server.service.UserService;
+import server.socketio.model.AckModel;
+import server.socketio.model.MessageModel;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
 public class MessageEventHandler {
     //此示例暂未与数据库中数据做任何关联
     private static SocketIOServer socketIoServer;
-    private static Map<String, List<UUID>> userUUIDsMap = new HashMap<>();
-    private static Map<UUID, String> UUIDUserMap = new HashMap<>();
+    private static Map<String, List<UUID>> userIdUUIDsMap = new ConcurrentHashMap<>();
+    private static Map<UUID, String> UUIDUserIdMap = new ConcurrentHashMap<>();
+    private static Map<String, String> userIdNicknameMap = new ConcurrentHashMap<>();
+
+    private final UserService userService;
 
     @Autowired
-    public MessageEventHandler(SocketIOServer server) {
+    public MessageEventHandler(SocketIOServer server, UserService userService) {
         socketIoServer = server;
+        this.userService = userService;
     }
 
     @OnConnect
     public void onConnect(SocketIOClient client) {
         log.info("客户端:  " + client.getSessionId() + "  已连接");
+        String userId = JavaJWT.getId(client.getHandshakeData().getSingleUrlParam("token"));
+//        String userId=client.getHandshakeData().getHttpHeaders().get("Authorization");
+        User user = userService.selectOneById(Integer.parseInt(userId));
+        addUserInfo(user, client.getSessionId());
+        updateUserListForWeb();
     }
 
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
         log.info("客户端:  " + client.getSessionId() + "  断开连接");
-        UUID sessionId = client.getSessionId();
-        removeUserInfo(sessionId);
+        removeUserInfo(client.getSessionId());
         updateUserListForWeb();
-
-    }
-
-    @OnEvent(value = "initInfo")
-    public void initInfo(SocketIOClient client, AckRequest ackRequest, InitInfo data) {
-        log.info("initInfo用户信息：" + data.getUserId());
-        String userId = data.getUserId();
-        UUID sessionId = client.getSessionId();
-        addUserInfo(userId, sessionId);
-        if (ackRequest.isAckRequested()) {
-            ackRequest.sendAckData("服务器已接收");
-        }
-        updateUserListForWeb();
-    }
-
-    @OnEvent(value = "event")
-    public void onEvent(SocketIOClient client, AckRequest ackRequest, MessageInfo data) {
-        log.info("event发来消息：" + data.getContent());
-        //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
-        if (ackRequest.isAckRequested()) {
-            ackRequest.sendAckData("服务器已接收");
-        }
     }
 
     @OnEvent(value = "message")
-    public void onMessage(SocketIOClient client, AckRequest ackRequest, MessageInfo data) {
-        log.info("message发来消息：" + data.getContent());
+    public void onMessage(SocketIOClient client, AckRequest ackRequest, MessageModel data) {
+        log.info("message触发");
+        //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
-            ackRequest.sendAckData("服务器已接收");
+            ackRequest.sendAckData(AckModel.success());
         }
     }
 
     @OnEvent(value = "broadcast")
-    public void onBroadcast(SocketIOClient client, AckRequest ackRequest, MessageInfo data) {
-        log.info("broadcast发来消息：" + data.getContent());
+    public void onBroadcast(SocketIOClient client, AckRequest ackRequest, MessageModel data) {
+        log.info("broadcast触发");
+        //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
-            ackRequest.sendAckData("服务器已接收");
+            ackRequest.sendAckData(AckModel.success());
         }
-        socketIoServer.getBroadcastOperations().sendEvent("broadcast", data.getContent());
+        data.setFromId(UUIDUserIdMap.get(client.getSessionId()));
+        data.setFromNickname(userIdNicknameMap.get(data.getFromId()));
+        socketIoServer.getBroadcastOperations().sendEvent("broadcast", data);
     }
 
     @OnEvent(value = "toOneUserByUserId")
-    public static void toOneUserByUserId(SocketIOClient client, AckRequest ackRequest, MessageInfo data) {   //向客户端推消息
-        log.info("toOneUserByUserId发来消息：" + data.getContent());
+    public static void toOneUserByUserId(SocketIOClient client, AckRequest ackRequest, MessageModel data) {   //向客户端推消息
+        log.info("toOneUserByUserId触发：" + data.getContent() + "；" + String.valueOf(UUIDUserIdMap.get(client.getSessionId())) + "→" + String.valueOf(data.getToId()) + ":" + data.getMsg());
+        //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
-            ackRequest.sendAckData("服务器已接收");
+            ackRequest.sendAckData(AckModel.success());
         }
-
-        data.setFromId(UUIDUserMap.get(client.getSessionId()));
-        data.setTime(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
-
-        System.out.println(data.getFromId() + "→" + data.getToId() + ":" + data.getMsg());
-
-        List<UUID> uuidList = userUUIDsMap.getOrDefault(data.getToId(), new ArrayList<>());
-        for (UUID uuid : uuidList) {
-            if (socketIoServer.getClient(uuid) != null) {
-                socketIoServer.getClient(uuid).sendEvent(
-                        "msgToMe",
-                        new AckCallback<String>(String.class) {
-                            @Override
-                            public void onSuccess(String result) {
-                                System.out.println("客户端回执: " + client.getSessionId() + " data: " + result);
-                            }
-                        },
-                        data);
+        data.setFromId(UUIDUserIdMap.get(client.getSessionId()));
+        data.setFromNickname(userIdNicknameMap.get(data.getFromId()));
+        data.setToNickname(userIdNicknameMap.get(data.getToId()));
+        if (data.getToId() != null) {
+            List<UUID> uuidList = userIdUUIDsMap.get(data.getToId());
+            for (UUID uuid : uuidList) {
+                if (socketIoServer.getClient(uuid) != null) {
+                    socketIoServer.getClient(uuid).sendEvent(
+                            "msgToMe",
+                            new AckCallback<String>(String.class) {
+                                @Override
+                                public void onSuccess(String result) {
+                                    System.out.println("客户端回执: " + client.getSessionId() + " data: " + result);
+                                }
+                            },
+                            data);
+                }
             }
         }
     }
 
     private void updateUserListForWeb() {
-        socketIoServer.getBroadcastOperations().sendEvent("onlineUser", UUIDUserMap.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toSet()));
+        socketIoServer.getBroadcastOperations().sendEvent("onlineUser", userIdNicknameMap);
     }
 
-    private void addUserInfo(String userId, UUID uuid) {
-        UUIDUserMap.put(uuid, userId);
+    //在线用户信息更新
+    private void addUserInfo(User user, UUID uuid) {
+        String userId = String.valueOf(user.getId());
+        String userNickname = user.getNickname();
+        //更新UUIDUserIdMap
+        UUIDUserIdMap.put(uuid, userId);
+        //更新userIdUUIDsMap
         {
-            if (userUUIDsMap.containsKey(userId)) {
-                userUUIDsMap.get(userId).add(uuid);
+            if (userIdUUIDsMap.containsKey(userId)) {
+                userIdUUIDsMap.get(userId).add(uuid);
             } else {
-                userUUIDsMap.put(userId, new ArrayList<UUID>() {{
+                userIdUUIDsMap.put(userId, new ArrayList<UUID>() {{
                     add(uuid);
                 }});
             }
         }
-        System.out.println("userUUIDsMap:" + userUUIDsMap);
+        //更新userIdNicknameMap
+        userIdNicknameMap.put(userId, userNickname);
+        System.out.println("userIdUUIDsMap:" + userIdUUIDsMap);
     }
 
     private void removeUserInfo(UUID uuid) {
-        String userId = UUIDUserMap.get(uuid);
-        UUIDUserMap.remove(uuid);
+        String userId = UUIDUserIdMap.get(uuid);
+        //更新UUIDUserIdMap
+        UUIDUserIdMap.remove(uuid);
+        //更新userIdUUIDsMap
         {
-            List UUIDList = userUUIDsMap.get(userId);
+            List UUIDList = userIdUUIDsMap.get(userId);
             UUIDList.remove(uuid);
             if (UUIDList.size() == 0) {
-                userUUIDsMap.remove(userId);
+                userIdUUIDsMap.remove(userId);
             }
         }
-        System.out.println("userUUIDsMap:" + userUUIDsMap);
+        //更新userIdNicknameMap
+        userIdNicknameMap.remove(userId);
+        System.out.println("userIdUUIDsMap:" + userIdUUIDsMap);
     }
 }
