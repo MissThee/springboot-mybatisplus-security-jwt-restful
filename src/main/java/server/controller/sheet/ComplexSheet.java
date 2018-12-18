@@ -4,30 +4,18 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import server.db.primary.model.sheet.ReportStationDataCez_Res;
 import server.db.primary.model.sheet.ReportStationDataCez0_Res;
-import server.service.SheetComplexService;
 import server.tool.ExcelExport;
-import server.tool.Res;
 
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RequestMapping("/sheet/complex")
 @RestController()
 public class ComplexSheet {
-    private final SheetComplexService sheetComplexService;
-
-    @Autowired
-    public ComplexSheet(SheetComplexService sheetComplexService) {
-        this.sheetComplexService = sheetComplexService;
-    }
-
     private ArrayList<ExcelExport.DataColumn> getColumnMap() {
         //前端网页数据所需的列，与后台导出excel所需的列统一在此设置
         //前端数据列，取map的id集合
@@ -348,17 +336,19 @@ public class ComplexSheet {
 
     private List<ReportStationDataCez_Res> getData() {
         List<ReportStationDataCez_Res> list = new ArrayList<>();
-        ReportStationDataCez_Res reportStationDataCez_res = new ReportStationDataCez_Res();
-        reportStationDataCez_res.setReport_time("00:00");
-        list.add(reportStationDataCez_res);
+        list.add(new ReportStationDataCez_Res().setReport_time("00:00"));
+        list.add(new ReportStationDataCez_Res().setReport_time("01:00"));
+        list.add(new ReportStationDataCez_Res().setReport_time("02:00"));
+        list.add(new ReportStationDataCez_Res().setReport_time("03:00"));
         return list;
     }
 
     private List<ReportStationDataCez0_Res> getFormData() {
         List<ReportStationDataCez0_Res> list = new ArrayList<>();
-        ReportStationDataCez0_Res reportStationDataCez0_res = new ReportStationDataCez0_Res();
-        reportStationDataCez0_res.setReport_hour("0");
-        list.add(reportStationDataCez0_res);
+        list.add(new ReportStationDataCez0_Res().setReportDate("00:00"));
+        list.add(new ReportStationDataCez0_Res().setReportDate("01:00"));
+        list.add(new ReportStationDataCez0_Res().setReportDate("02:00"));
+        list.add(new ReportStationDataCez0_Res().setReportDate("03:00"));
         return list;
     }
 }

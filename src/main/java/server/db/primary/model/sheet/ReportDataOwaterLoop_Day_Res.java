@@ -1,6 +1,7 @@
 package server.db.primary.model.sheet;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
@@ -8,6 +9,7 @@ import java.util.Date;
 
 @Data
 @Table(name = "REPORT_DATA_OWATER_LOOP")
+@Accessors(chain = true)
 public class ReportDataOwaterLoop_Day_Res {
     private Long id;
 

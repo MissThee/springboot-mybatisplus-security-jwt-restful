@@ -1,12 +1,14 @@
 package server.db.primary.model.sheet;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
 import java.util.Date;
 @Data
 @Table(name = "REPORT_STATION_DATA_CEZ0")
+@Accessors(chain = true)
 public class ReportStationDataCez0_Res {
     private Long id;
 

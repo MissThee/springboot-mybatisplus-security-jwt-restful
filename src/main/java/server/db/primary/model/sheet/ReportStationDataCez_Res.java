@@ -1,6 +1,7 @@
 package server.db.primary.model.sheet;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
@@ -8,6 +9,7 @@ import javax.persistence.Transient;
 
 @Data
 @Table(name = "REPORT_STATION_DATA_CEZ")
+@Accessors(chain = true)
 public class ReportStationDataCez_Res {
     private Long id;
 

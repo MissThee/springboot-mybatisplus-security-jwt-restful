@@ -1,12 +1,9 @@
 package server.controller.sheet;
 
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import server.db.primary.model.sheet.ReportDataOwaterLoop_Day_Res;
-import server.service.SheetSimpleService;
 import server.tool.ExcelExport;
-import server.tool.Res;
 
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
@@ -15,12 +12,6 @@ import java.util.*;
 @RequestMapping("/sheet/simple")
 @RestController()
 public class SimpleSheet {
-    private final SheetSimpleService sheetSimpleService;
-
-    @Autowired
-    public SimpleSheet(SheetSimpleService sheetSimpleService) {
-        this.sheetSimpleService = sheetSimpleService;
-    }
 
     private Map<String, String> getColumnMap() {
         //前端网页数据所需的列，与后台导出excel所需的列统一在此设置
@@ -60,9 +51,10 @@ public class SimpleSheet {
 
     private List<ReportDataOwaterLoop_Day_Res> getData( ) {
         List<ReportDataOwaterLoop_Day_Res> list=new ArrayList<>();
-        ReportDataOwaterLoop_Day_Res reportDataOwaterLoop_day_res=new ReportDataOwaterLoop_Day_Res();
-        reportDataOwaterLoop_day_res.setReportDate("00:00");
-        list.add(reportDataOwaterLoop_day_res);
+        list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("00:00"));
+        list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("01:00"));
+        list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("02:00"));
+        list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("03:00"));
         return list;
     }
 }
