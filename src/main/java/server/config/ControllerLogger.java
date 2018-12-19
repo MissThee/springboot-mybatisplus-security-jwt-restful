@@ -33,27 +33,27 @@ public class ControllerLogger {
         RequestAttributes ra = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes sra = (ServletRequestAttributes) ra;
         HttpServletRequest request = sra.getRequest();
-        log.info("-------------------------------------------------------");
-        log.info("URL: {}", request.getRequestURL().toString());
-        log.info("METHOD: {}", request.getMethod());
-        log.info("URI: {}", request.getRequestURI());
-        log.info("IP     : " + request.getRemoteAddr());
-        log.info("CLASS_METHOD: {}", pjp.getSignature().getDeclaringTypeName());
-        log.info("PARAMS: {}", request.getQueryString());
-//        log.info("PARAMS-JSON: {}", getRequestStr(request));
+        log.debug("-------------------------------------------------------");
+        log.debug("URL: {}", request.getRequestURL().toString());
+        log.debug("METHOD: {}", request.getMethod());
+        log.debug("URI: {}", request.getRequestURI());
+        log.debug("IP     : " + request.getRemoteAddr());
+        log.debug("CLASS_METHOD: {}", pjp.getSignature().getDeclaringTypeName());
+        log.debug("PARAMS: {}", request.getQueryString());
+//        log.debug("PARAMS-JSON: {}", getRequestStr(request));
         //        JSONObject paramJObj = JSON.parseObject(HttpKit.readData(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
-//        log.info("PARAM-JSON : " + (paramJObj == null ? "" : paramJObj.toString()));
+//        log.debug("PARAM-JSON : " + (paramJObj == null ? "" : paramJObj.toString()));
 //        try {
-//            log.info("PARAM-JSON : " + getRequestStr(request));
+//            log.debug("PARAM-JSON : " + getRequestStr(request));
 //        } catch (Exception e) {
-//            log.info("PARAM-JSON : 出错:" + e.getMessage());
+//            log.debug("PARAM-JSON : 出错:" + e.getMessage());
 //        }
-        log.info("-------------------------------------------------------");
+        log.debug("-------------------------------------------------------");
 
         // 执行被拦截方法，获取被拦截方法返回结果，result的值就是被拦截方法的返回值
         Object result = pjp.proceed();
 
-        log.info("RESPONSE : " + result);
+        log.debug("RESPONSE : " + result);
 //        //拦截的实体类
 //        Object target = pjp.getTarget();
 //        //拦截的方法名称
@@ -66,7 +66,7 @@ public class ControllerLogger {
 //        for(int i=0;i<annotations.length;i++){
 //            annotationsSB.append(annotations[i].getClass());
 //        }
-//        log.info("Annotations : " + annotationsSB);
+//        log.debug("Annotations : " + annotationsSB);
 //        Signature signature = pjp.getSignature();
 //        MethodSignature methodSignature = (MethodSignature)signature;
 //        Method targetMethod = methodSignature.getMethod();
@@ -78,19 +78,19 @@ public class ControllerLogger {
     public void doBefore(JoinPoint joinPoint) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
-            log.info("-------------------↓REQ↓--------------------");
-            log.info("Empty Attributes");
-            log.info("-------------------↑REQ↑--------------------");
+            log.debug("-------------------↓REQ↓--------------------");
+            log.debug("Empty Attributes");
+            log.debug("-------------------↑REQ↑--------------------");
         } else {
             HttpServletRequest request = attributes.getRequest();
             // 输出请求内容
-            log.info("-------------------↓REQ↓--------------------");
-            log.info("URI    : " + request.getRequestURI());
-            log.info("METHOD : " + request.getMethod());
-            log.info("IP     : " + request.getRemoteAddr());
-            log.info("CLASS  : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+            log.debug("-------------------↓REQ↓--------------------");
+            log.debug("URI    : " + request.getRequestURI());
+            log.debug("METHOD : " + request.getMethod());
+            log.debug("IP     : " + request.getRemoteAddr());
+            log.debug("CLASS  : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
             Object[] argsObj = joinPoint.getArgs();
-            log.info("ARGS   : " + (argsObj.length > 0 ? (argsObj.length > 1 ? Arrays.toString(argsObj) : argsObj[0]) : ""));
+            log.debug("ARGS   : " + (argsObj.length > 0 ? (argsObj.length > 1 ? Arrays.toString(argsObj) : argsObj[0]) : ""));
             //获取所有参数方法一：
             Enumeration<String> enu = request.getParameterNames();
             StringBuilder paramSB = new StringBuilder();
@@ -101,24 +101,24 @@ public class ControllerLogger {
                 paramSB.append(request.getParameter(paraName));
                 paramSB.append("  ");
             }
-            log.info("PARAM  : " + paramSB.toString());
+            log.debug("PARAM  : " + paramSB.toString());
 //        JSONObject paramJObj = JSON.parseObject(HttpKit.readData(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
-//        log.info("PARAM-JSON : " + (paramJObj == null ? "" : paramJObj.toString()));
+//        log.debug("PARAM-JSON : " + (paramJObj == null ? "" : paramJObj.toString()));
 //        try {
-//            log.info("PARAM-JSON : " + getRequestStr(request));
+//            log.debug("PARAM-JSON : " + getRequestStr(request));
 //        } catch (Exception e) {
-//            log.info("PARAM-JSON : 出错:" + e.getMessage());
+//            log.debug("PARAM-JSON : 出错:" + e.getMessage());
 //        }
-            log.info("-------------------↑REQ↑--------------------");
+            log.debug("-------------------↑REQ↑--------------------");
         }
     }
 
     @AfterReturning(returning = "ret", pointcut = "webLog()")
     public void doAfterReturning(Object ret) {
         // 处理完请求，返回内容
-        log.info("-------------------↓RES↓--------------------");
-        log.info("RESPONSE: DATA: " + ret);
-        log.info("-------------------↑RES↑--------------------");
+        log.debug("-------------------↓RES↓--------------------");
+        log.debug("RESPONSE: DATA: " + ret);
+        log.debug("-------------------↑RES↑--------------------");
     }
 
 //    private static byte[] getRequestBytes(HttpServletRequest request) throws IOException {

@@ -41,9 +41,10 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
         if (!StringUtils.isEmpty(token)) {
             try {
                 //当前token 剩余有效时间小于360分钟时，返回新的token
-                int tokenRemainingTime = JavaJWT.getTokenRemainingTime(token);
-                if (tokenRemainingTime != -1 && tokenRemainingTime > 0 && tokenRemainingTime < 360) {
-                    httpServletResponse.setHeader("Authorization", JavaJWT.updateToken(token));
+                long tokenRemainingTime = JavaJWT.getTokenRemainingTime(token);
+                log.debug(String.valueOf(tokenRemainingTime));
+                if (tokenRemainingTime >= 0 && tokenRemainingTime <= 360) {
+                    httpServletResponse.setHeader("Authorization", JavaJWT.updateToken(token, 1));
                 }
             } catch (Exception e) {
                 log.error("token刷新失败！！");
@@ -52,9 +53,9 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
         }
 
 
-        if (StringUtils.isEmpty(token)  || !JavaJWT.verifyTokenResult(token)){
+        if (StringUtils.isEmpty(token) || !JavaJWT.verifyToken(token)) {
             return false;
-        } else{
+        } else {
             SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 //          于缓存中获取用户信息
             LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(JavaJWT.getId(token)));

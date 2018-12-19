@@ -38,7 +38,7 @@ public class MessageEventHandler {
 
     @OnConnect
     public void onConnect(SocketIOClient client) {
-        log.info("客户端:  " + client.getSessionId() + "  已连接");
+        log.debug("客户端:  " + client.getSessionId() + "  已连接");
         String userId = JavaJWT.getId(client.getHandshakeData().getSingleUrlParam("token"));
 //        String userId=client.getHandshakeData().getHttpHeaders().get("Authorization");
         User user = userService.selectOneById(Integer.parseInt(userId));
@@ -48,14 +48,14 @@ public class MessageEventHandler {
 
     @OnDisconnect
     public void onDisconnect(SocketIOClient client) {
-        log.info("客户端:  " + client.getSessionId() + "  断开连接");
+        log.debug("客户端:  " + client.getSessionId() + "  断开连接");
         removeUserInfo(client.getSessionId());
         updateUserListForWeb();
     }
 
     @OnEvent(value = "message")
     public void onMessage(SocketIOClient client, AckRequest ackRequest, MessageModel data) {
-        log.info("message触发");
+        log.debug("message触发");
         //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
             ackRequest.sendAckData(AckModel.success());
@@ -64,7 +64,7 @@ public class MessageEventHandler {
 
     @OnEvent(value = "broadcast")
     public void onBroadcast(SocketIOClient client, AckRequest ackRequest, MessageModel data) {
-        log.info("broadcast触发");
+        log.debug("broadcast触发");
         //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
             ackRequest.sendAckData(AckModel.success());
@@ -76,7 +76,7 @@ public class MessageEventHandler {
 
     @OnEvent(value = "toOneUserByUserId")
     public static void toOneUserByUserId(SocketIOClient client, AckRequest ackRequest, MessageModel data) {   //向客户端推消息
-        log.info("toOneUserByUserId触发：" + data.getContent() + "；" + String.valueOf(UUIDUserIdMap.get(client.getSessionId())) + "→" + String.valueOf(data.getToId()) + ":" + data.getMsg());
+        log.debug("toOneUserByUserId触发：" + data.getContent() + "；" + String.valueOf(UUIDUserIdMap.get(client.getSessionId())) + "→" + String.valueOf(data.getToId()) + ":" + data.getMsg());
         //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
             ackRequest.sendAckData(AckModel.success());

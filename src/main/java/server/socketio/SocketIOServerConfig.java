@@ -15,7 +15,7 @@ public class SocketIOServerConfig {
     private static String hostname;
     private static int port;
 
-    @Value("${socketio.hostname}")
+    @Value("${server.address}")
     public void setHostname(String a) {
         hostname = a;
     }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Component
 public class FileRec {
     private static String rootPath;
-    private static int fileMaxSize;
+    private static DataSize fileMaxSize;
     private static String webPath;
 
     @Value("${custom-config.upload.path}")
@@ -23,18 +24,12 @@ public class FileRec {
         rootPath = a;
     }
 
-    @Value("${custom-config.upload.file-max-size}")
-    public void setFileMaxSize(String a) {
-        a = a.replaceAll(" ", "");
-        String[] aArr = a.split("\\*");
-        int size = 1;
-        for (String s : aArr) {
-            size *= Integer.parseInt(s);
-        }
-        fileMaxSize = size;
+    @Value("${spring.servlet.multipart.max-file-size}")
+    public void setFileMaxSize(DataSize a) {
+        fileMaxSize = a;
     }
 
-    @Value("${custom-config.server.host-port}")
+    @Value("http://${server.address}:${server.port}/")
     public void setWebPath(String a) {
         webPath = a;
     }
@@ -47,9 +42,9 @@ public class FileRec {
             res.put("result", false);
             res.put("msg", "没有文件");
         }
-        if (file.getSize() > fileMaxSize) {
+        if (file.getSize() > fileMaxSize.toBytes()) {
             res.put("result", false);
-            res.put("msg", "单个文件不能超过" + fileMaxSize / (1024 * 1024) + "M");
+            res.put("msg", "单个文件不能超过" + String.format("%.2f", Double.parseDouble(String.valueOf(fileMaxSize.toKilobytes())) / 1024) + "M");
         }
         try {
             // 获取完整文件名
