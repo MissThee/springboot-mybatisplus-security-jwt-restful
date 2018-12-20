@@ -1,14 +1,14 @@
 package server.tool;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-@Getter
-@Setter
+@Data
 @Component
 @NoArgsConstructor
 public class Res<T> {

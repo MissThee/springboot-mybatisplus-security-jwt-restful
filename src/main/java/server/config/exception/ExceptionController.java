@@ -25,7 +25,7 @@ public class ExceptionController {
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
     public Object unauthorizedException(HttpServletRequest request, Exception e) {
         e.printStackTrace();
-        ErrorLogPrinter.logOutPut(request, e);
+//        ErrorLogPrinter.logOutPut(request, e);
         JSONObject jO = new JSONObject();
         jO.put("msg","UnauthorizedException:"+ HttpStatus.FORBIDDEN.getReasonPhrase());
         return jO;
@@ -37,7 +37,7 @@ public class ExceptionController {
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public Object unauthenticatedException(HttpServletRequest request, Exception e) {
         e.printStackTrace();
-        ErrorLogPrinter.logOutPut(request, e);
+//        ErrorLogPrinter.logOutPut(request, e);
         JSONObject jO = new JSONObject();
         jO.put("msg","UnauthenticatedException:"+ HttpStatus.UNAUTHORIZED.getReasonPhrase());
         return jO;
@@ -49,12 +49,11 @@ public class ExceptionController {
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public Object httpMessageNotReadableException(HttpServletRequest request, Exception e) {
         e.printStackTrace();
-        ErrorLogPrinter.logOutPut(request, e);
+//        ErrorLogPrinter.logOutPut(request, e);
         JSONObject jO = new JSONObject();
         jO.put("msg","HttpMessageNotReadableException: 参数格式有误，请检查参数格式。"+ e);
         return jO;
     }
-
 
     //运行时所有异常
     @ExceptionHandler(Exception.class)
@@ -62,7 +61,7 @@ public class ExceptionController {
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public Object exceptionHandler(HttpServletRequest request, Exception e) {
         e.printStackTrace();
-        ErrorLogPrinter.logOutPut(request, e);
+//        ErrorLogPrinter.logOutPut(request, e);
         JSONObject jO = new JSONObject();
         jO.put("msg", "Exception: " + e);
         return jO;
