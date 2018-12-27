@@ -44,6 +44,9 @@ public class ExcelImport {
             T t = (T) Class.forName(clazz.getName()).newInstance();
             for (int j = 0; j < row.getLastCellNum(); j++) {
                 Cell c = row.getCell(j);
+                if(c==null){
+                    continue;
+                }
                 c.setCellType(CellType.STRING);
                 String value = c.getStringCellValue();
                 if (value != null) {
