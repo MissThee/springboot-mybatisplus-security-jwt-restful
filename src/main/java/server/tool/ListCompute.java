@@ -57,7 +57,7 @@ public class ListCompute {
             if (computeTypeMap.get(key1).toLowerCase().equals("sum")) {
 
             } else if (computeTypeMap.get(key1).toLowerCase().equals("avg")) {
-                setValue = setValue / (listSize - startIndex);
+                setValue =compute( setValue ,(listSize - startIndex),"/");
             } else {
                 throw new Exception("computeTypeMap的value值只能为[sum],[avg]");
             }
@@ -65,7 +65,7 @@ public class ListCompute {
             if (computeType.toLowerCase().equals("sum")) {
 
             } else if (computeType.toLowerCase().equals("avg")) {
-                setValue = setValue / (listSize - startIndex);
+                setValue =compute( setValue ,(listSize - startIndex),"/");
             } else {
                 throw new Exception("computeType值只能为[sum],[avg]");
             }
