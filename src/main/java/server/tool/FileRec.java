@@ -36,7 +36,7 @@ public class FileRec {
 
     //上传至 setRootPath 变量设置的目录中
     ///返回0成功 1出错 2没有文件 3文件过大
-    public static JSONObject fileUpload(MultipartFile file, String path) {
+    public JSONObject fileUpload(MultipartFile file, String path) {
         JSONObject res = new JSONObject();
         if (file.isEmpty()) {
             res.put("result", false);
@@ -44,7 +44,7 @@ public class FileRec {
         }
         if (file.getSize() > fileMaxSize.toBytes()) {
             res.put("result", false);
-            res.put("msg", "单个文件不能超过" + String.format("%.2f", Double.parseDouble(String.valueOf(fileMaxSize.toKilobytes())) / 1024) + "M");
+            res.put("msg", "单个文件不能超过" + String.format("%.0f", Double.parseDouble(String.valueOf(fileMaxSize.toKilobytes())) / 1024) + "M");
         }
         try {
             // 获取完整文件名
@@ -60,7 +60,7 @@ public class FileRec {
             if (dest.getParentFile().exists()) {
                 //文件已存在，重命名，加时间戳
                 if (dest.exists()) {
-                    fileName = fileName.substring(0, fileName.lastIndexOf(".")) + String.valueOf(System.currentTimeMillis()) + "." + extensionName;
+                    fileName = fileName.substring(0, fileName.lastIndexOf(".")) + System.currentTimeMillis() + "." + extensionName;
                     dest = new File(filePath, fileName);
                 }
                 //目录不存在,创建目录
@@ -88,7 +88,7 @@ public class FileRec {
         return res;
     }
 
-    public static JSONObject fileUpload(MultipartFile file) {
+    public JSONObject fileUpload(MultipartFile file) {
         return fileUpload(file, "");
     }
 }

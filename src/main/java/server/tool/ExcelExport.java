@@ -23,6 +23,8 @@ import org.springframework.util.StringUtils;
 @Component
 public class ExcelExport {
     /**
+     * 表格导出工具，导出List<Model>数据源的规律列表
+     *
      * @param wb               HSSFWorkbook对象
      * @param sheetIndex       表格下标，0开始(一般为0)
      * @param startRowIndex    插入行号，0开始（一般为0）
@@ -348,15 +350,16 @@ public class ExcelExport {
         }
     }
 
-    //    @SafeVarargs
-    public <T> void export(HttpServletResponse response,
-                           String fileName,
-                           String title,
-                           Map<String, String> columnMap,
-                           Boolean showHeaderColumn,
-                           List<T> dataList,
-                           Boolean withIndex,
-                           List<HeaderCell>... extraHeaderCell) throws Exception {
+    //     @SafeVarargs
+    @SafeVarargs
+    public final <T> void export(HttpServletResponse response,
+                                 String fileName,
+                                 String title,
+                                 Map<String, String> columnMap,
+                                 Boolean showHeaderColumn,
+                                 List<T> dataList,
+                                 Boolean withIndex,
+                                 List<HeaderCell>... extraHeaderCell) throws Exception {
         HSSFWorkbook wb = new HSSFWorkbook();
         wb.createSheet();
         List<DataColumn> dataColumns = new ArrayList<>();

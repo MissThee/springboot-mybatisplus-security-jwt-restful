@@ -12,14 +12,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 //简单表格导入工具
+@Component
 public class ExcelImport {
     /**
-     * @Param file 接收的Excel文件
-     * @Param clazz 实体类
-     * @Param columnMap （表头名称,实体类字段）
+     * @Param file      接收的Excel文件
+     * @Param clazz     实体类
+     * @Param columnMap Map< 表头名称,实体类字>
      */
-    public static <T> List<T> excel2POJOList(MultipartFile file, Class clazz, Map<String, String> columnMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException, IOException, InvalidFormatException {
+    public <T> List<T> excel2POJOList(MultipartFile file, Class clazz, Map<String, String> columnMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException, IOException, InvalidFormatException {
         List<T> tList = new ArrayList<>();
         Sheet sheet = WorkbookFactory.create(file.getInputStream()).getSheetAt(0);
         //获取表格首列表头名称
@@ -44,7 +46,7 @@ public class ExcelImport {
             T t = (T) Class.forName(clazz.getName()).newInstance();
             for (int j = 0; j < row.getLastCellNum(); j++) {
                 Cell c = row.getCell(j);
-                if(c==null){
+                if (c == null) {
                     continue;
                 }
                 c.setCellType(CellType.STRING);
@@ -55,7 +57,7 @@ public class ExcelImport {
                         columnId = columnId.substring(0, 1).toUpperCase() + columnId.substring(1);
                         //调用方法，准备3个参数
                         String methodName = "set" + columnId;//方法名
-                        Class<? > paramClass = Class.forName(methodMap.get(methodName));//参数类型
+                        Class<?> paramClass = Class.forName(methodMap.get(methodName));//参数类型
                         Object param;
                         switch (paramClass.getSimpleName()) {//参数类型判断，并转换
                             default:

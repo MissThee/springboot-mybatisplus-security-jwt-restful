@@ -1,18 +1,18 @@
 package server.controller.sheet;
 
 import com.alibaba.fastjson.JSONObject;
-import io.swagger.annotations.Authorization;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import server.db.primary.model.sheet.ReportStationDataCez_Res;
-import server.db.primary.model.sheet.ReportStationDataCez0_Res;
+import server.db.primary.model.sheet.ComplexSheetData;
+import server.db.primary.model.sheet.ComplexSheetForm;
 import server.tool.ExcelExport;
+import server.tool.ListCompute;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Action;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -20,10 +20,12 @@ import java.util.*;
 @RestController()
 public class ComplexSheet {
     private final ExcelExport excelExport;
+    private final ListCompute listCompute;
 
     @Autowired
-    public ComplexSheet(ExcelExport excelExport) {
+    public ComplexSheet(ExcelExport excelExport, ListCompute listCompute) {
         this.excelExport = excelExport;
+        this.listCompute = listCompute;
     }
 
     private ArrayList<ExcelExport.DataColumn> getColumnMap() {
@@ -90,7 +92,7 @@ public class ComplexSheet {
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet sheet = wb.createSheet();
         int rowNum = 0;
-        List<ReportStationDataCez_Res> reportData = getData();
+        List<ComplexSheetData> reportData = getData();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
@@ -209,10 +211,10 @@ public class ComplexSheet {
         ExcelExport.LastRowColumnNum lastRowColumnNum = excelExport.addRowsByData(wb, 0, 0, 0, fileName, getColumnMap(), false, reportData, false, extraHeaderCell);
         rowNum = lastRowColumnNum.getRowNum();
 
-        List<ReportStationDataCez0_Res> formData = getFormData();
+        List<ComplexSheetForm> formData = getForm();
         if (formData != null) {
             StringBuilder allNote = new StringBuilder();
-            for (ReportStationDataCez0_Res res : formData) {
+            for (ComplexSheetForm res : formData) {
                 HSSFRow row = sheet.createRow(rowNum);
                 int columnIndex = 0;
                 {
@@ -344,21 +346,32 @@ public class ComplexSheet {
         excelExport.responseOut(response, wb, fileName);
     }
 
-    private List<ReportStationDataCez_Res> getData() {
-        List<ReportStationDataCez_Res> list = new ArrayList<>();
-        list.add(new ReportStationDataCez_Res().setReport_time("00:00"));
-        list.add(new ReportStationDataCez_Res().setReport_time("01:00"));
-        list.add(new ReportStationDataCez_Res().setReport_time("02:00"));
-        list.add(new ReportStationDataCez_Res().setReport_time("03:00"));
+    private List<ComplexSheetData> getData() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        List<ComplexSheetData> list = new ArrayList<>();
+        //        此处实际由数据库获取数据
+        list.add(new ComplexSheetData().setReport_time("00:00").setCyg_jm1(123D).setCyg_jm2(1313D));
+        list.add(new ComplexSheetData().setReport_time("01:00"));
+        list.add(new ComplexSheetData().setReport_time("02:00").setCyg_jm1(24D).setCyg_jm2(253D));
+        list.add(new ComplexSheetData().setReport_time("03:00").setCyg_jm1(255D));
+        //        添加合计行
+        {
+            ComplexSheetData sumRow = listCompute.makeComputeRow(0, list.size(), list, new ArrayList<String>() {{
+                add("cyg_jm1");
+                add("cyg_jm2");
+            }}, ComplexSheetData.class, "sum", new HashMap<>());
+            sumRow.setReport_time("合计");
+            list.add(sumRow);
+        }
         return list;
     }
 
-    private List<ReportStationDataCez0_Res> getFormData() {
-        List<ReportStationDataCez0_Res> list = new ArrayList<>();
-        list.add(new ReportStationDataCez0_Res().setReportDate("00:00"));
-        list.add(new ReportStationDataCez0_Res().setReportDate("01:00"));
-        list.add(new ReportStationDataCez0_Res().setReportDate("02:00"));
-        list.add(new ReportStationDataCez0_Res().setReportDate("03:00"));
+    private List<ComplexSheetForm> getForm() {
+        List<ComplexSheetForm> list = new ArrayList<>();
+        //        此处实际由数据库获取数据
+        list.add(new ComplexSheetForm().setReportDate("00:00"));
+        list.add(new ComplexSheetForm().setReportDate("01:00"));
+        list.add(new ComplexSheetForm().setReportDate("02:00"));
+        list.add(new ComplexSheetForm().setReportDate("03:00"));
         return list;
     }
 }

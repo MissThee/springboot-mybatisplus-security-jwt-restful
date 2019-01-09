@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +21,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/test")
 public class ExampleController {
+    private final FileRec fileRec;
 
+    @Autowired
+    public ExampleController(FileRec fileRec) {
+        this.fileRec = fileRec;
+    }
 
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
@@ -75,7 +81,7 @@ public class ExampleController {
     //上传文件示例
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JSONObject fileUpload(@RequestParam("file") MultipartFile file) {
-        return FileRec.fileUpload(file, "uploadTest/image");
+        return fileRec.fileUpload(file, "uploadTest/image");
     }
 
 }

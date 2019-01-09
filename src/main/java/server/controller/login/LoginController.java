@@ -50,7 +50,6 @@ public class LoginController {
         }
         //添加token
         httpServletResponse.setHeader("Authorization", JavaJWT.createToken(String.valueOf(loginDTO.getId()), sevenDaysLogin ? 7 : 1));
-
         return Res.success(new loginRes(loginDTO), "登录成功");
     }
 

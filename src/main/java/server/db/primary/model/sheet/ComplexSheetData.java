@@ -10,12 +10,12 @@ import javax.persistence.Transient;
 @Data
 @Table(name = "REPORT_STATION_DATA_CEZ")
 @Accessors(chain = true)
-public class ReportStationDataCez_Res {
+public class ComplexSheetData {
     private Long id;
 
     private String reportDate;
 
-    @Column(name ="REPORT_HOUR")     private String report_time  ;
+    @Column(name ="REPORT_HOUR")     private String report_time    ;
     @Column(name ="CYG_YW1")         private Double cyg_yw1        ;                             //储油罐
     @Column(name ="CYG_JM1")         private Double cyg_jm1        ;
     @Column(name ="CYG_KR1")         private Double cyg_kr1        ;
@@ -36,9 +36,9 @@ public class ReportStationDataCez_Res {
     @Column(name ="PI_1120")         private Double pi_1120        ;
     @Column(name ="TI_1200")         private Double ti_1200        ;                             //加热炉
     @Column(name ="PI_1070")         private Double pi_1070        ;
-    @Transient                       private Double jiarelu1;
-    @Transient                       private Double jiarelu2;
-    @Transient                       private Double jiarelu3;
+    @Transient                       private Double jiarelu1       ;
+    @Transient                       private Double jiarelu2       ;
+    @Transient                       private Double jiarelu3       ;
     @Column(name ="RQ_CKYL")         private Double rq_ckyl        ;                              //    燃气
     @Column(name ="RQ_LJDS")         private Double rq_ljds        ;
     @Transient                       private Double ranqiliang     ;

@@ -3,7 +3,6 @@ package server.controller.sheet;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import server.db.primary.model.sheet.ReportDataOwaterLoop_Day_Res;
 import server.tool.ExcelExport;
 
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +42,7 @@ public class SimpleSheet {
 
     @PostMapping("/excel")
     public void excel(@RequestBody() JSONObject bodyJO, HttpServletResponse response) throws Exception {
-        List<ReportDataOwaterLoop_Day_Res> reportData = getData();
+        List<server.db.primary.model.sheet.SimpleSheet> reportData = getData();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
@@ -56,12 +55,13 @@ public class SimpleSheet {
         excelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
     }
 
-    private List<ReportDataOwaterLoop_Day_Res> getData() {
-        List<ReportDataOwaterLoop_Day_Res> list = new ArrayList<>();
-        list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("00:00"));
-        list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("01:00"));
-        list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("02:00"));
-        list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("03:00"));
+    private List<server.db.primary.model.sheet.SimpleSheet> getData() {
+        List<server.db.primary.model.sheet.SimpleSheet> list = new ArrayList<>();
+        //        此处实际由数据库获取数据
+        list.add(new server.db.primary.model.sheet.SimpleSheet().setReportDate("00:00").setPress_in(11D).setPress_out(224D));
+        list.add(new server.db.primary.model.sheet.SimpleSheet().setReportDate("01:00"));
+        list.add(new server.db.primary.model.sheet.SimpleSheet().setReportDate("02:00").setPress_in(51D));
+        list.add(new server.db.primary.model.sheet.SimpleSheet().setReportDate("03:00").setPress_in(16D).setPress_out(224D));
         return list;
     }
 }
