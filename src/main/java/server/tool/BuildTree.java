@@ -2,13 +2,16 @@ package server.tool;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 //树形数据构建工具
+@Component
 public class BuildTree {
     /**
      * 遍历id含parentId树形数据结构的数据
@@ -21,7 +24,7 @@ public class BuildTree {
      * @param parentIdColumn 自定义实体类parentId列名
      * @param attrMap        每个节点额外的属性Map(标签名, 实体类属性名>
      */
-    public static <T> JSONArray buildTree(List<T> li, Integer parentId, Integer rootId, Boolean includeSelf, String idColumn, String parentIdColumn, Map<String, String> attrMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public <T> JSONArray buildTree(List<T> li, Integer parentId, Integer rootId, Boolean includeSelf, String idColumn, String parentIdColumn, Map<String, String> attrMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         JSONArray nodeJA = new JSONArray();
         for (T currentItem : li) {
             Integer currentId = (Integer) currentItem.getClass().getMethod("get" + idColumn.substring(0, 1).toUpperCase() + idColumn.substring(1)).invoke(currentItem);
@@ -55,7 +58,7 @@ public class BuildTree {
      * @param includeSelf 包含根节点本身true：使用节点id==rootId为根节点；false：使用节点父id==rootId为根节点
      * @param attrMap     每个节点额外的属性Map(标签名, 实体类属性名>
      */
-    public static <T> JSONArray buildTree(List<T> li, Integer rootId, Boolean includeSelf, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public <T> JSONArray buildTree(List<T> li, Integer rootId, Boolean includeSelf, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return buildTree(li, null, rootId, includeSelf, "id", "parentId", attrMap);
     }
 
@@ -66,7 +69,7 @@ public class BuildTree {
      * @param rootId  根节点的id
      * @param attrMap 每个节点额外的属性Map(标签名, 实体类属性名>
      */
-    public static <T> JSONArray buildTree(List<T> li, Integer rootId, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public <T> JSONArray buildTree(List<T> li, Integer rootId, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return buildTree(li, null, rootId, true, "id", "parentId", attrMap);
     }
 
@@ -77,7 +80,7 @@ public class BuildTree {
      * @param li      包含id和parentId的数据
      * @param attrMap 每个节点额外的属性Map(标签名, 实体类属性名>
      */
-    public static <T> JSONArray buildTree(List<T> li, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public <T> JSONArray buildTree(List<T> li, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return buildTree(li, null, null, false, "id", "parentId", attrMap);
     }
 
@@ -92,7 +95,7 @@ public class BuildTree {
      * @param idColumn       自定义实体类id列名
      * @param parentIdColumn 自定义实体类parentId列名
      */
-    public static <T> List<Integer> getChildIdList(List<T> li, Integer parentId, Integer rootId, Boolean includeSelf, String idColumn, String parentIdColumn) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public <T> List<Integer> getChildIdList(List<T> li, Integer parentId, Integer rootId, Boolean includeSelf, String idColumn, String parentIdColumn) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<Integer> idList = new ArrayList<>();
         for (T currentItem : li) {
             Integer currentId = (Integer) currentItem.getClass().getMethod("get" + idColumn.substring(0, 1).toUpperCase() + idColumn.substring(1)).invoke(currentItem);
@@ -105,15 +108,15 @@ public class BuildTree {
         return idList;
     }
 
-    public static <T> List<Integer> getChildIdList(List<T> li, Integer rootId, Boolean includeSelf, String idColumn, String parentIdColumn) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public <T> List<Integer> getChildIdList(List<T> li, Integer rootId, Boolean includeSelf, String idColumn, String parentIdColumn) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return getChildIdList(li, null, rootId, includeSelf, idColumn, parentIdColumn);
     }
 
-    public static <T> List<Integer> getChildIdList(List<T> li, Integer rootId, Boolean includeSelf) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public <T> List<Integer> getChildIdList(List<T> li, Integer rootId, Boolean includeSelf) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return getChildIdList(li, null, rootId, includeSelf, "id", "parentId");
     }
 
-    public static <T> List<Integer> getChildIdList(List<T> li, Integer rootId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public <T> List<Integer> getChildIdList(List<T> li, Integer rootId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return getChildIdList(li, null, rootId, true, "id", "parentId");
     }
 }

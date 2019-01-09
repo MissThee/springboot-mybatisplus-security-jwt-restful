@@ -27,7 +27,6 @@ public class IndexController {
     public Res<loginRes> info(@RequestHeader(value = "Authorization", required = false) String token) {
         String id = JavaJWT.getId(token);
         LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(id));
-
         return Res.success(new loginRes(loginDTO), "登录成功");
     }
 

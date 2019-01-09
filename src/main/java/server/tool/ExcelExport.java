@@ -16,9 +16,11 @@ import org.apache.ibatis.jdbc.Null;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 //通用简单表格导出工具，调用本工具的Controller返回类型需为void
+@Component
 public class ExcelExport {
     /**
      * @param wb               HSSFWorkbook对象
@@ -33,9 +35,8 @@ public class ExcelExport {
      * @return int 返回最后插入数据的行下标+1，调用此方法后，新建行时可直接使用返回的值
      * @throws Exception 抛出异常
      */
-
-    @SafeVarargs
-    public static <T> LastRowColumnNum addRowsByData(
+//    @SafeVarargs
+    public <T> LastRowColumnNum addRowsByData(
             HSSFWorkbook wb,
             int sheetIndex,
             int startRowIndex,
@@ -46,8 +47,10 @@ public class ExcelExport {
             List<T> dataList,
             Boolean withIndex,
             List<HeaderCell>... extraHeaderCell) throws Exception {
-        HSSFSheet sheet;
-        sheet = wb.getNumberOfSheets() > 0 ? wb.getSheetAt(sheetIndex) : wb.createSheet();
+        HSSFCellStyle titleStyle = titleStyle(wb);
+        HSSFCellStyle headerStyle = headerStyle(wb);
+        HSSFCellStyle dataStyle = dataStyle(wb);
+        HSSFSheet sheet = wb.getNumberOfSheets() > 0 ? wb.getSheetAt(sheetIndex) : wb.createSheet();
 
         List<DataColumn> dataColumnList = new ArrayList<>();
         //删去列对象中，值为""或null的对象
@@ -70,13 +73,13 @@ public class ExcelExport {
             HSSFRow rowTitle = sheet.createRow(rowNum);
             HSSFCell cellTitle = rowTitle.createCell(0);// cell列 从0开始 第一列添加序号
             cellTitle.setCellValue(title);
-            cellTitle.setCellStyle(titleStyle(wb));
+            cellTitle.setCellStyle(titleStyle);
             rowNum++;
         }
         if (extraHeaderCell != null && extraHeaderCell.length > 0) {
             LastRowColumnNum lastRowColumnNum = addExtraHeaderRowsByList(wb, sheetIndex, rowNum, columnNum, extraHeaderCell);
             rowNum = lastRowColumnNum.getRowNum();
-            columnNum=lastRowColumnNum.getColumnNum();
+            columnNum = lastRowColumnNum.getColumnNum();
         }
         if (showHeaderColumn) {
             HSSFRow rowHeader = sheet.createRow(rowNum);
@@ -86,7 +89,7 @@ public class ExcelExport {
                 String columnName = "序号";
                 HSSFCell sequenceCell = rowHeader.createCell(columnIndex);
                 sequenceCell.setCellValue(columnName);
-                sequenceCell.setCellStyle(headerStyle(wb));
+                sequenceCell.setCellStyle(headerStyle);
                 setColumnWidth(sheet, columnIndex, columnName, true, 1);
                 columnIndex++;
             }
@@ -99,9 +102,9 @@ public class ExcelExport {
                     if (dataColumn.getWidth() > 1) {
                         CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + dataColumn.getWidth() - 1);
                         sheet.addMergedRegion(cellRangeAddress);
-                        setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
+                        setRegionStyle(sheet, cellRangeAddress, headerStyle);
                     } else {
-                        titleCell.setCellStyle(headerStyle(wb));
+                        titleCell.setCellStyle(headerStyle);
                     }
                     setColumnWidth(sheet, columnIndex, columnName, true, 1);
                     columnIndex = columnIndex + dataColumn.getWidth();
@@ -121,7 +124,7 @@ public class ExcelExport {
                     //  序号列
                     HSSFCell sequenceCellValue = rowData.createCell(columnIndex);// 序号值永远是第0列
                     sequenceCellValue.setCellValue(indexNumber++);
-                    sequenceCellValue.setCellStyle(dataStyle(wb));
+                    sequenceCellValue.setCellStyle(dataStyle);
                     columnIndex++;
                 }
                 T t = it.next();
@@ -129,7 +132,7 @@ public class ExcelExport {
                 {
                     for (DataColumn dataColumn : dataColumnList) {
                         HSSFCell dataCell = rowData.createCell(columnIndex);
-                        HSSFCellStyle cellStyle = dataStyle(wb);
+                        short dataFormatBack = dataStyle.getDataFormat();
                         //写入值
                         if (!dataColumn.getIsEmptyData()) {
                             String getMethodName = "get" + dataColumn.getDataStr().substring(0, 1).toUpperCase() + dataColumn.getDataStr().substring(1);// 取得对应getXxx()方法
@@ -139,12 +142,12 @@ public class ExcelExport {
                             if (value != null) {
                                 if (value instanceof Float || value instanceof Double) {
 //                                    value = String.format("%.2f", (Double) value);
-                                    cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("@"));
+                                    dataStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("@"));
                                     double newValue = new BigDecimal(value.toString()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                                     dataCell.setCellValue(newValue);
                                     setColumnWidth(sheet, columnIndex, newValue, true, 1);
                                 } else if (value instanceof Long || value instanceof Integer) {
-                                    cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("@"));
+                                    dataStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("@"));
                                     long newValue = (long) value;
                                     dataCell.setCellValue(newValue);
                                     setColumnWidth(sheet, columnIndex, newValue, true, 1);
@@ -152,14 +155,15 @@ public class ExcelExport {
                                     dataCell.setCellValue(value.toString());// 为当前列赋值
                                     setColumnWidth(sheet, columnIndex, value.toString(), true, 1);
                                 }
+                                dataStyle.setDataFormat(dataFormatBack);
                             }
                         }
                         if (dataColumn.getWidth() > 1) {
                             CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + dataColumn.getWidth() - 1);
                             sheet.addMergedRegion(cellRangeAddress);
-                            setRegionStyle(sheet, cellRangeAddress, cellStyle);
+                            setRegionStyle(sheet, cellRangeAddress, dataStyle);
                         } else {
-                            dataCell.setCellStyle(cellStyle);
+                            dataCell.setCellStyle(dataStyle);
                         }
                         columnIndex = columnIndex + dataColumn.getWidth();
                         columnNum = columnIndex;
@@ -173,8 +177,8 @@ public class ExcelExport {
         return new LastRowColumnNum(rowNum, columnNum);
     }
 
-    @SafeVarargs
-    public static <T> LastRowColumnNum addRowsByData(
+    //    @SafeVarargs
+    public <T> LastRowColumnNum addRowsByData(
             HSSFWorkbook wb,
             int sheetIndex,
             int startRowIndex,
@@ -192,9 +196,10 @@ public class ExcelExport {
         return addRowsByData(wb, sheetIndex, startRowIndex, startColumnIndex, title, dataColumns, showHeaderColumn, dataList, withIndex, extraHeaderCell);
     }
 
-    //headerCellLists中，第一个HeaderCell有五x,y决定使用顺序插入还是定点插入
-    @SafeVarargs
-    private static LastRowColumnNum addExtraHeaderRowsByList(HSSFWorkbook wb, int sheetIndex, int startRowIndex, int startColumnIndex, List<HeaderCell>... headerCellLists) {
+    //headerCellLists中，第一个HeaderCell有无x,y决定使用顺序插入还是定点插入
+//    @SafeVarargs
+    private LastRowColumnNum addExtraHeaderRowsByList(HSSFWorkbook wb, int sheetIndex, int startRowIndex, int startColumnIndex, List<HeaderCell>... headerCellLists) {
+        HSSFCellStyle headerStyle = headerStyle(wb);
         int insertType = 0;//插入方式：1-定点；2-顺序
         int rowsNum = 0;//有x,y时使用
         int rowsColumn = 0;//有x,y时使用
@@ -228,9 +233,9 @@ public class ExcelExport {
                 if (w > 1 || h > 1) {
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(y, y + h - 1, x, x + w - 1);
                     sheet.addMergedRegion(cellRangeAddress);
-                    setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
+                    setRegionStyle(sheet, cellRangeAddress, headerStyle);
                 } else {
-                    cell.setCellStyle(headerStyle(wb));
+                    cell.setCellStyle(headerStyle);
                 }
                 setColumnWidth(sheet, x, value, true, w);
             }
@@ -239,7 +244,7 @@ public class ExcelExport {
         return new LastRowColumnNum(rowsNum, rowsColumn);
     }
 
-    public static void responseOut(HttpServletResponse response, HSSFWorkbook wb, String fileName) throws IOException {
+    public void responseOut(HttpServletResponse response, HSSFWorkbook wb, String fileName) throws IOException {
         response.reset();
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/vnd.ms-excel");
@@ -253,49 +258,42 @@ public class ExcelExport {
         outputStream.close();// 关闭流
     }
 
-    public static HSSFCellStyle titleStyle(HSSFWorkbook wb) {
+    public HSSFCellStyle titleStyle(HSSFWorkbook wb) {
         // 设置标题样式
-        HSSFCellStyle style = wb.createCellStyle();
-        // 设置单元格边框样式
-        style.setBorderTop(BorderStyle.THIN);// 上边框 细边线
-        style.setBorderBottom(BorderStyle.THIN);// 下边框 细边线
-        style.setBorderLeft(BorderStyle.THIN);// 左边框 细边线
-        style.setBorderRight(BorderStyle.THIN);// 右边框 细边线
-        // 设置单元格对齐方式
-        style.setAlignment(HorizontalAlignment.CENTER); // 水平居中
-        style.setVerticalAlignment(VerticalAlignment.CENTER); // 垂直居中
+        HSSFCellStyle style = commonStyle(wb);
         // 设置字体样式
-        Font titleFont = wb.createFont();
-        titleFont.setFontHeightInPoints((short) 12); // 字体高度
-        titleFont.setFontName("ARIAL"); // 字体样式
-        titleFont.setBold(true);
-        style.setFont(titleFont);
+        Font font = wb.createFont();
+        font.setFontHeightInPoints((short) 12); // 字体高度
+        font.setFontName("ARIAL"); // 字体样式
+        font.setBold(true);
+        style.setFont(font);
         return style;
     }
 
-    public static HSSFCellStyle headerStyle(HSSFWorkbook wb) {
+    public HSSFCellStyle headerStyle(HSSFWorkbook wb) {
         // 设置列名样式
-        HSSFCellStyle style = wb.createCellStyle();
-        // 设置单元格边框样式
-        style.setBorderTop(BorderStyle.THIN);// 上边框 细边线
-        style.setBorderBottom(BorderStyle.THIN);// 下边框 细边线
-        style.setBorderLeft(BorderStyle.THIN);// 左边框 细边线
-        style.setBorderRight(BorderStyle.THIN);// 右边框 细边线
-        // 设置单元格对齐方式
-        style.setAlignment(HorizontalAlignment.CENTER); // 水平居中
-        style.setVerticalAlignment(VerticalAlignment.CENTER); // 垂直居中
-
+        HSSFCellStyle style = commonStyle(wb);
         // 设置字体样式
-        Font titleFont = wb.createFont();
-        titleFont.setFontHeightInPoints((short) 10); // 字体高度
-        titleFont.setFontName("ARIAL"); // 字体样式
-        titleFont.setBold(true);
-        style.setFont(titleFont);
+        Font font = wb.createFont();
+        font.setFontHeightInPoints((short) 10); // 字体高度
+        font.setFontName("ARIAL"); // 字体样式
+        font.setBold(true);
+        style.setFont(font);
         return style;
     }
 
-    public static HSSFCellStyle dataStyle(HSSFWorkbook wb) {
-        // 数据样式 （因为标题和数据样式不同 需要分开设置 不然会覆盖）
+    public HSSFCellStyle dataStyle(HSSFWorkbook wb) {
+        // 设置数据样式
+        HSSFCellStyle style = commonStyle(wb);
+        // 设置数据字体
+        Font font = wb.createFont();
+        font.setFontHeightInPoints((short) 10); // 字体高度
+        font.setFontName("ARIAL"); // 字体
+        style.setFont(font);
+        return style;
+    }
+
+    private HSSFCellStyle commonStyle(HSSFWorkbook wb) {
         HSSFCellStyle style = wb.createCellStyle();
         // 设置数据边框
         style.setBorderTop(BorderStyle.THIN);// 上边框 细边线
@@ -305,15 +303,10 @@ public class ExcelExport {
         // 设置居中样式
         style.setAlignment(HorizontalAlignment.CENTER); // 水平居中
         style.setVerticalAlignment(VerticalAlignment.CENTER); // 垂直居中
-        // 设置数据字体
-        Font dataFont = wb.createFont();
-        dataFont.setFontHeightInPoints((short) 10); // 字体高度
-        dataFont.setFontName("ARIAL"); // 字体
-        style.setFont(dataFont);
         return style;
     }
 
-    public static void setRegionStyle(HSSFSheet sheet, CellRangeAddress region, HSSFCellStyle cs) {
+    public void setRegionStyle(HSSFSheet sheet, CellRangeAddress region, HSSFCellStyle cs) {
         for (int i = region.getFirstRow(); i <= region.getLastRow(); i++) {
             HSSFRow row = sheet.getRow(i);
             if (row == null)
@@ -328,7 +321,7 @@ public class ExcelExport {
         }
     }
 
-    public static void setColumnWidth(HSSFSheet sheet, int columnNum, Object value, boolean useMaxWidth, int regionNum) {
+    public void setColumnWidth(HSSFSheet sheet, int columnNum, Object value, boolean useMaxWidth, int regionNum) {
         regionNum = regionNum < 1 ? 1 : regionNum;
         if (value == null) {
             return;
@@ -355,15 +348,15 @@ public class ExcelExport {
         }
     }
 
-    @SafeVarargs
-    public static <T> void export(HttpServletResponse response,
-                                  String fileName,
-                                  String title,
-                                  Map<String, String> columnMap,
-                                  Boolean showHeaderColumn,
-                                  List<T> dataList,
-                                  Boolean withIndex,
-                                  List<HeaderCell>... extraHeaderCell) throws Exception {
+    //    @SafeVarargs
+    public <T> void export(HttpServletResponse response,
+                           String fileName,
+                           String title,
+                           Map<String, String> columnMap,
+                           Boolean showHeaderColumn,
+                           List<T> dataList,
+                           Boolean withIndex,
+                           List<HeaderCell>... extraHeaderCell) throws Exception {
         HSSFWorkbook wb = new HSSFWorkbook();
         wb.createSheet();
         List<DataColumn> dataColumns = new ArrayList<>();
@@ -375,7 +368,7 @@ public class ExcelExport {
     }
 
     @Getter
-    public static class HeaderCell {
+    public class HeaderCell {
         private String value;
         private Integer x;
         private Integer y;
@@ -400,7 +393,7 @@ public class ExcelExport {
     }
 
     @Getter
-    public static class DataColumn {
+    public class DataColumn {
         private String dataStr;
         private String headerName;
         private Integer width;
@@ -419,11 +412,13 @@ public class ExcelExport {
             this.headerName = headerName;
             this.width = 1;
         }
-        //通用mapper中，可使用此值判断是否查询此字段（表格中不需要出现此列，但须查询出数据来做计算等其他用途时使用）
+
+        //配合通用mapper。可使用此值判断是否查询此字段（表格中不需要出现此列，但须查询出数据来做计算等其他用途时使用）
         public DataColumn setNoDataBaseColumn() {
             this.isDBColumn = false;
             return this;
         }
+
         //通用mapper中，可使用此值判断是否查询此字段；表格生成方法中，使用此值判断是否插入此列数据（当需要显示此列表头，但不插入实际数据时使用）
         public DataColumn setEmptyData() {
             this.isEmptyData = true;
@@ -433,7 +428,7 @@ public class ExcelExport {
 
     @Data
     @AllArgsConstructor
-    public static class LastRowColumnNum {
+    public class LastRowColumnNum {
         private Integer rowNum = 0;
         private Integer columnNum = 0;
     }

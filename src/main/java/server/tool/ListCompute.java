@@ -2,7 +2,10 @@ package server.tool;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
+
 //list中实体对象，指定字段平均、合计计算工具
 public class ListCompute {
     /**
@@ -13,7 +16,7 @@ public class ListCompute {
      * @Param resObj接收计算结果的对象
      * @Param computeType默认计算方式[sum]、[avg]
      * @Param computeTypeMap例外列计算方式 put( 列名 , avg/sum );
-     * */
+     */
     public static <T> void makeComputeRow(int startIndex, int listSize, List<T> resList, Collection<String> columnKeys, T resObj, String computeType, Map<String, String> computeTypeMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Map<String, Number> mapAvg = new HashMap<>();
         for (int i = startIndex; i < listSize; i++) {
@@ -23,47 +26,26 @@ public class ListCompute {
                 Class<?> tGetCls = resList.get(i).getClass();// 泛型为Object以及所有Object的子类
                 Method getMethod = tGetCls.getMethod(getGetMethodName);// 通过方法名得到对应的方法
                 Object value = getMethod.invoke(resList.get(i));// 动态调用方,得到属性值
-                if (value instanceof Long) {
-                    long valueLong;
-                    try {
-                        valueLong = (Long) value;
-                    } catch (Exception e) {
-                        valueLong = 0;
-                    }
-                    mapAvg.put(key1, (mapAvg.containsKey(key1) ? (long) mapAvg.get(key1) + valueLong : valueLong));
-                    if (i == listSize - 1) {
-                        try {
-                            // 利用反射，根据传过来的字段名数组，动态调用对应的setXxx()方法得到属性值
-                            String getSetMethodName = "set" + key1.substring(0, 1).toUpperCase() + key1.substring(1);// 取得对应getXxx()方法
-                            Class<?> tSetCls = resObj.getClass();// 泛型为Object以及所有Object的子类
-                            Method setMethod = tSetCls.getMethod(getSetMethodName, Long.class);// 通过方法名得到对应的方法
-                            long setValue = (long) mapAvg.get(key1);
-                            setValue = (long)getSetValue(startIndex, listSize, computeType, computeTypeMap, key1, setValue);
-                            setMethod.invoke(resObj, setValue);
-                        } catch (Exception e) {
-                            System.out.println("非可累加列，忽略统计值：" + key1);
-                        }
-                    }
-                } else if (value instanceof Double) {
+                if (value instanceof Double || value instanceof Long) {
                     double valueDouble;
                     try {
-                        valueDouble = (Double) value;
+                        valueDouble = Double.parseDouble(value.toString());
                     } catch (Exception e) {
                         valueDouble = 0;
                     }
-                    mapAvg.put(key1, (mapAvg.containsKey(key1) ? (double) mapAvg.get(key1) + valueDouble : valueDouble));
-                    if (i == listSize - 1) {
-                        try {
-                            // 利用反射，根据传过来的字段名数组，动态调用对应的setXxx()方法得到属性值
-                            String getSetMethodName = "set" + key1.substring(0, 1).toUpperCase() + key1.substring(1);// 取得对应getXxx()方法
-                            Class<?> tSetCls = resObj.getClass();// 泛型为Object以及所有Object的子类
-                            Method setMethod = tSetCls.getMethod(getSetMethodName, Double.class);// 通过方法名得到对应的方法
-                            double setValue = (double) mapAvg.get(key1);
-                            setValue = getSetValue(startIndex, listSize, computeType, computeTypeMap, key1, setValue);
-                            setMethod.invoke(resObj, setValue);
-                        } catch (Exception e) {
-                            System.out.println("非可累加列，忽略统计值：" + key1);
-                        }
+                    mapAvg.put(key1, (mapAvg.containsKey(key1) ? compute((double) mapAvg.get(key1), valueDouble, "+") : valueDouble));
+                }
+                if (i == listSize - 1) {
+                    try {
+                        // 利用反射，根据传过来的字段名数组，动态调用对应的setXxx()方法得到属性值
+                        String getSetMethodName = "set" + key1.substring(0, 1).toUpperCase() + key1.substring(1);// 取得对应getXxx()方法
+                        Class<?> tSetCls = resObj.getClass();// 泛型为Object以及所有Object的子类
+                        Method setMethod = tSetCls.getMethod(getSetMethodName, Double.class);// 通过方法名得到对应的方法
+                        double setValue = (double) mapAvg.get(key1);
+                        setValue = getSetValue(startIndex, listSize, computeType, computeTypeMap, key1, setValue);
+                        setMethod.invoke(resObj, setValue);
+                    } catch (Exception e) {
+                        System.out.println("非可累加列，忽略统计值：" + key1);
                     }
                 }
             }
@@ -91,4 +73,28 @@ public class ListCompute {
         return setValue;
     }
 
+    private static double compute(double numA, double numB, String operate) {
+        double res = 0;
+        BigDecimal bigA = new BigDecimal(Double.toString(numA));
+        BigDecimal bigB = new BigDecimal(Double.toString(numB));
+        switch (operate) {
+
+            case "+":
+                res = bigA.add(bigB).doubleValue();
+                break;
+            case "-":
+                res = bigA.subtract(bigB).doubleValue();
+                break;
+            case "*":
+                res = bigA.multiply(bigB).doubleValue();
+                break;
+            case "/":
+                res = bigA.divide(bigB, 2, RoundingMode.HALF_EVEN).doubleValue();
+                break;
+            default:
+                System.out.println("运算符不合法~");
+                break;
+        }
+        return res;
+    }
 }

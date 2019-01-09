@@ -1,6 +1,7 @@
 package server.controller.sheet;
 
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import server.db.primary.model.sheet.ReportDataOwaterLoop_Day_Res;
 import server.tool.ExcelExport;
@@ -12,6 +13,12 @@ import java.util.*;
 @RequestMapping("/sheet/simple")
 @RestController()
 public class SimpleSheet {
+    private final ExcelExport excelExport;
+
+    @Autowired
+    public SimpleSheet(ExcelExport excelExport) {
+        this.excelExport = excelExport;
+    }
 
     private Map<String, String> getColumnMap() {
         //前端网页数据所需的列，与后台导出excel所需的列统一在此设置
@@ -36,21 +43,21 @@ public class SimpleSheet {
 
     @PostMapping("/excel")
     public void excel(@RequestBody() JSONObject bodyJO, HttpServletResponse response) throws Exception {
-        List<ReportDataOwaterLoop_Day_Res> reportData = getData( );
+        List<ReportDataOwaterLoop_Day_Res> reportData = getData();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
         String fileName = "简单报表（" + searchDateStr + "）";
         List<ExcelExport.HeaderCell> extraHeaderCell = new ArrayList<ExcelExport.HeaderCell>() {{
-            add(new ExcelExport.HeaderCell("", 3));
-            add(new ExcelExport.HeaderCell("掺水汇管（出站）", 5));
-            add(new ExcelExport.HeaderCell("集油汇管（进站）", 5));
+            add(excelExport.new HeaderCell("", 3));
+            add(excelExport.new HeaderCell("掺水汇管（出站）", 5));
+            add(excelExport.new HeaderCell("集油汇管（进站）", 5));
         }};
-        ExcelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
+        excelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
     }
 
-    private List<ReportDataOwaterLoop_Day_Res> getData( ) {
-        List<ReportDataOwaterLoop_Day_Res> list=new ArrayList<>();
+    private List<ReportDataOwaterLoop_Day_Res> getData() {
+        List<ReportDataOwaterLoop_Day_Res> list = new ArrayList<>();
         list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("00:00"));
         list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("01:00"));
         list.add(new ReportDataOwaterLoop_Day_Res().setReportDate("02:00"));
