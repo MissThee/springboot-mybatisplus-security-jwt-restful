@@ -4,29 +4,38 @@
     <!--<script src="axios.min.js"></script>-->
 </head>
 <body>
-<div>服务器地址<input id="host" value="localhost">端口号<input id="port" value="8096"></div>
-<div>账号：<input id="username" value="admin"></div>
-<div>密码：<input id="password" value="123"></div>
-<div> <input type="button" onclick="loginHandler()" value="登录">当前token：<input  id="token" value=""></div>
-<div>&nbsp; </div>
-<div>日期：<input id="searchDate" value="1990-01-01"/></div>
-<div>导出类型：</div>
-<div><input type="radio" name="radio" value="/sheet/simple/excel">简单表【1990-01-01】</div>
-<div><input type="radio" name="radio" value="/sheet/complex/excel">复杂表【1990-01-01】</div>
-<button onclick="downLoadHandler()">下载excel</button>
-<div id="msg"></div>
+<form>
+    <fieldset>
+        <legend>登录</legend>
+        <div><span class="label">服务器地址：</span>http://<input id="host" value="localhost">:<input style="width:50px" id="port" value="8096">/</div>
+        <div><span class="label">账号：</span><input id="username" value="admin"></div>
+        <div><span class="label">密码：</span><input id="password" value="123"></div>
+        <div><span class="label"> 当前token：</span><input id="token" value=""></div>
+        <div><input type="button" onclick="loginHandler()" value="登录"></div>
+    </fieldset>
+    <fieldset>
+        <legend>导出</legend>
+        <div><span class="label">日期：</span><input id="searchDate" value="1990-01-01"/></div>
+        <div><span class="label">导出类型：</span></div>
+        <div><span class="label"></span><input type="radio" name="radio" value="/sheet/simple/excel">简单表【1990-01-01】</div>
+        <div><span class="label"></span><input type="radio" name="radio" value="/sheet/complex/excel">复杂表【1990-01-01】</div>
+        <input type="button" onclick="downLoadHandler()" value="下载excel">
+        <div id="msg"></div>
+    </fieldset>
+</form>
 </body>
 <!--<script src="axios.min.js"></script>-->
 <script>
-    var host='http://localhost:8096';
+    var host = 'http://localhost:8096';
+
     //-----------获取参数----------------获取参数-------------
     function getDate() {
         return document.getElementById('searchDate').value
     }
 
-	function getHost(){
-		return 'http://'+document.getElementById('host').value+':'+document.getElementById('port').value
-	}
+    function getHost() {
+        return 'http://' + document.getElementById('host').value + ':' + document.getElementById('port').value
+    }
 
     function getUrl() {
         var obj = document.getElementsByName('radio'); //这个是以标签的name来取控件
@@ -47,22 +56,24 @@
             }
         }
     };
+
     function loginHandler() {//请求后台
         axios.post(
-            getHost()+'/login', 						//参数：请求url
+            getHost() + '/login', 						//参数：请求url
             {
-                username : document.getElementById('username').value,
+                username: document.getElementById('username').value,
                 password: document.getElementById('password').value,
                 sevenDaysLogin: false
             })
             .then(function (res) {
                 console.log(res);
-                document.getElementById('token').value= res.headers.authorization;
+                document.getElementById('token').value = res.headers.authorization;
             })
             .catch(function (error) {
                 console.log(error);
             });
     }
+
     //---------------------------------------------------------
 
     function downLoadHandler() {//请求后台
@@ -561,4 +572,10 @@
 });
 //# sourceMappingURL=axios.min.map
 </script>
+<style>
+    .label {
+        width: 100px;
+        display: inline-block;
+    }
+</style>
 </html>
