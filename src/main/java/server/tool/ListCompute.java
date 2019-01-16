@@ -23,7 +23,7 @@ public class ListCompute {
      * @Param computeType       全局计算方式[sum]、[avg]
      * @Param computeTypeMap    例外属性计算方式，此属性会按指定方式计算 Map< 列名,"avg"/"sum">;
      */
-    public <T> T makeComputeRow(int startIndex, int endIndex, List<T> dataList, Collection<String> columnKeys, Class clazz, String computeType, Map<String, String> computeTypeMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public <T> T makeComputeRow(int startIndex, int endIndex, List<T> dataList, Collection<String> columnKeys, Class<T> clazz, String computeType, Map<String, String> computeTypeMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         T t = (T) Class.forName(clazz.getName()).newInstance();
         Map<String, Number> computeMap = new HashMap<>();
         //行数。防止溢出，最大为数据size
@@ -55,6 +55,10 @@ public class ListCompute {
             }
         }
         return t;
+    }
+
+    public <T> T makeComputeRow(List<T> dataList, Class<T> clazz, String computeType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+        return makeComputeRow(0, dataList.size(), dataList, getObjectAttributeNames(clazz), clazz, computeType, new HashMap<>());
     }
 
     private double getSetValue(int startIndex, int endIndex, String computeType, Map<String, String> computeTypeMap, String key1, double setValue) throws Exception {

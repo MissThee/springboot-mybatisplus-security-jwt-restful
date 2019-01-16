@@ -355,10 +355,7 @@ public class ComplexSheet {
         list.add(new ComplexSheetData().setReport_time("03:00").setCyg_jm1(255D));
         //        添加合计行
         {
-            ComplexSheetData sumRow = listCompute.makeComputeRow(0, list.size(), list, new ArrayList<String>() {{
-                add("cyg_jm1");
-                add("cyg_jm2");
-            }}, ComplexSheetData.class, "sum", new HashMap<>());
+            ComplexSheetData sumRow = listCompute.makeComputeRow( list, ComplexSheetData.class, "sum");
             sumRow.setReport_time("合计");
             list.add(sumRow);
         }
