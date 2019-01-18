@@ -210,7 +210,7 @@
         -->
         <!--</table>-->
 
-        <table schema="mybatis_test_db" tableName="permission"
+        <table schema="mybatis_test_db" tableName="log"
                enableCountByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
