@@ -1,5 +1,6 @@
 package server.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -18,6 +19,7 @@ import java.io.FileNotFoundException;
 
 @Configuration
 @MapperScan(basePackages = "server.db.primary.mapper", sqlSessionTemplateRef = "primarySqlSessionTemplate")
+@Slf4j
 public class PrimaryDBConfig {
 
     @Bean(name = "primaryDataSource")
@@ -35,7 +37,7 @@ public class PrimaryDBConfig {
         try {
             bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/primary/**/*.xml"));
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage() + ". File not exists.");
+log.info(e.getMessage() + ". File not exists.");
         }
         bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis.cfg.xml"));
         return bean.getObject();

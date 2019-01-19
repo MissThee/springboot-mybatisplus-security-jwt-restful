@@ -6,9 +6,14 @@
     <!--设置系统日志目录：./log/  -->
     <property name="LOG_PATH" value="./"/>
     <property name="APPDIR" value="log"/>
-    <property name="CONSOLE_LOG_PATTERN"
-              value="%yellow(%date{yyyy-MM-dd HH:mm:ss}) |%highlight(%-5level) |%blue(%thread) |%blue(%file:%line) |%green(%logger) |%cyan(%msg%n)"/>
+    <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %easyHighlight(%5.5level) --- [%15.15thread] %cyan(%-40.40logger{39}) : %msg%n"/>
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5.5level --- [%15.15thread] %-40.40logger{39} : %msg%n"/>
+    <!--读取application.properties配置-->
+    <springProperty scope="context" name="logging.level.root" source="logging.level.root"/>
+
+    <!--value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-15t] %highlight(%-5level) %-40logger{15} : %msg%n"/>-->
     <!-- 日志记录器，日期滚动记录 -->
+
     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 正在记录的日志文件的路径及文件名 -->
         <file>${LOG_PATH}/${APPDIR}/log_error.log</file>
@@ -25,9 +30,11 @@
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>===%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger Line:%-3L - %msg%n</pattern>
-            <charset>utf-8</charset>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="server.config.log.EasyPatternLayout">
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <!--<charset>utf-8</charset>-->
+            </layout>
         </encoder>
         <!-- 此日志文件只记录info级别的 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -52,9 +59,11 @@
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>===%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger Line:%-3L - %msg%n</pattern>
-            <charset>utf-8</charset>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="server.config.log.EasyPatternLayout">
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <!--<charset>utf-8</charset>-->
+            </layout>
         </encoder>
         <!-- 此日志文件只记录warn级别的 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -79,9 +88,11 @@
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>===%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger Line:%-3L - %msg%n</pattern>
-            <charset>utf-8</charset>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="server.config.log.EasyPatternLayout">
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <!--<charset>utf-8</charset>-->
+            </layout>
         </encoder>
         <!-- 此日志文件只记录debug级别的 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -106,9 +117,11 @@
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>===%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger Line:%-3L - %msg%n</pattern>
-            <charset>utf-8</charset>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="server.config.log.EasyPatternLayout">
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <!--<charset>utf-8</charset>-->
+            </layout>
         </encoder>
         <!-- 此日志文件只记录info级别的 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -134,16 +147,12 @@
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>===%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger Line:%-3L - %msg%n</pattern>
-            <charset>utf-8</charset>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="server.config.log.EasyPatternLayout">
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <!--<charset>utf-8</charset>-->
+            </layout>
         </encoder>
-        <!-- 此日志文件只记录debug级别的 -->
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>debug</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
     </appender>
     <appender name="MYBATIS1" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 正在记录的日志文件的路径及文件名 -->
@@ -161,16 +170,12 @@
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>===%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger Line:%-3L - %msg%n</pattern>
-            <charset>utf-8</charset>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="server.config.log.EasyPatternLayout">
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <!--<charset>utf-8</charset>-->
+            </layout>
         </encoder>
-        <!-- 此日志文件只记录debug级别的 -->
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>debug</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
     </appender>
     <appender name="MYBATIS2" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 正在记录的日志文件的路径及文件名 -->
@@ -188,26 +193,23 @@
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>===%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger Line:%-3L - %msg%n</pattern>
-            <charset>utf-8</charset>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="server.config.log.EasyPatternLayout">
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <!--<charset>utf-8</charset>-->
+            </layout>
         </encoder>
-        <!-- 此日志文件只记录debug级别的 -->
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <!--   <level>trace</level> -->
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
     </appender>
-
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="server.config.log.EasyPatternLayout">
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </layout>
         </encoder>
     </appender>
-
-    <logger name="server.config" level="debug" additivity="true">
+    <!--文件输出-->
+    <logger name="server.config.log" level="debug" additivity="true">
         <appender-ref ref="REQUEST"/>
     </logger>
     <logger name="server.db.primary" level="debug" additivity="true">
@@ -216,17 +218,14 @@
     <logger name="server.db.secondary" level="debug" additivity="false">
         <appender-ref ref="MYBATIS2"/>
     </logger>
-    <logger name="server" level="debug" additivity="false">
+
+    <root level="${logging.level.root:-debug}">
+        <!--文件写入-->
         <appender-ref ref="ERROR"/>
         <appender-ref ref="WARN"/>
         <appender-ref ref="DEBUG"/>
         <appender-ref ref="INFO"/>
-        <!-- 生产环境将请 stdout 去掉 -->
-        <!--<appender-ref ref="STDOUT" />-->
-    </logger>
-
-    <root level="INFO">
-        <!-- 生产环境将请 stdout 去掉 -->
+        <!--控制台输出-->
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
