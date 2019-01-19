@@ -1,4 +1,4 @@
-package server.config.log;
+package server.config.log.controller;
 
 
 import com.alibaba.fastjson.JSON;
