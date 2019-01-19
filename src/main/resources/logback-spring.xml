@@ -185,22 +185,25 @@
         </encoder>
     </appender>
     <!--文件输出-->
-    <logger name="server.config.log" level="${logging.level.root:-debug}" additivity="false">
+    <!--additivity控制本类中的日志是否提交到上层（即此处控制写入文件后，是否输出至控制台）-->
+    <!--以下logger将日志提交至上层root，由root输出至控制台-->
+    <logger name="server.config.log" level="${logging.level.server.config.log:-debug}" additivity="true">
         <appender-ref ref="REQUEST"/>
     </logger>
-    <logger name="server.db.primary" level="${logging.level.root:-debug}" additivity="false">
+    <logger name="server.db.primary" level="${logging.level.server.db.primary:-debug}" additivity="true">
         <appender-ref ref="MYBATIS1"/>
     </logger>
-    <logger name="server.db.secondary" level="${logging.level.root:-debug}" additivity="false">
+    <logger name="server.db.secondary" level="${logging.level.server.db.secondary:-debug}" additivity="true">
         <appender-ref ref="MYBATIS2"/>
     </logger>
-
-    <root level="${logging.level.root:-debug}">
+    <logger name="server" level="${logging.level.server:-debug}" additivity="true">
         <!--文件写入-->
         <appender-ref ref="ERROR"/>
         <appender-ref ref="WARN"/>
         <appender-ref ref="DEBUG"/>
         <appender-ref ref="INFO"/>
+    </logger>
+    <root level="${logging.level.root:-info}">
         <!--控制台输出-->
         <appender-ref ref="STDOUT"/>
     </root>
