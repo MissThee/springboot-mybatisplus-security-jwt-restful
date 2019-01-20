@@ -38,6 +38,7 @@ public class ControllerLogger {
     public void webLog() {
     }
 
+    //返回值为方法执行的结果对象
     @Around("webLog()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -45,6 +46,7 @@ public class ControllerLogger {
             log.debug("-------------------↓REQ↓--------------------");
             log.debug("Empty Attributes");
             log.debug("-------------------↑REQ↑--------------------");
+            return joinPoint.proceed();
         } else {
             HttpServletRequest request = attributes.getRequest();
             // 输出请求内容
@@ -80,8 +82,8 @@ public class ControllerLogger {
                 log.debug("RESPONSE: " + returnValue);
             }
             log.debug("-------------------↑RES↑--------------------");
+            return returnValue;
         }
-        return null;
     }
 
     //------用户信息记录，无相应方法可删除----START

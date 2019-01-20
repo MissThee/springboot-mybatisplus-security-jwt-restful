@@ -12,6 +12,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import java.util.ArrayList;
 import java.util.List;
 
+//fastJson配置
 @Configuration
 public class SpringJsonConfig {
     @Bean
@@ -33,5 +34,4 @@ public class SpringJsonConfig {
         fastConvert.setFastJsonConfig(fastJsonConfig);
         return new HttpMessageConverters((HttpMessageConverter<?>) fastConvert);
     }
-
 }
