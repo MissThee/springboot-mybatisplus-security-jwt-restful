@@ -42,16 +42,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!--切面编程依赖-->
+        <!--aop依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <!--热部署依赖-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <!--lombok依赖-->
         <dependency>
@@ -78,13 +72,13 @@
             <version>3.3.0</version>
         </dependency>
         <!--oracle驱动-->
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.2.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/ojdbc6.jar</systemPath>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.oracle</groupId>-->
+        <!--<artifactId>ojdbc6</artifactId>-->
+        <!--<version>11.2.0.2.0</version>-->
+        <!--<scope>system</scope>-->
+        <!--<systemPath>${basedir}/lib/ojdbc6.jar</systemPath>-->
+        <!--</dependency>-->
         <!--shiro依赖-->
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -92,21 +86,19 @@
             <version>1.4.0</version>
         </dependency>
         <!--meta model依赖-->
-        <!--settings->annotation processors->选Enable...，选Module content root，路径target\generated-sources\annotations。运行后，手动标记文件夹为generated sources root-->
-        <!--Module content root      生成后在指定目录-->
-        <!--Module output directory 生成后在原model目录-->
+        <!--settings->annotation processors->选Enable...，选Module content root，路径：空(自动为generated),或src/main/generated。运行后，手动标记文件夹为generated sources root-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
             <version>5.3.7.Final</version>
             <scope>provided</scope>
         </dependency>
-        <!--JPA依赖-->
+        <!--jpa依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!--通用mapper依赖-->
+        <!--mybatis依赖:通用mapper.（三种mybatis工具：mybatis，mybatis plus，tkmapper。选一种即可）-->
         <dependency>
             <groupId>tk.mybatis</groupId>
             <artifactId>mapper-spring-boot-starter</artifactId>
@@ -124,17 +116,17 @@
         <!--<artifactId>mybatis-plus-boot-starter</artifactId>-->
         <!--<version>3.0.7.1</version>-->
         <!--</dependency>-->
+        <!--mybatis分页工具依赖-->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.2.5</version>
+        </dependency>
         <!--反射类工具依赖-->
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.9.11</version>
-        </dependency>
-        <!--分页依赖-->
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <version>1.2.5</version>
         </dependency>
         <!--poi依赖-->
         <dependency>
@@ -164,33 +156,31 @@
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/ma.glasnost.orika/orika-core -->
         <!--对象拷贝工具-->
-        <dependency>
-            <groupId>ma.glasnost.orika</groupId>
-            <artifactId>orika-core</artifactId>
-            <version>1.5.2</version>
-        </dependency>
         <dependency>
             <groupId>net.rakugakibox.spring.boot</groupId>
             <artifactId>orika-spring-boot-starter</artifactId>
             <version>1.8.0</version>
         </dependency>
-        <!--netty-socket.io依赖-->
+        <!--socket.io依赖-->
         <dependency>
             <groupId>com.corundumstudio.socketio</groupId>
             <artifactId>netty-socketio</artifactId>
             <version>1.7.11</version>
         </dependency>
-        <!--springboot test依赖-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-        </dependency>
-
+        <!--热部署依赖-->
+        <!--<dependency>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-devtools</artifactId>-->
+        <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
 
         <!--暂未使用-->
-
+        <!--springboot test依赖-->
+        <!--<dependency>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-starter-test</artifactId>-->
+        <!--</dependency>-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.boot</groupId>-->
         <!--<artifactId>spring-boot-starter-data-mongodb</artifactId>-->
@@ -257,13 +247,13 @@
                         <artifactId>mysql-connector-java</artifactId>
                         <version>5.1.44</version>
                     </dependency>
-                    <dependency>
-                        <groupId>com.oracle</groupId>
-                        <artifactId>ojdbc6</artifactId>
-                        <version>11.2.0.2.0</version>
-                        <scope>system</scope>
-                        <systemPath>${basedir}/lib/ojdbc6.jar</systemPath>
-                    </dependency>
+                    <!--<dependency>-->
+                    <!--<groupId>com.oracle</groupId>-->
+                    <!--<artifactId>ojdbc6</artifactId>-->
+                    <!--<version>11.2.0.2.0</version>-->
+                    <!--<scope>system</scope>-->
+                    <!--<systemPath>${basedir}/lib/ojdbc6.jar</systemPath>-->
+                    <!--</dependency>-->
                     <dependency>
                         <groupId>org.mybatis.generator</groupId>
                         <artifactId>mybatis-generator-core</artifactId>
@@ -293,17 +283,19 @@
             </plugin>
         </plugins>
         <resources>
-            <!-- 打包本地jar包(正确找到打包后的jar) -->
+            <!--打包时将本地jar包进行打包-->
             <resource>
                 <directory>lib</directory>
+                <!--正确找到打包后的jar-->
                 <targetPath>BOOT-INF/lib/</targetPath>
                 <includes>
                     <include>**/*.jar</include>
                 </includes>
             </resource>
+            <!--打包时将resources资源进行打包-->
             <resource>
                 <directory>src/main/resources</directory>
-                <!--默认在打包时放置到此目录-->
+                <!--默认在打包时放置到此目录，无需设置-->
                 <!--<targetPath>BOOT-INF/classes/</targetPath>-->
                 <includes>
                     <include>**/*.properties</include>
