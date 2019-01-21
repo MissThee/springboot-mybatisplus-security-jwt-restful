@@ -2,10 +2,11 @@
 <!-- create by ice 2017-09-20 start -->
 <configuration>
 
-    <contextName>SpringBootLogbacK</contextName>
+    <contextName>SpringBootLogback</contextName>
     <!--设置系统日志目录：./log/  -->
     <property name="LOG_PATH" value="./"/>
     <property name="APPDIR" value="log"/>
+    <!--自定义日志格式-->
     <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %easyHighlight(%5.5level) --- [%15.15thread] %cyan(%-40.40logger{39}) : %msg%n"/>
     <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5.5level --- [%15.15thread] %-40.40logger{39} : %msg%n"/>
     <!--读取application.properties配置-->
