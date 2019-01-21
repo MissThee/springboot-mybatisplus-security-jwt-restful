@@ -25,6 +25,7 @@
     <!--</snapshots>-->
     <!--</repository>-->
     <!--</repositories>-->
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -91,7 +92,9 @@
             <version>1.4.0</version>
         </dependency>
         <!--meta model依赖-->
-        <!--settings/annotation processors/Enable,勾选Module output directory.设置mark as generated sources-->
+        <!--settings->annotation processors->选Enable...，选Module content root，路径target\generated-sources\annotations。运行后，手动标记文件夹为generated sources root-->
+        <!--Module content root      生成后在指定目录-->
+        <!--Module output directory 生成后在原model目录-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
@@ -103,23 +106,29 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!--mybatis依赖-->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>1.3.1</version>
-        </dependency>
-        <!--反射类工具依赖-->
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
-        </dependency>
         <!--通用mapper依赖-->
         <dependency>
             <groupId>tk.mybatis</groupId>
             <artifactId>mapper-spring-boot-starter</artifactId>
             <version>2.1.0</version>
+        </dependency>
+        <!--mybatis依赖-->
+        <!--<dependency>-->
+        <!--<groupId>org.mybatis.spring.boot</groupId>-->
+        <!--<artifactId>mybatis-spring-boot-starter</artifactId>-->
+        <!--<version>1.3.1</version>-->
+        <!--</dependency>-->
+        <!--mybatis plus依赖-->
+        <!--<dependency>-->
+        <!--<groupId>com.baomidou</groupId>-->
+        <!--<artifactId>mybatis-plus-boot-starter</artifactId>-->
+        <!--<version>3.0.7.1</version>-->
+        <!--</dependency>-->
+        <!--反射类工具依赖-->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.11</version>
         </dependency>
         <!--分页依赖-->
         <dependency>
@@ -178,6 +187,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+
+
         <!--暂未使用-->
 
         <!--<dependency>-->
