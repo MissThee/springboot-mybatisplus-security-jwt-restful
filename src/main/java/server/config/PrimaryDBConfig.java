@@ -51,7 +51,7 @@ log.info(e.getMessage() + ". File not exists.");
 
     @Bean(name = "primarySqlSessionTemplate")
     @Primary
-    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("primarySqlSessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
+    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("primarySqlSessionFactory") SqlSessionFactory sqlSessionFactory)   {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 }
