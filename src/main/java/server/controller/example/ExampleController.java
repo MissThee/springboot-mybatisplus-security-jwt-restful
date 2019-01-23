@@ -84,4 +84,10 @@ public class ExampleController {
         return fileRec.fileUpload(file, "uploadTest/image");
     }
 
+    //上传文件示例1
+    @PostMapping(value = "/upload1")
+    public JSONObject fileUpload1(MultipartFile file,String tip) {
+        return fileRec.fileUpload(file, "uploadTest/image");
+    }
+
 }

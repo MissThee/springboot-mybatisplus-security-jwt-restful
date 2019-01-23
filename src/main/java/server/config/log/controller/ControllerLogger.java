@@ -41,38 +41,46 @@ public class ControllerLogger {
     //返回值为方法执行的结果对象
     @Around("webLog()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes == null) {
-            log.debug("-------------------↓REQ↓--------------------");
-            log.debug("Empty Attributes");
-            log.debug("-------------------↑REQ↑--------------------");
-            return joinPoint.proceed();
-        } else {
-            HttpServletRequest request = attributes.getRequest();
-            // 输出请求内容
-            log.debug("-------------------↓REQ↓--------------------");
-            log.debug("URI    : " + request.getRequestURI());
-            log.debug("METHOD : " + request.getMethod());
-            log.debug("IP     : " + request.getRemoteAddr());
-            log.debug("CLASS  : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-            //获取所有参数：
-            Object[] argsObj = joinPoint.getArgs();
-            List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
-            log.debug("ARGS   : " + JSONArray.toJSONString(argsObjList));
-            Enumeration<String> enu = request.getParameterNames();
-            StringBuilder paramSB = new StringBuilder();
-            while (enu.hasMoreElements()) {
-                String paraName = enu.nextElement();
-                paramSB.append(paraName);
-                paramSB.append("=");
-                paramSB.append(request.getParameter(paraName));
-                paramSB.append("  ");
+        Object returnValue;
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes == null) {
+                log.debug("-------------------·REQ·--------------------");
+            } else {
+                HttpServletRequest request = attributes.getRequest();
+                // 输出请求内容
+                log.debug("-------------------↓REQ↓--------------------");
+                log.debug("URI      : " + request.getRequestURI());
+                log.debug("METHOD   : " + request.getMethod());
+                log.debug("IP       : " + request.getRemoteAddr());
+                log.debug("CLASS    : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+                //获取所有参数：
+                Object[] argsObj = joinPoint.getArgs();
+                List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
+                try {
+                    log.debug("ARGS[J]  : " + JSONArray.toJSONString(argsObjList));
+                } catch (Exception e) {
+                    log.debug("ARGS     : " + argsObjList);
+                }
+                Enumeration<String> enu = request.getParameterNames();
+                StringBuilder paramSB = new StringBuilder();
+                while (enu.hasMoreElements()) {
+                    String paraName = enu.nextElement();
+                    paramSB.append(paraName);
+                    paramSB.append("=");
+                    paramSB.append(request.getParameter(paraName));
+                    paramSB.append("  ");
+                }
+                log.debug("PARAM  : " + paramSB.toString());
+                userLog(request);//记录用户信息，无相应方法可删除
+                log.debug("-------------------↑REQ↑--------------------");
             }
-            log.debug("PARAM  : " + paramSB.toString());
-            userLog(request);//记录用户信息，无相应方法可删除
-            log.debug("-------------------↑REQ↑--------------------");
-            Object returnValue = joinPoint.proceed();
-            // 处理完请求，返回内容
+        } catch (Exception e) {
+            log.warn("-------------------REQ-LOG-ERROR--------------------");
+        }
+        returnValue = joinPoint.proceed();
+        // 处理完请求，返回内容
+        try {
             log.debug("-------------------↓RES↓--------------------");
             if (returnValue instanceof Res) {
                 log.debug("RESULT : " + ((Res) returnValue).getResult());
@@ -82,8 +90,10 @@ public class ControllerLogger {
                 log.debug("RESPONSE: " + returnValue);
             }
             log.debug("-------------------↑RES↑--------------------");
-            return returnValue;
+        } catch (Exception e) {
+            log.warn("-------------------RES-LOG-ERROR--------------------");
         }
+        return returnValue;
     }
 
     //------用户信息记录，无相应方法可删除----START
