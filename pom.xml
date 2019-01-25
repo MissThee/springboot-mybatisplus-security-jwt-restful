@@ -283,11 +283,10 @@
             </plugin>
         </plugins>
         <resources>
-            <!--打包时将本地jar包进行打包-->
             <resource>
                 <directory>lib</directory>
                 <!--正确找到打包后的jar-->
-                <!--<targetPath>BOOT-INF/lib/</targetPath>-->
+                <targetPath>BOOT-INF/lib/</targetPath>
                 <includes>
                     <include>**/*.jar</include>
                 </includes>
