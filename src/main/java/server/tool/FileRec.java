@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 public class FileRec {
     private static String rootPath;
     private static DataSize fileMaxSize;
-    private static String webPath;
 
     @Value("${custom-config.upload.path}")
     public void setRootPath(String a) {
@@ -27,11 +26,6 @@ public class FileRec {
     @Value("${spring.servlet.multipart.max-file-size}")
     public void setFileMaxSize(DataSize a) {
         fileMaxSize = a;
-    }
-
-    @Value("http://${server.address}:${server.port}/")
-    public void setWebPath(String a) {
-        webPath = a;
     }
 
     //上传至 setRootPath 变量设置的目录中
@@ -75,8 +69,8 @@ public class FileRec {
             //将图片流转换进行BASE64加码
             //BASE64Encoder encoder = new BASE64Encoder();
             //String data = encoder.encode(file.getBytes());
-            //修url分隔符
-            String data = webPath + dataDirectory.replaceAll("\\\\", "/") + fileName;
+            //修正url分隔符。此地址不包含host:port 内容，在返回时自行拼接
+            String data = dataDirectory.replaceAll("\\\\", "/") + fileName;
             res.put("result", true);
             res.put("data", data);
             res.put("msg", "上传成功");
