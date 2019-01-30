@@ -1,4 +1,4 @@
-package server.db.common;
+package server.config.tkmapper.custom;
 
 import org.apache.ibatis.annotations.SelectProvider;
 import tk.mybatis.mapper.annotation.RegisterMapper;

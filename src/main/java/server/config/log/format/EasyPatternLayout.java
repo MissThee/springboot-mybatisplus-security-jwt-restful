@@ -1,4 +1,4 @@
-package server.config.log;
+package server.config.log.format;
 
 import java.util.HashMap;
 import java.util.Map;

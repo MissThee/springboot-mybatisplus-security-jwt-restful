@@ -1,4 +1,4 @@
-package server.config;
+package server.config.json;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
@@ -14,7 +14,7 @@ import java.util.List;
 
 //fastJson配置
 @Configuration
-public class SpringJsonConfig {
+public class SpringFastJsonConfig {
     @Bean
     public HttpMessageConverters fastJsonHttpMessageConverters() {
         FastJsonHttpMessageConverter fastConvert = new FastJsonHttpMessageConverter();

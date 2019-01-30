@@ -1,4 +1,4 @@
-package server.config;
+package server.config.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,6 +10,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import tk.mybatis.spring.annotation.MapperScan;
@@ -18,40 +19,36 @@ import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 
 @Configuration
-@MapperScan(basePackages = "server.db.primary.mapper", sqlSessionTemplateRef = "primarySqlSessionTemplate")
+@MapperScan(basePackages = "server.db.secondary.mapper", sqlSessionTemplateRef = "secondarySqlSessionTemplate")
 @Slf4j
-public class PrimaryDBConfig {
+public class SecondaryDBConfig {
 
-    @Bean(name = "primaryDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.primary")
-    @Primary
+    @Bean(name = "secondaryDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.secondary")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "primarySqlSessionFactory")
-    @Primary
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("primaryDataSource") DataSource dataSource) throws Exception {
+    @Bean(name = "secondarySqlSessionFactory")
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("secondaryDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         try {
-            bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/primary/**/*.xml"));
+            bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/secondary/**/*.xml"));
         } catch (FileNotFoundException e) {
-log.info(e.getMessage() + ". File not exists.");
+            log.info(e.getMessage() + ". File not exists.");
         }
         bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis.cfg.xml"));
         return bean.getObject();
     }
 
-    @Bean(name = "primaryTransactionManager")
-    @Primary
-    public DataSourceTransactionManager transactionManager(@Qualifier("primaryDataSource") DataSource dataSource) {
+    @Bean(name = "secondaryTransactionManager")
+    public DataSourceTransactionManager transactionManager(@Qualifier("secondaryDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean(name = "primarySqlSessionTemplate")
-    @Primary
-    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("primarySqlSessionFactory") SqlSessionFactory sqlSessionFactory)   {
+    @Bean(name = "secondarySqlSessionTemplate")
+    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("secondarySqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 }

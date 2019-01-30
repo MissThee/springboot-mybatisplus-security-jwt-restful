@@ -1,12 +1,7 @@
-package server.db.common;
+package server.config.tkmapper.custom;
 
 import org.apache.ibatis.mapping.MappedStatement;
-import tk.mybatis.mapper.MapperException;
-import tk.mybatis.mapper.entity.EntityColumn;
 import tk.mybatis.mapper.mapperhelper.*;
-
-import java.util.Iterator;
-import java.util.Set;
 
 public class MySelectProvider extends MapperTemplate {
     public MySelectProvider(Class<?> mapperClass, MapperHelper mapperHelper) {

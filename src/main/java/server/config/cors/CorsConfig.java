@@ -1,4 +1,4 @@
-package server.config;
+package server.config.cors;
 
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

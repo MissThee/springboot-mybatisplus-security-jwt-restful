@@ -75,6 +75,21 @@ public class ExcelImport {
                             case "Double":
                                 param = Double.parseDouble(value);
                                 break;
+                            case "Byte":
+                                param = Byte.parseByte(value);
+                                break;
+                            case "Short":
+                                param = Short.parseShort(value);
+                                break;
+                            case "Long":
+                                param = Long.parseLong(value);
+                                break;
+                            case "Float":
+                                param = Float.parseFloat(value);
+                                break;
+                            case "Boolean":
+                                param = Boolean.parseBoolean(value);
+                                break;
                         }
                         t.getClass().getMethod(methodName, paramClass).invoke(t, param);
                     }
@@ -158,6 +173,21 @@ public class ExcelImport {
                             break;
                         case "Double":
                             param = Double.parseDouble(value);
+                            break;
+                        case "Byte":
+                            param = Byte.parseByte(value);
+                            break;
+                        case "Short":
+                            param = Short.parseShort(value);
+                            break;
+                        case "Long":
+                            param = Long.parseLong(value);
+                            break;
+                        case "Float":
+                            param = Float.parseFloat(value);
+                            break;
+                        case "Boolean":
+                            param = Boolean.parseBoolean(value);
                             break;
                     }
                     t.getClass().getMethod(methodName, paramClass).invoke(t, param);

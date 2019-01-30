@@ -1,4 +1,4 @@
-package server.db.common;
+package server.config.tkmapper.custom;
 
 public class OrderStr {
     public static final String sqlOrderByReportHourDecodeStr =

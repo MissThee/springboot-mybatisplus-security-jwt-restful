@@ -86,18 +86,23 @@
             <version>1.4.0</version>
         </dependency>
         <!--meta model依赖-->
-        <!--settings->annotation processors->选Enable...，选Module content root，路径：空(自动为generated),或src/main/generated。运行后，手动标记文件夹为generated sources root-->
-        <dependency>
+        <dependency> <!--meta model生成相关依赖-->
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
             <version>5.3.7.Final</version>
             <scope>provided</scope>
         </dependency>
-        <!--jpa依赖-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        <dependency><!--meta model相关类依赖-->
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>
         </dependency>
+        <!--settings->annotation processors->选Enable...，选Module content root，路径：空(自动为generated),或src/main/generated。运行后，手动标记文件夹为generated sources root-->
+        <!--jpa依赖(使用jpa可将javax.persistence-api依赖注释掉)-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+        <!--</dependency>-->
         <!--mybatis依赖:通用mapper.（三种mybatis工具：mybatis，mybatis plus，tkmapper。选一种即可）-->
         <dependency>
             <groupId>tk.mybatis</groupId>
@@ -168,6 +173,11 @@
             <artifactId>netty-socketio</artifactId>
             <version>1.7.11</version>
         </dependency>
+        <!--redis依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
         <!--热部署依赖-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.boot</groupId>-->
@@ -185,10 +195,7 @@
         <!--<groupId>org.springframework.boot</groupId>-->
         <!--<artifactId>spring-boot-starter-data-mongodb</artifactId>-->
         <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.boot</groupId>-->
-        <!--<artifactId>spring-boot-starter-data-redis</artifactId>-->
-        <!--</dependency>-->
+
         <!--<dependency>-->
         <!--<groupId>redis.clients</groupId>-->
         <!--<artifactId>jedis</artifactId>-->

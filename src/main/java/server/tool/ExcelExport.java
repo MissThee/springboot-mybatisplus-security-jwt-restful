@@ -6,13 +6,13 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
-import javax.lang.model.type.NullType;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import org.apache.ibatis.jdbc.Null;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -37,8 +37,8 @@ public class ExcelExport {
      * @return int 返回最后插入数据的行下标+1，调用此方法后，新建行时可直接使用返回的值
      * @throws Exception 抛出异常
      */
-//    @SafeVarargs
-    public <T> LastRowColumnNum addRowsByData(
+    @SafeVarargs
+    public final <T> LastRowColumnNum addRowsByData(
             HSSFWorkbook wb,
             int sheetIndex,
             int startRowIndex,
@@ -179,8 +179,8 @@ public class ExcelExport {
         return new LastRowColumnNum(rowNum, columnNum);
     }
 
-    //    @SafeVarargs
-    public <T> LastRowColumnNum addRowsByData(
+    @SafeVarargs
+    public final <T> LastRowColumnNum addRowsByData(
             HSSFWorkbook wb,
             int sheetIndex,
             int startRowIndex,
@@ -198,35 +198,29 @@ public class ExcelExport {
         return addRowsByData(wb, sheetIndex, startRowIndex, startColumnIndex, title, dataColumns, showHeaderColumn, dataList, withIndex, extraHeaderCell);
     }
 
-    //headerCellLists中，第一个HeaderCell有无x,y决定使用顺序插入还是定点插入
-//    @SafeVarargs
-    private LastRowColumnNum addExtraHeaderRowsByList(HSSFWorkbook wb, int sheetIndex, int startRowIndex, int startColumnIndex, List<HeaderCell>... headerCellLists) {
+    //headerCellLists中，HeaderCell有无x,y决定使用顺序插入还是定点插入,顺序插入总是以上一个cell的右边一格插入
+    @SafeVarargs
+    private final LastRowColumnNum addExtraHeaderRowsByList(HSSFWorkbook wb, int sheetIndex, int startRowIndex, int startColumnIndex, List<HeaderCell>... headerCellLists) {
         HSSFCellStyle headerStyle = headerStyle(wb);
-        int insertType = 0;//插入方式：1-定点；2-顺序
-        int rowsNum = 0;//有x,y时使用
-        int rowsColumn = 0;//有x,y时使用
-        int rowIndex = startRowIndex, columnIndex = startColumnIndex;//无x,y时使用 定点插入
+        int insertMaxHeight = 0;        //记录插入的最大行号
+        int insertMaxWidth = 0;         //记录插入的最大列号
+        int rowIndex = startRowIndex;       //无x,y时使用   顺序插入    记录上次插入的行号
+        int columnIndex = startColumnIndex; //无x,y时使用   顺序插入    记录上次插入的列号
         for (List<HeaderCell> headerCellList : headerCellLists) {
             for (HeaderCell headerCell : headerCellList) {
                 String value = headerCell.getValue();
-                Integer x = headerCell.getX();
-                Integer y = headerCell.getY() == null ? null : (headerCell.getY() + startRowIndex);
-                Integer w = headerCell.getWidth();
-                Integer h = headerCell.getHeight();
-                if (insertType == 0) {
-                    if (x != null && y != null) {//有x,y时
-                        insertType = 1;//定点插入
-                    } else {
-                        insertType = 2;//顺序插入
-                    }
-                }
-                if (insertType == 2) {
+                Integer x = headerCell.getX();                                                              //单元格列号下标
+                Integer y = headerCell.getY() == null ? null : (headerCell.getY() + startRowIndex);         //单元格行号下标
+                Integer w = headerCell.getW();                                                          //单元格宽度
+                Integer h = headerCell.getH();                                                         //单元格高度
+                if (x == null || y == null) {//无x或y时，顺序插入
                     x = columnIndex;
                     y = rowIndex;
-                    columnIndex = x + w;
                 }
-                rowsNum = Math.max(y + h, rowsNum);
-                rowsColumn = Math.max(x + w, rowsColumn);
+                columnIndex = x + w;
+                rowIndex = y;
+                insertMaxHeight = Math.max(y + h, insertMaxHeight);
+                insertMaxWidth = Math.max(x + w, insertMaxWidth);
                 //写入单元格
                 HSSFSheet sheet = wb.getSheetAt(sheetIndex);
                 HSSFRow row = sheet.getRow(y) == null ? sheet.createRow(y) : sheet.getRow(y);
@@ -243,7 +237,7 @@ public class ExcelExport {
             }
             rowIndex++;
         }
-        return new LastRowColumnNum(rowsNum, rowsColumn);
+        return new LastRowColumnNum(insertMaxHeight, insertMaxWidth);
     }
 
     public void responseOut(HttpServletResponse response, HSSFWorkbook wb, String fileName) throws IOException {
@@ -375,23 +369,31 @@ public class ExcelExport {
         private String value;
         private Integer x;
         private Integer y;
-        private Integer width;
-        private Integer height;
+        private Integer w;
+        private Integer h;
 
-        public HeaderCell(String cellValue, int width) {
+        public HeaderCell(String cellValue, int w) {
             this.value = cellValue;
             this.x = null;
             this.y = null;
-            this.width = Math.max(width, 1);
-            this.height = 1;
+            this.w = Math.max(w, 1);
+            this.h = 1;
         }
 
-        public HeaderCell(String cellValue, int x, int y, int width, int height) {
+        public HeaderCell(String cellValue, int w, int h) {
+            this.value = cellValue;
+            this.x = null;
+            this.y = null;
+            this.w = Math.max(w, 1);
+            this.h = Math.max(h, 1);
+        }
+
+        public HeaderCell(String cellValue, int x, int y, int w, int h) {
             this.value = cellValue;
             this.x = x;
             this.y = y;
-            this.width = Math.max(width, 1);
-            this.height = Math.max(height, 1);
+            this.w = Math.max(w, 1);
+            this.h = Math.max(h, 1);
         }
     }
 
@@ -416,15 +418,15 @@ public class ExcelExport {
             this.width = 1;
         }
 
-        //配合通用mapper。可使用此值判断是否查询此字段（表格中不需要出现此列，但须查询出数据来做计算等其他用途时使用）
-        public DataColumn setNoDataBaseColumn() {
-            this.isDBColumn = false;
+        //此列是否写入数据。表格生成方法中，使用此值判断是否插入此列数据（当需要显示此列表头，但不插入数据时使用）
+        public DataColumn setEmptyData() {
+            this.isEmptyData = true;
             return this;
         }
 
-        //通用mapper中，可使用此值判断是否查询此字段；表格生成方法中，使用此值判断是否插入此列数据（当需要显示此列表头，但不插入实际数据时使用）
-        public DataColumn setEmptyData() {
-            this.isEmptyData = true;
+        //配合通用mapper。可使用此值判断是否将此字段写入查询语句中（表格中不需要出现此列，但须查询出数据来做计算等其他用途时使用）
+        public DataColumn setNoDataBaseColumn() {
+            this.isDBColumn = false;
             return this;
         }
     }

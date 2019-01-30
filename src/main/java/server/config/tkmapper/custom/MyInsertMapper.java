@@ -1,10 +1,7 @@
-package server.db.common;
+package server.config.tkmapper.custom;
 
 import org.apache.ibatis.annotations.InsertProvider;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.SelectProvider;
 import tk.mybatis.mapper.annotation.RegisterMapper;
-import tk.mybatis.mapper.provider.SpecialProvider;
 
 import java.util.List;
 

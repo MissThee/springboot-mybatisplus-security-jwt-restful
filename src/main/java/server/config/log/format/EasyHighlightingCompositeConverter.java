@@ -1,4 +1,4 @@
-package server.config.log;
+package server.config.log.format;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;

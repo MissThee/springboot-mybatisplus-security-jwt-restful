@@ -16,7 +16,7 @@
         <!--2、 自定义的注释生成插件。取消多余注释-->
         <!--3、 使用lombok的@Data注解，取消生成setter/getter。-->
         <!--<plugin type="tk.mybatis.mapper.generator.MapperPlugin">-->
-            <!--<property name="mappers" value="server.db.common.CommonMapper" />-->
+            <!--<property name="mappers" value="server.config.tkmapper.common.CommonMapper" />-->
         <!--</plugin>-->
         <!--<plugin type="com.custom.mybatis.generator.plugins.CommentPlugin"> </plugin>-->
         <!--<plugin type="com.custom.mybatis.generator.plugins.LombokPlugin" > </plugin>-->
