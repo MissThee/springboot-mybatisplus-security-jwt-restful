@@ -1,4 +1,4 @@
-package server.service.imp;
+package server.service.imp.login;
 
 import ma.glasnost.orika.MapperFacade;
 import org.apache.shiro.authz.UnauthenticatedException;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import server.db.primary.mapper.basic.*;
 import server.db.primary.model.basic.*;
 import server.db.primary.dto.login.LoginDTO;
-import server.service.LoginService;
+import server.service.interf.login.LoginService;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;

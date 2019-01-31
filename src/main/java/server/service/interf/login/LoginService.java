@@ -1,4 +1,4 @@
-package server.service;
+package server.service.interf.login;
 
 import server.db.primary.dto.login.LoginDTO;
 

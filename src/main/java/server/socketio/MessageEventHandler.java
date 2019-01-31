@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import server.config.security.JavaJWT;
 import server.db.primary.model.basic.User;
-import server.service.UserService;
+import server.service.interf.login.UserService;
 import server.socketio.model.AckModel;
 import server.socketio.model.MessageModel;
 

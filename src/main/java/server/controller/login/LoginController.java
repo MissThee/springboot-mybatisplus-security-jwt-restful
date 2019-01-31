@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import server.db.primary.dto.login.LoginDTO;
 import server.config.security.JavaJWT;
-import server.service.LoginService;
+import server.service.interf.login.LoginService;
 import server.tool.Res;
 
 import javax.servlet.http.HttpServletRequest;

@@ -36,13 +36,15 @@ public class ErrorLogPrinter {
                     "; ERROR:" + (eStr == null ? "" : eStr);
             log.error(logSB);
         } else {
-            log.error("-------------------↓ERROR↓--------------------");
-            log.error("URI    : " + (url == null ? request.getRequestURI() : url));
-            log.error("METHOD : " + request.getMethod());
-            log.error("IP     : " + request.getRemoteAddr());
-            log.error("PARAMS : " + request.getQueryString());
-            log.error("ERROR  : " + (eStr == null ? "" : eStr));
-            log.error("-------------------↑ERROR↑--------------------");
+            String stringBuilder =
+                    "\r\n-------------------↓ERROR↓--------------------" +
+                    "\r\nURI    : " + (url == null ? request.getRequestURI() : url) +
+                    "\r\nMETHOD : " + request.getMethod() +
+                    "\r\nIP     : " + request.getRemoteAddr() +
+                    "\r\nPARAMS : " + request.getQueryString() +
+                    "\r\nERROR  : " + (eStr == null ? "" : eStr) +
+                    "\r\n-------------------↑ERROR↑--------------------";
+            log.error(stringBuilder);
         }
     }
 }

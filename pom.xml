@@ -100,8 +100,8 @@
         <!--settings->annotation processors->选Enable...，选Module content root，路径：空(自动为generated),或src/main/generated。运行后，手动标记文件夹为generated sources root-->
         <!--jpa依赖(使用jpa可将javax.persistence-api依赖注释掉)-->
         <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
         <!--</dependency>-->
         <!--mybatis依赖:通用mapper.（三种mybatis工具：mybatis，mybatis plus，tkmapper。选一种即可）-->
         <dependency>
@@ -178,14 +178,20 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+        <!--mq依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
+
+        <!-- 暂未使用 -->
         <!--热部署依赖-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.boot</groupId>-->
         <!--<artifactId>spring-boot-devtools</artifactId>-->
         <!--<scope>runtime</scope>-->
         <!--</dependency>-->
-
-        <!--暂未使用-->
         <!--springboot test依赖-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.boot</groupId>-->

@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -40,27 +41,29 @@ public class ControllerLogger {
 
     //返回值为方法执行的结果对象
     @Around("webLog()")
+    @SuppressWarnings("all")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         Object returnValue;
+        StringBuilder stringBuilder = new StringBuilder();
         try {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes == null) {
-                log.debug("-------------------·REQ·--------------------");
+                stringBuilder.append("\r\n-------------------·REQ·--------------------");
             } else {
                 HttpServletRequest request = attributes.getRequest();
                 // 输出请求内容
-                log.debug("-------------------↓REQ↓--------------------");
-                log.debug("URI      : " + request.getRequestURI());
-                log.debug("METHOD   : " + request.getMethod());
-                log.debug("IP       : " + request.getRemoteAddr());
-                log.debug("CLASS    : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+                stringBuilder.append("\r\n-------------------↓REQ↓--------------------");
+                stringBuilder.append("\r\nURI      : " + request.getRequestURI());
+                stringBuilder.append("\r\nMETHOD   : " + request.getMethod());
+                stringBuilder.append("\r\nIP       : " + request.getRemoteAddr());
+                stringBuilder.append("\r\nCLASS    : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
                 //获取所有参数：
                 Object[] argsObj = joinPoint.getArgs();
-                List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
+                List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse|| e instanceof HttpHeaders)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
                 try {
-                    log.debug("ARGS[J]  : " + JSONArray.toJSONString(argsObjList));
+                    stringBuilder.append("\r\nARGS[J]  : " + JSONArray.toJSONString(argsObjList));
                 } catch (Exception e) {
-                    log.debug("ARGS     : " + argsObjList);
+                    stringBuilder.append("\r\nARGS     : " + argsObjList);
                 }
                 Enumeration<String> enu = request.getParameterNames();
                 StringBuilder paramSB = new StringBuilder();
@@ -71,28 +74,29 @@ public class ControllerLogger {
                     paramSB.append(request.getParameter(paraName));
                     paramSB.append("  ");
                 }
-                log.debug("PARAM  : " + paramSB.toString());
-                userLog(request);//记录用户信息，无相应方法可删除
-                log.debug("-------------------↑REQ↑--------------------");
+                stringBuilder.append("\r\nPARAM     : " + paramSB.toString());
+                stringBuilder.append(userLog(request));//记录用户信息，无相应方法可删除
+                stringBuilder.append("\r\n-------------------↑REQ↑--------------------");
             }
         } catch (Exception e) {
-            log.warn("-------------------REQ-LOG-ERROR--------------------");
+            stringBuilder.append("\r\n!!!!!!!!!!!!!!!!!!!REQ-LOG-ERROR!!!!!!!!!!!!!!!!!!!");
         }
         returnValue = joinPoint.proceed();
         // 处理完请求，返回内容
         try {
-            log.debug("-------------------↓RES↓--------------------");
+            stringBuilder.append("\r\n-------------------↓RES↓--------------------");
             if (returnValue instanceof Res) {
-                log.debug("RESULT : " + ((Res) returnValue).getResult());
-                log.debug("DATA   : " + JSONObject.toJSONString(((Res) returnValue).getData()));
-                log.debug("MSG    : " + ((Res) returnValue).getMsg());
+                stringBuilder.append("\r\nRESULT : " + ((Res) returnValue).getResult());
+                stringBuilder.append("\r\nDATA   : " + JSONObject.toJSONString(((Res) returnValue).getData()));
+                stringBuilder.append("\r\nMSG    : " + ((Res) returnValue).getMsg());
             } else {
-                log.debug("RESPONSE: " + returnValue);
+                stringBuilder.append("\r\nRESPONSE: " + returnValue);
             }
-            log.debug("-------------------↑RES↑--------------------");
+            stringBuilder.append("\r\n-------------------↑RES↑--------------------");
         } catch (Exception e) {
-            log.warn("-------------------RES-LOG-ERROR--------------------");
+            stringBuilder.append("\r\n!!!!!!!!!!!!!!!!!!!RES-LOG-ERROR!!!!!!!!!!!!!!!!!!!");
         }
+        log.debug(stringBuilder.toString());
         return returnValue;
     }
 
@@ -104,12 +108,12 @@ public class ControllerLogger {
         this.userMapper = userMapper;
     }
 
-    private void userLog(HttpServletRequest request) {
+    private String userLog(HttpServletRequest request) {
         try {
             User user = userMapper.selectByPrimaryKey(JavaJWT.getId(request.getHeader("Authorization")));
-            log.debug("USER   : " + user.getNickname() + "[id: " + user.getId() + "]");
+            return "\r\nUSER     : " + user.getNickname() + "[id: " + user.getId() + "]";
         } catch (Exception e) {
-            log.debug("USER   : GUEST");
+            return "\r\nUSER     : GUEST";
         }
     }
     //------用户信息记录，无相应方法可删除----END

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import server.db.primary.dto.login.LoginDTO;
-import server.service.LoginService;
+import server.service.interf.login.LoginService;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
