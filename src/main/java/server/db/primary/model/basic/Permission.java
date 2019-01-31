@@ -14,6 +14,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Entity
 public class Permission  implements Serializable {
+//    权限的type，parentId，isEnable，value，note等属性暂未添加
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

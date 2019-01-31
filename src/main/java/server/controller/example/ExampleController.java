@@ -1,6 +1,10 @@
 package server.controller.example;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -9,11 +13,15 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.config.security.JavaJWT;
+import server.tool.TreeData;
 import server.tool.FileRec;
 import server.tool.Res;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ApiIgnore
@@ -22,10 +30,12 @@ import java.util.Map;
 @RequestMapping("/test")
 public class ExampleController {
     private final FileRec fileRec;
+    private final TreeData buildTree;
 
     @Autowired
-    public ExampleController(FileRec fileRec) {
+    public ExampleController(FileRec fileRec, TreeData buildTree) {
         this.fileRec = fileRec;
+        this.buildTree = buildTree;
     }
 
     //获取当前用户相关信息。
@@ -39,6 +49,29 @@ public class ExampleController {
 //        map.put("roleList", roleList);
 //        map.put("permissionList", permissionList);
         return Res.success(map);
+    }
+
+    @RequestMapping("tree")
+    public Res getTree(@RequestParam("c") Boolean compareSelfId, @RequestParam("r") Integer rootId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        List<TreeItem> li = new ArrayList<TreeItem>() {{
+            add(new TreeItem(1, "name1", null));
+            add(new TreeItem(2, "name2", 1));
+            add(new TreeItem(3, "name3", 2));
+            add(new TreeItem(4, "name4", 2));
+            add(new TreeItem(5, "name5", null));
+            add(new TreeItem(6, "name6", 2));
+        }};
+        JSONArray objects = buildTree.tree(li, rootId, compareSelfId == null ? false : compareSelfId, new HashMap<>());
+        return Res.success(objects);
+    }
+
+    @Data
+    @Accessors(chain = true)
+    @AllArgsConstructor
+    public class TreeItem {
+        private Integer id;
+        private String name;
+        private Integer parentId;
     }
 
     //-----以下为权限测试，若需测试权限功能，需将本controller访问url先加入到shiro的检测路径中。-----
@@ -86,7 +119,7 @@ public class ExampleController {
 
     //上传文件示例1
     @PostMapping(value = "/upload1")
-    public JSONObject fileUpload1(MultipartFile file,String tip) {
+    public JSONObject fileUpload1(MultipartFile file, String tip) {
         return fileRec.fileUpload(file, "uploadTest/image");
     }
 
