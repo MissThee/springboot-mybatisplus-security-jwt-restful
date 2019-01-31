@@ -51,10 +51,10 @@ public class TreeData {
     /**
      * 遍历id含parentId树形数据结构的数据。自定义自是否包含身节点，自定义根节点。
      *
-     * @param li            包含id和parentId的数据
-     * @param rootId        根节点的id
-     * @param rootIdIsNodeId 包含根节点本身true：使用节点id==rootId为根节点；false：使用节点父id==rootId为根节点
-     * @param attrMap       每个节点额外的属性Map(标签名, 实体类属性名>
+     * @param li             包含id和parentId的数据
+     * @param rootId         根节点的id
+     * @param rootIdIsNodeId 使用节点id或parentId与rootId比较。true：节点id==rootId为根节点；false：节点parentId==rootId为根节点
+     * @param attrMap        每个节点额外的属性Map(标签名, 实体类属性名>
      */
     public <T> JSONArray tree(List<T> li, Integer rootId, Boolean rootIdIsNodeId, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return tree(li, null, rootId, rootIdIsNodeId, "id", "parentId", attrMap);
@@ -89,7 +89,7 @@ public class TreeData {
      * @param li             包含id和parentId的数据
      * @param parentId       固定为null
      * @param rootId         根节点的id
-     * @param rootIdIsNodeId  包含根节点本身true：使用节点id==rootId为根节点；false：使用节点父id==rootId为根节点
+     * @param rootIdIsNodeId 使用节点id或parentId与rootId比较。true：节点id==rootId为根节点；false：节点parentId==rootId为根节点
      * @param idColumn       自定义实体类id列名
      * @param parentIdColumn 自定义实体类parentId列名
      */
