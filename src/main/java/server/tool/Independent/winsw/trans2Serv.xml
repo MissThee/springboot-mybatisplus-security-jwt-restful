@@ -1,0 +1,13 @@
+﻿<configuration> 
+     <id>新疆煤层气</id> 
+     <name>新疆煤层气</name>
+     <description>新疆煤层气后台服务，port：8096</description>
+     <executable>java</executable> 
+    <arguments>-jar xjmcq-0.0.1-SNAPSHOT.jar   --server.port=8096    --spring.datasource.primary.driver-class-name=oracle.jdbc.OracleDriver --spring.datasource.primary.jdbc-url=jdbc:oracle:thin:@192.168.1.6:1521:cbmdb --spring.datasource.primary.username=cbmdb --spring.datasource.primary.password=cbmdb1qazxsw2   --logging.level.root=warn --logging.level.server=warn --logging.level.server.config.log=warn --logging.level.server.db.primary=warn  --logging.level.server.db.secondary=warn</arguments>
+     <!-- 开机启动 -->
+     <startmode>Automatic</startmode>
+     <!-- 日志配置 -->
+     <logpath>logs</logpath>
+     <logmode>rotate</logmode>
+ </configuration>
+ 

@@ -7,7 +7,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//direct直连模式的交换机配置,包括一个direct交换机，两个队列，三根网线binding
+//direct直连模式的交换机配置,包括一个direct交换机，两个队列
 @Configuration
 public class DirectExchangeConfig {
 
@@ -15,7 +15,12 @@ public class DirectExchangeConfig {
     public DirectExchange directExchange() {
         return new DirectExchange("exchange-direct");
     }
-
+//定义队列
+//  Queue可有4个参数
+//      1、队列名
+//      2、durable       持久化消息队列，rabbitma重启的时候不需要重新创建队列。默认true
+//      3、auto-delete   消息队列在没有使用的时候自动删除。默认false
+//      4、exclusive     该消息队列是否只在当前connection生效。默认false
     @Bean
     public Queue directQueue1() {
         return new Queue("direct-queue1");

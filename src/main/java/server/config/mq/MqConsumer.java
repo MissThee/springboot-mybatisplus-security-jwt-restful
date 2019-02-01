@@ -15,19 +15,17 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 public class MqConsumer {
-
-    private static final String QUEUE_NAME = "direct-queue1";
-    private final MqConnectionConfig mqConnectionConfig;
+    private final ConnectionFactory connectionFactory;
 
     @Autowired
-    public MqConsumer(MqConnectionConfig mqConnectionConfig) {
-        this.mqConnectionConfig = mqConnectionConfig;
+    public MqConsumer(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
     }
 
     //    SimpleMessageListenerContainer，消费者配置
 //    @Bean
 //    public SimpleMessageListenerContainer messageContainer() {
-//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(mqConnectionConfig.connectionFactory());
+//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory );
 //        container.setQueueNames(QUEUE_NAME);
 //        container.setExposeListenerChannel(true);
 //        container.setMaxConcurrentConsumers(1);
@@ -43,7 +41,7 @@ public class MqConsumer {
 
     //自定义Jackson2JsonMessageConverter反序列化
     @Bean
-    public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+    public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory() {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(new Jackson2JsonMessageConverter());

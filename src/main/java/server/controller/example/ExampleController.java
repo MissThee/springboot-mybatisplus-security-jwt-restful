@@ -42,12 +42,8 @@ public class ExampleController {
     @PostMapping("infoByHeader")
     public Res getInfo(@RequestHeader("Authorization") String token) {
         String id = JavaJWT.getId(token);
-//        List roleList = JavaJWT.getRoleList(token);
-//        List permissionList = JavaJWT.getPermissionList(token);
         Map<String, Object> map = new HashMap<>();
         map.put("id", id);
-//        map.put("roleList", roleList);
-//        map.put("permissionList", permissionList);
         return Res.success(map);
     }
 

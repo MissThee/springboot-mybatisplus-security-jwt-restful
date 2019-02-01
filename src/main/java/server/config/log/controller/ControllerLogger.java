@@ -59,7 +59,7 @@ public class ControllerLogger {
                 stringBuilder.append("\r\nCLASS    : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
                 //获取所有参数：
                 Object[] argsObj = joinPoint.getArgs();
-                List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse|| e instanceof HttpHeaders)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
+                List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse || e instanceof HttpHeaders)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
                 try {
                     stringBuilder.append("\r\nARGS[J]  : " + JSONArray.toJSONString(argsObjList));
                 } catch (Exception e) {
@@ -84,15 +84,19 @@ public class ControllerLogger {
         returnValue = joinPoint.proceed();
         // 处理完请求，返回内容
         try {
-            stringBuilder.append("\r\n-------------------↓RES↓--------------------");
-            if (returnValue instanceof Res) {
-                stringBuilder.append("\r\nRESULT : " + ((Res) returnValue).getResult());
-                stringBuilder.append("\r\nDATA   : " + JSONObject.toJSONString(((Res) returnValue).getData()));
-                stringBuilder.append("\r\nMSG    : " + ((Res) returnValue).getMsg());
-            } else {
-                stringBuilder.append("\r\nRESPONSE: " + returnValue);
+            if (returnValue == null) {
+                stringBuilder.append("\r\n-------------------·RES·--------------------");
+            }else {
+                stringBuilder.append("\r\n-------------------↓RES↓--------------------");
+                if (returnValue instanceof Res) {
+                    stringBuilder.append("\r\nRESULT : " + ((Res) returnValue).getResult());
+                    stringBuilder.append("\r\nDATA   : " + JSONObject.toJSONString(((Res) returnValue).getData()));
+                    stringBuilder.append("\r\nMSG    : " + ((Res) returnValue).getMsg());
+                } else {
+                    stringBuilder.append("\r\nRESPONSE: " + returnValue);
+                }
+                stringBuilder.append("\r\n-------------------↑RES↑--------------------");
             }
-            stringBuilder.append("\r\n-------------------↑RES↑--------------------");
         } catch (Exception e) {
             stringBuilder.append("\r\n!!!!!!!!!!!!!!!!!!!RES-LOG-ERROR!!!!!!!!!!!!!!!!!!!");
         }

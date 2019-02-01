@@ -1,6 +1,5 @@
 package server.controller.example;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
@@ -21,7 +20,7 @@ import java.util.Map;
 @Api(value = "rabbitMqContronller", description = "rabbitmq测试类")
 @RequestMapping("/rabbitmq")
 public class MqPController {
-    private static final String QUEUE_NAME = "direct-queue1";//简单发送队列
+    private static final String QUEUE_NAME = "direct-queue1";//队列
     //性能排序：fanout > direct >> topic。比例大约为11：10：6
     private static final String FANOUT_EXCHANGE = "exchange-fanout";//   任何发送到Fanout Exchange的消息都会被转发到与该Exchange绑定(Binding)的所有Queue上
 
@@ -42,56 +41,41 @@ public class MqPController {
         this.rabbitTemplate = mqProductor.rabbitTemplate();
     }
 
-
-    @RequestMapping("/directsend/s")
-    public Res sendStringMq(@RequestParam(required = false) String message, @RequestHeader HttpHeaders headers) {   //这里用于测试，key值可以自定义实现
-        message = "test msg[" + LocalDateTime.now() + "]：" + message;
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
-        return Res.success(message);
-    }
-
-
-    @RequestMapping("/directsend/m")
-    public Res sendMapMq(@RequestParam(required = false) String message, @RequestHeader HttpHeaders headers) {   //这里用于测试，key值可以自定义实现
-        Map<String, String> map = new HashMap<>();
-        map.put("time", LocalDateTime.now().toString());
-        map.put("msg", "test");
-        rabbitTemplate.convertAndSend(QUEUE_NAME, map);
-        return Res.success(map);
+    @RequestMapping("/simple")//直接发送至队列
+    public Res sendMapMq() {
+        JSONObject jO = new JSONObject();
+        jO.put("time", LocalDateTime.now().toString());
+        jO.put("msg", "test-simple");
+        rabbitTemplate.convertAndSend(QUEUE_NAME, jO);
+        return Res.success(jO);
     }
 
 
     @RequestMapping("/ps")
-    public Res sendPSMq(@RequestParam(required = false) String message, @RequestHeader HttpHeaders headers) {   //这里用于测试，key值可以自定义实现
-        message = "test msg[" + LocalDateTime.now() + "]：" + message;
-        rabbitTemplate.convertAndSend(FANOUT_EXCHANGE, "[no routingKey]", message);
-        return Res.success(message);
+    public Res sendPSMq() {
+        JSONObject jO = new JSONObject();
+        jO.put("time", LocalDateTime.now().toString());
+        jO.put("msg", "test-ps");
+        rabbitTemplate.convertAndSend(FANOUT_EXCHANGE, "[no routingKey]", jO);
+        return Res.success(jO);
     }
 
-    @RequestMapping(value = "/direct", produces = "application/json;charset=UTF-8")
-    public Res sendDirectMq(@RequestBody(required = false) JSONArray messageJA, @RequestHeader HttpHeaders headers) {   //这里用于测试，key值可以自定义实现
-        if (messageJA == null || messageJA.size() == 0) {
-            messageJA = new JSONArray() {{
-                add("direct1");
-                add("direct2");
-                add(LocalDateTime.now());
-            }};
-        }
-        messageJA.forEach((json) -> rabbitTemplate.convertAndSend(DIRECT_EXCHANGE, DIRECT_EXCHANGE_ROUTINGKY_ORANGE, JSONObject.toJSONString(json)));
-        return Res.success(messageJA);
+    @RequestMapping(value = "/direct")
+    public Res sendDirectMq() {
+        JSONObject jO = new JSONObject();
+        jO.put("time", LocalDateTime.now().toString());
+        jO.put("msg", "test-direct");
+        rabbitTemplate.convertAndSend(DIRECT_EXCHANGE, DIRECT_EXCHANGE_ROUTINGKY_ORANGE, jO);
+        return Res.success(jO);
     }
 
-    @RequestMapping(value = "/topic", produces = "application/json;charset=UTF-8")
-    public Res sendTopicMq(@RequestBody(required = false) JSONArray messageJA, @RequestHeader HttpHeaders headers) {   //这里用于测试，key值可以自定义实现
-        if (messageJA == null || messageJA.size() == 0) {
-            messageJA = new JSONArray() {{
-                add("topic1");
-                add("topic2");
-                add(LocalDateTime.now());
-            }};
-        }
-        messageJA.forEach((json) -> rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, "a.orange", JSONObject.toJSONString(json)));
-        return Res.success(messageJA);
+    @RequestMapping(value = "/topic")
+    public Res sendTopicMq() {
+        JSONObject jO = new JSONObject();
+        jO.put("time", LocalDateTime.now().toString());
+        jO.put("msg", "test-topic");
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, "a.orange", jO);
+        return Res.success(jO);
     }
 }
  
