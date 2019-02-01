@@ -90,11 +90,12 @@ public class JavaJWT {
         DecodedJWT jwt = JWT.decode(token);
         Date expiresDate = jwt.getExpiresAt();
         if (expiresDate == null) {
-            return 999999;
+            return -1;
+        }else {
+            LocalDateTime expiresLocalDateTime = expiresDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            Duration duration = Duration.between(LocalDateTime.now(), expiresLocalDateTime);
+            return duration.toDays();
         }
-        LocalDateTime expiresLocalDateTime = expiresDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        Duration duration = Duration.between(LocalDateTime.now(), expiresLocalDateTime);
-        return duration.toMinutes();
     }
 
     public static String getId(String token) {

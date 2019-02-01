@@ -3,6 +3,9 @@ package server.controller.example;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import server.config.mq.MqProductor;
 import server.tool.Res;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,41 +45,40 @@ public class MqPController {
         this.rabbitTemplate = mqProductor.rabbitTemplate();
     }
 
-    @RequestMapping("/simple")//直接发送至队列
+    @RequestMapping("/simple")//通过默认交换机发送至队列，使用队列名
     public Res sendMapMq() {
-        JSONObject jO = new JSONObject();
-        jO.put("time", LocalDateTime.now().toString());
-        jO.put("msg", "test-simple");
-        rabbitTemplate.convertAndSend(QUEUE_NAME, jO);
-        return Res.success(jO);
+        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-simple");
+        rabbitTemplate.convertAndSend(QUEUE_NAME, mqData);
+        return Res.success(mqData);
     }
-
 
     @RequestMapping("/ps")
     public Res sendPSMq() {
-        JSONObject jO = new JSONObject();
-        jO.put("time", LocalDateTime.now().toString());
-        jO.put("msg", "test-ps");
-        rabbitTemplate.convertAndSend(FANOUT_EXCHANGE, "[no routingKey]", jO);
-        return Res.success(jO);
+        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-ps");
+        rabbitTemplate.convertAndSend(FANOUT_EXCHANGE, "[no routingKey]", mqData);
+        return Res.success(mqData);
     }
 
     @RequestMapping(value = "/direct")
     public Res sendDirectMq() {
-        JSONObject jO = new JSONObject();
-        jO.put("time", LocalDateTime.now().toString());
-        jO.put("msg", "test-direct");
-        rabbitTemplate.convertAndSend(DIRECT_EXCHANGE, DIRECT_EXCHANGE_ROUTINGKY_ORANGE, jO);
-        return Res.success(jO);
+        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-direct");
+        rabbitTemplate.convertAndSend(DIRECT_EXCHANGE, DIRECT_EXCHANGE_ROUTINGKY_ORANGE, mqData);
+        return Res.success(mqData);
     }
 
     @RequestMapping(value = "/topic")
     public Res sendTopicMq() {
-        JSONObject jO = new JSONObject();
-        jO.put("time", LocalDateTime.now().toString());
-        jO.put("msg", "test-topic");
-        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, "a.orange", jO);
-        return Res.success(jO);
+        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-topic");
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, "a.orange", mqData);
+        return Res.success(mqData);
+    }
+
+    @Data
+    @AllArgsConstructor
+    @Accessors(chain = true)
+    public class MqData implements Serializable {
+        String time;
+        String msg;
     }
 }
  

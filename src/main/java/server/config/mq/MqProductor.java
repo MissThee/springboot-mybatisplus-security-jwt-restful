@@ -38,9 +38,9 @@ public class MqProductor {
         });
 
         // 消息确认, yml需要配置 publisher-confirms: true
-        rabbitTemplate.setConfirmCallback((data, ack, cause) -> {
+        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
             if (ack) {
-                log.debug("TO EXCHANGE[SUCCESS]: data: {}", data);
+                log.debug("TO EXCHANGE[SUCCESS]: correlationData: {}", correlationData);
             } else {
                 log.debug("TO EXCHANGE[FAILURE]: cause: {}", cause);
             }

@@ -35,27 +35,22 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-
         String token = httpServletRequest.getHeader("Authorization");
-        //若当前用户有将过期token，刷新token
-        if (!StringUtils.isEmpty(token)) {
-            try {
-                //当前token 剩余有效时间小于360分钟时，返回新的token
-                long tokenRemainingTime = JavaJWT.getTokenRemainingTime(token);
-                log.debug(String.valueOf(tokenRemainingTime));
-                if (tokenRemainingTime >= 0 && tokenRemainingTime <= 360) {
-                    httpServletResponse.setHeader("Authorization", JavaJWT.updateToken(token, 1));
-                }
-            } catch (Exception e) {
-                log.error("token刷新失败！！");
-                e.printStackTrace();
-            }
-        }
-
 
         if (StringUtils.isEmpty(token) || !JavaJWT.verifyToken(token)) {
             return false;
         } else {
+            //若当前用户有将过期token，刷新token
+            try {
+                //当前token 剩余有效时间小于1440分钟时，返回新的token
+                long tokenRemainingTime = JavaJWT.getTokenRemainingTime(token);
+                log.debug(String.valueOf(tokenRemainingTime));
+                if (tokenRemainingTime >= 0 && tokenRemainingTime <= 1440) {
+                    httpServletResponse.setHeader("Authorization", JavaJWT.updateToken(token, 2));
+                }
+            } catch (Exception e) {
+                log.error("token刷新失败！！");
+            }
             SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 //          于缓存中获取用户信息
             LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(JavaJWT.getId(token)));
@@ -80,7 +75,7 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
             getSubject(request, response).login(authenticationToken);
             // System.out.println(" SecurityUtils.getSubject()==getSubject(request, response):" + (SecurityUtils.getSubject() == getSubject(request, response)));
             // 如果没有抛出异常则代表登入成功，返回true
-            return true;
         }
+        return true;
     }
 }

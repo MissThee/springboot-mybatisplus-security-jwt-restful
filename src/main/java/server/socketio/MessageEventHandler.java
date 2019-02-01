@@ -64,7 +64,7 @@ public class MessageEventHandler {
 
     @OnEvent(value = "broadcast")
     public void onBroadcast(SocketIOClient client, AckRequest ackRequest, MessageModel data) {
-        log.debug("broadcast触发");
+        log.debug("broadcast触发: " + data.getContent());
         //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
             ackRequest.sendAckData(AckModel.success());
@@ -76,15 +76,19 @@ public class MessageEventHandler {
 
     @OnEvent(value = "toOneUserByUserId")
     public static void toOneUserByUserId(SocketIOClient client, AckRequest ackRequest, MessageModel data) {   //向客户端推消息
-        log.debug("toOneUserByUserId触发：" + data.getContent() + "；" + String.valueOf(UUIDUserIdMap.get(client.getSessionId())) + "→" + String.valueOf(data.getToId()) + ":" + data.getMsg());
+        log.debug("toOneUserByUserId触发：" + data.getContent() + "；" + UUIDUserIdMap.get(client.getSessionId()) + "→" + data.getToId() + ":" + data.getMsg());
         //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
-        if (ackRequest.isAckRequested()) {
-            ackRequest.sendAckData(AckModel.success());
-        }
-        data.setFromId(UUIDUserIdMap.get(client.getSessionId()));
-        data.setFromNickname(userIdNicknameMap.get(data.getFromId()));
-        data.setToNickname(userIdNicknameMap.get(data.getToId()));
-        if (data.getToId() != null) {
+        if (data.getToId() == null) {
+            if (ackRequest.isAckRequested()) {
+                ackRequest.sendAckData(AckModel.failure());
+            }
+        } else {
+            if (ackRequest.isAckRequested()) {
+                ackRequest.sendAckData(AckModel.success());
+            }
+            data.setFromId(UUIDUserIdMap.get(client.getSessionId()));
+            data.setFromNickname(userIdNicknameMap.get(data.getFromId()));
+            data.setToNickname(userIdNicknameMap.get(data.getToId()));
             List<UUID> uuidList = userIdUUIDsMap.get(data.getToId());
             for (UUID uuid : uuidList) {
                 if (socketIoServer.getClient(uuid) != null) {
@@ -93,7 +97,7 @@ public class MessageEventHandler {
                             new AckCallback<String>(String.class) {
                                 @Override
                                 public void onSuccess(String result) {
-                                    System.out.println("客户端回执: " + client.getSessionId() + " data: " + result);
+                                    log.debug("客户端回执: " + client.getSessionId() + " data: " + result);
                                 }
                             },
                             data);
@@ -124,7 +128,7 @@ public class MessageEventHandler {
         }
         //更新userIdNicknameMap
         userIdNicknameMap.put(userId, userNickname);
-        System.out.println("userIdUUIDsMap:" + userIdUUIDsMap);
+        log.debug("userIdUUIDsMap:" + userIdUUIDsMap);
     }
 
     private void removeUserInfo(UUID uuid) {
@@ -141,6 +145,6 @@ public class MessageEventHandler {
         }
         //更新userIdNicknameMap
         userIdNicknameMap.remove(userId);
-        System.out.println("userIdUUIDsMap:" + userIdUUIDsMap);
+        log.debug("userIdUUIDsMap:" + userIdUUIDsMap);
     }
 }

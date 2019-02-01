@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.RabbitAccessor;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
@@ -39,12 +40,16 @@ public class MqConsumer {
 //        return container;
 //    }
 
-    //自定义Jackson2JsonMessageConverter反序列化
-    @Bean
-    public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory() {
-        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        factory.setMessageConverter(new Jackson2JsonMessageConverter());
-        return factory;
-    }
+//    //自定义Jackson2JsonMessageConverter反序列化
+//    @Bean
+//    public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory() {
+//        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+//        factory.setConnectionFactory(connectionFactory);
+//        factory.setConcurrentConsumers(1);
+//        factory.setMaxConcurrentConsumers(1);
+//        factory.setPrefetchCount(1);
+//        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+//        factory.setMessageConverter(new Jackson2JsonMessageConverter());
+//        return factory;
+//    }
 }

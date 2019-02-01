@@ -37,7 +37,7 @@ public class PrimaryDBConfig {
         try {
             bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/primary/**/*.xml"));
         } catch (FileNotFoundException e) {
-log.info(e.getMessage() + ". File not exists.");
+            log.info(e.getMessage() + ". File not exists.");
         }
         bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis.cfg.xml"));
         return bean.getObject();
@@ -51,7 +51,7 @@ log.info(e.getMessage() + ". File not exists.");
 
     @Bean(name = "primarySqlSessionTemplate")
     @Primary
-    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("primarySqlSessionFactory") SqlSessionFactory sqlSessionFactory)   {
+    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("primarySqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 }
