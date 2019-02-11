@@ -21,7 +21,7 @@ public class MqCController {
     //    @RabbitHandler        //@RabbitListener 标注在类上面表示当有收到消息的时候，就交给 @RabbitHandler 的方法处理(此方式有时导致循环重试错误，暂未查询到有效解决方法)
     public void directQueue1(Message message, Channel channel) throws IOException {
         log.info("direct-queue1: " + new String(message.getBody()));
-//        channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);          // deliveryTag：该消息的index; multiple：是否批量处理.true:将一次性ack所有小于deliveryTag的消息。
+//        channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);          // deliveryTag:该消息的index; multiple：是否批量处理.true:将一次性ack所有小于deliveryTag的消息。
 //        channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,true);    // deliveryTag:该消息的index; multiple：是否批量.true:将一次性拒绝所有小于deliveryTag的消息。; requeue：被拒绝的是否重新入队列
 //        channel.basicReject(message.getMessageProperties().getDeliveryTag(), ture);       // deliveryTag:该消息的index; requeue：被拒绝的是否重新入队列
 //        ( channel.basicNack 与 channel.basicReject 的区别在于basicNack可以拒绝多条消息，而basicReject一次只能拒绝一条消息)
