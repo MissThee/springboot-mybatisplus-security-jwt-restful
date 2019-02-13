@@ -18,17 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @Component
 public class MyJWTFilter extends BasicHttpAuthenticationFilter {
-    private final LoginService loginService;
 
-    @Autowired
-    public MyJWTFilter(LoginService loginService) {
-        this.loginService = loginService;
-    }
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         executeLogin(request, response);
-        return true;//使匿名用户可以通过验证
+        return true;//使匿名用户可以通过此次用户身份构建
     }
 
     @Override
@@ -36,45 +31,21 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String token = httpServletRequest.getHeader("Authorization");
-
-        if (StringUtils.isEmpty(token) || !JavaJWT.verifyToken(token)) {
-            return false;
-        } else {
-            //若当前用户有将过期token，刷新token
-            try {
-                //当前token 剩余有效时间小于1440分钟时，返回新的token
-                long tokenRemainingTime = JavaJWT.getTokenRemainingTime(token);
-                log.debug(String.valueOf(tokenRemainingTime));
-                if (tokenRemainingTime >= 0 && tokenRemainingTime <= 1440) {
-                    httpServletResponse.setHeader("Authorization", JavaJWT.updateToken(token, 2));
-                }
-            } catch (Exception e) {
-                log.error("token刷新失败！！");
-            }
-            SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-//          于缓存中获取用户信息
-            LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(JavaJWT.getId(token)));
-            simpleAuthorizationInfo.addRoles(loginDTO.getRoleValueList());
-            simpleAuthorizationInfo.addStringPermissions(loginDTO.getPermissionValueList());
-
-//          使用token中存储的角色、权限信息，需在登录时将相关信息写入token中
-//            simpleAuthorizationInfo.addRoles(JavaJWT.getRoleList(token));                           //将token中携带的角色信息写入shiro身份对象
-//            simpleAuthorizationInfo.addStringPermissions(JavaJWT.getPermissionList(token));         //将token中携带的权限信息写入shiro身份对象
+        if (JavaJWT.verifyToken(token)) {
             AuthenticationToken authenticationToken = new AuthenticationToken() {
                 @Override
                 public Object getPrincipal() { //将用户权限放置getPrincipal
-                    return simpleAuthorizationInfo;
-                }
+                    return token;
+                }//直接将构建的用户身份对象放置此处，供身份验证使用
 
                 @Override
-                public Object getCredentials() { //将用户jwt放置getCredentials
-                    return token;
+                public Object getCredentials() {
+                    return "";//之后的验证未使用此值
                 }
             };
             // 提交给realm进行登入，（仅在本次访问中有效，因为前后分离是无状态连接。故名为登入，实则是为此次访问填入权限），如果错误他会抛出异常并被捕获
             getSubject(request, response).login(authenticationToken);
-            // System.out.println(" SecurityUtils.getSubject()==getSubject(request, response):" + (SecurityUtils.getSubject() == getSubject(request, response)));
-            // 如果没有抛出异常则代表登入成功，返回true
+            httpServletResponse.setHeader("Authorization", JavaJWT.updateToken(token, 15));
         }
         return true;
     }

@@ -27,24 +27,14 @@ public class ErrorLogPrinter {
     }
 
     static void logOutPut(HttpServletRequest request, String url, String eStr) {
-        if (mode.equals("release")) {
-            String logSB = "[ERROR]" +
-                    "; URI:" + (url == null ? request.getRequestURI() : url) +
-                    "; METHOD:" + request.getMethod() +
-                    "; IP:" + request.getRemoteAddr() +
-                    "; PARAMS:" + request.getQueryString() +
-                    "; ERROR:" + (eStr == null ? "" : eStr);
-            log.error(logSB);
-        } else {
-            String stringBuilder =
-                    "\r\n-------------------↓ERROR↓--------------------" +
-                    "\r\nURI    : " + (url == null ? request.getRequestURI() : url) +
-                    "\r\nMETHOD : " + request.getMethod() +
-                    "\r\nIP     : " + request.getRemoteAddr() +
-                    "\r\nPARAMS : " + request.getQueryString() +
-                    "\r\nERROR  : " + (eStr == null ? "" : eStr) +
-                    "\r\n-------------------↑ERROR↑--------------------";
-            log.error(stringBuilder);
-        }
+        String stringBuilder =
+                "\r\n-------------------↓ERROR↓--------------------" +
+                        "\r\nURI    : " + (url == null ? request.getRequestURI() : url) +
+                        "\r\nMETHOD : " + request.getMethod() +
+                        "\r\nIP     : " + request.getRemoteAddr() +
+                        "\r\nPARAMS : " + request.getQueryString() +
+                        "\r\nERROR  : " + (eStr == null ? "" : eStr) +
+                        "\r\n-------------------↑ERROR↑--------------------";
+        log.error(stringBuilder);
     }
 }

@@ -9,26 +9,34 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import server.db.primary.dto.login.LoginDTO;
+import server.service.interf.login.LoginService;
 
 @Component
 public class MyRealm extends AuthorizingRealm {
+    private final LoginService loginService;
+
+    @Autowired
+    public MyRealm(LoginService loginService) {
+        this.loginService = loginService;
+    }
 
     /**
      * 身份信息是否是支持的类型
      */
     @Override
     public boolean supports(AuthenticationToken token) {
-        return token != null;
+        return true;
     }
 
     /**
-     * 默认使用此方法进行用户名正确与否验证，错误抛出异常即可。验证role或permisson时先调用此方法，再调用doGetAuthorizationInfo
      * Authentication认证   Authorization授权
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
-        return new SimpleAuthenticationInfo(auth.getPrincipal(), auth.getCredentials(), getName());
+        return new SimpleAuthenticationInfo(auth.getPrincipal(), "", getName());
     }
 
     /**
@@ -36,6 +44,12 @@ public class MyRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        return (SimpleAuthorizationInfo)(principals.getPrimaryPrincipal());
+        String token = principals.getPrimaryPrincipal().toString();
+//          于缓存中获取用户信息
+        LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(JavaJWT.getId(token)));
+        return new SimpleAuthorizationInfo() {{
+            addRoles(loginDTO.getRoleValueList());
+            addStringPermissions(loginDTO.getPermissionValueList());
+        }};
     }
 }
