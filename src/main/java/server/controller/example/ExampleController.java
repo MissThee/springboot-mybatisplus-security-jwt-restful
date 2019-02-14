@@ -117,10 +117,10 @@ public class ExampleController {
         return Res.success("WebController：You are authenticated");
     }
 
-    @RequestMapping("/require_role1")
-    @RequiresRoles("role1")
+    @RequestMapping("/require_role12")
+    @RequiresRoles({"role1","role2"})
     public Res requireRole1() {
-        return Res.success("WebController：You are visiting require_role [role1]");
+        return Res.success("WebController：You are visiting require_role12 [role1&role2]");
     }
 
     @RequestMapping("/require_role3")
@@ -130,13 +130,13 @@ public class ExampleController {
     }
 
     @RequestMapping("/require_role_permission")
-    @RequiresPermissions(value = {"admin:view"})
+    @RequiresPermissions({"admin:view"})
     public Res requireRolePermission() {
-        return Res.success("WebController：You are visiting permission require edit,view");
+        return Res.success("WebController：You are visiting permission require admin:view");
     }
 
     @RequestMapping("/require_permission")
-    @RequiresPermissions(value = {"view", "edit"})
+    @RequiresPermissions({"view", "edit"})
     public Res requirePermission() {
         return Res.success("WebController：You are visiting permission require edit,view");
     }
