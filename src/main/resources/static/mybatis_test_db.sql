@@ -11,7 +11,7 @@
  Target Server Version : 50720
  File Encoding         : 65001
 
- Date: 18/12/2018 15:09:58
+ Date: 14/02/2019 13:15:35
 */
 
 SET NAMES utf8mb4;
@@ -83,15 +83,18 @@ CREATE TABLE `user`  (
   `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `salt` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, '管理员', 'admin', '123');
-INSERT INTO `user` VALUES (2, '用户1', 'user1', '123');
-INSERT INTO `user` VALUES (3, '用户2', 'user2', '123');
+INSERT INTO `user` VALUES (1, '管理员', 'admin', '4d9190258588d2a9ef90d42304b7ef1d', 'fb1a1a08c4b54fecb568522497b502f8');
+INSERT INTO `user` VALUES (2, 'test', 'test', '4d9190258588d2a9ef90d42304b7ef1d', 'fb1a1a08c4b54fecb568522497b502f8');
+INSERT INTO `user` VALUES (11, 'test', 'test', 'f9030e74bc61e9bdd152dc530842036b', 'cb5d802259fd760bfbd618636cbfe5d7');
+INSERT INTO `user` VALUES (12, 'test', 'test', 'f92aa409d25bd113ba5ed11fba0a2115', '2f26092792450933e9607b83561065fd');
+INSERT INTO `user` VALUES (13, 'test', 'test', 'ffe9c253031a2e5c41789a055b9659af', 'a137eff7c832b8a1b9fa3ae63608df41');
 
 -- ----------------------------
 -- Table structure for user_role

@@ -195,7 +195,7 @@ root
 │          │          └─generate
 │          └─static
 │              │  mybatis-generator-lombok-plugin-master.zip    //自定义mybatis生成工具相关类源码，可自行定制，打包jar包
-│              │  testdb.sql    //测试用基础数据库表
+│              │  mybatis_test_db.sql.sql    //测试用基础数据库表
 │              │
 │              └─files    //资源文件目录
 │                      ces.png
