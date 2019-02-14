@@ -15,17 +15,19 @@ import server.tool.Res;
 @RestController("FunIndexController")
 public class IndexController {
     private final LoginService loginService;
+    private final JavaJWT javaJWT;
 
     @Autowired
-    public IndexController(LoginService loginService) {
+    public IndexController(LoginService loginService, JavaJWT javaJWT) {
         this.loginService = loginService;
+        this.javaJWT = javaJWT;
     }
 
     @ApiOperation(value = "获取用户信息", notes = "通过token获取用户信息，用于token有效期内的自动登录")
     @PostMapping("/info")
     @RequiresAuthentication
     public Res<loginRes> info(@RequestHeader(value = "Authorization", required = false) String token) {
-        String id = JavaJWT.getId(token);
+        String id = javaJWT.getId(token);
         LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(id));
         return Res.success(new loginRes(loginDTO), "登录成功");
     }

@@ -16,6 +16,7 @@ import server.service.interf.login.LoginService;
 
 @Component
 public class MyRealm extends AuthorizingRealm {
+
     private final LoginService loginService;
 
     @Autowired
@@ -32,24 +33,25 @@ public class MyRealm extends AuthorizingRealm {
     }
 
     /**
-     * Authentication认证   Authorization授权
+     * 登录验证
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
-        return new SimpleAuthenticationInfo(auth.getPrincipal(), "", getName());
+        return new SimpleAuthenticationInfo(auth.getPrincipal(), auth.getCredentials(), getName());
     }
 
     /**
-     * 只有当需要检测用户权限的时候才会调用此方法，例如checkRole,checkPermission之类的
+     * 角色权限验证
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        String token = principals.getPrimaryPrincipal().toString();
-//          于缓存中获取用户信息
-        LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(JavaJWT.getId(token)));
+        //          于缓存中获取用户信息
+        String userId = principals.getPrimaryPrincipal().toString();
+        LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(userId));
         return new SimpleAuthorizationInfo() {{
             addRoles(loginDTO.getRoleValueList());
             addStringPermissions(loginDTO.getPermissionValueList());
         }};
+
     }
 }

@@ -35,7 +35,7 @@ public class LoginImp implements LoginService {
 
     }
     @Override
-    public LoginDTO selectUserByUsername(String username, String password) {
+    public LoginDTO selectUserByUsername(String username) {
         //查找用户
         User user;
         {
@@ -43,15 +43,6 @@ public class LoginImp implements LoginService {
             userExp.createCriteria()
                     .andEqualTo(User_.USERNAME, username);
             user = userMapper.selectOneByExample(userExp);
-            if (user == null) {
-                throw new UnauthenticatedException("无此账号");
-            }
-            if (!password.equals(user.getPassword())) {
-                throw new UnauthenticatedException("密码错误");
-            }
-//            if (user.getIsDel()) {
-//                throw new UnauthenticatedException("账号已删除");
-//            }
         }
         return getUserLoginInfo(user);
     }

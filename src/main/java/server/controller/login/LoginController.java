@@ -4,11 +4,15 @@ import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.shiro.authz.UnauthenticatedException;
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.codehaus.janino.Java;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import server.db.primary.dto.login.LoginDTO;
 import server.config.security.JavaJWT;
+import server.db.primary.model.basic.User;
+import server.service.interf.basic.UserService;
 import server.service.interf.login.LoginService;
 import server.tool.Res;
 
@@ -20,10 +24,14 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginController {
 
     private final LoginService loginService;
+    private final UserService userService;
+    private final JavaJWT javaJWT;
 
     @Autowired
-    public LoginController(LoginService loginService) {
+    public LoginController(LoginService loginService, JavaJWT javaJWT, UserService userService) {
         this.loginService = loginService;
+        this.javaJWT = javaJWT;
+        this.userService = userService;
     }
 
     @ApiOperation(value = "登录", notes = "账号密码登录，获取token及用户信息")
@@ -41,15 +49,16 @@ public class LoginController {
         if (StringUtils.isEmpty(password)) {
             return Res.failure("密码不能为空");
         }
-        Boolean sevenDaysLogin = loginModel.sevenDaysLogin;
-        LoginDTO loginDTO;
-        try {
-            loginDTO = loginService.selectUserByUsername(username, password);
-        } catch (UnauthenticatedException e) {
-            return Res.failure(e.getMessage());
+        Boolean isLongLogin = loginModel.getIsLongLogin();
+        User user = userService.selectOneByUsername(username);
+        if (user == null) {
+            return Res.failure("无此账号");
         }
-        //添加token
-        httpServletResponse.setHeader("Authorization", JavaJWT.createToken(String.valueOf(loginDTO.getId()), sevenDaysLogin ? 7 : 2));
+        if (!user.getPassword().equals(new Md5Hash(password, user.getSalt(), 3).toString())) {
+            return Res.failure("密码错误");
+        }
+        LoginDTO loginDTO = loginService.selectUserByUsername(username);
+        httpServletResponse.setHeader("Authorization", javaJWT.createToken(loginDTO.getId().toString(), isLongLogin ? 15 : 2));  //添加token
         return Res.success(new loginRes(loginDTO), "登录成功");
     }
 
@@ -60,7 +69,7 @@ public class LoginController {
         private String username;
         @ApiModelProperty(value = "密码", required = true, example = "123")
         private String password;
-        private Boolean sevenDaysLogin = false;
+        private Boolean isLongLogin = false;
     }
 
     @Data

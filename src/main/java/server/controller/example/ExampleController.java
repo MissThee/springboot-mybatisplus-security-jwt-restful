@@ -5,14 +5,19 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.config.security.JavaJWT;
+import server.db.primary.model.basic.User;
+import server.service.interf.basic.UserService;
 import server.tool.TreeData;
 import server.tool.FileRec;
 import server.tool.Res;
@@ -31,20 +36,50 @@ import java.util.Map;
 public class ExampleController {
     private final FileRec fileRec;
     private final TreeData buildTree;
+    private final UserService userService;
+    private final JavaJWT javaJWT;
 
     @Autowired
-    public ExampleController(FileRec fileRec, TreeData buildTree) {
+    public ExampleController(FileRec fileRec, TreeData buildTree, UserService userService, JavaJWT javaJWT) {
         this.fileRec = fileRec;
         this.buildTree = buildTree;
+        this.userService = userService;
+        this.javaJWT = javaJWT;
     }
 
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
-    public Res getInfo(@RequestHeader("Authorization") String token) {
-        String id = JavaJWT.getId(token);
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", id);
+    public Res getInfo(@RequestHeader(value = "Authorization", required = false) String token) {
+        String userIdByToken = javaJWT.getId(token);//通过token解析获得
+        Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
+        Map<String, Object> map = new HashMap<String, Object>() {{
+            put("userIdByToken", userIdByToken);
+            put("userIdBySubject", userIdBySubject);
+        }};
         return Res.success(map);
+    }
+
+    @PostMapping("addUser")
+    public Res addUser(@RequestBody JSONObject bJO) {
+        String username = bJO.getString("username");
+        String password = bJO.getString("password");
+        String salt = new SecureRandomNumberGenerator().nextBytes().toHex();
+        User user = new User();
+        user.setUsername(username);
+        String md5Password = new Md5Hash(password, salt, 3).toString();
+        user.setPassword(md5Password);
+        user.setNickname(username);
+        user.setSalt(salt);
+        int result = userService.insertOne(user);
+        JSONObject jO = new JSONObject() {{
+            put("result", result);
+            put("user", user);
+        }};
+        if (result > 0) {
+            return Res.success(jO, "成功");
+        } else {
+            return Res.failure(jO, "失败");
+        }
     }
 
     @RequestMapping("tree")
@@ -64,7 +99,7 @@ public class ExampleController {
     @Data
     @Accessors(chain = true)
     @AllArgsConstructor
-    public class TreeItem {
+    private class TreeItem {
         private Integer id;
         private String name;
         private Integer parentId;

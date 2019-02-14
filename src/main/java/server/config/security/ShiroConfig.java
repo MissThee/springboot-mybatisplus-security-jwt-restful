@@ -6,9 +6,12 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
+import org.codehaus.janino.Java;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import server.service.interf.login.LoginService;
 
 import javax.servlet.Filter;
@@ -19,8 +22,8 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
-    @Bean("securityManager")
-    public DefaultWebSecurityManager getManager(MyRealm myRealm) {
+    @Bean
+    public DefaultWebSecurityManager securityManager(MyRealm myRealm) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         manager.setRealm(myRealm);//自定义认证器
         manager.setSessionManager(new DefaultWebSessionManager() {{//关闭生成session功能
@@ -32,11 +35,11 @@ public class ShiroConfig {
         return manager;
     }
 
-    @Bean("shiroFilter")
-    public ShiroFilterFactoryBean factory(DefaultWebSecurityManager securityManager) {
+    @Bean
+    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, JavaJWT javaJWT) {
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
-        Map<String, Filter> filterMap = new HashMap<String, Filter>() {{
-            put("jwt", new MyJWTFilter());  // 添加自己的过滤器并且取名为jwt
+        Map<String, Filter> filterMap = new LinkedHashMap<String, Filter>() {{
+            put("jwt", new MyJWTFilter(javaJWT));  // 添加自己的过滤器并且取名为jwt
         }};
         factoryBean.setFilters(filterMap);
         factoryBean.setSecurityManager(securityManager);
@@ -79,5 +82,17 @@ public class ShiroConfig {
 //        DefaultAdvisorAutoProxyCreator defaultAAP = new DefaultAdvisorAutoProxyCreator();
 //        defaultAAP.setProxyTargetClass(true);
 //        return defaultAAP;
+//    }
+//    /**
+//     * 配置shiroFilter过滤器到springboot中
+//     */
+//    @Bean
+//    public FilterRegistrationBean<DelegatingFilterProxy> delegatingFilterProxy() {
+//        FilterRegistrationBean<DelegatingFilterProxy> filterRegistrationBean = new FilterRegistrationBean<>();
+//        DelegatingFilterProxy proxy = new DelegatingFilterProxy();
+//        proxy.setTargetFilterLifecycle(true);
+//        proxy.setTargetBeanName("shiroFilter");
+//        filterRegistrationBean.setFilter(proxy);
+//        return filterRegistrationBean;
 //    }
 }

@@ -5,6 +5,7 @@ import com.corundumstudio.socketio.HandshakeData;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.Transport;
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,12 @@ import server.config.security.JavaJWT;
 public class SocketIOServerConfig {
     private static String hostname;
     private static int port;
+    private final JavaJWT javaJWT;
+
+    @Autowired
+    public SocketIOServerConfig(JavaJWT javaJWT) {
+        this.javaJWT = javaJWT;
+    }
 
     @Value("${socketio.host}")
     public void setHostname(String a) {
@@ -35,7 +42,7 @@ public class SocketIOServerConfig {
             String token = data.getSingleUrlParam("token");
             boolean result = false;
             try {
-                result = JavaJWT.verifyToken(token);
+                result = javaJWT.verifyToken(token);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import server.config.security.JavaJWT;
 import server.db.primary.model.basic.User;
-import server.service.interf.login.UserService;
+import server.service.interf.basic.UserService;
 import server.socketio.model.AckModel;
 import server.socketio.model.MessageModel;
 
@@ -27,19 +27,20 @@ public class MessageEventHandler {
     private static Map<String, List<UUID>> userIdUUIDsMap = new ConcurrentHashMap<>();
     private static Map<UUID, String> UUIDUserIdMap = new ConcurrentHashMap<>();
     private static Map<String, String> userIdNicknameMap = new ConcurrentHashMap<>();
-
+    private final JavaJWT javaJWT;
     private final UserService userService;
 
     @Autowired
-    public MessageEventHandler(SocketIOServer server, UserService userService) {
+    public MessageEventHandler(SocketIOServer server, UserService userService, JavaJWT javaJWT) {
         socketIoServer = server;
         this.userService = userService;
+        this.javaJWT = javaJWT;
     }
 
     @OnConnect
     public void onConnect(SocketIOClient client) {
         log.debug("客户端:  " + client.getSessionId() + "  已连接");
-        String userId = JavaJWT.getId(client.getHandshakeData().getSingleUrlParam("token"));
+        String userId = javaJWT.getId(client.getHandshakeData().getSingleUrlParam("token"));
 //        String userId=client.getHandshakeData().getHttpHeaders().get("Authorization");
         User user = userService.selectOneById(Integer.parseInt(userId));
         addUserInfo(user, client.getSessionId());

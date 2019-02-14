@@ -1,5 +1,6 @@
 package server.config.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 //自定义错误返回（主要用于修改404错误的返回格式）
 @Controller
+@Slf4j
 public class MyErrorController extends BasicErrorController {
 
     public MyErrorController(ServerProperties serverProperties) {
@@ -30,13 +32,25 @@ public class MyErrorController extends BasicErrorController {
         Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
         HttpStatus status = getStatus(request);
         Map<String, Object> map = new HashMap<>();
+        String uri, eStr;
         if (status.is4xxClientError()) {
+            uri = body.getOrDefault("path", "").toString();
+            eStr = body.getOrDefault("error", "").toString();
             map.put("msg", body.getOrDefault("error", ""));
-            ErrorLogPrinter.logOutPut(request, body.getOrDefault("path", "").toString(), body.getOrDefault("error", "").toString());
         } else {
+            uri = "";
+            eStr = body.toString();
             map.put("msg", body);
-            ErrorLogPrinter.logOutPut(request, body.toString());
         }
+        String stringBuilder =
+                "\r\n-------------------↓ERROR↓--------------------" +
+                        "\r\nURI    : " + (uri == null ? request.getRequestURI() : uri) +
+                        "\r\nMETHOD : " + request.getMethod() +
+                        "\r\nIP     : " + request.getRemoteAddr() +
+                        "\r\nPARAMS : " + request.getQueryString() +
+                        "\r\nERROR  : " + (eStr == null ? "" : eStr) +
+                        "\r\n-------------------↑ERROR↑--------------------";
+        log.error(stringBuilder);
         return new ResponseEntity<>(map, status);
     }
 
