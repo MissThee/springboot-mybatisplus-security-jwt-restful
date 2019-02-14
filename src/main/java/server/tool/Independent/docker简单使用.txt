@@ -1,0 +1,21 @@
+----运行springboot的jar包
+
+1、当前目录创建文件命名为Dockfile，填入内容：
+
+FROM java:8 
+VOLUME /tmp 
+ADD springbootPackage.jar /package.jar 
+ENTRYPOINT ["sh","-c","java -jar /package.jar $PARAMS"]
+
+2、将jar包命名为springbootPackage.jar，放置Dockfile同级目录
+3、构建docker镜像[Dockerfile目录运行]（注意结尾的.）
+docker build -t springboot_project .
+4、运行镜像并添加自定义参数
+docker run -t -i -p 18098:8098 -p 18097:8097 -e PARAMS="--spring.redis.host=host.docker.internal  --spring.rabbitmq.host=host.docker.internal --spring.datasource.primary.jdbc-url=jdbc:mysql://host.docker.internal:3306/mybatis_test_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&nullNamePatternMatchesAll=true&useSSL=false --spring.datasource.secondary.jdbc-url=jdbc:mysql://host.docker.internal:3306/mybatis_test_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&nullNamePatternMatchesAll=true&useSSL=false"  --name springboot_demo <镜像id> -d
+
+----mysql
+1、拉取镜像
+docker pull mysql:5.7
+2、当前目录创建mysql文件夹用以存储数据库文件，win版docker会弹窗提示输入windows用户密码，已授权使用共享磁盘空间
+3、当前目录运行镜像
+docker run -t -i -p 13306:3306 -v $PWD/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password -d --name <自定义名称> <mysql镜像id>
