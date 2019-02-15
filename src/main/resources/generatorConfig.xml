@@ -9,14 +9,14 @@
     <!--<classPathEntry location="lib/mysql-connector-java-5.1.44-bin.jar"/>-->
     <context id="generator1" targetRuntime="MyBatis3">
         <!-- 序列化接口 -->
-        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
 
         <!--  若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
         <!--1、 自定义通用Mapper接口，将来所有生成的mapper接口都会继承这个接口。生产成继承CommenMapper的Mapper类-->
         <!--2、 自定义的注释生成插件。取消多余注释-->
         <!--3、 使用lombok的@Data注解，取消生成setter/getter。-->
         <!--<plugin type="tk.mybatis.mapper.generator.MapperPlugin">-->
-            <!--<property name="mappers" value="server.config.tkmapper.common.CommonMapper" />-->
+        <!--<property name="mappers" value="server.config.tkmapper.common.CommonMapper" />-->
         <!--</plugin>-->
         <!--<plugin type="com.custom.mybatis.generator.plugins.CommentPlugin"> </plugin>-->
         <!--<plugin type="com.custom.mybatis.generator.plugins.LombokPlugin" > </plugin>-->
@@ -44,7 +44,9 @@
                 driverClass="${spring.datasource.primary.driver-class-name}"
                 connectionURL="${spring.datasource.primary.jdbc-url}"
                 userId="${spring.datasource.primary.username}"
-                password="${spring.datasource.primary.password}" />
+                password="${spring.datasource.primary.password}">
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
         <!-- 非必需，类型处理器，在数据库类型和java类型之间的转换控制,默认使用type=JavaTypeResolverDefaultImpl-->
         <!-- 默认false，把JDBC DECIMAL 和 NUMERIC 类型，先尝试使用Integer，Long，Short来对应，
              为 true时，把JDBC DECIMAL 和 NUMERIC 类型解析为 java.math.BigDecimal -->
