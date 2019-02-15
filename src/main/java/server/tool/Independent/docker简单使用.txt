@@ -2,14 +2,16 @@
 
 1、当前目录创建文件命名为Dockfile，填入内容：
 
-FROM java:8 
+FROM openjdk:8-jre-alpine
 VOLUME /tmp 
 ADD springbootPackage.jar /package.jar 
-ENTRYPOINT ["sh","-c","java -jar /package.jar $PARAMS"]
+ENTRYPOINT ["sh","-c","java -Djava.security.egd=file:/dev/./urandom -jar /package.jar $PARAMS"]
 
 2、将jar包命名为springbootPackage.jar，放置Dockfile同级目录
 3、构建docker镜像[Dockerfile目录运行]（注意结尾的.）
 docker build -t springboot_project .
+
+[或使用maven中的jib/jib:dockerBuild,代替以上三部，完成构建。配置文件于pom.xml的jib插件中]
 4、运行镜像并添加自定义参数
 docker run -t -i -p 18098:8098 -p 18097:8097 -e PARAMS="--spring.redis.host=host.docker.internal  --spring.rabbitmq.host=host.docker.internal --spring.datasource.primary.jdbc-url=jdbc:mysql://host.docker.internal:3306/mybatis_test_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&nullNamePatternMatchesAll=true&useSSL=false --spring.datasource.secondary.jdbc-url=jdbc:mysql://host.docker.internal:3306/mybatis_test_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&nullNamePatternMatchesAll=true&useSSL=false"  --name springboot_demo <镜像id> -d
 
@@ -19,3 +21,28 @@ docker pull mysql:5.7
 2、当前目录创建mysql文件夹用以存储数据库文件，win版docker会弹窗提示输入windows用户密码，已授权使用共享磁盘空间
 3、当前目录运行镜像
 docker run -t -i -p 13306:3306 -v $PWD/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password -d --name <自定义名称> <mysql镜像id>
+
+
+----dockerUI
+1、拉取镜像
+docker pull uifd/ui-for-docker
+2、运行
+docker run -it -d --name docker-web -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock docker.io/uifd/ui-for-docker
+
+
+----oracle三方镜像
+docker pull registry.cn-hangzhou.aliyuncs.com/woqutech/oracle-database-11.2.0.4.0-ee
+创建数据库存储路径：
+mkdir -p /data/oracledb
+启动Oracle数据库容器：
+docker run -d --name oracledb \
+-p 1521:1521 \
+-e ORACLE_SID=oracledb \
+-e ORACLE_PWD=oracle \
+-e ORACLE_CHARACTERSET=ZHS16GBK \
+-e SGA_SIZE=8G \
+-e PGA_SIZE=8G \
+-e DB_ROLE=primary \
+-e ENABLE_ARCH=true \
+-v /data/oracledb:/opt/oracle/oradata \
+registry.cn-hangzhou.aliyuncs.com/woqutech/oracle-database-11.2.0.4.0-ee

@@ -297,12 +297,26 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>0.9.0</version>
+                <version>1.0.0</version>
                 <configuration>
+                    <container>
+                        <useCurrentTimestamp>true</useCurrentTimestamp>
+                        <entrypoint>
+                            <arg>/bin/sh</arg>
+                            <arg>-c</arg>
+                            <arg>java -cp /app/resources/:/app/classes/:/app/libs/* server.WebApplication $PARAMS</arg>
+                        </entrypoint>
+                    </container>
+                    <from>
+                        <image>openjdk:8-jre-alpine</image>
+                    </from>
+                    <mainClass>server.WebApplication</mainClass>
                     <to>
-                        <image>gcr.io/my-project/image-built-with-jib</image>
+                        <image>${project.name}2019:${project.version}</image>
                     </to>
+
                 </configuration>
+
             </plugin>
         </plugins>
         <resources>
