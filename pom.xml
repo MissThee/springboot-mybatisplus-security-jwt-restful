@@ -71,56 +71,18 @@
             <artifactId>java-jwt</artifactId>
             <version>3.3.0</version>
         </dependency>
-        <!--oracle驱动-->
-        <!--<dependency>-->
-        <!--<groupId>com.oracle</groupId>-->
-        <!--<artifactId>ojdbc6</artifactId>-->
-        <!--<version>11.2.0.2.0</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>${basedir}/lib/ojdbc6.jar</systemPath>-->
-        <!--</dependency>-->
         <!--shiro依赖-->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-spring</artifactId>
             <version>1.4.0</version>
         </dependency>
-        <!--&lt;!&ndash;meta model依赖&ndash;&gt;-->
-        <!--<dependency> &lt;!&ndash;meta model生成相关依赖&ndash;&gt;-->
-            <!--<groupId>org.hibernate</groupId>-->
-            <!--<artifactId>hibernate-jpamodelgen</artifactId>-->
-            <!--<version>5.3.7.Final</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>&lt;!&ndash;meta model相关类依赖&ndash;&gt;-->
-            <!--<groupId>javax.persistence</groupId>-->
-            <!--<artifactId>javax.persistence-api</artifactId>-->
-            <!--<version>2.2</version>-->
-        <!--</dependency>-->
-        <!--settings->annotation processors->选Enable...，选Module content root，路径：空(自动为generated),或src/main/generated。运行后，手动标记文件夹为generated sources root-->
-        <!--jpa依赖(使用jpa可将javax.persistence-api依赖注释掉)-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.boot</groupId>-->
-        <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
-        <!--</dependency>-->
-        <!--mybatis依赖:通用mapper.（三种mybatis工具：mybatis，mybatis plus，tkmapper。选一种即可）-->
+        <!--通用mapper-->
         <dependency>
             <groupId>tk.mybatis</groupId>
             <artifactId>mapper-spring-boot-starter</artifactId>
             <version>2.1.5</version>
         </dependency>
-        <!--mybatis依赖-->
-        <!--<dependency>-->
-        <!--<groupId>org.mybatis.spring.boot</groupId>-->
-        <!--<artifactId>mybatis-spring-boot-starter</artifactId>-->
-        <!--<version>1.3.1</version>-->
-        <!--</dependency>-->
-        <!--mybatis plus依赖-->
-        <!--<dependency>-->
-        <!--<groupId>com.baomidou</groupId>-->
-        <!--<artifactId>mybatis-plus-boot-starter</artifactId>-->
-        <!--<version>3.0.7.1</version>-->
-        <!--</dependency>-->
         <!--mybatis分页工具依赖-->
         <dependency>
             <groupId>com.github.pagehelper</groupId>
@@ -144,7 +106,7 @@
             <artifactId>poi-ooxml</artifactId>
             <version>3.17</version>
         </dependency>
-        <!-- swagger2 依赖 及图形化依赖-->
+        <!-- swagger2 依赖 及 图形化依赖-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -186,6 +148,48 @@
 
 
         <!-- 暂未使用 -->
+        <!--oracle驱动(本地)-->
+        <!--<dependency>-->
+        <!--<groupId>com.oracle</groupId>-->
+        <!--<artifactId>ojdbc6</artifactId>-->
+        <!--<version>11.2.0.2.0</version>-->
+        <!--<scope>system</scope>-->
+        <!--<systemPath>${basedir}/lib/ojdbc6.jar</systemPath>-->
+        <!--</dependency>-->
+
+        <!--meta model依赖-->
+        <!--<dependency> &lt;!&ndash;meta model生成相关依赖&ndash;&gt;-->
+        <!--<groupId>org.hibernate</groupId>-->
+        <!--<artifactId>hibernate-jpamodelgen</artifactId>-->
+        <!--<version>5.3.7.Final</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--meta model相关类依赖-->
+        <!--<dependency>-->
+        <!--<groupId>javax.persistence</groupId>-->
+        <!--<artifactId>javax.persistence-api</artifactId>-->
+        <!--<version>2.2</version>-->
+        <!--</dependency>-->
+        <!--settings->annotation processors->选Enable...，选Module content root，路径：空(自动为generated),或src/main/generated。运行后，手动标记文件夹为generated sources root-->
+        <!--jpa依赖(使用jpa可将javax.persistence-api依赖注释掉)-->
+        <!--<dependency>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+        <!--</dependency>-->
+        <!--mybatis依赖:通用mapper.（三种mybatis工具：mybatis，mybatis plus，tkmapper。选一种即可）-->
+        <!--mybatis依赖-->
+        <!--<dependency>-->
+        <!--<groupId>org.mybatis.spring.boot</groupId>-->
+        <!--<artifactId>mybatis-spring-boot-starter</artifactId>-->
+        <!--<version>1.3.1</version>-->
+        <!--</dependency>-->
+        <!--mybatis plus依赖-->
+        <!--<dependency>-->
+        <!--<groupId>com.baomidou</groupId>-->
+        <!--<artifactId>mybatis-plus-boot-starter</artifactId>-->
+        <!--<version>3.0.7.1</version>-->
+        <!--</dependency>-->
+
         <!--热部署依赖-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.boot</groupId>-->
@@ -202,17 +206,6 @@
         <!--<artifactId>spring-boot-starter-data-mongodb</artifactId>-->
         <!--</dependency>-->
 
-        <!--<dependency>-->
-        <!--<groupId>redis.clients</groupId>-->
-        <!--<artifactId>jedis</artifactId>-->
-        <!--<version>2.9.0</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>junit</groupId>-->
-        <!--<artifactId>junit</artifactId>-->
-        <!--<version>4.12</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
         <!--&lt;!&ndash;quartz依赖&ndash;&gt;-->
         <!--<dependency>-->
         <!--<groupId>org.springframework.boot</groupId>-->
@@ -227,7 +220,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 没有该配置，devtools 不生效 -->
-                    <fork>true</fork>
+                    <!--<fork>true</fork>-->
                     <addResources>true</addResources>
                 </configuration>
             </plugin>
@@ -268,16 +261,12 @@
                         <artifactId>mybatis-generator-core</artifactId>
                         <version>1.3.7</version>
                     </dependency>
-                    <!--<dependency>-->
-                        <!--<groupId>tk.mybatis</groupId>-->
-                        <!--<artifactId>mapper-generator</artifactId>-->
-                        <!--<version>1.0.0</version>-->
-                    <!--</dependency>-->
                     <dependency>
                         <groupId>tk.mybatis</groupId>
                         <artifactId>mapper</artifactId>
                         <version>4.1.5</version>
                     </dependency>
+                    <!--自定义generator生成内容，已使用通用mapper中插件，此自定义jar包不再使用-->
                     <!--<dependency>-->
                         <!--<groupId>com.custom</groupId>-->
                         <!--<artifactId>mybatis-generator-lombok-plugin</artifactId>-->
