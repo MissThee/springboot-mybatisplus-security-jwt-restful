@@ -28,7 +28,7 @@
             <property name="lombok" value="Data,Accessors"/>
         </plugin>
 
-        <!--  若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
+        <!-- （自定义mybatis generator方法jar包，已弃用，使用tkmapper插件实现） 若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
         <!--1、 自定义通用Mapper接口，将来所有生成的mapper接口都会继承这个接口。生产成继承CommenMapper的Mapper类-->
         <!--2、 自定义的注释生成插件。取消多余注释-->
         <!--3、 使用lombok的@Data注解，取消生成setter/getter。-->
@@ -114,12 +114,11 @@
             3，XMLMAPPER：会生成Mapper接口，接口完全依赖XML；
         注意，如果context是MyBatis3Simple：只支持ANNOTATEDMAPPER和XMLMAPPER
         -->
-        <!--<javaClientGenerator targetPackage="server.db.primary.mapper" targetProject="src/main/java"-->
-                             <!--type="XMLMAPPER">-->
-            <!--&lt;!&ndash;XMLMAPPER表示生成xml映射文件；ANNOTATEDMAPPER，表示生成的dao采用注解来写sql&ndash;&gt;-->
-            <!--&lt;!&ndash; enableSubPackages:是否让schema作为包的后缀 &ndash;&gt;-->
-            <!--<property name="enableSubPackages" value="false"/>-->
-        <!--</javaClientGenerator>-->
+        <javaClientGenerator targetPackage="server.db.primary.mapper" targetProject="src/main/java" type="XMLMAPPER">
+            <!--XMLMAPPER表示生成xml映射文件；ANNOTATEDMAPPER，表示生成的dao采用注解来写sql-->
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>
 
         <!-- 配置表信息 -->
         <!-- schema即为数据库名 tableName为对应的数据库表 domainObjectName是要生成的实体类 enable*ByExample
@@ -229,12 +228,11 @@
         -->
         <!--</table>-->
 
-        <table schema="mybatis_test_db" tableName="Role_Permission"
+        <table schema="mybatis_test_db" tableName="user"
                enableCountByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                enableUpdateByExample="false"
         />
-
     </context>
 </generatorConfiguration>
