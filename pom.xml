@@ -311,7 +311,6 @@
                     <from>
                         <image>openjdk:8-jre-alpine</image>
                     </from>
-                    <mainClass>server.WebApplication</mainClass>
                     <to>
                         <image>${project.name}2019:${project.version}</image>
                     </to>
