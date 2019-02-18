@@ -34,6 +34,7 @@ public class LoginImp implements LoginService {
         this.mapperFacade = mapperFacade;
 
     }
+
     @Override
     public LoginDTO selectUserByUsername(String username) {
         //查找用户
@@ -41,7 +42,7 @@ public class LoginImp implements LoginService {
         {
             Example userExp = new Example(User.class);
             userExp.createCriteria()
-                    .andEqualTo(User_.USERNAME, username);
+                    .andEqualTo(User.USERNAME, username);
             user = userMapper.selectOneByExample(userExp);
         }
         return getUserLoginInfo(user);
@@ -66,7 +67,7 @@ public class LoginImp implements LoginService {
         {
             Example userRoleExp = new Example(UserRole.class);
             userRoleExp.createCriteria()
-                    .andEqualTo(UserRole_.USER_ID, user.getId());
+                    .andEqualTo(UserRole.USER_ID, user.getId());
             List<UserRole> userRoleList = userRoleMapper.selectByExample(userRoleExp);
             userRoleList.forEach(e -> roleIdList.add(e.getRoleId()));
         }
@@ -76,27 +77,27 @@ public class LoginImp implements LoginService {
         if (roleIdList.size() > 0) {
             Example roleExp = new Example(Role.class);
             roleExp.createCriteria()
-                    .andIn(Role_.ID, roleIdList);
+                    .andIn(Role.ID, roleIdList);
 //                    .andEqualTo(Role_.IS_ENABLE, true);
             roleList = roleMapper.selectByExample(roleExp);
             roleList.forEach(e -> roleValueList.add(e.getRole()));
         }
         //查找权限id集
         List<Integer> permissionIdList = new ArrayList<>();
-        if (roleIdList.size() > 0)  {
+        if (roleIdList.size() > 0) {
             Example rolePermissionExp = new Example(RolePermission.class);
             rolePermissionExp.createCriteria()
-                    .andIn(RolePermission_.ROLE_ID, roleIdList);
+                    .andIn(RolePermission.ROLE_ID, roleIdList);
             List<RolePermission> rolePermissionList = rolePermissionMapper.selectByExample(rolePermissionExp);
             rolePermissionList.forEach(e -> permissionIdList.add(e.getPermissionId()));
         }
         //查找权限信息集
         List<Permission> permissionList = new ArrayList<>();
         Set<String> permissionValueList = new HashSet<>();
-        if (permissionIdList.size() > 0)     {
+        if (permissionIdList.size() > 0) {
             Example permissionExp = new Example(Permission.class);
             permissionExp.createCriteria()
-                    .andIn(Permission_.ID, permissionIdList);
+                    .andIn(Permission.ID, permissionIdList);
 //                    .andEqualTo(Permission_.IS_ENABLE, true) ;
             permissionList = permissionMapper.selectByExample(permissionExp);
             permissionList.forEach(e -> permissionValueList.add(e.getPermission()));

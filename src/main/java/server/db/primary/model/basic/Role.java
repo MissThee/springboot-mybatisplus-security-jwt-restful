@@ -13,7 +13,6 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-@Entity
 public class Role implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +21,15 @@ public class Role implements Serializable {
     private String name;
 
     private String role;
+    public static final String ID = "id";
+
+    public static final String DB_ID = "id";
+
+    public static final String NAME = "name";
+
+    public static final String DB_NAME = "name";
+
+    public static final String ROLE = "role";
+
+    public static final String DB_ROLE = "role";
 }

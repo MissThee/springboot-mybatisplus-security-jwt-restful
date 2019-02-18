@@ -13,7 +13,6 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-@Entity
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +25,23 @@ public class User implements Serializable {
     private String password;
 
     private String salt;
+    public static final String ID = "id";
 
+    public static final String DB_ID = "id";
+
+    public static final String NICKNAME = "nickname";
+
+    public static final String DB_NICKNAME = "nickname";
+
+    public static final String USERNAME = "username";
+
+    public static final String DB_USERNAME = "username";
+
+    public static final String PASSWORD = "password";
+
+    public static final String DB_PASSWORD = "password";
+
+    public static final String SALT = "salt";
+
+    public static final String DB_SALT = "salt";
 }

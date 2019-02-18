@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import server.db.primary.mapper.basic.UserMapper;
 import server.db.primary.model.basic.User;
-import server.db.primary.model.basic.User_;
 import server.service.interf.basic.UserService;
 import tk.mybatis.mapper.entity.Example;
 
@@ -25,7 +24,7 @@ public class UserImp implements UserService {
     @Override
     public User selectOneByUsername(String username) {
         Example example = new Example(User.class);
-        example.createCriteria().andEqualTo(User_.USERNAME, username);
+        example.createCriteria().andEqualTo(User.USERNAME, username);
         return userMapper.selectOneByExample(example);
     }
 
