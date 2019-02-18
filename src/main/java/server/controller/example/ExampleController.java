@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.*;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,6 +107,18 @@ public class ExampleController {
     @RequestMapping("/everyone")
     public Res everyone() {
         return Res.success("WebController：everyone");
+    }
+
+    @RequestMapping("/user")
+    @RequiresUser//因为订制rememberMe功能，作用同@RequiresAuthentication
+    public Res user() {
+        return Res.success("WebController：user");
+    }
+
+    @RequestMapping("/guest")
+    @RequiresGuest
+    public Res guest() {
+        return Res.success("WebController：guest");
     }
 
     @RequestMapping("/require_auth")
