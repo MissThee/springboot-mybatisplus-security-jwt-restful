@@ -243,6 +243,7 @@
                 <executions>
                     <execution>
                         <id>Generate MyBatis Artifacts</id>
+                        <!--此处默认绑定在了package声明周期。若打包时不想再次生成代码，设置为所用打包maven语句，最后生命周期之后的生命周期即可-->
                         <phase>deploy</phase>
                         <goals>
                             <goal>generate</goal>

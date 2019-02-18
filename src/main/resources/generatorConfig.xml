@@ -212,7 +212,7 @@
         -->
         <!--</table>-->
 
-        <table schema="mybatis_test_db" tableName="log"
+        <table schema="mybatis_test_db" tableName="user"
                enableCountByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
