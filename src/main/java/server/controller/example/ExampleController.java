@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.config.security.JavaJWT;
 import server.db.primary.model.basic.User;
+import server.db.primary.model.compute.Compute;
 import server.service.interf.basic.UserService;
+import server.service.interf.compute.ComputeService;
 import server.tool.TreeData;
 import server.tool.FileRec;
 import server.tool.Res;
@@ -36,13 +38,14 @@ public class ExampleController {
     private final TreeData buildTree;
     private final UserService userService;
     private final JavaJWT javaJWT;
-
+    private final ComputeService computeService;
     @Autowired
-    public ExampleController(FileRec fileRec, TreeData buildTree, UserService userService, JavaJWT javaJWT) {
+    public ExampleController(FileRec fileRec, TreeData buildTree, UserService userService, JavaJWT javaJWT, ComputeService computeService) {
         this.fileRec = fileRec;
         this.buildTree = buildTree;
         this.userService = userService;
         this.javaJWT = javaJWT;
+        this.computeService = computeService;
     }
 
     //获取当前用户相关信息。
@@ -55,6 +58,13 @@ public class ExampleController {
             put("userIdBySubject", userIdBySubject);
         }};
         return Res.success(map);
+    }
+
+    //groupby测试(非标准扩展方法，不建议使用)。
+    @PostMapping("groupBy")
+    public Res getInfo() {
+        List<Compute> computeList = computeService.selectGroupBy();
+        return Res.success(computeList);
     }
 
     @PostMapping("addUser")

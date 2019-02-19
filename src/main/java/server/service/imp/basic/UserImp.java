@@ -7,6 +7,8 @@ import server.db.primary.model.basic.User;
 import server.service.interf.basic.UserService;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.List;
+
 @Service
 public class UserImp implements UserService {
     private final UserMapper userMapper;
@@ -32,5 +34,6 @@ public class UserImp implements UserService {
     public int insertOne(User user) {
         return userMapper.insertSelective(user);
     }
+
 
 }

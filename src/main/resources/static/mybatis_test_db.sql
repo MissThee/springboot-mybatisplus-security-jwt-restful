@@ -11,11 +11,31 @@
  Target Server Version : 50720
  File Encoding         : 65001
 
- Date: 14/02/2019 13:15:35
+ Date: 19/02/2019 16:28:44
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for compute
+-- ----------------------------
+DROP TABLE IF EXISTS `compute`;
+CREATE TABLE `compute`  (
+  `id` int(11) NULL DEFAULT NULL,
+  `column1` int(11) NULL DEFAULT NULL,
+  `column2` int(11) NULL DEFAULT NULL
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of compute
+-- ----------------------------
+INSERT INTO `compute` VALUES (4, 5, 6);
+INSERT INTO `compute` VALUES (7, 8, 9);
+INSERT INTO `compute` VALUES (1, 3, 4);
+INSERT INTO `compute` VALUES (33, 4, 4);
+INSERT INTO `compute` VALUES (1, 5, 5);
+INSERT INTO `compute` VALUES (1, 6, 6);
 
 -- ----------------------------
 -- Table structure for permission
@@ -79,8 +99,8 @@ INSERT INTO `role_permission` VALUES (6, 3, 3);
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '昵称',
   `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `salt` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,

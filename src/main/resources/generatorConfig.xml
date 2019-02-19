@@ -43,7 +43,7 @@
         <javaClientGenerator targetPackage="server.db.primary.mapper" targetProject="src/main/java" type="XMLMAPPER"/>
 
         <!--设置生成的表-->
-        <table schema="mybatis_test_db" tableName="user"
+        <table schema="mybatis_test_db" tableName="compute"
                enableCountByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
