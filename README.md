@@ -1,8 +1,3 @@
-
-
-# springboot-mybatis-shiro-jwt-restful
-springboot，mybatis多数据源，tkmapper，自定义mybatis generator，shiro，jwt，socket.io，restful，excel导出导入 空项目
-  
 # 简介
 
 使用TestDB.sql文件可导入项目所需基础表，及表格导出示例表
