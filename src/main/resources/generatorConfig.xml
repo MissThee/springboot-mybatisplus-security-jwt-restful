@@ -10,7 +10,7 @@
         <!-- 序列化接口 -->
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
 
-        <!-- 若不使用通用mapper，则将以下三个plugin注释掉,并打开<commentGenerator>，可生成默认格式文件  -->
+        <!-- 若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
         <!--MapperPlugin： 生成继承CommenMapper的Mapper类-->
         <!--LombokPlugin： 使用lombok的@Data注解，取消生成setter/getter-->
         <!--LombokSwaggerPlugin： 使用lombok的@Data注解,注释使用，取消生成setter/getter-->
@@ -20,11 +20,10 @@
         <!--<plugin type="com.custom.mybatis.generator.plugins.LombokPlugin" /> -->
         <plugin type="com.custom.mybatis.generator.plugins.LombokSwaggerPlugin"/>
 
-        <!--去除生成时的注释 -->
-        <!--<commentGenerator>-->
-        <!--&lt;!&ndash; 是否去除自动生成的注释 true：是 ： false:否 &ndash;&gt;-->
-        <!--<property name="suppressAllComments" value="true"/>-->
-        <!--</commentGenerator>-->
+        <commentGenerator>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
 
         <jdbcConnection
                 driverClass="${spring.datasource.primary.driver-class-name}"
