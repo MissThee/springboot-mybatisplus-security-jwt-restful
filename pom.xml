@@ -266,14 +266,14 @@
                         <artifactId>mapper</artifactId>
                         <version>4.1.5</version>
                     </dependency>
-                    <!--自定义generator生成内容，已使用通用mapper中插件，此自定义jar包不再使用-->
-                    <!--<dependency>-->
-                        <!--<groupId>com.custom</groupId>-->
-                        <!--<artifactId>mybatis-generator-lombok-plugin</artifactId>-->
-                        <!--<version>1.0-SNAPSHOT</version>-->
-                        <!--<scope>system</scope>-->
-                        <!--<systemPath>${basedir}/lib/mybatis-generator-lombok-plugin-1.0-SNAPSHOT.jar</systemPath>-->
-                    <!--</dependency>-->
+                    <!--自定义generator生成内容-->
+                    <dependency>
+                        <groupId>com.custom</groupId>
+                        <artifactId>mybatis-generator-lombok-plugin</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                        <scope>system</scope>
+                        <systemPath>${basedir}/lib/mybatis-generator-custom-plugin-1.0.jar</systemPath>
+                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>
