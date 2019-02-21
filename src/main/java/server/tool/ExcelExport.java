@@ -26,14 +26,15 @@ public class ExcelExport {
      * 表格导出工具，导出List<Model>数据源的规律列表
      *
      * @param wb               HSSFWorkbook对象
-     * @param sheetIndex       表格下标，0开始(一般为0)
-     * @param startRowIndex    插入行号，0开始（一般为0）
-     * @param title            表第一行总标题 如："表格标题"；若为null忽略总标题行
-     * @param dataColumns      列名行。(字段名，显示列名)  对应map,如：put("实体类属性名","列名"),若put("实体类属性名","")，则生成表时不生成此列
-     * @param showHeaderColumn 是否插入列名行（简单表格可为true；复杂表头为false，使用extraHeaderCell做表头）
-     * @param dataList         数据集合，需与表头数组中的字段名一致，并且符合javabean规范
-     * @param withIndex        是否插入序号列
-     * @param extraHeaderCell  在列名行前的额外列名行，专用于制作复杂表头。HeaderColumn不含x,y时，每个List为一行，HeaderColumn(内容,合并列数) ;含x,y时使用x,y定位插入
+     * @param sheetIndex       表格下标，0开始【一般为0】
+     * @param startRowIndex    插入行号，0开始【一般为0】
+     * @param title            表第一行总标题 如："表格标题"；若为null忽略总标题行【字符串】
+     * @param dataColumns      表头行。(字段名，显示列名)  对应map,如：put("实体类属性名","列名"),若put("实体类属性名","")，则生成表时不生成此列【自行构建LinkedHashMap< String ,string>】
+     * @param showHeaderColumn 是否插入表头行。（简单表格可为true；复杂表头为false，使用extraHeaderCell做表头）【一般为true】
+     * @param dataList         数据集合，需与表头数组中的字段名一致，并且符合javabean规范【自行查询数据List< Model>】
+     * @param withIndex        是否插入序号列【一般为true】
+     * @param extraHeaderCell  在列名行前的额外列名行，专用于制作复杂表头。HeaderColumn不含x,y时，每个List为一行，HeaderColumn(内容,合并列数) ;含x,y时使用x,y定位插入【一般为null】
+     *
      * @return int 返回最后插入数据的行下标+1，调用此方法后，新建行时可直接使用返回的值
      * @throws Exception 抛出异常
      */

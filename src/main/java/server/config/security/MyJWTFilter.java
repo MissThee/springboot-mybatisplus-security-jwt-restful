@@ -1,8 +1,10 @@
 package server.config.security;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.codehaus.janino.Java;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Component
-public class MyJWTFilter extends BasicHttpAuthenticationFilter {
+public class MyJWTFilter extends AuthenticatingFilter {
     private final JavaJWT javaJWT;
 
     @Autowired
@@ -33,9 +35,15 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
     }
 
     @Override
+    protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
+        return false;
+    }
+
+    @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        System.out.println("123123:::"+httpServletRequest.getRequestURI());
         String token = httpServletRequest.getHeader("Authorization");
         if (javaJWT.verifyToken(token)) {
             String userId = javaJWT.getId(token);
@@ -51,13 +59,18 @@ public class MyJWTFilter extends BasicHttpAuthenticationFilter {
                         return "";//之后的验证未使用此值,仅使用principal
                     }
                 };
-                // 提交给realm进行登入，（仅在本次访问中有效，因为前后分离是无状态连接。故名为登入，实则是为此次访问填入权限），如果错误他会抛出异常并被捕获
-                getSubject(request, response).login(authenticationToken);
+                // 提交给realm为本次访问进行登入
+                SecurityUtils.getSubject().login(authenticationToken);
                 // 刷新token
                 javaJWT.updateTokenAndSetHeader(token, httpServletResponse);
             }
         }
         return true;
+    }
+
+    @Override
+    protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
+        return null;
     }
 }
 

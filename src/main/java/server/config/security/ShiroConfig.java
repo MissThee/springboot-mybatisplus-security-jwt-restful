@@ -1,5 +1,6 @@
 package server.config.security;
 
+import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -7,6 +8,7 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.subject.SubjectContext;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.mgt.DefaultWebSubjectFactory;
+import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
 import org.codehaus.janino.Java;
@@ -28,17 +30,8 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
-//    private class StatelessDefaultSubjectFactory extends DefaultWebSubjectFactory {
-//        @Override
-//        public Subject createSubject(SubjectContext context) {
-//            //不创建session
-//            context.setSessionCreationEnabled(false);
-//            return super.createSubject(context);
-//        }
-//    }
-
     @Bean
-    public DefaultWebSecurityManager securityManager(MyRealm myRealm,MyDefaultWebSessionManager myDefaultWebSessionManager) {
+    public DefaultWebSecurityManager securityManager(MyRealm myRealm, MyDefaultWebSessionManager myDefaultWebSessionManager) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         manager.setRealm(myRealm);//自定义认证器
         manager.setSessionManager(myDefaultWebSessionManager);
@@ -57,16 +50,17 @@ public class ShiroConfig {
     @Bean
     public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, JavaJWT javaJWT) {
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
-        Map<String, Filter> filterMap = new LinkedHashMap<String, Filter>() {{
+        LinkedHashMap<String, Filter> filterMap = new LinkedHashMap<String, Filter>() {{
             put("jwt", new MyJWTFilter(javaJWT));  // 添加自己的过滤器并且取名为jwt
         }};
         factoryBean.setFilters(filterMap);
         factoryBean.setSecurityManager(securityManager);
-        Map<String, String> filterRuleMap = new LinkedHashMap<String, String>() {{
-            put("/files", "anon");
+        LinkedHashMap<String, String> filterRuleMap = new LinkedHashMap<String, String>() {{
+            put("/files/**", "anon");
             put("/**", "jwt");
-        }};  //因路由拦截认证需保证设置的先后顺序，若有多个过滤规则，此处需使用可保证顺序的对象
+        }};
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
+        factoryBean.setLoginUrl("/login");
         return factoryBean;
     }
 
@@ -79,24 +73,24 @@ public class ShiroConfig {
         advisor.setSecurityManager(securityManager);
         return advisor;
     }
-
-//    /**
-//     * DefaultAdvisorAutoProxyCreator，Spring的一个bean，由Advisor决定对哪些类的方法进行AOP代理。
-//     */
-//    @Bean
-//    @DependsOn("lifecycleBeanPostProcessor")
-//    @ConditionalOnMissingBean
-//    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-//        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
-//        // 强制使用cglib，防止重复代理和可能引起代理出错的问题
-//        // https://zhuanlan.zhihu.com/p/29161098
-//        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
-//        return defaultAdvisorAutoProxyCreator;
-//    }
-//    @Bean
-//    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
-//        return new LifecycleBeanPostProcessor();
-//    }
+//
+    /**
+     * DefaultAdvisorAutoProxyCreator，Spring的一个bean，由Advisor决定对哪些类的方法进行AOP代理。
+     */
+    @Bean
+    @DependsOn("lifecycleBeanPostProcessor")
+    @ConditionalOnMissingBean
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        // 强制使用cglib，防止重复代理和可能引起代理出错的问题
+        // https://zhuanlan.zhihu.com/p/29161098
+        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
+        return defaultAdvisorAutoProxyCreator;
+    }
+    @Bean
+    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+        return new LifecycleBeanPostProcessor();
+    }
 //
 //    /**
 //     * 配置shiroFilter过滤器到springboot中

@@ -45,13 +45,12 @@ public class MyRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        //          于缓存中获取用户信息
+        //于缓存中获取用户信息
         String userId = principals.getPrimaryPrincipal().toString();
         LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(userId));
         return new SimpleAuthorizationInfo() {{
             addRoles(loginDTO.getRoleValueList());
             addStringPermissions(loginDTO.getPermissionValueList());
         }};
-
     }
 }
