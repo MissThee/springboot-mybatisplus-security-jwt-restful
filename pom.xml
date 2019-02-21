@@ -153,7 +153,16 @@
             <artifactId>graphql-java</artifactId>
             <version>11.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java-spring-boot-starter-webmvc</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.graphql-java</groupId>-->
+            <!--<artifactId>graphql-spring-boot-starter</artifactId>-->
+            <!--<version>5.0.2</version>-->
+        <!--</dependency>-->
         <!-- 暂未使用 -->
         <!--oracle驱动(本地)-->
         <!--<dependency>-->

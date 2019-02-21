@@ -3,14 +3,20 @@ package server.config.security;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.subject.SubjectContext;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.mgt.DefaultWebSubjectFactory;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
 import org.codehaus.janino.Java;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import server.service.interf.login.LoginService;
 
@@ -22,16 +28,22 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
+//    private class StatelessDefaultSubjectFactory extends DefaultWebSubjectFactory {
+//        @Override
+//        public Subject createSubject(SubjectContext context) {
+//            //不创建session
+//            context.setSessionCreationEnabled(false);
+//            return super.createSubject(context);
+//        }
+//    }
+
     @Bean
-    public DefaultWebSecurityManager securityManager(MyRealm myRealm) {
+    public DefaultWebSecurityManager securityManager(MyRealm myRealm,MyDefaultWebSessionManager myDefaultWebSessionManager) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         manager.setRealm(myRealm);//自定义认证器
-        manager.setSessionManager(new DefaultWebSessionManager() {{//关闭生成session功能
-            setSessionIdCookieEnabled(false);
-            setSessionValidationSchedulerEnabled(false);
-            setSessionIdUrlRewritingEnabled(false);
-        }});
+        manager.setSessionManager(myDefaultWebSessionManager);
         manager.setRememberMeManager(null);//关闭RememberMe功能
+//        manager.setSubjectFactory(new StatelessDefaultSubjectFactory());//不创建session
         return manager;
     }
 
@@ -67,8 +79,13 @@ public class ShiroConfig {
         advisor.setSecurityManager(securityManager);
         return advisor;
     }
+
+//    /**
+//     * DefaultAdvisorAutoProxyCreator，Spring的一个bean，由Advisor决定对哪些类的方法进行AOP代理。
+//     */
 //    @Bean
 //    @DependsOn("lifecycleBeanPostProcessor")
+//    @ConditionalOnMissingBean
 //    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
 //        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
 //        // 强制使用cglib，防止重复代理和可能引起代理出错的问题
@@ -80,16 +97,7 @@ public class ShiroConfig {
 //    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
 //        return new LifecycleBeanPostProcessor();
 //    }
-//    /**
-//     * DefaultAdvisorAutoProxyCreator，Spring的一个bean，由Advisor决定对哪些类的方法进行AOP代理。
-//     */
-//    @Bean
-//    @ConditionalOnMissingBean
-//    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-//        DefaultAdvisorAutoProxyCreator defaultAAP = new DefaultAdvisorAutoProxyCreator();
-//        defaultAAP.setProxyTargetClass(true);
-//        return defaultAAP;
-//    }
+//
 //    /**
 //     * 配置shiroFilter过滤器到springboot中
 //     */
