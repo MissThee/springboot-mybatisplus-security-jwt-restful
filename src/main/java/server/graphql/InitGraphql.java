@@ -69,7 +69,8 @@ public class InitGraphql {
                 .build();
     }
 
-    //构建图，引用匹配方式
+    //构建图，引用匹配方式(使用graphql-spring-boot-starter时，默认使用此bean)
+    @Bean
     private GraphQLSchema userGraphQLSchema() {
         return GraphQLSchema.newSchema()
                 .query(newObject()
@@ -80,7 +81,7 @@ public class InitGraphql {
                 .build();
     }
 
-    //构建graphQL，引用图。
+    //构建graphQL，引用图。(使用graphql-java-spring-boot-starter-webmvc时，默认使用此bean)
     @Bean
     public GraphQL userGraphQLDefinition() {
         return GraphQL.newGraphQL(userGraphQLSchema()).build();

@@ -101,14 +101,14 @@ public class JavaJWT {
             log.debug("CHECK TOEKN: NULL");
             return false;
         }
-        DecodedJWT decodedJWT = JWT.decode(token);
-        String id = decodedJWT.getClaim("id").asString();
-        User user = userService.selectOneById(Integer.parseInt(id));
-        Algorithm algorithm = Algorithm.HMAC256(user.getPassword().getBytes());
-        JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer(issuer)
-                .build();
         try {
+            DecodedJWT decodedJWT = JWT.decode(token);
+            String id = decodedJWT.getClaim("id").asString();
+            User user = userService.selectOneById(Integer.parseInt(id));
+            Algorithm algorithm = Algorithm.HMAC256(user.getPassword().getBytes());
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer(issuer)
+                    .build();
             verifier.verify(token);
             log.debug("CHECK TOEKN: Fine");
             return true;
