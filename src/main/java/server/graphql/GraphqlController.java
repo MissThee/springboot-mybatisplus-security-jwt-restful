@@ -57,14 +57,14 @@ public class GraphqlController {
                 .type("Query", builder -> builder.dataFetcher("hello", new StaticDataFetcher("world")))
                 .build();
 
-        SchemaGenerator schemaGenerator = new SchemaGenerator();
-        GraphQLSchema schema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
-
+        GraphQLSchema schema = new SchemaGenerator().makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
+        //请求测试
+        //        /g/2?query={hello}
         return new ResGraphql(GraphQL.newGraphQL(schema).build().execute(query));
     }
 
     @RequestMapping("3")
-    public Object graphql3(@RequestParam(value = "query", required = false) String query) throws Exception {
+    public Object graphql3(@RequestParam(value = "query", required = false) String query) {
         GraphQLObjectType objectType = newObject()//创建对象
                 .name("UserTest")
                 .field(newFieldDefinition().type(GraphQLString).name("string1"))
