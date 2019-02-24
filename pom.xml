@@ -156,9 +156,9 @@
             <version>11.0</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.graphql-java</groupId>-->
-            <!--<artifactId>graphql-java-spring-boot-starter-webmvc</artifactId>-->
-            <!--<version>1.0</version>-->
+        <!--<groupId>com.graphql-java</groupId>-->
+        <!--<artifactId>graphql-java-spring-boot-starter-webmvc</artifactId>-->
+        <!--<version>1.0</version>-->
         <!--</dependency>-->
         <!--使用graphql-java-spring-boot-starter-webmvc（使用时注册GraphQL为Bean） 或 graphql-spring-boot-starter（使用时注册GraphQLSchema）一种即可-->
         <dependency>
@@ -171,7 +171,12 @@
             <artifactId>graphiql-spring-boot-starter</artifactId>
             <version>5.3.1</version>
         </dependency>
-
+        <!--自定义集合类计算工具-->
+        <dependency>
+            <groupId>com.github.MissThee</groupId>
+            <artifactId>collection-compute</artifactId>
+            <version>2.1</version>
+        </dependency>
         <!-- 暂未使用 -->
         <!--oracle驱动(本地)-->
         <!--<dependency>-->

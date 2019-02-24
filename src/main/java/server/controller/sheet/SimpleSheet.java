@@ -1,8 +1,10 @@
 package server.controller.sheet;
 
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import server.tool.ExcelExport;
 
 import javax.servlet.http.HttpServletResponse;
@@ -12,12 +14,6 @@ import java.util.*;
 @RequestMapping("/sheet/simple")
 @RestController()
 public class SimpleSheet {
-    private final ExcelExport excelExport;
-
-    @Autowired
-    public SimpleSheet(ExcelExport excelExport) {
-        this.excelExport = excelExport;
-    }
 
     private Map<String, String> getColumnMap() {
         //前端网页数据所需的列，与后台导出excel所需的列统一在此设置
@@ -48,11 +44,11 @@ public class SimpleSheet {
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
         String fileName = "简单报表（" + searchDateStr + "）";
         List<ExcelExport.HeaderCell> extraHeaderCell = new ArrayList<ExcelExport.HeaderCell>() {{
-            add(excelExport.new HeaderCell("", 3));
-            add(excelExport.new HeaderCell("掺水汇管（出站）", 5));
-            add(excelExport.new HeaderCell("集油汇管（进站）", 5));
+            add(new ExcelExport.HeaderCell("", 3));
+            add(new ExcelExport.HeaderCell("掺水汇管（出站）", 5));
+            add(new ExcelExport.HeaderCell("集油汇管（进站）", 5));
         }};
-        excelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
+        ExcelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
     }
 
     private List<server.db.primary.model.sheet.SimpleSheet> getData() {

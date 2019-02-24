@@ -1,0 +1,6 @@
+src/main/resources/META-INF/spring.factories
+
+增加配置，指向自己的配置bean
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.jar.demo.config
