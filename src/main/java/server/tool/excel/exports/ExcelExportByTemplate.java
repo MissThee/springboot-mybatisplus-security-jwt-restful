@@ -1,4 +1,4 @@
-package server.tool.excel;
+package server.tool.excel.exports;
 
 
 import com.alibaba.fastjson.JSON;
@@ -6,9 +6,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.util.CellRangeAddress;
+import server.tool.excel.template.SimpleCell;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -20,7 +18,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static server.tool.excel.CellTool.getSimpleCellInfo;
+import static server.tool.excel.reflection.GetterAndSetter.invokeGetMethod;
+import static server.tool.excel.template.TemplateTool.getSimpleCellInfo;
 import static server.tool.excel.response.ResponseTool.responseOut;
 
 public class ExcelExportByTemplate {
@@ -32,7 +31,7 @@ public class ExcelExportByTemplate {
      * @param sheetIndex       sheet页下标：从0开始
      * @param t                实体类
      */
-    public static <T> void ExportByTemplate(HttpServletResponse response, String templateFilePath, String exportFileName, int sheetIndex, T t) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static <T> void simpleReplaceByPOJO(HttpServletResponse response, String templateFilePath, String exportFileName, int sheetIndex, T t) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         HSSFWorkbook wb = new HSSFWorkbook(Objects.requireNonNull(ExcelExportByTemplate.class.getClassLoader().getResourceAsStream(templateFilePath)));
         List<String> cellStyleStrList = new ArrayList<>();
         HSSFSheet sheet = wb.getSheetAt(sheetIndex);
@@ -62,41 +61,5 @@ public class ExcelExportByTemplate {
     }
 
 
-    /**
-     * 执行getXxx方法
-     *
-     * @param t            执行set方法的对象
-     * @param propertyName 执行set方法的属性名
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     */
-    private static <T> Object invokeGetMethod(T t, String propertyName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //通过集合类中列举的属性，获取对应的getXxx()方法名
-        String getGetMethodName = "get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
-        //通过方法名获取方法
-        Method getMethod = t.getClass().getMethod(getGetMethodName);
-        //执行方法获取值
-        return getMethod.invoke(t);
-    }
 
-    /**
-     * 执行setXxx方法
-     *
-     * @param t             执行set方法的对象
-     * @param propertyName  执行set方法的属性名
-     * @param setValue      执行set方法的参数
-     * @param setValueClazz 参数的类型
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     */
-    private static <T> void invokeSetMethod(T t, String propertyName, Object setValue, Class setValueClazz) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //通过集合类中列举的属性，获取对应的setXxx()方法名
-        String getGetMethodName = "set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
-        //通过方法名获取方法
-        Method setMethod = t.getClass().getMethod(getGetMethodName, setValueClazz);
-        //执行方法获设置值
-        setMethod.invoke(t, setValue);
-    }
 }

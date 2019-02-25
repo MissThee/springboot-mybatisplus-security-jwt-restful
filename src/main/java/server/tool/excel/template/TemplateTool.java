@@ -1,11 +1,11 @@
-package server.tool.excel;
+package server.tool.excel.template;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-public class CellTool {
+public class TemplateTool {
     /**
      * 若单元格为有效值单元格（单个单元格、合并单元的首个单元格），读取单元格
      */

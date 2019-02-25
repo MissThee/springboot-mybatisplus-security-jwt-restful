@@ -1,4 +1,4 @@
-package server.tool.excel;
+package server.tool.excel.response;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -13,7 +13,7 @@ public class ResponseTool {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName + ".xls", "UTF-8"));
+        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName , "UTF-8"));
         response.setHeader("Access-Control-Expose-Headers", "Content-disposition");
         OutputStream outputStream = response.getOutputStream(); // 打开流
         wb.write(outputStream);// HSSFWorkbook写入流
