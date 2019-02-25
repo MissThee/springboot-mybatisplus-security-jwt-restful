@@ -3,7 +3,6 @@ package server.config.tkmapper.common;
 
 import server.config.tkmapper.custom.MyExampleMapper;
 import server.config.tkmapper.custom.MyInsertMapper;
-import tk.mybatis.mapper.additional.dialect.oracle.OracleMapper;
 import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.common.MySqlMapper;
 //通用mapper内含生成器生成的一般方法，若自己的mapper继承mapper需自行删除自己mapper.java以及mapper.xml中与此同名的方法。

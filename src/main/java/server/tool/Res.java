@@ -5,16 +5,20 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shiro.crypto.hash.Hash;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.HashMap;
 
 @Data
 @Component
 @NoArgsConstructor
-public class Res<T> {
+public class Res<T> implements Serializable {
     private Res(Boolean result, T data, String msg) {
         this.result = result;
-        data = data == null ? (T) new JSONObject() : data;
+        data = data == null ? (T) new HashMap() : data;
         this.data = data;
         this.msg = StringUtils.isEmpty(msg) ? "" : msg;
     }

@@ -9,16 +9,15 @@
     <context id="generator1" targetRuntime="MyBatis3">
         <!-- 序列化接口 -->
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
-
         <!-- 若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
-        <!--MapperPlugin： 生成继承CommenMapper的Mapper类-->
-        <!--LombokPlugin： 使用lombok的@Data注解，取消生成setter/getter-->
-        <!--LombokSwaggerPlugin： 使用lombok的@Data注解,注释使用，取消生成setter/getter-->
+        <!--MapperPlugin：           生成继承CommenMapper的Mapper类-->
+        <!--LombokPlugin：           使用lombok的@Data注解，取消生成setter/getter，增加实体类属性名String类型静态变量-->
+        <!--LombokSwaggerPlugin：    使用lombok的@Data注解，取消生成setter/getter，增加实体类属性名String类型静态变量，属性添加@ApiModelProperty，value为数据库字段说明-->
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
             <property name="mappers" value="server.config.tkmapper.common.CommonMapper"/>
         </plugin>
-        <!--<plugin type="com.custom.mybatis.generator.plugins.LombokPlugin" /> -->
-        <plugin type="com.custom.mybatis.generator.plugins.LombokSwaggerPlugin"/>
+        <plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin" />
+        <!--<plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokSwaggerPlugin"/>-->
 
         <commentGenerator>
             <!-- 是否去除自动生成的注释 true：是 ： false:否 -->

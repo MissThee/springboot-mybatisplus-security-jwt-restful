@@ -1,26 +1,24 @@
-package server.tool;
+package server.tool.excel.exports;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.util.StringUtils;
+import server.tool.excel.template.SimpleCell;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static server.tool.excel.reflection.GetterAndSetter.invokeGetMethod;
+import static server.tool.excel.response.ResponseTool.responseOut;
 
 //通用简单表格导出工具，调用本工具的Controller返回类型需为void
 public class ExcelExport {
@@ -37,12 +35,11 @@ public class ExcelExport {
      * @param dataList         数据集合，需与表头数组中的字段名一致，并且符合javabean规范【自行查询数据List< Model>】
      * @param withIndex        是否插入序号列【一般为true】
      * @param extraHeaderCell  在列名行前的额外列名行，专用于制作复杂表头。HeaderColumn不含x,y时，每个List为一行，HeaderColumn(内容,合并列数) ;含x,y时使用x,y定位插入【一般为null】
-     *
      * @return int 返回最后插入数据的行下标+1，调用此方法后，新建行时可直接使用返回的值
      * @throws Exception 抛出异常
      */
     @SafeVarargs
-    public static final <T> LastRowColumnNum addRowsByData(
+    public static <T> LastRowColumnNum addRowsByData(
             HSSFWorkbook wb,
             int sheetIndex,
             int startRowIndex,
@@ -52,7 +49,7 @@ public class ExcelExport {
             Boolean showHeaderColumn,
             List<T> dataList,
             Boolean withIndex,
-            List<HeaderCell>... extraHeaderCell) throws Exception {
+            List<SimpleCell>... extraHeaderCell) throws Exception {
         HSSFCellStyle titleStyle = titleStyle(wb);
         HSSFCellStyle headerStyle = headerStyle(wb);
         HSSFCellStyle dataStyle = dataStyle(wb);
@@ -141,10 +138,7 @@ public class ExcelExport {
                         short dataFormatBack = dataStyle.getDataFormat();
                         //写入值
                         if (!dataColumn.getIsEmptyData()) {
-                            String getMethodName = "get" + dataColumn.getDataStr().substring(0, 1).toUpperCase() + dataColumn.getDataStr().substring(1);// 取得对应getXxx()方法
-                            Class<?> tCls = t.getClass();// 泛型为Object以及所有Object的子类
-                            Method getMethod = tCls.getMethod(getMethodName);// 通过方法名得到对应的方法
-                            Object value = getMethod.invoke(t);// 动态调用方,得到属性值
+                            Object value = invokeGetMethod(t, dataColumn.getDataStr());
                             if (value != null) {
                                 if (value instanceof Float || value instanceof Double) {
 //                                    value = String.format("%.2f", (Double) value);
@@ -177,14 +171,13 @@ public class ExcelExport {
                 }
                 rowNum++;
                 columnNum++;
-
             }
         }
         return new LastRowColumnNum(rowNum, columnNum);
     }
 
     @SafeVarargs
-    public static final <T> LastRowColumnNum addRowsByData(
+    public static <T> LastRowColumnNum addRowsByData(
             HSSFWorkbook wb,
             int sheetIndex,
             int startRowIndex,
@@ -194,7 +187,7 @@ public class ExcelExport {
             Boolean showHeaderColumn,
             List<T> dataList,
             Boolean withIndex,
-            List<HeaderCell>... extraHeaderCell) throws Exception {
+            List<SimpleCell>... extraHeaderCell) throws Exception {
         List<DataColumn> dataColumns = new ArrayList<>();
         for (String key : columnMap.keySet()) {
             dataColumns.add(new DataColumn(key, columnMap.get(key)));
@@ -204,14 +197,14 @@ public class ExcelExport {
 
     //headerCellLists中，HeaderCell有无x,y决定使用顺序插入还是定点插入,顺序插入总是以上一个cell的右边一格插入
     @SafeVarargs
-    private static final LastRowColumnNum addExtraHeaderRowsByList(HSSFWorkbook wb, int sheetIndex, int startRowIndex, int startColumnIndex, List<HeaderCell>... headerCellLists) {
+    private static LastRowColumnNum addExtraHeaderRowsByList(HSSFWorkbook wb, int sheetIndex, int startRowIndex, int startColumnIndex, List<SimpleCell>... headerCellLists) {
         HSSFCellStyle headerStyle = headerStyle(wb);
         int insertMaxHeight = 0;        //记录插入的最大行号
         int insertMaxWidth = 0;         //记录插入的最大列号
         int rowIndex = startRowIndex;       //无x,y时使用   顺序插入    记录上次插入的行号
         int columnIndex = startColumnIndex; //无x,y时使用   顺序插入    记录上次插入的列号
-        for (List<HeaderCell> headerCellList : headerCellLists) {
-            for (HeaderCell headerCell : headerCellList) {
+        for (List<SimpleCell> headerCellList : headerCellLists) {
+            for (SimpleCell headerCell : headerCellList) {
                 String value = headerCell.getValue();
                 Integer x = headerCell.getX();                                                              //单元格列号下标
                 Integer y = headerCell.getY() == null ? null : (headerCell.getY() + startRowIndex);         //单元格行号下标
@@ -244,19 +237,6 @@ public class ExcelExport {
         return new LastRowColumnNum(insertMaxHeight, insertMaxWidth);
     }
 
-    public static void responseOut(HttpServletResponse response, HSSFWorkbook wb, String fileName) throws IOException {
-        response.reset();
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName + ".xls", "UTF-8"));
-        response.setHeader("Access-Control-Expose-Headers", "Content-disposition");
-        OutputStream outputStream = response.getOutputStream(); // 打开流
-        wb.write(outputStream);// HSSFWorkbook写入流
-        wb.close();// HSSFWorkbook关闭
-        outputStream.flush();// 刷新流
-        outputStream.close();// 关闭流
-    }
 
     public static HSSFCellStyle titleStyle(HSSFWorkbook wb) {
         // 设置标题样式
@@ -351,13 +331,13 @@ public class ExcelExport {
     //     @SafeVarargs
     @SafeVarargs
     public static final <T> void export(HttpServletResponse response,
-                                 String fileName,
-                                 String title,
-                                 Map<String, String> columnMap,
-                                 Boolean showHeaderColumn,
-                                 List<T> dataList,
-                                 Boolean withIndex,
-                                 List<HeaderCell>... extraHeaderCell) throws Exception {
+                                        String fileName,
+                                        String title,
+                                        Map<String, String> columnMap,
+                                        Boolean showHeaderColumn,
+                                        List<T> dataList,
+                                        Boolean withIndex,
+                                        List<SimpleCell>... extraHeaderCell) throws Exception {
         HSSFWorkbook wb = new HSSFWorkbook();
         wb.createSheet();
         List<DataColumn> dataColumns = new ArrayList<>();
@@ -365,41 +345,9 @@ public class ExcelExport {
             dataColumns.add(new DataColumn(key, columnMap.get(key)));
         }
         addRowsByData(wb, 0, 0, 0, title, dataColumns, showHeaderColumn, dataList, withIndex, extraHeaderCell);
-        responseOut(response, wb, fileName);
+        responseOut(response, wb, fileName + ".xls");
     }
 
-    @Getter
-    public static class HeaderCell {
-        private String value;
-        private Integer x;
-        private Integer y;
-        private Integer w;
-        private Integer h;
-
-        public HeaderCell(String cellValue, int w) {
-            this.value = cellValue;
-            this.x = null;
-            this.y = null;
-            this.w = Math.max(w, 1);
-            this.h = 1;
-        }
-
-        public HeaderCell(String cellValue, int w, int h) {
-            this.value = cellValue;
-            this.x = null;
-            this.y = null;
-            this.w = Math.max(w, 1);
-            this.h = Math.max(h, 1);
-        }
-
-        public HeaderCell(String cellValue, int x, int y, int w, int h) {
-            this.value = cellValue;
-            this.x = x;
-            this.y = y;
-            this.w = Math.max(w, 1);
-            this.h = Math.max(h, 1);
-        }
-    }
 
     @Getter
     public static class DataColumn {
@@ -416,7 +364,7 @@ public class ExcelExport {
             this.width = Math.max(width, 1);
         }
 
-        public  DataColumn(String dataStr, String headerName) {
+        public DataColumn(String dataStr, String headerName) {
             this.dataStr = dataStr;
             this.headerName = headerName;
             this.width = 1;

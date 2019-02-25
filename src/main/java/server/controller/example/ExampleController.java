@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.*;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -23,34 +24,54 @@ import server.tool.FileRec;
 import server.tool.Res;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.naming.SizeLimitExceededException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static server.tool.excel.imports.ExcelImport.excel2POJOList;
 
 @ApiIgnore
 //权限访问测试
 @RestController
 @RequestMapping("/test")
 public class ExampleController {
-    private final FileRec fileRec;
-    private final TreeData buildTree;
     private final UserService userService;
     private final JavaJWT javaJWT;
     private final ComputeService computeService;
+
     @Autowired
-    public ExampleController(FileRec fileRec, TreeData buildTree, UserService userService, JavaJWT javaJWT, ComputeService computeService) {
-        this.fileRec = fileRec;
-        this.buildTree = buildTree;
+    public ExampleController(UserService userService, JavaJWT javaJWT, ComputeService computeService) {
+
         this.userService = userService;
         this.javaJWT = javaJWT;
         this.computeService = computeService;
     }
 
+    @PostMapping("getProperty")
+    public Res getProperty() {
+        Map<String, String> map = new HashMap<>();
+        map.put("privateStaticString", AStaticClass.getPrivateStaticString());
+        map.put("InnerStaticClass", AStaticClass.InnerStaticClass.getB());
+        AStaticClass aStaticClass = new AStaticClass();
+        aStaticClass.getPrivateString();
+        aStaticClass.getPublicString();
+        AStaticClass.InnerStaticClass innerStaticClass = new AStaticClass.InnerStaticClass();
+        innerStaticClass.getA();
+        return Res.success(map);
+    }
+
+    @PostMapping("setProperty")
+    public Res setProperty() {
+        AStaticClass.setPrivateStaticString(new Date().toString());
+        AStaticClass.InnerStaticClass.setB(new Date().toString());
+        return Res.success();
+    }
+
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
-    public Res getInfo(@RequestHeader(value = "Authorization", required = false) String token) {
+    public Res<Map<String, Object>> getInfo(@RequestHeader(value = "Authorization", required = false) String token) {
         String userIdByToken = javaJWT.getId(token);//通过token解析获得
         Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
         Map<String, Object> map = new HashMap<String, Object>() {{
@@ -62,13 +83,13 @@ public class ExampleController {
 
     //groupby测试(非标准扩展方法，不建议使用)。
     @PostMapping("groupBy")
-    public Res getInfo() {
+    public Res<List<Compute>> getInfo() {
         List<Compute> computeList = computeService.selectGroupBy();
         return Res.success(computeList);
     }
 
     @PostMapping("addUser")
-    public Res addUser(@RequestBody JSONObject bJO) {
+    public Res<JSONObject> addUser(@RequestBody JSONObject bJO) {
         String username = bJO.getString("username");
         String password = bJO.getString("password");
         String salt = new SecureRandomNumberGenerator().nextBytes().toHex();
@@ -91,7 +112,7 @@ public class ExampleController {
     }
 
     @RequestMapping("tree")
-    public Res getTree(@RequestParam("c") Boolean compareSelfId, @RequestParam("r") Integer rootId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Res<JSONArray> getTree(@RequestParam("c") Boolean compareSelfId, @RequestParam("r") Integer rootId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         List<TreeItem> li = new ArrayList<TreeItem>() {{
             add(new TreeItem(1, "name1", null));
             add(new TreeItem(2, "name2", 1));
@@ -100,7 +121,7 @@ public class ExampleController {
             add(new TreeItem(5, "name5", null));
             add(new TreeItem(6, "name6", 2));
         }};
-        JSONArray objects = buildTree.tree(li, rootId, compareSelfId == null ? false : compareSelfId, new HashMap<>());
+        JSONArray objects = TreeData.tree(li, rootId, compareSelfId == null ? false : compareSelfId, new HashMap<>());
         return Res.success(objects);
     }
 
@@ -138,7 +159,7 @@ public class ExampleController {
     }
 
     @RequestMapping("/require_role12")
-    @RequiresRoles({"role1","role2"})
+    @RequiresRoles({"role1", "role2"})
     public Res requireRole1() {
         return Res.success("WebController：You are visiting require_role12 [role1&role2]");
     }
@@ -164,14 +185,33 @@ public class ExampleController {
 
     //上传文件示例
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JSONObject fileUpload(@RequestParam("file") MultipartFile file) {
-        return fileRec.fileUpload(file, "uploadTest/image");
+    public Res fileUpload(@RequestParam("file") MultipartFile file) throws FileNotFoundException, SizeLimitExceededException {
+        String path = FileRec.fileUpload(file, "uploadTest");
+        if (path != null) {
+            return Res.success(path, "成功");
+        } else {
+            return Res.failure("失败");
+        }
     }
 
-    //上传文件示例1
+    //上传文件示例
     @PostMapping(value = "/upload1")
-    public JSONObject fileUpload1(MultipartFile file, String tip) {
-        return fileRec.fileUpload(file, "uploadTest/image");
+    public Res fileUpload1(MultipartFile file, String customPath) throws FileNotFoundException, SizeLimitExceededException {
+        String path = FileRec.fileUpload(file, customPath);
+        if (path != null) {
+            return Res.success(path, "成功");
+        } else {
+            return Res.failure("失败");
+        }
     }
 
+    //上传excel转为POJO
+    @PostMapping(value = "/upload2")
+    public Res fileUpload2(MultipartFile file) throws IOException, NoSuchMethodException, InvalidFormatException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
+        List<Object> objects = excel2POJOList(file, User.class, new ArrayList<String>() {{
+            add("nickname");
+            add("username");
+        }});
+        return Res.success(objects);
+    }
 }

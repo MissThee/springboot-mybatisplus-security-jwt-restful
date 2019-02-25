@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 //树形数据构建工具
-@Component
 public class TreeData {
     /**
      * 遍历id含parentId树形数据结构的数据
@@ -22,7 +21,7 @@ public class TreeData {
      * @param parentIdColumn 自定义实体类parentId列名
      * @param attrMap        每个节点额外的属性Map(标签名, 实体类属性名>
      */
-    public <T> JSONArray tree(List<T> li, Integer parentId, Integer rootId, Boolean rootIdIsNodeId, String idColumn, String parentIdColumn, Map<String, String> attrMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static <T> JSONArray tree(List<T> li, Integer parentId, Integer rootId, Boolean rootIdIsNodeId, String idColumn, String parentIdColumn, Map<String, String> attrMap) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         JSONArray nodeJA = new JSONArray();
         for (T currentItem : li) {
             Integer nodeId = (Integer) getPropertyValue(currentItem, idColumn);
@@ -56,7 +55,7 @@ public class TreeData {
      * @param rootIdIsNodeId 使用节点id或parentId与rootId比较。true：节点id==rootId为根节点；false：节点parentId==rootId为根节点
      * @param attrMap        每个节点额外的属性Map(标签名, 实体类属性名>
      */
-    public <T> JSONArray tree(List<T> li, Integer rootId, Boolean rootIdIsNodeId, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static <T> JSONArray tree(List<T> li, Integer rootId, Boolean rootIdIsNodeId, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return tree(li, null, rootId, rootIdIsNodeId, "id", "parentId", attrMap);
     }
 
@@ -67,7 +66,7 @@ public class TreeData {
      * @param rootId  根节点的id
      * @param attrMap 每个节点额外的属性Map(标签名, 实体类属性名>
      */
-    public <T> JSONArray tree(List<T> li, Integer rootId, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static <T> JSONArray tree(List<T> li, Integer rootId, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return tree(li, null, rootId, true, "id", "parentId", attrMap);
     }
 
@@ -78,7 +77,7 @@ public class TreeData {
      * @param li      包含id和parentId的数据
      * @param attrMap 每个节点额外的属性Map(标签名, 实体类属性名>
      */
-    public <T> JSONArray tree(List<T> li, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static <T> JSONArray tree(List<T> li, Map<String, String> attrMap) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return tree(li, null, null, false, "id", "parentId", attrMap);
     }
 
@@ -93,12 +92,12 @@ public class TreeData {
      * @param idColumn       自定义实体类id列名
      * @param parentIdColumn 自定义实体类parentId列名
      */
-    public <T> List<Integer> getChildIdList(List<T> li, Integer parentId, Integer rootId, Boolean rootIdIsNodeId, String idColumn, String parentIdColumn) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static <T> List<Integer> getChildIdList(List<T> li, Integer parentId, Integer rootId, Boolean rootIdIsNodeId, String idColumn, String parentIdColumn) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<Integer> idList = new ArrayList<>();
         for (T currentItem : li) {
             Integer nodeId = (Integer) currentItem.getClass().getMethod("get" + idColumn.substring(0, 1).toUpperCase() + idColumn.substring(1)).invoke(currentItem);
             Integer nodePId = (Integer) currentItem.getClass().getMethod("get" + parentIdColumn.substring(0, 1).toUpperCase() + parentIdColumn.substring(1)).invoke(currentItem);
-            if (parentId == null ? (Objects.equals(rootId, rootIdIsNodeId ? nodeId : nodePId)): (Objects.equals(nodePId, parentId))) {
+            if (parentId == null ? (Objects.equals(rootId, rootIdIsNodeId ? nodeId : nodePId)) : (Objects.equals(nodePId, parentId))) {
                 idList.addAll(getChildIdList(li, nodeId, rootId, rootIdIsNodeId, idColumn, parentIdColumn));
                 idList.add(nodeId);
             }
@@ -106,20 +105,20 @@ public class TreeData {
         return idList;
     }
 
-    public <T> List<Integer> getChildIdList(List<T> li, Integer rootId, Boolean rootIdIsNodeId, String idColumn, String parentIdColumn) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static <T> List<Integer> getChildIdList(List<T> li, Integer rootId, Boolean rootIdIsNodeId, String idColumn, String parentIdColumn) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return getChildIdList(li, null, rootId, rootIdIsNodeId, idColumn, parentIdColumn);
     }
 
-    public <T> List<Integer> getChildIdList(List<T> li, Integer rootId, Boolean rootIdIsNodeId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static <T> List<Integer> getChildIdList(List<T> li, Integer rootId, Boolean rootIdIsNodeId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return getChildIdList(li, null, rootId, rootIdIsNodeId, "id", "parentId");
     }
 
-    public <T> List<Integer> getChildIdList(List<T> li, Integer rootId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static <T> List<Integer> getChildIdList(List<T> li, Integer rootId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return getChildIdList(li, null, rootId, true, "id", "parentId");
     }
 
     //    获取相应属性的值
-    private Object getPropertyValue(Object currentItem, String propertyName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static Object getPropertyValue(Object currentItem, String propertyName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return currentItem.getClass().getMethod("get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1)).invoke(currentItem);
     }
 }

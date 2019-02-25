@@ -5,7 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import server.tool.ExcelExport;
+import server.tool.excel.exports.direct.ExcelExport;
+import server.tool.excel.template.SimpleCell;
 
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
@@ -43,10 +44,10 @@ public class SimpleSheet {
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
         String fileName = "简单报表（" + searchDateStr + "）";
-        List<ExcelExport.HeaderCell> extraHeaderCell = new ArrayList<ExcelExport.HeaderCell>() {{
-            add(new ExcelExport.HeaderCell("", 3));
-            add(new ExcelExport.HeaderCell("掺水汇管（出站）", 5));
-            add(new ExcelExport.HeaderCell("集油汇管（进站）", 5));
+        List<SimpleCell> extraHeaderCell = new ArrayList< SimpleCell>() {{
+            add(new SimpleCell("", 3));
+            add(new SimpleCell("掺水汇管（出站）", 5));
+            add(new SimpleCell("集油汇管（进站）", 5));
         }};
         ExcelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
     }
