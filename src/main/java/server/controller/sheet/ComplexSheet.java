@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import server.db.primary.model.sheet.ComplexSheetData;
 import server.db.primary.model.sheet.ComplexSheetForm;
+import server.tool.excel.exports.direct.DataColumn;
 import server.tool.excel.exports.direct.ExcelExport;
 import server.tool.excel.exports.direct.LastRowColumnNum;
 import server.tool.excel.template.SimpleCell;
@@ -34,62 +35,62 @@ import static server.tool.excel.response.ResponseTool.responseOut;
 @RestController()
 public class ComplexSheet {
 
-    private ArrayList<ExcelExport.DataColumn> getColumnMap() {
+    private ArrayList<DataColumn> getColumnMap() {
         //前端网页数据所需的列，与后台导出excel所需的列统一在此设置
         //前端数据列，取map的id集合
         //excel数据列，取value非空
-        return new ArrayList<ExcelExport.DataColumn>() {{
-            add(new ExcelExport.DataColumn("id", "").setNoDataBaseColumn());
-            add(new ExcelExport.DataColumn("report_time", "1", 1));
-            add(new ExcelExport.DataColumn("cyg_yw1", "1"));
-            add(new ExcelExport.DataColumn("cyg_jm1", "1"));
-            add(new ExcelExport.DataColumn("cyg_kr1", "1"));
-            add(new ExcelExport.DataColumn("cyg_yw2", "1"));
-            add(new ExcelExport.DataColumn("cyg_jm2", "1"));
-            add(new ExcelExport.DataColumn("cyg_kr2", "1"));
-            add(new ExcelExport.DataColumn("pi_1150", "1"));
-            add(new ExcelExport.DataColumn("ti_1270", "1"));
-            add(new ExcelExport.DataColumn("ft109", "1"));
-            add(new ExcelExport.DataColumn("ti_1250", "1"));
-            add(new ExcelExport.DataColumn("pi_1090", "1"));
-            add(new ExcelExport.DataColumn("ti_1260", "1"));
-            add(new ExcelExport.DataColumn("pi_1100", "1"));
-            add(new ExcelExport.DataColumn("ti_1230", "1"));
-            add(new ExcelExport.DataColumn("ti_1240", "1"));
-            add(new ExcelExport.DataColumn("pi_1140", "1"));
-            add(new ExcelExport.DataColumn("pi_1110", "1"));
-            add(new ExcelExport.DataColumn("pi_1120", "1"));
-            add(new ExcelExport.DataColumn("ti_1200", "1"));
-            add(new ExcelExport.DataColumn("pi_1070", "1"));
-            add(new ExcelExport.DataColumn("jiarelu1", "1").setNoDataBaseColumn());
-            add(new ExcelExport.DataColumn("jiarelu2", "1").setNoDataBaseColumn());
-            add(new ExcelExport.DataColumn("jiarelu3", "1").setNoDataBaseColumn());
-            add(new ExcelExport.DataColumn("rq_ckyl", "1"));
-            add(new ExcelExport.DataColumn("rq_ljds", "1"));
-            add(new ExcelExport.DataColumn("ranqiliang", "1").setNoDataBaseColumn());
-            add(new ExcelExport.DataColumn("pi_1060", "1"));
-            add(new ExcelExport.DataColumn("ti_1150", "1"));
-            add(new ExcelExport.DataColumn("ft104s", "1"));
-            add(new ExcelExport.DataColumn("ft_1040", "1"));
-            add(new ExcelExport.DataColumn("rsb_by1", "1"));
-            add(new ExcelExport.DataColumn("rsb_by2", "1"));
-            add(new ExcelExport.DataColumn("rsb_by3", "1"));
-            add(new ExcelExport.DataColumn("lt_1030", "1"));
-            add(new ExcelExport.DataColumn("hsg_wd", "1"));
-            add(new ExcelExport.DataColumn("pi_1080", "1"));
-            add(new ExcelExport.DataColumn("ti_1210", "1"));
-            add(new ExcelExport.DataColumn("pi_1010", "1"));
-            add(new ExcelExport.DataColumn("ti_1010", "1"));
-            add(new ExcelExport.DataColumn("ft_1010", "1"));
-            add(new ExcelExport.DataColumn("ft101s", "1"));
-            add(new ExcelExport.DataColumn("cshrq_hgwd", "1"));
-            add(new ExcelExport.DataColumn("ti_1020", "1"));
-            add(new ExcelExport.DataColumn("ti_1030", "1"));
-            add(new ExcelExport.DataColumn("ti_1220", "1"));
-            add(new ExcelExport.DataColumn("ws_yl", "1"));
-            add(new ExcelExport.DataColumn("ws_wd", "1"));
-            add(new ExcelExport.DataColumn("ws_llj", "1"));
-            add(new ExcelExport.DataColumn("yeliang", "1").setNoDataBaseColumn());
+        return new ArrayList<DataColumn>() {{
+            add(new DataColumn("id", "").setNoDataBaseColumn());
+            add(new DataColumn("report_time", "1", 1));
+            add(new DataColumn("cyg_yw1", "1"));
+            add(new DataColumn("cyg_jm1", "1"));
+            add(new DataColumn("cyg_kr1", "1"));
+            add(new DataColumn("cyg_yw2", "1"));
+            add(new DataColumn("cyg_jm2", "1"));
+            add(new DataColumn("cyg_kr2", "1"));
+            add(new DataColumn("pi_1150", "1"));
+            add(new DataColumn("ti_1270", "1"));
+            add(new DataColumn("ft109", "1"));
+            add(new DataColumn("ti_1250", "1"));
+            add(new DataColumn("pi_1090", "1"));
+            add(new DataColumn("ti_1260", "1"));
+            add(new DataColumn("pi_1100", "1"));
+            add(new DataColumn("ti_1230", "1"));
+            add(new DataColumn("ti_1240", "1"));
+            add(new DataColumn("pi_1140", "1"));
+            add(new DataColumn("pi_1110", "1"));
+            add(new DataColumn("pi_1120", "1"));
+            add(new DataColumn("ti_1200", "1"));
+            add(new DataColumn("pi_1070", "1"));
+            add(new DataColumn("jiarelu1", "1").setNoDataBaseColumn());
+            add(new DataColumn("jiarelu2", "1").setNoDataBaseColumn());
+            add(new DataColumn("jiarelu3", "1").setNoDataBaseColumn());
+            add(new DataColumn("rq_ckyl", "1"));
+            add(new DataColumn("rq_ljds", "1"));
+            add(new DataColumn("ranqiliang", "1").setNoDataBaseColumn());
+            add(new DataColumn("pi_1060", "1"));
+            add(new DataColumn("ti_1150", "1"));
+            add(new DataColumn("ft104s", "1"));
+            add(new DataColumn("ft_1040", "1"));
+            add(new DataColumn("rsb_by1", "1"));
+            add(new DataColumn("rsb_by2", "1"));
+            add(new DataColumn("rsb_by3", "1"));
+            add(new DataColumn("lt_1030", "1"));
+            add(new DataColumn("hsg_wd", "1"));
+            add(new DataColumn("pi_1080", "1"));
+            add(new DataColumn("ti_1210", "1"));
+            add(new DataColumn("pi_1010", "1"));
+            add(new DataColumn("ti_1010", "1"));
+            add(new DataColumn("ft_1010", "1"));
+            add(new DataColumn("ft101s", "1"));
+            add(new DataColumn("cshrq_hgwd", "1"));
+            add(new DataColumn("ti_1020", "1"));
+            add(new DataColumn("ti_1030", "1"));
+            add(new DataColumn("ti_1220", "1"));
+            add(new DataColumn("ws_yl", "1"));
+            add(new DataColumn("ws_wd", "1"));
+            add(new DataColumn("ws_llj", "1"));
+            add(new DataColumn("yeliang", "1").setNoDataBaseColumn());
         }};
     }
 
