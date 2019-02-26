@@ -1,18 +1,18 @@
 package server.tool.excel.exports;
 
 
-import com.alibaba.fastjson.JSON;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.xmlbeans.impl.piccolo.io.FileFormatException;
 import server.tool.excel.template.SimpleCell;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -26,21 +26,16 @@ public class ExcelExportByTemplate {
     /**
      * 读取模板文件，以${xxxXxx}为占位符，按Model中的变量替换值
      *
-     * @param templateFilePath 模板文件路径。开头不加/，以resources目录为根目录，如"static/test.xls"对应src/main/resources/static/test.xls文件
-     * @param exportFileName   输出的excel表文件名
-     * @param sheetIndex       sheet页下标：从0开始
-     * @param t                实体类
+     * @param sheetIndex sheet页下标：从0开始
+     * @param t          实体类
      */
-    public static <T> void simpleReplaceByPOJO(HttpServletResponse response, String templateFilePath, String exportFileName, int sheetIndex, T t) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        HSSFWorkbook wb = new HSSFWorkbook(Objects.requireNonNull(ExcelExportByTemplate.class.getClassLoader().getResourceAsStream(templateFilePath)));
-        List<String> cellStyleStrList = new ArrayList<>();
-        HSSFSheet sheet = wb.getSheetAt(sheetIndex);
-        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
-            HSSFRow row = sheet.getRow(i);
+    public static <T> Workbook simplePartialReplaceByPOJO(Workbook wb, int sheetIndex, T t) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Sheet sheet = wb.getSheetAt(sheetIndex);
+        for (Row row : sheet) {
+            if (row == null) {
+                continue;
+            }
             for (Cell cell : row) {
-                if (!cellStyleStrList.contains(JSON.toJSONString(cell.getCellStyle()))) {
-                    cellStyleStrList.add(JSON.toJSONString(cell.getCellStyle()));
-                }
                 SimpleCell cellInfo = getSimpleCellInfo(sheet, cell);
                 if (cellInfo.getValue() != null) {
                     //替换值
@@ -50,16 +45,104 @@ public class ExcelExportByTemplate {
                     while (m.find()) {
                         String modelPropertyName = m.group(1);
                         Object modelPropertyValue = invokeGetMethod(t, modelPropertyName);
-                        cell.setCellValue(valueStr.replace(m.group(), String.valueOf(modelPropertyValue)));
+                        System.out.println(m.group());
+                        valueStr = valueStr.replace(m.group(), String.valueOf(modelPropertyValue));
+                        cell.setCellValue(valueStr);
                     }
                 }
-
             }
-
         }
-        responseOut(response, wb, exportFileName + ".xls");
+        return wb;
     }
 
+    public static Workbook readFile(String templateFilePath) throws IOException {
+        Workbook wb;
+        if (templateFilePath.endsWith(".xls")) {
+            wb = new HSSFWorkbook(Objects.requireNonNull(ExcelExportByTemplate.class.getClassLoader().getResourceAsStream(templateFilePath)));
+        } else if (templateFilePath.endsWith(".xlsx")) {
+            wb = new XSSFWorkbook(Objects.requireNonNull(ExcelExportByTemplate.class.getClassLoader().getResourceAsStream(templateFilePath)));
+        } else {
+            throw new FileFormatException(" only for .xls or .xlsx ");
+        }
+        return wb;
+    }
 
+    /**
+     * 读取模板文件，以$[List]为占位符，按propertyNameList中的属性名，对应的datalist中的变量替换
+     *
+     * @param sheetIndex       sheet页下标：从0开始
+     * @param dataList         实体类集合
+     * @param propertyNameList 实体类属性名集合
+     */
+    public static <T> Workbook simpleReplaceByPOJOList(Workbook wb, int sheetIndex, List<T> dataList, List<String> propertyNameList) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Sheet sheet = wb.getSheetAt(sheetIndex);
+        for (int rowIndex = 0; rowIndex < sheet.getLastRowNum(); rowIndex++) {
+            Row row = sheet.getRow(rowIndex);
+            if (row == null) {
+                continue;
+            }
+            for (int columnIndex = 0; columnIndex < row.getLastCellNum(); columnIndex++) {
+                Cell cell = row.getCell(columnIndex);
+                if (cell == null) {
+                    continue;
+                }
+                SimpleCell cellInfo = getSimpleCellInfo(sheet, cell);
+                if (cellInfo.getValue() != null) {
+                    String valueStr = cellInfo.getValue();
+                    //用List替换值
+                    if (dataList != null && dataList.size() > 0) {
+                        if (valueStr.contains("$[List]")) {
+                            int repalceRowIndex = rowIndex;
+                            for (T t : dataList) {
+                                if (valueStr.contains("$[List]")) {
+                                    int repalceColumnIndex = columnIndex;
+                                    for (String propertyName : propertyNameList) {
+                                        Object o = invokeGetMethod(t, propertyName);
+                                        Row currentRow = sheet.getRow(repalceRowIndex);
+                                        if (currentRow == null) {
+                                            currentRow = sheet.createRow(repalceRowIndex);
+                                        }
+                                        Cell currentCell = currentRow.getCell(repalceColumnIndex);
+                                        if (currentCell == null) {
+                                            currentCell = currentRow.createCell(repalceColumnIndex);
+                                        }
+                                        currentCell.setCellValue(o.toString());
+                                        repalceColumnIndex++;
+                                    }
+                                }
+                                repalceRowIndex++;
+//                               取下一行首个值
+                                {
+                                    Row nextRow = sheet.getRow(repalceRowIndex);
+                                    if (nextRow == null) {
+                                        valueStr = "";
+                                    } else {
+                                        Cell nextCell = nextRow.getCell(columnIndex);
+                                        if (nextCell == null) {
+                                            valueStr = "";
+                                        } else {
+                                            valueStr = nextCell.getStringCellValue();
+                                        }
+                                    }
+                                }
+                                if (repalceRowIndex >= sheet.getLastRowNum()) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return wb;
+    }
 
+    public static void export(HttpServletResponse response, Workbook wb, String fileName) throws IOException {
+        if (wb.getClass().equals(HSSFWorkbook.class)) {
+            fileName += ".xls";
+        } else if (wb.getClass().equals(XSSFWorkbook.class)) {
+            fileName += ".xls";
+        }
+        responseOut(response, wb, fileName);
+    }
 }

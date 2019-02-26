@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import server.tool.excel.exports.direct.ExcelExport;
+import server.tool.excel.exports.direct.WorkBookVersion;
 import server.tool.excel.template.SimpleCell;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,12 +29,12 @@ public class SimpleSheet {
             put("press_out", "出站压力（MPa）");
             put("flow_inst_out", "瞬时流量（m³/h）");
             put("flow_totle_out", "流量计读数");
-            put("water_val", "水量(m³)");
+            put("water_val", "水量（m³）");
             put("temp_in", "入站温度(℃)");
             put("press_in", "入站压力（MPa）");
             put("flow_inst_in", "瞬时流量（m³/h）");
             put("flow_totle_in", "流量计读数");
-            put("liquid_val", "液量(m³)");
+            put("liquid_val", "液量（m³）");
         }};
     }
 
@@ -44,12 +45,12 @@ public class SimpleSheet {
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
         String fileName = "简单报表（" + searchDateStr + "）";
-        List<SimpleCell> extraHeaderCell = new ArrayList< SimpleCell>() {{
+        List<SimpleCell> extraHeaderCell = new ArrayList<SimpleCell>() {{
             add(new SimpleCell("", 3));
             add(new SimpleCell("掺水汇管（出站）", 5));
             add(new SimpleCell("集油汇管（进站）", 5));
         }};
-        ExcelExport.export(response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
+        ExcelExport.export(WorkBookVersion.Excel97_2003, response, fileName, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
     }
 
     private List<server.db.primary.model.sheet.SimpleSheet> getData() {

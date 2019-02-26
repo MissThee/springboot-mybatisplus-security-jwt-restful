@@ -17,7 +17,7 @@ import server.db.primary.model.sheet.ComplexSheetData;
 import server.db.primary.model.sheet.ComplexSheetForm;
 import server.tool.excel.exports.direct.DataColumn;
 import server.tool.excel.exports.direct.ExcelExport;
-import server.tool.excel.exports.direct.LastRowColumnNum;
+import server.tool.excel.exports.direct.CellPoint;
 import server.tool.excel.template.SimpleCell;
 
 import javax.servlet.http.HttpServletResponse;
@@ -62,12 +62,12 @@ public class ComplexSheet {
             add(new DataColumn("pi_1120", "1"));
             add(new DataColumn("ti_1200", "1"));
             add(new DataColumn("pi_1070", "1"));
-            add(new DataColumn("jiarelu1", "1").setNoDataBaseColumn());
-            add(new DataColumn("jiarelu2", "1").setNoDataBaseColumn());
-            add(new DataColumn("jiarelu3", "1").setNoDataBaseColumn());
+            add(new DataColumn("jiarelu1", "1"));
+            add(new DataColumn("jiarelu2", "1"));
+            add(new DataColumn("jiarelu3", "1"));
             add(new DataColumn("rq_ckyl", "1"));
             add(new DataColumn("rq_ljds", "1"));
-            add(new DataColumn("ranqiliang", "1").setNoDataBaseColumn());
+            add(new DataColumn("ranqiliang", "1"));
             add(new DataColumn("pi_1060", "1"));
             add(new DataColumn("ti_1150", "1"));
             add(new DataColumn("ft104s", "1"));
@@ -215,8 +215,8 @@ public class ComplexSheet {
             add(new SimpleCell("温度℃", 44, 3, 1, 1));
             add(new SimpleCell("温度℃", 45, 3, 1, 1));
         }};
-        LastRowColumnNum lastRowColumnNum = ExcelExport.addRowsByData(wb, 0, 0, 0, fileName, getColumnMap(), false, reportData, false, extraHeaderCell);
-        rowNum = lastRowColumnNum.getRowNum();
+        CellPoint cellPosittion = ExcelExport.addRows(wb, 0, 0, 0, fileName, getColumnMap(), false, reportData, false, extraHeaderCell);
+        rowNum = cellPosittion.getY();
 
         List<ComplexSheetForm> formData = getForm();
         if (formData != null) {
@@ -235,7 +235,7 @@ public class ComplexSheet {
                 }
                 {
                     HSSFCell cell = row.createCell(columnIndex);
-                    cell.setCellValue("外输量(m³):");
+                    cell.setCellValue("外输量（m³）:");
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 2);
                     sheet.addMergedRegion(cellRangeAddress);
                     ExcelExport.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));

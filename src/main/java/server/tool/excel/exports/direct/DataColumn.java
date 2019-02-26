@@ -4,21 +4,20 @@ import lombok.Getter;
 
 @Getter
 public class DataColumn {
-    private String dataStr;
-    private String headerName;
-    private Integer width;
-    private Boolean isEmptyData = false;
-    private Boolean isDBColumn = true;
-    private String computeType = "";
+    private String modelPropertyName;           //属性名
+    private String headerName;                  //表头名
+    private Integer width;                      //单元格宽度
+    private Boolean isEmptyData = false;        //不插入数据标记
+    private Boolean isDBColumn = true;          //数据库中此字段有映射字段（用于配合tkmapper筛选需查询的字段使用）
 
-    public DataColumn(String dataStr, String headerName, int width) {
-        this.dataStr = dataStr;
+    public DataColumn(String modelPropertyName, String headerName, int width) {
+        this.modelPropertyName = modelPropertyName;
         this.headerName = headerName;
         this.width = Math.max(width, 1);
     }
 
-    public DataColumn(String dataStr, String headerName) {
-        this.dataStr = dataStr;
+    public DataColumn(String modelPropertyName, String headerName) {
+        this.modelPropertyName = modelPropertyName;
         this.headerName = headerName;
         this.width = 1;
     }
