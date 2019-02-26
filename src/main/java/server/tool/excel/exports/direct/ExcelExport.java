@@ -37,7 +37,6 @@ public class ExcelExport {
      * @param withIndex        是否插入序号列【一般为true】
      * @param extraHeaderCell  在列名行前的额外列名行，专用于制作复杂表头。HeaderColumn不含x,y时，每个List为一行，HeaderColumn(内容,合并列数) ;含x,y时使用x,y定位插入【一般为null】
      * @return int 返回最后插入数据的行下标+1，调用此方法后，新建行时可直接使用返回的坐标值
-     * @throws Exception 抛出异常
      */
     @SafeVarargs
     public static <T> CellPoint addRows(
@@ -50,7 +49,7 @@ public class ExcelExport {
             Boolean showHeaderColumn,
             List<T> dataList,
             Boolean withIndex,
-            List<SimpleCell>... extraHeaderCell) throws Exception {
+            List<SimpleCell>... extraHeaderCell) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
         CellStyle titleStyle = titleStyle(wb);
         CellStyle headerStyle = headerStyle(wb);
@@ -123,6 +122,7 @@ public class ExcelExport {
         }
         return cellPoint;
     }
+
     @SafeVarargs
     private static CellPoint addExtraHeader(Sheet sheet, CellStyle headerStyle, CellPoint cellPoint, List<SimpleCell>... headerCellLists) {
         if (headerCellLists != null && headerCellLists.length > 0) {
@@ -253,6 +253,7 @@ public class ExcelExport {
         }
         return cellPoint;
     }
+
     @SafeVarargs
     public static <T> void export(WorkBookVersion workBookVersion, HttpServletResponse response, String fileName, String title, Map<String, String> columnMap, Boolean showHeaderColumn, List<T> dataList, Boolean withIndex, List<SimpleCell>... extraHeaderCell) throws Exception {
         String fullFileName = fileName + workBookVersion.getFileType();
@@ -282,14 +283,14 @@ public class ExcelExport {
     }
 
     public static void setRegionStyle(Sheet sheet, CellRangeAddress region, CellStyle cs) {
-        for (int i = region.getFirstRow(); i <= region.getLastRow(); i++) {
-            Row row = sheet.getRow(i);
+        for (int rowIndex = region.getFirstRow(); rowIndex <= region.getLastRow(); rowIndex++) {
+            Row row = sheet.getRow(rowIndex);
             if (row == null)
-                row = sheet.createRow(i);
-            for (int j = region.getFirstColumn(); j <= region.getLastColumn(); j++) {
-                Cell cell = row.getCell(j);
+                row = sheet.createRow(rowIndex);
+            for (int columnIndex = region.getFirstColumn(); columnIndex <= region.getLastColumn(); columnIndex++) {
+                Cell cell = row.getCell(columnIndex);
                 if (cell == null) {
-                    cell = row.createCell(j);
+                    cell = row.createCell(columnIndex);
                 }
                 cell.setCellStyle(cs);
             }

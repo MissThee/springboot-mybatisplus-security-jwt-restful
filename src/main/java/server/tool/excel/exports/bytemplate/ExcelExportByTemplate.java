@@ -91,15 +91,15 @@ public class ExcelExportByTemplate {
                     //用List替换值
                     if (dataList != null && dataList.size() > 0) {
                         if (valueStr.contains("$["+clazz.getSimpleName()+"]")) {
-                            int repalceRowIndex = rowIndex;
+                            int replaceRowIndex = rowIndex;
                             for (T t : dataList) {
                                 if (valueStr.contains("$["+clazz.getSimpleName()+"]")) {
                                     int repalceColumnIndex = columnIndex;
                                     for (String propertyName : propertyNameList) {
                                         Object o = invokeGetMethod(t, propertyName);
-                                        Row currentRow = sheet.getRow(repalceRowIndex);
+                                        Row currentRow = sheet.getRow(replaceRowIndex);
                                         if (currentRow == null) {
-                                            currentRow = sheet.createRow(repalceRowIndex);
+                                            currentRow = sheet.createRow(replaceRowIndex);
                                         }
                                         Cell currentCell = currentRow.getCell(repalceColumnIndex);
                                         if (currentCell == null) {
@@ -109,10 +109,10 @@ public class ExcelExportByTemplate {
                                         repalceColumnIndex++;
                                     }
                                 }
-                                repalceRowIndex++;
+                                replaceRowIndex++;
 //                               取下一行首个值
                                 {
-                                    Row nextRow = sheet.getRow(repalceRowIndex);
+                                    Row nextRow = sheet.getRow(replaceRowIndex);
                                     if (nextRow == null) {
                                         valueStr = "";
                                     } else {
@@ -124,7 +124,7 @@ public class ExcelExportByTemplate {
                                         }
                                     }
                                 }
-                                if (repalceRowIndex >= sheet.getLastRowNum()) {
+                                if (replaceRowIndex >= sheet.getLastRowNum()) {
                                     break;
                                 }
                             }
