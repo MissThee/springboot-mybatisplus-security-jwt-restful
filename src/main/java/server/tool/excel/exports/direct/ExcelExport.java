@@ -20,7 +20,6 @@ import static server.tool.excel.exports.direct.DefaultStyle.*;
 import static server.tool.excel.reflection.GetterAndSetter.invokeGetMethod;
 import static server.tool.excel.response.ResponseTool.responseOut;
 
-//通用简单表格导出工具，调用本工具的Controller返回类型需为void
 public class ExcelExport {
 
     /**
@@ -36,7 +35,7 @@ public class ExcelExport {
      * @param dataList         数据集合，需与表头数组中的字段名一致，并且符合javabean规范【自行查询数据List< Model>】
      * @param withIndex        是否插入序号列【一般为true】
      * @param extraHeaderCell  在列名行前的额外列名行，专用于制作复杂表头。HeaderColumn不含x,y时，每个List为一行，HeaderColumn(内容,合并列数) ;含x,y时使用x,y定位插入【一般为null】
-     * @return int 返回最后插入数据的行下标+1，调用此方法后，新建行时可直接使用返回的坐标值
+     * @return int 返回最后插入数据的行列下标各+1，调用此方法后，新建行时可直接使用返回的坐标值
      */
     @SafeVarargs
     public static <T> CellPoint addRows(
@@ -54,7 +53,7 @@ public class ExcelExport {
         CellStyle titleStyle = titleStyle(wb);
         CellStyle headerStyle = headerStyle(wb);
         CellStyle dataStyle = dataStyle(wb);
-
+        //记录初始、当前格子位置
         CellPoint cellPoint = new CellPoint(startRowIndex, startColumnIndex);
 
         //删去列对象中，值为""或null的对象
@@ -271,7 +270,6 @@ public class ExcelExport {
      * @param withIndex        是否插入序号列【一般为true】
      * @param extraHeaderCell  在列名行前的额外列名行，专用于制作复杂表头。HeaderColumn不含x,y时，每个List为一行，HeaderColumn(内容,合并列数) ;含x,y时使用x,y定位插入【一般为null】
      * @return int 返回最后插入数据的行下标+1，调用此方法后，新建行时可直接使用返回的坐标值
-     * @throws Exception 抛出异常
      */
     @SafeVarargs
     public static <T> CellPoint addRows(Workbook wb, String title, Map<String, String> columnMap, Boolean showHeaderColumn, List<T> dataList, Boolean withIndex, List<SimpleCell>... extraHeaderCell) throws Exception {

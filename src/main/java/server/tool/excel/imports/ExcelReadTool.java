@@ -18,6 +18,10 @@ import static server.tool.excel.template.TemplateTool.getSimpleCellInfo;
 //excel 文件格式读取工具，用于生成表头代码，供导出Excel使用
 public class ExcelReadTool {
     public static void main(String[] args) {
+        readExcel();
+    }
+
+    public static void readExcel() {
         try {
             Scanner scanner = new Scanner(System.in);
             System.out.println("输入excel文件地址（.xls）:");

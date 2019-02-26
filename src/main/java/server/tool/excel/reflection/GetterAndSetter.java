@@ -9,9 +9,6 @@ public class GetterAndSetter {
      *
      * @param t            执行set方法的对象
      * @param propertyName 执行set方法的属性名
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
     public static <T> Object invokeGetMethod(T t, String propertyName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //通过集合类中列举的属性，获取对应的getXxx()方法名
@@ -29,9 +26,6 @@ public class GetterAndSetter {
      * @param propertyName  执行set方法的属性名
      * @param setValue      执行set方法的参数
      * @param setValueClazz 参数的类型
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
     public static <T> void invokeSetMethod(T t, String propertyName, Object setValue, Class setValueClazz) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //通过集合类中列举的属性，获取对应的setXxx()方法名
