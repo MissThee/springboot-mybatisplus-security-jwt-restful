@@ -63,13 +63,135 @@ public class ExcelExport {
         //新建工作簿
         Sheet sheet = buildSheet(wb, sheetIndex);
         //添加标题
-        addTitle(sheet, titleStyle, cellPoint, dataList, withIndex, title);
+        addTitle(sheet, titleStyle, cellPoint, dataColumnList, withIndex, title);
         //自定义表头
         addExtraHeader(sheet, headerStyle, cellPoint, extraHeaderCell);
         //每列数据标准表头
         addHeader(sheet, headerStyle, cellPoint, dataColumnList, withIndex, showHeaderColumn);
         //循环插入数据行
         addData(sheet, dataStyle, cellPoint, dataColumnList, dataList, withIndex);
+        return cellPoint;
+    }
+
+    @SafeVarargs
+    public static <T> Workbook buildWorkBook(WorkBookVersion workBookVersion, String title, Map<String, String> columnMap, Boolean showHeaderColumn, List<T> dataList, Boolean withIndex, List<SimpleCell>... extraHeaderCell) throws Exception {
+        Workbook wb;
+        switch (workBookVersion) {
+            case Excel97_2003:
+                wb = new HSSFWorkbook();
+                break;
+            case Excel2007:
+                wb = new XSSFWorkbook();
+                break;
+            default:
+                throw new Exception("invalid workBookVersion");
+        }
+        wb.createSheet();
+        List<DataColumn> dataColumns = new ArrayList<>();
+        for (
+                String key : columnMap.keySet()) {
+            dataColumns.add(new DataColumn(key, columnMap.get(key)));
+        }
+        addRows(wb, 0, 0, 0, title, dataColumns, showHeaderColumn, dataList, withIndex, extraHeaderCell);
+        return wb;
+    }
+
+    private static Sheet buildSheet(Workbook wb, int sheetIndex) {
+        //创建工作簿
+        while (sheetIndex >= wb.getNumberOfSheets() - 1) {
+            wb.createSheet();
+        }
+        return wb.getSheetAt(sheetIndex);
+    }
+
+    private static CellPoint addTitle(Sheet sheet, CellStyle titleStyle, CellPoint cellPoint, List<DataColumn> dataColumnList, boolean withIndex, String title) {
+        int titleWidth = dataColumnList.size() - (withIndex ? 0 : 1); // 最大列下标（从0开始，比实际size小1）
+        if (title != null) {
+            // 在sheet中添加标总标题
+            Row rowTitle = sheet.createRow(cellPoint.getY());
+            Cell cellTitle = rowTitle.createCell(cellPoint.getX());// cell列 从0开始 第一列添加序号
+            cellTitle.setCellType(CellType.STRING);
+            cellTitle.setCellValue(title);
+            cellTitle.setCellStyle(titleStyle);
+            // 在sheet中合并标总标题
+            if (titleWidth > 0) {
+                CellRangeAddress cellRangeAddress = new CellRangeAddress(cellPoint.getOriginY(), cellPoint.getY(), cellPoint.getOriginY(), titleWidth + cellPoint.getOriginX());
+                sheet.addMergedRegion(cellRangeAddress);
+                setRegionStyle(sheet, cellRangeAddress, titleStyle);
+            }
+            cellPoint.moveXY(1);
+        }
+        return cellPoint;
+    }
+    @SafeVarargs
+    private static CellPoint addExtraHeader(Sheet sheet, CellStyle headerStyle, CellPoint cellPoint, List<SimpleCell>... headerCellLists) {
+        if (headerCellLists != null && headerCellLists.length > 0) {
+            cellPoint.setXToOrigin();
+            int startRowIndex = cellPoint.getY();
+            for (List<SimpleCell> headerCellList : headerCellLists) {
+                for (SimpleCell headerCell : headerCellList) {
+                    String value = headerCell.getValue();
+                    Integer x = headerCell.getX();                                                              //单元格列号下标
+                    Integer y = headerCell.getY() == null ? null : (headerCell.getY() + startRowIndex);         //单元格行号下标
+                    Integer w = headerCell.getW();                                                          //单元格宽度
+                    Integer h = headerCell.getH();                                                         //单元格高度
+                    if (x == null || y == null) {//无x或y时，顺序插入
+                        x = cellPoint.getX();
+                        y = cellPoint.getY();
+                    }
+                    //写入单元格
+                    Row row = sheet.getRow(y) == null ? sheet.createRow(y) : sheet.getRow(y);
+                    Cell cell = row.createCell(x);
+                    cell.setCellValue(value);
+                    if (w > 1 || h > 1) {
+                        CellRangeAddress cellRangeAddress = new CellRangeAddress(y, y + h - 1, x, x + w - 1);
+                        sheet.addMergedRegion(cellRangeAddress);
+                        setRegionStyle(sheet, cellRangeAddress, headerStyle);
+                    } else {
+                        cell.setCellStyle(headerStyle);
+                    }
+                    setColumnWidth(sheet, x, value, true, w);
+                    cellPoint.setX(x + w);
+                    cellPoint.setY(y);
+                }
+                cellPoint.moveY(1);
+            }
+        }
+        return cellPoint;
+    }
+
+    private static CellPoint addHeader(Sheet sheet, CellStyle headerStyle, CellPoint cellPoint, List<DataColumn> dataColumnList, boolean withIndex, boolean showHeaderColumn) {
+        if (showHeaderColumn) {
+            cellPoint.setXToOrigin();
+            Row rowHeader = sheet.createRow(cellPoint.getY());
+            if (withIndex) {
+                // 第一列添加序号
+                String columnName = "序号";
+                Cell sequenceCell = rowHeader.createCell(cellPoint.getX());
+                sequenceCell.setCellValue(columnName);
+                sequenceCell.setCellStyle(headerStyle);
+                setColumnWidth(sheet, cellPoint.getX(), columnName, true, 1);
+                cellPoint.moveX(1);
+            }
+            // 为标题行赋值
+            {
+                for (DataColumn dataColumn : dataColumnList) {
+                    String columnName = dataColumn.getHeaderName();
+                    Cell titleCell = rowHeader.createCell(cellPoint.getX());
+                    titleCell.setCellValue(columnName);
+                    if (dataColumn.getWidth() > 1) {
+                        CellRangeAddress cellRangeAddress = new CellRangeAddress(cellPoint.getY(), cellPoint.getY(), cellPoint.getX(), cellPoint.getX() + dataColumn.getWidth() - 1);
+                        sheet.addMergedRegion(cellRangeAddress);
+                        setRegionStyle(sheet, cellRangeAddress, headerStyle);
+                    } else {
+                        titleCell.setCellStyle(headerStyle);
+                    }
+                    setColumnWidth(sheet, cellPoint.getX(), columnName, true, 1);
+                    cellPoint.moveX(dataColumn.getWidth());
+                }
+            }
+            cellPoint.moveY(1);
+        }
         return cellPoint;
     }
 
@@ -127,161 +249,12 @@ public class ExcelExport {
                     }
                 }
                 cellPoint.moveXY(1);
-
             }
         }
         return cellPoint;
     }
-
-    private static CellPoint addHeader(Sheet sheet, CellStyle headerStyle, CellPoint cellPoint, List<DataColumn> dataColumnList, boolean withIndex, boolean showHeaderColumn) {
-        if (showHeaderColumn) {
-            cellPoint.setXToOrigin();
-            Row rowHeader = sheet.createRow(cellPoint.getY());
-            int columnIndex = cellPoint.getOriginX();
-            if (withIndex) {
-                // 第一列添加序号
-                String columnName = "序号";
-                Cell sequenceCell = rowHeader.createCell(cellPoint.getX());
-                sequenceCell.setCellValue(columnName);
-                sequenceCell.setCellStyle(headerStyle);
-                setColumnWidth(sheet, cellPoint.getX(), columnName, true, 1);
-                cellPoint.moveX(1);
-            }
-            // 为标题行赋值
-            {
-                for (DataColumn dataColumn : dataColumnList) {
-                    String columnName = dataColumn.getHeaderName();
-                    Cell titleCell = rowHeader.createCell(cellPoint.getX());
-                    titleCell.setCellValue(columnName);
-                    if (dataColumn.getWidth() > 1) {
-                        CellRangeAddress cellRangeAddress = new CellRangeAddress(cellPoint.getY(), cellPoint.getY(), cellPoint.getX(), cellPoint.getX() + dataColumn.getWidth() - 1);
-                        sheet.addMergedRegion(cellRangeAddress);
-                        setRegionStyle(sheet, cellRangeAddress, headerStyle);
-                    } else {
-                        titleCell.setCellStyle(headerStyle);
-                    }
-                    setColumnWidth(sheet, cellPoint.getX(), columnName, true, 1);
-                    cellPoint.moveX(dataColumn.getWidth());
-                }
-            }
-            cellPoint.moveY(1);
-        }
-        return cellPoint;
-    }
-
-    private static <T> CellPoint addTitle(
-            Sheet sheet,
-            CellStyle titleStyle,
-            CellPoint cellPoint,
-            List<T> dataList,
-            boolean withIndex,
-            String title) {
-        int columnCount = dataList.size() - (withIndex ? 0 : 1); // 最大列下标（从0开始，比实际size小1）
-        if (title != null) {
-            // 在sheet中添加标总标题
-            Row rowTitle = sheet.createRow(cellPoint.getY());
-            Cell cellTitle = rowTitle.createCell(cellPoint.getX());// cell列 从0开始 第一列添加序号
-            cellTitle.setCellType(CellType.STRING);
-            cellTitle.setCellValue(title);
-            cellTitle.setCellStyle(titleStyle);
-            // 在sheet中合并标总标题
-            if (columnCount > 0) {
-                CellRangeAddress cellRangeAddress = new CellRangeAddress(cellPoint.getY(), cellPoint.getY(), cellPoint.getOriginY(), columnCount);
-                sheet.addMergedRegion(cellRangeAddress);
-                setRegionStyle(sheet, cellRangeAddress, titleStyle);
-            }
-            cellPoint.moveXY(1);
-        }
-        return cellPoint;
-    }
-
-    //headerCellLists中，HeaderCell有无x,y决定使用顺序插入还是定点插入,顺序插入总是以上一个cell的右边一格插入
     @SafeVarargs
-    private static CellPoint addExtraHeader(Sheet sheet, CellStyle headerStyle, CellPoint cellPoint, List<SimpleCell>... headerCellLists) {
-        if (headerCellLists != null && headerCellLists.length > 0) {
-            cellPoint.setXToOrigin();
-            int startRowIndex = cellPoint.getY();
-            for (List<SimpleCell> headerCellList : headerCellLists) {
-                for (SimpleCell headerCell : headerCellList) {
-                    String value = headerCell.getValue();
-                    Integer x = headerCell.getX();                                                              //单元格列号下标
-                    Integer y = headerCell.getY() == null ? null : (headerCell.getY() + startRowIndex);         //单元格行号下标
-                    Integer w = headerCell.getW();                                                          //单元格宽度
-                    Integer h = headerCell.getH();                                                         //单元格高度
-                    if (x == null || y == null) {//无x或y时，顺序插入
-                        x = cellPoint.getX();
-                        y = cellPoint.getY();
-                    }
-                    //写入单元格
-                    Row row = sheet.getRow(y) == null ? sheet.createRow(y) : sheet.getRow(y);
-                    Cell cell = row.createCell(x);
-                    cell.setCellValue(value);
-                    if (w > 1 || h > 1) {
-                        CellRangeAddress cellRangeAddress = new CellRangeAddress(y, y + h - 1, x, x + w - 1);
-                        sheet.addMergedRegion(cellRangeAddress);
-                        setRegionStyle(sheet, cellRangeAddress, headerStyle);
-                    } else {
-                        cell.setCellStyle(headerStyle);
-                    }
-                    setColumnWidth(sheet, x, value, true, w);
-                    cellPoint.setX(x + w);
-                    cellPoint.setY(y);
-                }
-                cellPoint.moveY(1);
-            }
-        }
-        return cellPoint;
-    }
-
-
-    private static Sheet buildSheet(Workbook wb, int sheetIndex) {
-        //创建工作簿
-        while (sheetIndex >= wb.getNumberOfSheets() - 1) {
-            wb.createSheet();
-        }
-        return wb.getSheetAt(sheetIndex);
-    }
-
-    @SafeVarargs
-    public static <T> Workbook buildWorkBook(
-            WorkBookVersion workBookVersion,
-            String title,
-            Map<String, String> columnMap,
-            Boolean showHeaderColumn,
-            List<T> dataList,
-            Boolean withIndex,
-            List<SimpleCell>... extraHeaderCell) throws Exception {
-        Workbook wb;
-        switch (workBookVersion) {
-            case Excel97_2003:
-                wb = new HSSFWorkbook();
-                break;
-            case Excel2007:
-                wb = new XSSFWorkbook();
-                break;
-            default:
-                throw new Exception("invalid workBookVersion");
-        }
-        wb.createSheet();
-        List<DataColumn> dataColumns = new ArrayList<>();
-        for (
-                String key : columnMap.keySet()) {
-            dataColumns.add(new DataColumn(key, columnMap.get(key)));
-        }
-        addRows(wb, 5, 2, 2, title, dataColumns, showHeaderColumn, dataList, withIndex, extraHeaderCell);
-        return wb;
-    }
-
-    @SafeVarargs
-    public static <T> void export(WorkBookVersion workBookVersion,
-                                  HttpServletResponse response,
-                                  String fileName,
-                                  String title,
-                                  Map<String, String> columnMap,
-                                  Boolean showHeaderColumn,
-                                  List<T> dataList,
-                                  Boolean withIndex,
-                                  List<SimpleCell>... extraHeaderCell) throws Exception {
+    public static <T> void export(WorkBookVersion workBookVersion, HttpServletResponse response, String fileName, String title, Map<String, String> columnMap, Boolean showHeaderColumn, List<T> dataList, Boolean withIndex, List<SimpleCell>... extraHeaderCell) throws Exception {
         String fullFileName = fileName + workBookVersion.getFileType();
         Workbook wb = buildWorkBook(workBookVersion, title, columnMap, showHeaderColumn, dataList, withIndex, extraHeaderCell);
         responseOut(response, wb, fullFileName);
@@ -300,14 +273,7 @@ public class ExcelExport {
      * @throws Exception 抛出异常
      */
     @SafeVarargs
-    public static <T> CellPoint addRows(
-            Workbook wb,
-            String title,
-            Map<String, String> columnMap,
-            Boolean showHeaderColumn,
-            List<T> dataList,
-            Boolean withIndex,
-            List<SimpleCell>... extraHeaderCell) throws Exception {
+    public static <T> CellPoint addRows(Workbook wb, String title, Map<String, String> columnMap, Boolean showHeaderColumn, List<T> dataList, Boolean withIndex, List<SimpleCell>... extraHeaderCell) throws Exception {
         List<DataColumn> dataColumns = new ArrayList<>();
         for (String key : columnMap.keySet()) {
             dataColumns.add(new DataColumn(key, columnMap.get(key)));
@@ -346,7 +312,7 @@ public class ExcelExport {
             }
         }
         int sheetWidth;
-        int fontWidth = 300;//单个小写英文字母所占宽度标准为256
+        int fontWidth = 300;//单个小写英文字母所占宽度标准为256左右
         if (useMaxWidth) {
             sheetWidth = Math.max(sheet.getColumnWidth(columnNum), codeCount * fontWidth);
         } else {
