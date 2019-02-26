@@ -78,7 +78,6 @@ public class FileRec {
         } catch (IOException e) {
             return null;
         }
-
     }
 
     public static String fileUpload(MultipartFile file) throws FileNotFoundException, SizeLimitExceededException {

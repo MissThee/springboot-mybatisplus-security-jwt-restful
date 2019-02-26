@@ -2,6 +2,7 @@ package server.controller.example;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.missthee.tool.excel.imports.ExcelImport;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -30,7 +31,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static server.tool.excel.imports.ExcelImport.excel2POJOList;
 
 @ApiIgnore
 //权限访问测试
@@ -208,7 +208,7 @@ public class ExampleController {
     //上传excel转为POJO
     @PostMapping(value = "/upload2")
     public Res fileUpload2(MultipartFile file) throws IOException, NoSuchMethodException, InvalidFormatException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
-        List<Object> objects = excel2POJOList(file, User.class, new ArrayList<String>() {{
+        List<Object> objects = ExcelImport.excel2POJOList(file, User.class, new ArrayList<String>() {{
             add("nickname");
             add("username");
         }});
