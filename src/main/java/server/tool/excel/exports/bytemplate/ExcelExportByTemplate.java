@@ -1,4 +1,4 @@
-package server.tool.excel.exports;
+package server.tool.excel.exports.bytemplate;
 
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -45,7 +45,6 @@ public class ExcelExportByTemplate {
                     while (m.find()) {
                         String modelPropertyName = m.group(1);
                         Object modelPropertyValue = invokeGetMethod(t, modelPropertyName);
-                        System.out.println(m.group());
                         valueStr = valueStr.replace(m.group(), String.valueOf(modelPropertyValue));
                         cell.setCellValue(valueStr);
                     }
@@ -68,13 +67,13 @@ public class ExcelExportByTemplate {
     }
 
     /**
-     * 读取模板文件，以$[List]为占位符，按propertyNameList中的属性名，对应的datalist中的变量替换
+     * 读取模板文件，以$[类名]为占位符，按propertyNameList中的属性名，对应的datalist中的变量替换
      *
      * @param sheetIndex       sheet页下标：从0开始
      * @param dataList         实体类集合
      * @param propertyNameList 实体类属性名集合
      */
-    public static <T> Workbook simpleReplaceByPOJOList(Workbook wb, int sheetIndex, List<T> dataList, List<String> propertyNameList) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static <T> Workbook simpleReplaceByPOJOList(Workbook wb, int sheetIndex, List<T> dataList, List<String> propertyNameList,Class<T> clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Sheet sheet = wb.getSheetAt(sheetIndex);
         for (int rowIndex = 0; rowIndex < sheet.getLastRowNum(); rowIndex++) {
             Row row = sheet.getRow(rowIndex);
@@ -91,10 +90,10 @@ public class ExcelExportByTemplate {
                     String valueStr = cellInfo.getValue();
                     //用List替换值
                     if (dataList != null && dataList.size() > 0) {
-                        if (valueStr.contains("$[List]")) {
+                        if (valueStr.contains("$["+clazz.getSimpleName()+"]")) {
                             int repalceRowIndex = rowIndex;
                             for (T t : dataList) {
-                                if (valueStr.contains("$[List]")) {
+                                if (valueStr.contains("$["+clazz.getSimpleName()+"]")) {
                                     int repalceColumnIndex = columnIndex;
                                     for (String propertyName : propertyNameList) {
                                         Object o = invokeGetMethod(t, propertyName);
@@ -141,7 +140,7 @@ public class ExcelExportByTemplate {
         if (wb.getClass().equals(HSSFWorkbook.class)) {
             fileName += ".xls";
         } else if (wb.getClass().equals(XSSFWorkbook.class)) {
-            fileName += ".xls";
+            fileName += ".xlsx";
         }
         responseOut(response, wb, fileName);
     }

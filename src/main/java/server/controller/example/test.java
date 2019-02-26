@@ -5,9 +5,8 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import server.tool.excel.exports.ExcelExportByTemplate;
+import server.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -31,7 +30,7 @@ public class test {
         propertyList.add("tianQi");
         propertyList.add("wenDu");
         propertyList.add("fengLi");
-        ExcelExportByTemplate.simpleReplaceByPOJOList(wb, 0, dataModelList, propertyList);
+        ExcelExportByTemplate.simpleReplaceByPOJOList(wb, 0, dataModelList, propertyList,DataModel.class);
         output(wb);
     }
 
@@ -64,7 +63,7 @@ public class test {
 
     private static void output(Workbook Workbook) {
         try {
-            String fileName = "H:/" + UUID.randomUUID().toString() + ".xls";
+            String fileName = "F:/" + UUID.randomUUID().toString() + ".xls";
             FileOutputStream fout = new FileOutputStream(fileName);
             Workbook.write(fout);
             fout.close();
