@@ -1,14 +1,11 @@
-package server.config.tkmapper.custom;
+package com.github.missthee.config.tkmapper.custom;
 
 
 import org.apache.ibatis.mapping.MappedStatement;
-import tk.mybatis.mapper.entity.EntityColumn;
 import tk.mybatis.mapper.mapperhelper.EntityHelper;
 import tk.mybatis.mapper.mapperhelper.MapperHelper;
 import tk.mybatis.mapper.mapperhelper.MapperTemplate;
 import tk.mybatis.mapper.mapperhelper.SqlHelper;
-
-import java.util.Set;
 
 public class MyExampleProvider extends MapperTemplate {
     public MyExampleProvider(Class<?> mapperClass, MapperHelper mapperHelper) {

@@ -1,4 +1,4 @@
-package server.config.tkmapper.custom;
+package com.github.missthee.config.tkmapper.custom;
 
 import org.apache.ibatis.annotations.InsertProvider;
 import tk.mybatis.mapper.annotation.RegisterMapper;

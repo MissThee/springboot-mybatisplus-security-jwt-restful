@@ -1,4 +1,4 @@
-package server.socketio.model;
+package com.github.missthee.socketio.model;
 
 import lombok.Data;
 

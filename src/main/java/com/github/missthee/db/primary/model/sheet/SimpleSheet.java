@@ -1,9 +1,8 @@
-package server.db.primary.model.sheet;
+package com.github.missthee.db.primary.model.sheet;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Column;
 import javax.persistence.Table;
 import java.util.Date;
 

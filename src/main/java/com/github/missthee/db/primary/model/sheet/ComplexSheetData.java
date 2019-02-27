@@ -1,4 +1,4 @@
-package server.db.primary.model.sheet;
+package com.github.missthee.db.primary.model.sheet;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

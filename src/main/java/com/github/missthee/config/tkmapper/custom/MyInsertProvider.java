@@ -1,4 +1,4 @@
-package server.config.tkmapper.custom;
+package com.github.missthee.config.tkmapper.custom;
 
 import org.apache.ibatis.mapping.MappedStatement;
 import tk.mybatis.mapper.entity.EntityColumn;

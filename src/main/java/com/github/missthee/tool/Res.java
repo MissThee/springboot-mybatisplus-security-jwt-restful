@@ -1,11 +1,7 @@
-package server.tool;
+package com.github.missthee.tool;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shiro.crypto.hash.Hash;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

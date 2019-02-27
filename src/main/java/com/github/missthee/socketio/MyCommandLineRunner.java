@@ -1,7 +1,6 @@
-package server.socketio;
+package com.github.missthee.socketio;
 
 import com.corundumstudio.socketio.SocketIOServer;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;

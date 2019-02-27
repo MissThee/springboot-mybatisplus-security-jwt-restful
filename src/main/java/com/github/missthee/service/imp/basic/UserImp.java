@@ -1,10 +1,10 @@
-package server.service.imp.basic;
+package com.github.missthee.service.imp.basic;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import server.db.primary.mapper.basic.UserMapper;
-import server.db.primary.model.basic.User;
-import server.service.interf.basic.UserService;
+import com.github.missthee.db.primary.mapper.basic.UserMapper;
+import com.github.missthee.db.primary.model.basic.User;
+import com.github.missthee.service.interf.basic.UserService;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;

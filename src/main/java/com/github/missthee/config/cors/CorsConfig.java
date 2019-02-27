@@ -1,4 +1,4 @@
-package server.config.cors;
+package com.github.missthee.config.cors;
 
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

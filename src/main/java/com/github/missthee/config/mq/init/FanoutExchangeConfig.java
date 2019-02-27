@@ -1,4 +1,4 @@
-package server.config.mq.init;
+package com.github.missthee.config.mq.init;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

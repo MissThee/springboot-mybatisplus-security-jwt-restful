@@ -1,4 +1,4 @@
-package server.controller.login;
+package com.github.missthee.controller.login;
 
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
@@ -6,10 +6,10 @@ import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import server.db.primary.dto.login.LoginDTO;
-import server.config.security.JavaJWT;
-import server.service.interf.login.LoginService;
-import server.tool.Res;
+import com.github.missthee.db.primary.dto.login.LoginDTO;
+import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.service.interf.login.LoginService;
+import com.github.missthee.tool.Res;
 
 @Api(tags = "获取用户信息")
 @RestController("FunIndexController")

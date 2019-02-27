@@ -1,4 +1,4 @@
-package server.config.exception;
+package com.github.missthee.config.exception;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.shiro.authz.UnauthenticatedException;

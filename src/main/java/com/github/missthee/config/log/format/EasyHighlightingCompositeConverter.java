@@ -1,10 +1,10 @@
-package server.config.log.format;
+package com.github.missthee.config.log.format;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.color.ANSIConstants;
 import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
-import org.springframework.context.annotation.Configuration;
+
 public class EasyHighlightingCompositeConverter extends ForegroundCompositeConverterBase<ILoggingEvent> {
     protected String getForegroundColorCode(ILoggingEvent event) {
         switch (event.getLevel().toInt()) {

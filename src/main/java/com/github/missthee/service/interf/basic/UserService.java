@@ -1,6 +1,6 @@
-package server.service.interf.basic;
+package com.github.missthee.service.interf.basic;
 
-import server.db.primary.model.basic.User;
+import com.github.missthee.db.primary.model.basic.User;
 
 import java.util.List;
 

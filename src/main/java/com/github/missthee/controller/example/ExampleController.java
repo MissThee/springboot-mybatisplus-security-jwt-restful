@@ -1,4 +1,4 @@
-package server.controller.example;
+package com.github.missthee.controller.example;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -16,14 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import server.config.security.JavaJWT;
-import server.db.primary.model.basic.User;
-import server.db.primary.model.compute.Compute;
-import server.service.interf.basic.UserService;
-import server.service.interf.compute.ComputeService;
+import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.db.primary.model.basic.User;
+import com.github.missthee.db.primary.model.compute.Compute;
+import com.github.missthee.service.interf.basic.UserService;
+import com.github.missthee.service.interf.compute.ComputeService;
 
-import server.tool.FileRec;
-import server.tool.Res;
+import com.github.missthee.tool.FileRec;
+import com.github.missthee.tool.Res;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.naming.SizeLimitExceededException;

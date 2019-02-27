@@ -1,4 +1,4 @@
-package server.config.json;
+package com.github.missthee.config.json;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;

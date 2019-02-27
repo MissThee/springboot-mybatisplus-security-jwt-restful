@@ -1,17 +1,12 @@
-package server.config.security;
+package com.github.missthee.config.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
-import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
-import org.codehaus.janino.Java;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import server.db.primary.dto.login.LoginDTO;
-import server.service.interf.login.LoginService;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;

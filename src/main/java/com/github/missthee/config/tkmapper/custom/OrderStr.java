@@ -1,4 +1,4 @@
-package server.config.tkmapper.custom;
+package com.github.missthee.config.tkmapper.custom;
 
 public class OrderStr {
     public static final String sqlOrderByReportHourDecodeStr =

@@ -1,4 +1,4 @@
-package server.config.security;
+package com.github.missthee.config.security;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -11,8 +11,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import server.db.primary.dto.login.LoginDTO;
-import server.service.interf.login.LoginService;
+import com.github.missthee.db.primary.dto.login.LoginDTO;
+import com.github.missthee.service.interf.login.LoginService;
 
 @Component
 public class MyRealm extends AuthorizingRealm {

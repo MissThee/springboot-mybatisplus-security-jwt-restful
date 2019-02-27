@@ -1,4 +1,4 @@
-package server.config.security;
+package com.github.missthee.config.security;
 
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.stereotype.Component;

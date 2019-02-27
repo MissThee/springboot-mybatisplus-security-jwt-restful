@@ -1,4 +1,4 @@
-package server.config.db;
+package com.github.missthee.config.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 
 @Configuration
-@MapperScan(basePackages = "server.db.primary.mapper", sqlSessionTemplateRef = "primarySqlSessionTemplate")
+@MapperScan(basePackages = {"com.github.missthee.db.primary.mapper"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
 @Slf4j
 public class PrimaryDBConfig {
 

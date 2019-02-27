@@ -1,4 +1,4 @@
-package server.config.log.format;
+package com.github.missthee.config.log.format;
 
 import java.util.HashMap;
 import java.util.Map;

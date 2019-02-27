@@ -1,6 +1,5 @@
-package server.db.primary.model.compute;
+package com.github.missthee.db.primary.model.compute;
 
-import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import javax.persistence.*;
 import lombok.Data;

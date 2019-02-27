@@ -1,4 +1,4 @@
-package server.controller.example;
+package com.github.missthee.controller.example;
 
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import lombok.Data;

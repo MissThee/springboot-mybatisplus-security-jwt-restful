@@ -1,4 +1,4 @@
-package server.config.mq;
+package com.github.missthee.config.mq;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;

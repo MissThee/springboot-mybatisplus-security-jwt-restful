@@ -1,20 +1,18 @@
-package server.controller.login;
+package com.github.missthee.controller.login;
 
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.crypto.hash.Md5Hash;
-import org.codehaus.janino.Java;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import server.db.primary.dto.login.LoginDTO;
-import server.config.security.JavaJWT;
-import server.db.primary.model.basic.User;
-import server.service.interf.basic.UserService;
-import server.service.interf.login.LoginService;
-import server.tool.Res;
+import com.github.missthee.db.primary.dto.login.LoginDTO;
+import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.db.primary.model.basic.User;
+import com.github.missthee.service.interf.basic.UserService;
+import com.github.missthee.service.interf.login.LoginService;
+import com.github.missthee.tool.Res;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

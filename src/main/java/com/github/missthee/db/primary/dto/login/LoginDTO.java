@@ -1,4 +1,4 @@
-package server.db.primary.dto.login;
+package com.github.missthee.db.primary.dto.login;
 
 import lombok.Data;
 

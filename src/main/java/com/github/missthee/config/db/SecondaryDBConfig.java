@@ -1,4 +1,4 @@
-package server.config.db;
+package com.github.missthee.config.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -9,8 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import tk.mybatis.spring.annotation.MapperScan;
@@ -19,7 +17,7 @@ import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 
 @Configuration
-@MapperScan(basePackages = "server.db.secondary.mapper", sqlSessionTemplateRef = "secondarySqlSessionTemplate")
+@MapperScan(basePackages = "com.github.missthee.db.secondary.mapper", sqlSessionTemplateRef = "secondarySqlSessionTemplate")
 @Slf4j
 public class SecondaryDBConfig {
 

@@ -1,4 +1,4 @@
-package server.socketio;
+package com.github.missthee.socketio;
 
 import com.corundumstudio.socketio.AckCallback;
 import com.corundumstudio.socketio.AckRequest;
@@ -10,11 +10,11 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import server.config.security.JavaJWT;
-import server.db.primary.model.basic.User;
-import server.service.interf.basic.UserService;
-import server.socketio.model.AckModel;
-import server.socketio.model.MessageModel;
+import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.db.primary.model.basic.User;
+import com.github.missthee.service.interf.basic.UserService;
+import com.github.missthee.socketio.model.AckModel;
+import com.github.missthee.socketio.model.MessageModel;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

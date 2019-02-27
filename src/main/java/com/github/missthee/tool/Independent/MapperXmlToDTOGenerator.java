@@ -1,4 +1,4 @@
-package server.tool.Independent;
+package com.github.missthee.tool.Independent;
 
 import com.google.common.base.Joiner;
 import org.dom4j.*;
@@ -21,7 +21,7 @@ public class MapperXmlToDTOGenerator {
     private static void generateInFolder() {
         try {
             String xmlFolderPath = "mybatis/mapper/primary/custom/";
-            String outPutPath = "src.main.java.server.db.primary.dto";
+            String outPutPath = "src.main.java.com.github.missthee.db.primary.dto";
             Boolean appendEnable = false;
             String fileType = "DTO";          //DTO、CLASS
             Boolean withInnerClass = true;
@@ -39,7 +39,7 @@ public class MapperXmlToDTOGenerator {
     private static void generateOne() {
         try {
             String xmlFilePath = "mybatis/mapper/primary/custom/CloginMapper.xml";
-            String outPutPath = "src.main.java.server.config";
+            String outPutPath = "src.main.java.com.github.missthee.config";
             Boolean appendEnable = false;
             String fileType = "DTO";          //DTO、CLASS
             Boolean withInnerClass = true;

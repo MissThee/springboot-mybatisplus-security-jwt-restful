@@ -1,4 +1,4 @@
-package server.config.tkmapper.cache;
+package com.github.missthee.config.tkmapper.cache;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

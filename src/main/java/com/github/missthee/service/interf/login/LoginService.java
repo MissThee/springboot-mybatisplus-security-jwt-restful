@@ -1,6 +1,6 @@
-package server.service.interf.login;
+package com.github.missthee.service.interf.login;
 
-import server.db.primary.dto.login.LoginDTO;
+import com.github.missthee.db.primary.dto.login.LoginDTO;
 
 public interface LoginService {
     LoginDTO selectUserByUsername(String username);
