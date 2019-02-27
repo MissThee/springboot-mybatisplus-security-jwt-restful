@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.collectioncompute.CollectionCompute;
 import com.github.missthee.tool.collectioncompute.ComputeType;
 import com.github.missthee.tool.excel.exports.direct.DataColumn;
+import com.github.missthee.tool.excel.template.CellFomatter;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -238,7 +239,7 @@ public class ComplexSheet {
                     cell.setCellValue("外输量（m³）:");
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 2);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
                     columnIndex = columnIndex + 2 + 1;
                 }
                 {
@@ -249,7 +250,7 @@ public class ComplexSheet {
                     }
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 1);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
                     columnIndex = columnIndex + 1 + 1;
                 }
                 {
@@ -257,7 +258,7 @@ public class ComplexSheet {
                     cell.setCellValue("燃气量(吨):");
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 2);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
                     columnIndex = columnIndex + 2 + 1;
                 }
                 {
@@ -268,7 +269,7 @@ public class ComplexSheet {
                     }
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 1);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
                     columnIndex = columnIndex + 1 + 1;
                 }
                 {
@@ -276,7 +277,7 @@ public class ComplexSheet {
                     cell.setCellValue("卸油量(吨):");
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 2);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
                     columnIndex = columnIndex + 2 + 1;
                 }
                 {
@@ -287,7 +288,7 @@ public class ComplexSheet {
                     }
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 1);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
                     columnIndex = columnIndex + 1 + 1;
                 }
                 {
@@ -295,7 +296,7 @@ public class ComplexSheet {
                     cell.setCellValue("加药量(吨):");
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 2);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
                     columnIndex = columnIndex + 2 + 1;
                 }
                 {
@@ -306,7 +307,7 @@ public class ComplexSheet {
                     }
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 1);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
                     columnIndex = columnIndex + 1 + 1;
                 }
                 {
@@ -314,7 +315,7 @@ public class ComplexSheet {
                     cell.setCellValue("备注:");
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 2);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
                     columnIndex = columnIndex + 2 + 1;
                 }
                 {
@@ -326,7 +327,7 @@ public class ComplexSheet {
                     }
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 25);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, dataStyle(wb));
                 }
                 rowNum++;
             }
@@ -346,7 +347,7 @@ public class ComplexSheet {
                     cell.setCellValue(allNote.toString());
                     CellRangeAddress cellRangeAddress = new CellRangeAddress(rowNum, rowNum, columnIndex, columnIndex + 48);
                     sheet.addMergedRegion(cellRangeAddress);
-                    ExcelExport.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
+                    CellFomatter.setRegionStyle(sheet, cellRangeAddress, headerStyle(wb));
                 }
             }
         }

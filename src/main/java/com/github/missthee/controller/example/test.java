@@ -2,6 +2,7 @@ package com.github.missthee.controller.example;
 
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -18,14 +19,16 @@ public class test {
     public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Workbook wb = ExcelExportByTemplate.readFile("exceltemplate/test.xls");
 
-        TestModel testModel = new TestModel();
+        TestModel testModel = new TestModel().setTest1("长文本长文本长文本长文本长文本长文本长文本长文本长文本");
         ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel);//使用${属性名}替换
 
         List<DataModel> dataModelList = new ArrayList<>();
         dataModelList.add(new DataModel());
-        dataModelList.add(new DataModel());
-        dataModelList.add(new DataModel());
-        dataModelList.add(new DataModel());
+        dataModelList.add(new DataModel().setFengLi("11111111111111111111111111"));
+        dataModelList.add(new DataModel().setFengLi("2"));
+        dataModelList.add(new DataModel().setFengLi("3"));
+        dataModelList.add(new DataModel().setFengLi("4"));
+        dataModelList.add(new DataModel().setFengLi("5"));
         List<String> propertyList = new ArrayList<>();
         propertyList.add("tianQi");//要插入DataModel的属性名，依次添加
         propertyList.add("wenDu");
@@ -74,6 +77,7 @@ public class test {
     }
 
     @Data
+    @Accessors(chain = true)
     public static class TestModel {
         private String test1 = "测试文字1";
         private String test2 = "测试文字2";
@@ -81,6 +85,7 @@ public class test {
     }
 
     @Data
+    @Accessors(chain = true)
     public static class DataModel {
         private String tianQi = "天气良好";
         private String wenDu = "温度适中";
