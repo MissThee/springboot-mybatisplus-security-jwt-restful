@@ -104,11 +104,11 @@
             <artifactId>springfox-swagger2</artifactId>
             <version>2.9.2</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>io.springfox</groupId>-->
-        <!--<artifactId>springfox-swagger-ui</artifactId>-->
-        <!--<version>2.9.2</version>-->
-        <!--</dependency>-->
+        <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger-ui</artifactId>
+        <version>2.9.2</version>
+        </dependency>
         <!--读取xml工具类-->
         <dependency>
             <groupId>dom4j</groupId>
@@ -328,7 +328,7 @@
                         <entrypoint>
                             <arg>/bin/sh</arg>
                             <arg>-c</arg>
-                            <arg>java -cp /app/resources/:/app/classes/:/app/libs/* server.WebApplication $PARAMS</arg>
+                            <arg>java -cp /app/resources/:/app/classes/:/app/libs/* com.github.missthee.WebApplication $PARAMS</arg>
                         </entrypoint>
                     </container>
                     <from>

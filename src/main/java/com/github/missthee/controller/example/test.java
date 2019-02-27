@@ -19,7 +19,7 @@ public class test {
         Workbook wb = ExcelExportByTemplate.readFile("exceltemplate/test.xls");
 
         TestModel testModel = new TestModel();
-        ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel);
+        ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel);//使用${属性名}替换
 
         List<DataModel> dataModelList = new ArrayList<>();
         dataModelList.add(new DataModel());
@@ -27,10 +27,10 @@ public class test {
         dataModelList.add(new DataModel());
         dataModelList.add(new DataModel());
         List<String> propertyList = new ArrayList<>();
-        propertyList.add("tianQi");
+        propertyList.add("tianQi");//要插入DataModel的属性名，依次添加
         propertyList.add("wenDu");
         propertyList.add("fengLi");
-        ExcelExportByTemplate.simpleReplaceByPOJOList(wb, 0, dataModelList, propertyList,DataModel.class);
+        ExcelExportByTemplate.simpleReplaceByPOJOList(wb, 0, dataModelList, propertyList,DataModel.class);//使用$[实体类名]替换
         output(wb);
     }
 

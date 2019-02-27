@@ -2,6 +2,7 @@ package server.controller.example;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.missthee.tool.datastructure.TreeData;
 import com.github.missthee.tool.excel.imports.ExcelImport;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,7 @@ import server.db.primary.model.basic.User;
 import server.db.primary.model.compute.Compute;
 import server.service.interf.basic.UserService;
 import server.service.interf.compute.ComputeService;
-import server.tool.TreeData;
+
 import server.tool.FileRec;
 import server.tool.Res;
 import springfox.documentation.annotations.ApiIgnore;

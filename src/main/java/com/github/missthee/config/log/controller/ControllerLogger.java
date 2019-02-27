@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ControllerLogger {
 
-    @Pointcut("execution(public * server.controller..*.*(..))")
+    @Pointcut("execution(public * *.controller..*.*(..))")
     public void webLog() {
     }
 
