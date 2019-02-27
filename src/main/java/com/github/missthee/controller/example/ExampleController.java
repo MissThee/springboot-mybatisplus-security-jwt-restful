@@ -2,12 +2,15 @@ package com.github.missthee.controller.example;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.missthee.controller.example.test.TestModel;
 import com.github.missthee.tool.datastructure.TreeData;
+import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.*;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -27,6 +30,7 @@ import com.github.missthee.tool.Res;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.naming.SizeLimitExceededException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -48,6 +52,18 @@ public class ExampleController {
         this.userService = userService;
         this.javaJWT = javaJWT;
         this.computeService = computeService;
+    }
+
+    @PostMapping("excel/output")
+    public void excelTest(HttpServletResponse response) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException, NoSuchFieldException {
+        //读取模板支持.xls（97-2003）或.xlsx（2007+）
+        Workbook wb = ExcelExportByTemplate.readFile("exceltemplate/test.xls");
+        //实体类
+        TestModel testModel = new TestModel().setTest1("测试长文本长文本长文本长文本长文本长文本长文本长文本长文本");
+        //参数：Workbook，工作簿编号（0开始），实体类，单元格自适应宽度
+        ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel, true);//使用${属性名}替换
+        //流输出
+        ExcelExportByTemplate.export(response, wb, "文件名");
     }
 
     @PostMapping("getProperty")

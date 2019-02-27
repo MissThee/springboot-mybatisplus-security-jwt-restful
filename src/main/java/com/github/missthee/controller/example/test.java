@@ -12,11 +12,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 public class test {
-    public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         Workbook wb = ExcelExportByTemplate.readFile("exceltemplate/test.xls");
 
         TestModel testModel = new TestModel().setTest1("长文本长文本长文本长文本长文本长文本长文本长文本长文本");
@@ -36,6 +37,8 @@ public class test {
         ExcelExportByTemplate.simpleReplaceByPOJOList(wb, 0, dataModelList, propertyList,DataModel.class);//使用$[实体类名]替换
         output(wb);
     }
+
+
 
     private static Workbook test() {
         HSSFWorkbook hssfWorkbook = new HSSFWorkbook();//创建表
@@ -79,8 +82,8 @@ public class test {
     @Data
     @Accessors(chain = true)
     public static class TestModel {
-        private String test1 = "测试文字1";
-        private String test2 = "测试文字2";
+        private String test1 ;
+        private Date test2 ;
         private String test3 = "测试文字3";
     }
 

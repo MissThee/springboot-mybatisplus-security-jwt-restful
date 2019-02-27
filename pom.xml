@@ -147,7 +147,7 @@
         <dependency>
             <groupId>com.github.MissThee</groupId>
             <artifactId>excel-tool</artifactId>
-            <version>1.1</version>
+            <version>1.6</version>
         </dependency>
         <!--树形数据构建工具-->
         <dependency>
