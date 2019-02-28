@@ -9,11 +9,6 @@
     <!--自定义日志格式-->
     <property name="CONSOLE" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %easyHighlight(%5.5level) --- [%15.15thread] %cyan(%-40.40logger{39}) : %msg%n"/>
     <property name="PRODUCT" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5.5level --- [%15.15thread] %-40.40logger{39} : %msg%n"/>
-    <!--读取application.properties配置-->
-    <springProperty scope="context" name="logging.level.root" source="logging.level.root"/>
-
-    <!--value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-15t] %highlight(%-5level) %-40logger{15} : %msg%n"/>-->
-    <!-- 日志记录器，日期滚动记录 -->
 
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 正在记录的日志文件的路径及文件名 -->
@@ -44,7 +39,6 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
-
     <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 正在记录的日志文件的路径及文件名 -->
         <file>${LOG_PATH}/${APPDIR}/log_all.log</file>
@@ -67,7 +61,6 @@
             </layout>
         </encoder>
     </appender>
-
     <appender name="FILE_REQUEST" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${APPDIR}/log_debug_request.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -113,6 +106,7 @@
             </layout>
         </encoder>
     </appender>
+
     <appender name="CONSOLE_COLOR" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="com.github.missthee.config.log.format.EasyPatternLayout">
@@ -156,7 +150,6 @@
         <logger name="com.github.missthee.db.secondary" level="${logging.level.com.github.missthee.db.secondary:-info}" additivity="true">
             <appender-ref ref="FILE_MYBATIS2"/>
         </logger>
-
     </springProfile>
 </configuration>
 

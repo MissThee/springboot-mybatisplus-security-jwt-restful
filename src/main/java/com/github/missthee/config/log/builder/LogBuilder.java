@@ -3,14 +3,12 @@ package com.github.missthee.config.log.builder;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import org.apache.shiro.SecurityUtils;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.http.HttpHeaders;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -80,7 +78,7 @@ public class LogBuilder {
         return requestLogAspect(request, null, "REQ");
     }
 
-    public static String responseLogAspect(Object returnObj, String headLabel) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static String responseLogAspect(Object returnObj, String headLabel) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("\r\n-------------------↓" + headLabel + "↓--------------------");
         Class<?> returnValueClass = returnObj.getClass();
@@ -110,7 +108,7 @@ public class LogBuilder {
         return stringBuilder.toString();
     }
 
-    public static String responseLogAspect(Object returnObj) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static String responseLogAspect(Object returnObj) {
         return responseLogAspect(returnObj, "RES");
     }
 
