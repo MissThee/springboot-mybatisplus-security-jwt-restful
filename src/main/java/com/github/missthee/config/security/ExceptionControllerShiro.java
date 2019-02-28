@@ -1,6 +1,8 @@
 package com.github.missthee.config.security;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.missthee.config.log.builder.LogBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.core.annotation.Order;
@@ -19,13 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 @ApiIgnore
 @RestControllerAdvice
 @Order(1)
+@Slf4j
 public class ExceptionControllerShiro {
     //访问无权限接口
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
     public Object unauthorizedException(HttpServletRequest request, Exception e) {
-        e.printStackTrace();
+        log.debug(LogBuilder.requestLog(request,"ERROR") + "\r\nEXCEPTION : " + e.getMessage());
         JSONObject jO = new JSONObject();
         jO.put("msg", "UnauthorizedException:" + HttpStatus.FORBIDDEN.getReasonPhrase());
         return jO;
@@ -36,7 +39,7 @@ public class ExceptionControllerShiro {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public Object unauthenticatedException(HttpServletRequest request, Exception e) {
-        e.printStackTrace();
+        log.debug(LogBuilder.requestLog(request,"ERROR") + "\r\nEXCEPTION : " + e.getMessage());
         JSONObject jO = new JSONObject();
         jO.put("msg", "UnauthenticatedException:" + HttpStatus.UNAUTHORIZED.getReasonPhrase());
         return jO;

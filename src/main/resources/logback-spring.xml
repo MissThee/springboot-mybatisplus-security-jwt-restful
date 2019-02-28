@@ -129,24 +129,24 @@
     </appender>
 
     <springProfile name="dev,default">
-        <logger name="root" level="${logging.level.root:-debug}" additivity="true"/>
-        <root level="${logging.level.root:-info}">
+        <logger name="com.github.missthee" level="debug" additivity="true"/>
+        <root level="info">
             <!--控制台输出（彩色）-->
             <appender-ref ref="CONSOLE_COLOR"/>
         </root>
     </springProfile>
     <springProfile name="prod">
-        <root level="${logging.level.root:-info}">
+        <root level="info">
             <!--文件输出-->
             <appender-ref ref="FILE_ERROR"/>
             <appender-ref ref="FILE_ALL"/>
             <!--控制台输出（原色），若使用docker，可查看实时输出使用-->
-            <appender-ref ref="CONSOLE"/>
+            <!--<appender-ref ref="CONSOLE"/>-->
         </root>
         <!--文件输出-->
         <!--additivity是否将日志传递给上级（false：只使用内部appender-ref的方法输出；true：使用内部方法，且将日志内容交至更上级再次输出）-->
         <!--三个logger为分类输出日志，REQUEST请求，MYBATIS1第一数据库，MYBATIS2第二数据库 -->
-        <!--若使用下面三个分类输出，level改为debug，name为要输出日志的包。（生产环境不推荐输出debug大量日志） -->
+        <!--若使用下面三个分类输出，level改为debug，name为要输出日志的包。（生产环境不推荐输出大量debug日志） -->
         <logger name="com.github.missthee.config.log" level="${logging.level.com.github.missthee.config.log:-info}" additivity="true">
             <appender-ref ref="FILE_REQUEST"/>
         </logger>
