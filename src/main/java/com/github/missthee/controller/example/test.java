@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import javax.script.ScriptException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class test {
-    public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
+    public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, ScriptException {
         Workbook wb = ExcelExportByTemplate.readFile("exceltemplate/test.xls");
 
         TestModel testModel = new TestModel().setTest1("长文本长文本长文本长文本长文本长文本长文本长文本长文本");
@@ -85,6 +86,8 @@ public class test {
         private String test1 ;
         private Date test2 ;
         private String test3 = "测试文字3";
+        private String test4= "123";
+        private String test5= null;
     }
 
     @Data

@@ -30,6 +30,7 @@ import com.github.missthee.tool.Res;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.naming.SizeLimitExceededException;
+import javax.script.ScriptException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class ExampleController {
     }
 
     @PostMapping("excel/output")
-    public void excelTest(HttpServletResponse response) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException, NoSuchFieldException {
+    public void excelTest(HttpServletResponse response) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException, NoSuchFieldException, ScriptException {
         //读取模板支持.xls（97-2003）或.xlsx（2007+）
         Workbook wb = ExcelExportByTemplate.readFile("exceltemplate/test.xls");
         //实体类
