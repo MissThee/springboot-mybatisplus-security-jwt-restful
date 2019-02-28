@@ -224,7 +224,7 @@ public class ExampleController {
 
     //上传excel转为POJO
     @PostMapping(value = "/upload2")
-    public Res fileUpload2(MultipartFile file) throws IOException, NoSuchMethodException, InvalidFormatException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
+    public Res fileUpload2(MultipartFile file) throws IOException, NoSuchMethodException, InvalidFormatException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException {
         List<Object> objects = ExcelImport.excel2POJOList(file, User.class, new ArrayList<String>() {{
             add("nickname");
             add("username");
