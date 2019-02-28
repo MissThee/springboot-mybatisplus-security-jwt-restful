@@ -1,0 +1,1 @@
+使用说明：将.exe .xml .bat与jar包放置同目录，修改.xml配置，运行.bat
