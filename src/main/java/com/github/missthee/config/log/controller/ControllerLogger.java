@@ -1,8 +1,8 @@
 package com.github.missthee.config.log.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -11,10 +11,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import com.github.missthee.tool.Res;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -24,8 +25,28 @@ import java.util.stream.Collectors;
 @Aspect
 @Slf4j
 public class ControllerLogger {
+    private static int RES_KEY_LENGTH;
+    private static final List<Class> BASE_TYPE_LIST = new ArrayList<Class>() {{
+        add(byte.class);
+        add(Byte.class);
+        add(short.class);
+        add(Short.class);
+        add(int.class);
+        add(Integer.class);
+        add(long.class);
+        add(Long.class);
+        add(float.class);
+        add(Float.class);
+        add(double.class);
+        add(Double.class);
+        add(boolean.class);
+        add(Boolean.class);
+        add(char.class);
+        add(Character.class);
+        add(String.class);
+    }};
 
-    @Pointcut("execution(public * *.controller..*.*(..))")
+    @Pointcut("execution(public * *..controller..*.*(..))")
     public void webLog() {
     }
 
@@ -33,7 +54,7 @@ public class ControllerLogger {
     @Around("webLog()")
     @SuppressWarnings("all")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        Object returnValue;
+        Object returnObj;
         StringBuilder stringBuilder = new StringBuilder();
         try {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -75,26 +96,48 @@ public class ControllerLogger {
         } catch (Exception e) {
             stringBuilder.append("\r\n!!!!!!!!!!!!!!!!!!!REQ-LOG-ERROR!!!!!!!!!!!!!!!!!!!");
         }
-        returnValue = joinPoint.proceed();
+        returnObj = joinPoint.proceed();
         // 处理完请求，返回内容
         try {
-            if (returnValue == null) {
+            if (returnObj == null) {
                 stringBuilder.append("\r\n-------------------·RES·--------------------");
             } else {
                 stringBuilder.append("\r\n-------------------↓RES↓--------------------");
-                if (returnValue instanceof Res) {
-                    stringBuilder.append("\r\nRESULT : " + ((Res) returnValue).getResult());
-                    stringBuilder.append("\r\nDATA   : " + JSONObject.toJSONString(((Res) returnValue).getData()));
-                    stringBuilder.append("\r\nMSG    : " + ((Res) returnValue).getMsg());
+                Class<?> returnValueClass = returnObj.getClass();
+                Field[] declaredFields = returnValueClass.getDeclaredFields();
+
+                if (BASE_TYPE_LIST.contains(returnValueClass)) {
+                    stringBuilder.append("\r\nRES : " + returnObj);
                 } else {
-                    stringBuilder.append("\r\nRESPONSE: " + returnValue);
+                    if (RES_KEY_LENGTH == 0) {
+                        for (Field field : declaredFields) {
+                            RES_KEY_LENGTH = Math.max(RES_KEY_LENGTH, field.getName().length());
+                        }
+                    }
+                    for (Field field : declaredFields) {
+                        try {
+                            String propertyType = field.getName();
+                            String propertyName = field.getName();
+                            Object value = GetterAndSetter.invokeGetMethod(returnObj, field.getName());
+                            String valueStr;
+                            try {
+                                valueStr = JSON.toJSONString(value);
+                            } catch (Exception ignord) {
+                                valueStr = String.valueOf(value);
+                            }
+                            stringBuilder.append("\r\n" + String.format("%-" + RES_KEY_LENGTH + "s", propertyName.toUpperCase()) + " : " + valueStr);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 stringBuilder.append("\r\n-------------------↑RES↑--------------------");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             stringBuilder.append("\r\n!!!!!!!!!!!!!!!!!!!RES-LOG-ERROR!!!!!!!!!!!!!!!!!!!");
         }
         log.debug(stringBuilder.toString());
-        return returnValue;
+        return returnObj;
     }
 }

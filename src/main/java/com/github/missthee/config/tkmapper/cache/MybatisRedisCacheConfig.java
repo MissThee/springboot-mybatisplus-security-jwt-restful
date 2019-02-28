@@ -11,12 +11,12 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Slf4j
-public class RedisCache implements Cache {
+public class MybatisRedisCacheConfig implements Cache {
     private static final long EXPIRE_TIME_IN_MINUTES = 1440; // redis过期时间
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final String id;
 
-    public RedisCache(String id) {
+    public MybatisRedisCacheConfig(String id) {
         if (id == null) {
             throw new IllegalArgumentException("Cache instances require an ID");
         }
@@ -35,14 +35,12 @@ public class RedisCache implements Cache {
         opsForValue.set(key, value, EXPIRE_TIME_IN_MINUTES, TimeUnit.MINUTES);
     }
 
-
     @Override
     public Object getObject(Object key) {
         RedisTemplate<Object, Object> redisTemplate = getRedisTemplate();
         ValueOperations<Object, Object> opsForValue = redisTemplate.opsForValue();
         return opsForValue.get(key);
     }
-
 
     @Override
     public Object removeObject(Object key) {

@@ -65,7 +65,10 @@ public class ExampleController {
         //流输出
         ExcelExportByTemplate.export(response, wb, "文件名");
     }
-
+    @PostMapping("returnStr")
+    public String getProperty123() {
+        return "string12312rfqwfq";
+    }
     @PostMapping("getProperty")
     public Res getProperty() {
         Map<String, String> map = new HashMap<>();

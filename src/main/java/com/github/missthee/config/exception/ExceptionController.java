@@ -3,6 +3,7 @@ package com.github.missthee.config.exception;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -17,30 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 //controller异常捕捉返回
 @ApiIgnore
 @RestControllerAdvice
-
+@Order
 public class ExceptionController {
-
-    //访问无权限接口
-    @ExceptionHandler(UnauthorizedException.class)
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.FORBIDDEN)
-    public Object unauthorizedException(HttpServletRequest request, Exception e) {
-        e.printStackTrace();
-        JSONObject jO = new JSONObject();
-        jO.put("msg", "UnauthorizedException:" + HttpStatus.FORBIDDEN.getReasonPhrase());
-        return jO;
-    }
-
-    //需要登录
-    @ExceptionHandler(UnauthenticatedException.class)
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
-    public Object unauthenticatedException(HttpServletRequest request, Exception e) {
-        e.printStackTrace();
-        JSONObject jO = new JSONObject();
-        jO.put("msg", "UnauthenticatedException:" + HttpStatus.UNAUTHORIZED.getReasonPhrase());
-        return jO;
-    }
 
     //参数错误
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -76,10 +55,12 @@ public class ExceptionController {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+    @Order
     public Object exceptionHandler(HttpServletRequest request, Exception e) {
         e.printStackTrace();
         JSONObject jO = new JSONObject();
         jO.put("msg", "Exception: " + e);
         return jO;
     }
+
 }

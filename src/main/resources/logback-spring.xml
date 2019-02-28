@@ -113,53 +113,63 @@
             </layout>
         </encoder>
     </appender>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="CONSOLE_OUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="com.github.missthee.config.log.format.EasyPatternLayout">
                 <pattern>${CONSOLE}</pattern>
             </layout>
         </encoder>
     </appender>
-    <appender name="FILEOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="FILE_OUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="com.github.missthee.config.log.format.EasyPatternLayout">
                 <pattern>${PRODUCT}</pattern>
             </layout>
         </encoder>
     </appender>
-    <!--文件输出-->
-    <!--additivity控制本类中的日志是否提交到上层（即此处控制写入文件后，是否输出至控制台）-->
-    <!--以下logger将日志提交至上层root，由root输出至控制台-->
-    <logger name="com.github.missthee.config.log" level="${logging.level.com.github.missthee.config.log:-debug}" additivity="true">
-        <appender-ref ref="REQUEST"/>
-    </logger>
-    <logger name="com.github.missthee.db.primary" level="${logging.level.com.github.missthee.db.primary:-debug}" additivity="true">
-        <appender-ref ref="MYBATIS1"/>
-    </logger>
-    <logger name="com.github.missthee.db.secondary" level="${logging.level.com.github.missthee.db.secondary:-debug}" additivity="true">
-        <appender-ref ref="MYBATIS2"/>
-    </logger>
 
     <springProfile name="dev,default">
-        <logger name="root" level="${logging.level.server:-debug}" additivity="true">
-            <!--文件写入-->
-            <appender-ref ref="ERROR"/>
-            <appender-ref ref="ALL"/>
+        <!--文件输出-->
+        <!--additivity控制本类中的日志是否提交到上层（即此处控制写入文件后，是否输出至控制台）-->
+        <!--以下logger将日志提交至上层root，由root输出至控制台-->
+        <logger name="com.github.missthee.config.log" level="${logging.level.com.github.missthee.config.log:-debug}" additivity="true">
+            <!--<appender-ref ref="REQUEST"/>-->
+        </logger>
+        <logger name="com.github.missthee.db.primary" level="${logging.level.com.github.missthee.db.primary:-debug}" additivity="true">
+            <!--<appender-ref ref="MYBATIS1"/>-->
+        </logger>
+        <logger name="com.github.missthee.db.secondary" level="${logging.level.com.github.missthee.db.secondary:-debug}" additivity="true">
+            <!--<appender-ref ref="MYBATIS2"/>-->
+        </logger>
+        <logger name="root" level="${logging.level.root:-debug}" additivity="true">
+            <!--<appender-ref ref="ERROR"/>-->
+            <!--<appender-ref ref="ALL"/>-->
         </logger>
         <root level="${logging.level.root:-info}">
             <!--控制台输出-->
-            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="CONSOLE_OUT"/>
         </root>
     </springProfile>
     <springProfile name="prod">
-        <logger name="root" level="${logging.level.server:-info}" additivity="true">
-            <!--文件写入-->
+        <!--文件输出-->
+        <!--additivity控制本类中的日志是否提交到上层（即此处控制写入文件后，是否输出至控制台）-->
+        <!--以下logger将日志提交至上层root，由root输出至控制台-->
+        <logger name="com.github.missthee.config.log" level="${logging.level.com.github.missthee.config.log:-info}" additivity="true">
+            <appender-ref ref="REQUEST"/>
+        </logger>
+        <logger name="com.github.missthee.db.primary" level="${logging.level.com.github.missthee.db.primary:-info}" additivity="true">
+            <appender-ref ref="MYBATIS1"/>
+        </logger>
+        <logger name="com.github.missthee.db.secondary" level="${logging.level.com.github.missthee.db.secondary:-info}" additivity="true">
+            <appender-ref ref="MYBATIS2"/>
+        </logger>
+        <logger name="root" level="${logging.level.root:-info}" additivity="true">
             <appender-ref ref="ERROR"/>
             <appender-ref ref="ALL"/>
         </logger>
         <root level="${logging.level.root:-info}">
             <!--控制台输出-->
-            <appender-ref ref="FILEOUT"/>
+            <appender-ref ref="FILE_OUT"/>
         </root>
     </springProfile>
 </configuration>

@@ -1,0 +1,13 @@
+﻿<configuration> 
+     <id>测试项目服务</id> 
+     <name>测试项目服务</name>
+     <description>测试项目服务</description>
+     <executable>java</executable> 
+    <arguments>-jar demo-0.0.1-SNAPSHOT.jar</arguments>
+     <!-- 开机启动 -->
+     <startmode>Automatic</startmode>
+     <!-- 日志配置 -->
+     <logpath>logs</logpath>
+     <logmode>rotate</logmode>
+ </configuration>
+ 
