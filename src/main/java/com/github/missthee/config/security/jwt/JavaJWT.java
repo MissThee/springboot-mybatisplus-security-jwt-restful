@@ -1,4 +1,4 @@
-package com.github.missthee.config.security;
+package com.github.missthee.config.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
@@ -7,10 +7,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import com.github.missthee.db.primary.model.basic.User;
-import com.github.missthee.service.interf.basic.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
@@ -21,34 +20,43 @@ import java.util.*;
 @Slf4j
 @Component
 public class JavaJWT {
-    private final String issuer = "spring-project";
 
-    private final UserService userService;
+    private static String JWT_TOKEN_KEY;
+    private final String issuer = "spring-project";
+    private final UserInfoForJWT userInfoForJWT;
+
+    @Value("${jwt.token.key:Authorization}")
+    public void setJWT_TOKEN_KEY(String a) {
+        JWT_TOKEN_KEY = a;
+    }
 
     @Autowired
-    public JavaJWT(UserService userService) {
-        this.userService = userService;
+    public JavaJWT(UserInfoForJWT userSecretForJWT) {
+        this.userInfoForJWT = userSecretForJWT;
     }
 
     /**
      * @param expiresDayFromNow 有效时间（天）
      */
-    public String createToken(String id, int expiresDayFromNow) {
+    public String createToken(Object userId, int expiresDayFromNow) {
         JWTCreator.Builder builder = JWT.create();
         //添加发布人信息【可直接解析】
         builder.withIssuer(issuer);
         builder.withExpiresAt(toDate(LocalDateTime.now().plusDays(expiresDayFromNow)));
         //添加claim附加信息【可直接解析】
-        builder.withClaim("id", id);
+        String userIdStr = String.valueOf(userId);
+        if ("null".equals(userIdStr)) {
+            userIdStr = null;
+        }
+        builder.withClaim("id", userIdStr);
         builder.withClaim("duration", expiresDayFromNow);
-//            builder.withArrayClaim("roleList", roleList.toArray(new String[]{}));
-//            builder.withArrayClaim("permissionList", permissionList.toArray(new String[]{}));
+//      builder.withArrayClaim("roleList", roleList.toArray(new String[]{}));
+//      builder.withArrayClaim("permissionList", permissionList.toArray(new String[]{}));
         //添加header键值对【可直接解析】
         //Map<String, Object> headerClaims = new HashMap();
         //headerClaims.put("userId", "1234");
         //builder.withHeader(headerClaims);
-        User user = userService.selectOneById(Integer.parseInt(id));
-        String token = builder.sign(Algorithm.HMAC256(user.getPassword().getBytes()));
+        String token = builder.sign(Algorithm.HMAC256(userInfoForJWT.getSecret(userId).getBytes()));
         log.debug("CREATE TOKEN：" + token);
         return token;
     }
@@ -70,10 +78,10 @@ public class JavaJWT {
             String id = decodedJWT.getClaim("id").asString();
             builder.withClaim("id", id);
             builder.withClaim("duration", decodedJWT.getClaim("duration").asInt());
-//      builder.withArrayClaim("roleList", decodedJWT.getClaim("roleList").asList(String.class).toArray(new String[]{}));
-//      builder.withArrayClaim("permissionList", decodedJWT.getClaim("permissionList").asList(String.class).toArray(new String[]{}));
-            User user = userService.selectOneById(Integer.parseInt(id));
-            String newToken = builder.sign(Algorithm.HMAC256(user.getPassword().getBytes()));
+//          builder.withArrayClaim("roleList", decodedJWT.getClaim("roleList").asList(String.class).toArray(new String[]{}));
+//          builder.withArrayClaim("permissionList", decodedJWT.getClaim("permissionList").asList(String.class).toArray(new String[]{}));
+//          User user = userService.selectOneById(Integer.parseInt(id));
+            String newToken = builder.sign(Algorithm.HMAC256(userInfoForJWT.getSecret(id).getBytes()));
             log.debug("REFRESH TOKEN：" + newToken);
             return newToken;
         } catch (Exception e) {
@@ -86,7 +94,7 @@ public class JavaJWT {
     public void updateTokenAndSetHeader(String token, HttpServletResponse httpServletResponse) {
         token = updateToken(token);
         if (token != null) {
-            httpServletResponse.setHeader("Authorization", token);
+            httpServletResponse.setHeader(JWT_TOKEN_KEY, token);
         }
     }
 
@@ -95,21 +103,21 @@ public class JavaJWT {
             log.debug("CHECK TOEKN: NULL");
             return false;
         }
-        try {
-            DecodedJWT decodedJWT = JWT.decode(token);
-            String id = decodedJWT.getClaim("id").asString();
-            User user = userService.selectOneById(Integer.parseInt(id));
-            Algorithm algorithm = Algorithm.HMAC256(user.getPassword().getBytes());
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer(issuer)
-                    .build();
-            verifier.verify(token);
-            log.debug("CHECK TOEKN: Fine");
-            return true;
-        } catch (Exception exception) {
-            log.debug("CHECK TOEKN-ERROR: " + exception);
-            return false;
-        }
+
+        DecodedJWT decodedJWT = JWT.decode(token);
+        String id = decodedJWT.getClaim("id").asString();
+//        try {
+        Algorithm algorithm = Algorithm.HMAC256(userInfoForJWT.getSecret(id).getBytes());
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withIssuer(issuer)
+                .build();
+        verifier.verify(token);
+        log.debug("CHECK TOEKN: Fine");
+        return true;
+//        } catch (Exception exception) {
+//            log.debug("CHECK TOEKN-ERROR: " + exception);
+//            return false;
+//        }
     }
 
     /**
@@ -136,6 +144,15 @@ public class JavaJWT {
         }
     }
 
+    public String getId(HttpServletResponse httpServletResponse) {
+        try {
+            String token = httpServletResponse.getHeader(JWT_TOKEN_KEY);
+            return getId(token);
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
 //    public static List<String> getRoleList(String token) {
 //        DecodedJWT jwt = JWT.decode(token);
 //        return jwt.getClaim("roleList").asList(String.class);

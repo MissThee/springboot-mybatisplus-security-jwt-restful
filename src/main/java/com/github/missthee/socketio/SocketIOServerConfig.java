@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.config.security.jwt.JavaJWT;
 
 @Configuration
 public class SocketIOServerConfig {

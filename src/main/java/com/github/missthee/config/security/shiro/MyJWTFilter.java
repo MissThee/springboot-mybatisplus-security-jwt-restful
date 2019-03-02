@@ -1,5 +1,6 @@
-package com.github.missthee.config.security;
+package com.github.missthee.config.security.shiro;
 
+import com.github.missthee.config.security.jwt.JavaJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;

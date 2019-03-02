@@ -16,8 +16,8 @@
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
             <property name="mappers" value="com.github.missthee.config.tkmapper.common.CommonMapper"/>
         </plugin>
-        <plugin type="com.github.com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin" />
-        <!--<plugin type="com.github.com.github.missthee.mybatis.generator.plugins.custom.LombokSwaggerPlugin"/>-->
+        <plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin" />
+        <!--<plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokSwaggerPlugin"/>-->
 
         <commentGenerator>
             <!-- 是否去除自动生成的注释 true：是 ： false:否 -->

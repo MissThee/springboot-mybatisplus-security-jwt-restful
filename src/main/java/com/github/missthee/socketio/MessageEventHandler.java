@@ -10,7 +10,7 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.config.security.jwt.JavaJWT;
 import com.github.missthee.db.primary.model.basic.User;
 import com.github.missthee.service.interf.basic.UserService;
 import com.github.missthee.socketio.model.AckModel;

@@ -1,4 +1,4 @@
-package com.github.missthee.tool.Independent;
+package com.github.missthee.tool.Independent.db;
 
 import com.google.common.base.Joiner;
 import org.dom4j.*;

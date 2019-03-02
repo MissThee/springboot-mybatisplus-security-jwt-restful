@@ -1,27 +1,23 @@
-package com.github.missthee.config.security;
+package com.github.missthee.config.security.shiro;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.github.missthee.db.primary.dto.login.LoginDTO;
-import com.github.missthee.service.interf.login.LoginService;
 
 @Component
 public class MyRealm extends AuthorizingRealm {
-
-    private final LoginService loginService;
+    private final UserInfoForShiro userInfoForShiro;
 
     @Autowired
-    public MyRealm(LoginService loginService) {
-        this.loginService = loginService;
+    public MyRealm(UserInfoForShiro userInfoForShiro) {
+        this.userInfoForShiro = userInfoForShiro;
     }
 
     /**
@@ -45,12 +41,8 @@ public class MyRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        //于缓存中获取用户信息
+        //获取用户信息(尽量由缓存中获取，避免频繁读取数据库)
         String userId = principals.getPrimaryPrincipal().toString();
-        LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(userId));
-        return new SimpleAuthorizationInfo() {{
-            addRoles(loginDTO.getRoleValueList());
-            addStringPermissions(loginDTO.getPermissionValueList());
-        }};
+        return userInfoForShiro.getSimpleAuthorizationInfo(userId);
     }
 }

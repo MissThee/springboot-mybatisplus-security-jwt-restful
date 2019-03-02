@@ -1,5 +1,6 @@
-package com.github.missthee.config.security;
+package com.github.missthee.config.security.shiro;
 
+import com.github.missthee.config.security.jwt.JavaJWT;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;

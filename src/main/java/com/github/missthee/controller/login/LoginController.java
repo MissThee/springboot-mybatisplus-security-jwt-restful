@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import com.github.missthee.db.primary.dto.login.LoginDTO;
-import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.config.security.jwt.JavaJWT;
 import com.github.missthee.db.primary.model.basic.User;
 import com.github.missthee.service.interf.basic.UserService;
 import com.github.missthee.service.interf.login.LoginService;

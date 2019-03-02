@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.config.security.jwt.JavaJWT;
 import com.github.missthee.db.primary.model.basic.User;
 import com.github.missthee.db.primary.model.compute.Compute;
 import com.github.missthee.service.interf.basic.UserService;

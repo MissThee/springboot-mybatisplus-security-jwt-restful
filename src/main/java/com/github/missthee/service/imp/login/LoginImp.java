@@ -1,6 +1,8 @@
 package com.github.missthee.service.imp.login;
 
+import com.github.missthee.config.security.shiro.UserInfoForShiro;
 import ma.glasnost.orika.MapperFacade;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class LoginImp implements LoginService {
+public class LoginImp implements LoginService, UserInfoForShiro {
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
@@ -72,7 +74,7 @@ public class LoginImp implements LoginService {
             userRoleList.forEach(e -> roleIdList.add(e.getRoleId()));
         }
         //查找角色信息集
-        List<Role> roleList = new ArrayList<>();
+        List<Role> roleList;
         Set<String> roleValueList = new HashSet<>();
         if (roleIdList.size() > 0) {
             Example roleExp = new Example(Role.class);
@@ -92,7 +94,7 @@ public class LoginImp implements LoginService {
             rolePermissionList.forEach(e -> permissionIdList.add(e.getPermissionId()));
         }
         //查找权限信息集
-        List<Permission> permissionList = new ArrayList<>();
+        List<Permission> permissionList;
         Set<String> permissionValueList = new HashSet<>();
         if (permissionIdList.size() > 0) {
             Example permissionExp = new Example(Permission.class);
@@ -107,5 +109,14 @@ public class LoginImp implements LoginService {
         loginDTO.setRoleValueList(roleValueList);
         loginDTO.setPermissionValueList(permissionValueList);
         return loginDTO;
+    }
+
+    @Override
+    public SimpleAuthorizationInfo getSimpleAuthorizationInfo(Object obj) {
+        LoginDTO loginDTO = selectUserById(Integer.parseInt(String.valueOf(obj)));
+        return new SimpleAuthorizationInfo() {{
+            addRoles(loginDTO.getRoleValueList());
+            addStringPermissions(loginDTO.getPermissionValueList());
+        }};
     }
 }

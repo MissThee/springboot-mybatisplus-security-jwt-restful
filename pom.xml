@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.server</groupId>
+    <groupId>com.github.missthee</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -149,7 +149,7 @@
             <artifactId>excel-tool</artifactId>
             <version>1.8</version>
         </dependency>
-        <!--树形数据构建工具-->
+        <!--自定义树形数据构建工具-->
         <dependency>
             <groupId>com.github.MissThee</groupId>
             <artifactId>data-structure</artifactId>
@@ -180,13 +180,13 @@
         <!--</dependency>-->
 
         <!--oracle驱动(本地)-->
-        <!--<dependency>-->
-        <!--<groupId>com.oracle</groupId>-->
-        <!--<artifactId>ojdbc6</artifactId>-->
-        <!--<version>11.2.0.2.0</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>${basedir}/lib/ojdbc6.jar</systemPath>-->
-        <!--</dependency>-->
+        <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>ojdbc6</artifactId>
+        <version>11.2.0.2.0</version>
+        <scope>system</scope>
+        <systemPath>${basedir}/lib/ojdbc6.jar</systemPath>
+        </dependency>
 
         <!--meta model依赖-->
         <!--<dependency> &lt;!&ndash;meta model生成相关依赖&ndash;&gt;-->
@@ -303,6 +303,7 @@
                         <artifactId>mybatis-generator-custom-plugin</artifactId>
                         <version>1.0</version>
                     </dependency>
+
                 </dependencies>
             </plugin>
             <plugin>
@@ -344,18 +345,19 @@
             <!--将自定义jar打包。主要为打包oracle驱动-->
             <resource>
                 <directory>lib</directory>
-                <targetPath>BOOT-INF/lib/</targetPath>
+                <targetPath>BOOT-INF/lib</targetPath>
                 <includes>
-                    <include>**/*.jar</include>
+                    <include>*.jar</include>
                 </includes>
             </resource>
-            <!--默认会打包resources下资源，此配置仅为使mybatis generator可找到application.properties配置文件-->
+            <!--若不设置<resources>配置，mybatis generator读取默认resources目录;
+                若设置了<resources>配置，myabtis generator仅读取配置的目录。因此处需打包本地jar（oracle驱动为本地jar包时），需配置jar包打进指定目录的<resources>，但会影响mybatis generator仅读取lib目录，需再将原resources目录也配置在此处-->
             <resource>
                 <directory>src/main/resources</directory>
                 <!--默认在打包时放置到此目录，无需设置-->
                 <!--<targetPath>BOOT-INF/classes/</targetPath>-->
                 <includes>
-                    <include>**/*.properties</include>
+                    <!--<include>**/*.properties</include>-->
                     <include>**/*.*</include>
                 </includes>
             </resource>

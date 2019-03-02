@@ -7,7 +7,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.github.missthee.db.primary.dto.login.LoginDTO;
-import com.github.missthee.config.security.JavaJWT;
+import com.github.missthee.config.security.jwt.JavaJWT;
 import com.github.missthee.service.interf.login.LoginService;
 import com.github.missthee.tool.Res;
 

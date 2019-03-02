@@ -1,5 +1,8 @@
 package com.github.missthee.service.imp.basic;
 
+import com.github.missthee.config.security.jwt.UserInfoForJWT;
+import com.github.missthee.db.primary.dto.login.LoginDTO;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.github.missthee.db.primary.mapper.basic.UserMapper;
@@ -10,7 +13,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.List;
 
 @Service
-public class UserImp implements UserService {
+public class UserImp implements UserService, UserInfoForJWT {
     private final UserMapper userMapper;
 
     @Autowired
@@ -40,6 +43,18 @@ public class UserImp implements UserService {
         Example example = new Example(User.class);
         example.createCriteria().andEqualTo(User.NICKNAME, username);
         return userMapper.selectByExample(example);
+    }
+
+    @Override
+    public String getSecret(Object obj) {
+        String userId = String.valueOf(obj);
+        if (!"null".equals(userId) && !"".equals(userId)) {
+            User user = userMapper.selectByPrimaryKey(userId);
+            if (user != null) {
+                return user.getPassword();
+            }
+        }
+        return null;
     }
 
 
