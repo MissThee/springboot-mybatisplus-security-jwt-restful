@@ -11,13 +11,21 @@
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
         <!-- 若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
         <!--MapperPlugin：           生成继承CommenMapper的Mapper类-->
-        <!--LombokPlugin：           使用lombok的@Data注解，取消生成setter/getter，增加实体类属性名String类型静态变量-->
-        <!--LombokSwaggerPlugin：    使用lombok的@Data注解，取消生成setter/getter，增加实体类属性名String类型静态变量，属性添加@ApiModelProperty，value为数据库字段说明-->
+        <!--LombokPlugin：           使用lombok的@Data注解，取消生成setter/getter。addStaticPropertyName增加实体类属性名String类型静态变量，addPropertyComment增加注释，addPropertySwaggerAnnotation增加swagger注解-->
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
             <property name="mappers" value="com.github.missthee.config.tkmapper.common.CommonMapper"/>
         </plugin>
-        <plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin" />
-        <!--<plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokSwaggerPlugin"/>-->
+        <!--LombokPlugin：使用lombok的@Data注解，取消生成setter/getter。-->
+        <plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin">
+            <!--实体类增加属性名String类型静态变量-->
+            <property name="addStaticPropertyName" value="false"/>
+            <!--实体类增加注释-->
+            <property name="addPropertyComment" value="false"/>
+            <!--实体类增加swagger注解-->
+            <property name="addPropertySwaggerAnnotation" value="false"/>
+            <!--mapper类增加@Component注解-->
+            <property name="addMapperClassComponentAnnotation" value="false"/>
+        </plugin>
 
         <commentGenerator>
             <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
