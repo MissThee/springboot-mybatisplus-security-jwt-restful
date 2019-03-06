@@ -103,21 +103,19 @@ public class JavaJWT {
             log.debug("CHECK TOEKN: NULL");
             return false;
         }
-
         DecodedJWT decodedJWT = JWT.decode(token);
         String id = decodedJWT.getClaim("id").asString();
-//        try {
-        Algorithm algorithm = Algorithm.HMAC256(userInfoForJWT.getSecret(id).getBytes());
+        String secret = userInfoForJWT.getSecret(id);
+        if (secret == null) {
+            return false;
+        }
+        Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         JWTVerifier verifier = JWT.require(algorithm)
                 .withIssuer(issuer)
                 .build();
         verifier.verify(token);
         log.debug("CHECK TOEKN: Fine");
         return true;
-//        } catch (Exception exception) {
-//            log.debug("CHECK TOEKN-ERROR: " + exception);
-//            return false;
-//        }
     }
 
     /**

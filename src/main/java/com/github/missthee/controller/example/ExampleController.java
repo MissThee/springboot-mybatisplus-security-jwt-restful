@@ -66,10 +66,12 @@ public class ExampleController {
         //流输出
         ExcelExportByTemplate.export(response, wb, "文件名");
     }
+
     @PostMapping("returnStr")
     public String getProperty123() {
         return "string12312rfqwfq";
     }
+
     @PostMapping("getProperty")
     public Res getProperty() {
         Map<String, String> map = new HashMap<>();
@@ -88,6 +90,11 @@ public class ExampleController {
         AStaticClass.setPrivateStaticString(new Date().toString());
         AStaticClass.InnerStaticClass.setB(new Date().toString());
         return Res.success();
+    }
+
+    @PostMapping("error")
+    public Res error() throws Exception {
+        throw new Exception("A unknown exception");
     }
 
     //获取当前用户相关信息。

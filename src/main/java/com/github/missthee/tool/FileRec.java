@@ -1,6 +1,5 @@
 package com.github.missthee.tool;
 
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
@@ -32,13 +31,18 @@ public class FileRec {
 
     //上传至 setRootPath 变量设置的目录中
     public static String fileUpload(MultipartFile file, String path) throws FileNotFoundException, SizeLimitExceededException {
-        if (file.isEmpty()) {
+        if (path != null) {
+            path = path.replace("/", File.separator).replace("\\", File.separator);
+        }
+        if (file == null) {
             throw new FileNotFoundException("No File Uploaded");
+        }
+        if (file.isEmpty()) {
+            throw new FileNotFoundException("Empty File");
         }
         if (file.getSize() > fileMaxSize.toBytes()) {
             throw new SizeLimitExceededException("File too large. " + "Less than " + String.format(" % .0f", Double.parseDouble(String.valueOf(fileMaxSize.toKilobytes())) / 1024) + "M each file");
         }
-        JSONObject res = new JSONObject();
         try {
             // 获取完整文件名
             String fileName = file.getOriginalFilename() == null ? "DefaultName" + LocalDateTime.now() : file.getOriginalFilename();
@@ -69,7 +73,7 @@ public class FileRec {
             //BASE64Encoder encoder = new BASE64Encoder();
             //String data = encoder.encode(file.getBytes());
             //修正url分隔符。此地址不包含host:port 内容，在返回时自行拼接
-            return dataDirectory.replaceAll("\\\\", "/") + fileName;
+            return dataDirectory.replace("\\", "/") + fileName;
         } catch (IOException e) {
             return null;
         }

@@ -1,13 +1,14 @@
-﻿<configuration> 
-     <id>测试项目服务</id> 
-     <name>测试项目服务</name>
-     <description>测试项目服务</description>
-     <executable>java</executable> 
+﻿<configuration>
+    <!-- id不要使用中文，否则某些系统报7034错误，意外终止 -->
+    <id>ZZTestService</id>
+    <name>测试服务，这里是任务管理器描述</name>
+    <description>测试服务，这里是服务中的描述</description>
+    <executable>java</executable>
     <arguments>-jar demo-0.0.1-SNAPSHOT.jar</arguments>
-     <!-- 开机启动 -->
-     <startmode>Automatic</startmode>
-     <!-- 日志配置 -->
-     <logpath>logs</logpath>
-     <logmode>rotate</logmode>
- </configuration>
+    <!-- 开机启动 -->
+    <startmode>Automatic</startmode>
+    <!-- 日志配置 -->
+    <logpath>logs</logpath>
+    <logmode>rotate</logmode>
+</configuration>
  
