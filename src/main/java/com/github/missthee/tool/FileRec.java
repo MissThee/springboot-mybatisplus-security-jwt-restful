@@ -49,7 +49,7 @@ public class FileRec {
             // 获取扩展名
             String extensionName = fileName.lastIndexOf(".") >= 0 ? fileName.substring(fileName.lastIndexOf(".")) : "";
             // 文件在静态资源文件夹中路径
-            String dataDirectory = File.separator + "files" + File.separator + "upload" + File.separator + (StringUtils.isEmpty(path) ? "" : (path + File.separator));
+            String dataDirectory = File.separator + (StringUtils.isEmpty(path) ? "" : (path + File.separator));
             // 拼接设置的额外静态资源目录路径
             String filePath = rootPath.concat(dataDirectory);
             File dest = new File(filePath, fileName);

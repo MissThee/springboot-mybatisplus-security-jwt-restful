@@ -14,7 +14,10 @@ import java.util.HashMap;
 public class Res<T> implements Serializable {
     private Res(Boolean result, T data, String msg) {
         this.result = result;
-        data = data == null ? (T) new HashMap() : data;
+        try {
+            data = data == null ? (T) new HashMap() : data;
+        } catch (Exception ignored) {
+        }
         this.data = data;
         this.msg = StringUtils.isEmpty(msg) ? "" : msg;
     }
