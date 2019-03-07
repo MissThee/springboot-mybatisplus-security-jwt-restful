@@ -19,5 +19,19 @@ for /f "tokens=5" %%i in ('netstat -aon ^| findstr ":%port%"') do (
 if defined n (
 	taskkill /f /pid %n% 
 )
-java -jar ../../../../../../../target/demo-0.0.1-SNAPSHOT.jar --server.port=%port% --spring.datasource.primary.driver-class-name=oracle.jdbc.OracleDriver --spring.datasource.primary.jdbc-url=jdbc:oracle:thin:@192.168.1.6:1521:cbmdb --spring.datasource.primary.username=cbmdb --spring.datasource.primary.password=cbmdb1qazxsw2   --logging.level.root=info --logging.level.server=info --logging.level.server.config.log=debug --logging.level.server.db.primary=info --logging.level.server.db.secondary=info
+java ^
+-Djava.rmi.server.hostname=localhost ^
+-Dcom.sun.management.jmxremote ^
+-Dcom.sun.management.jmxremote.port=1099 ^
+-Dcom.sun.management.jmxremote.authenticate=false ^
+-Dcom.sun.management.jmxremote.ssl=false ^
+-jar ^
+../../../../../../../../../target/demo-0.0.1-SNAPSHOT.jar ^
+--server.port=%port% ^
+--spring.datasource.primary.driver-class-name=com.mysql.jdbc.Driver ^
+--spring.datasource.primary.jdbc-url=jdbc:mysql://localhost:3306/mybatis_test_db?useUnicode=true^&useJDBCCompliantTimezoneShift=true^&useLegacyDatetimeCode=false^&serverTimezone=Asia/Shanghai^&nullNamePatternMatchesAll=true^&useSSL=false ^
+--spring.datasource.primary.username=user ^
+--spring.datasource.primary.password=1234 ^
+--spring.profiles.active=prod
+
 pause & exit
