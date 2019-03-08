@@ -1,4 +1,4 @@
-package com.github.missthee.controller.example;
+package com.github.missthee.test.staticproperty;
 
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import lombok.Data;

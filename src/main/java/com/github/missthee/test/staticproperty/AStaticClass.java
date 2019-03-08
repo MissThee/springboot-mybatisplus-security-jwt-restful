@@ -1,4 +1,4 @@
-package com.github.missthee.controller.example;
+package com.github.missthee.test.staticproperty;
 
 public class AStaticClass {
 

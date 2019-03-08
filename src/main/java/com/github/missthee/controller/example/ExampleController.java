@@ -2,7 +2,8 @@ package com.github.missthee.controller.example;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.missthee.controller.example.test.TestModel;
+import com.github.missthee.test.staticproperty.test.TestModel;
+import com.github.missthee.test.staticproperty.AStaticClass;
 import com.github.missthee.tool.datastructure.TreeData;
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
