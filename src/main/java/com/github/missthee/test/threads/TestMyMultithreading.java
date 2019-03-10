@@ -1,9 +1,10 @@
-package com.github.missthee.test.multithreading;
+package com.github.missthee.test.threads;
 
 public class TestMyMultithreading { // 主类
     private static final int THREAD_NUMBER = 5;
     public static void main(String[] args) {
         testMyRunnable();
+        System.out.println("ALL FINISHED!!!");
     }
 
     private static void testMyThread() {

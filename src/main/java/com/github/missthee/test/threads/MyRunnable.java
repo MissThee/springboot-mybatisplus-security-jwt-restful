@@ -1,4 +1,4 @@
-package com.github.missthee.test.multithreading;
+package com.github.missthee.test.threads;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

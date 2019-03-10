@@ -1,4 +1,4 @@
-package com.github.missthee.test.multithreading;
+package com.github.missthee.test.threads;
 
 
 class MyThread extends Thread { // Thread实际为Runnable的一个实现类
