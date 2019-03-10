@@ -4,11 +4,13 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 //topic交换机模型，需要一个topic交换机，两个队列和三个binding
 @Configuration
+@ConditionalOnProperty(name = "custom.rabbitmq.enable", havingValue = "true")
 public class TopicExchangeConfig {
     @Bean
     public TopicExchange topicExchange() {

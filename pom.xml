@@ -49,6 +49,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+        <!--aop依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
         <!--lombok依赖-->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -124,6 +129,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
+        <!--flowable依赖-->
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter</artifactId>
+            <version>6.4.1</version>
+        </dependency>
+
         <!--自定义集合类计算工具,List<POJO>合计、平均-->
         <dependency>
             <groupId>com.github.MissThee</groupId>

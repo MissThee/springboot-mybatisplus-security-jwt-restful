@@ -4,11 +4,13 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 //direct直连模式的交换机配置,包括一个direct交换机，两个队列
 @Configuration
+@ConditionalOnProperty(name = "custom.rabbitmq.enable", havingValue = "true")
 public class DirectExchangeConfig {
 
     @Bean

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://www.flowable.org/processdef">
+    <process id="Expense" name="ExpenseProcess" isExecutable="true">
+        <documentation>报销流程</documentation>
+        <startEvent id="start" name="开始"/>
+        <userTask id="fillTask" name="出差报销" flowable:assignee="${taskUser}">
+            <extensionElements>
+            </extensionElements>
+        </userTask>
+        <exclusiveGateway id="judgeTask"/>
+        <userTask id="directorTak" name="经理审批">
+            <extensionElements>
+                <flowable:taskListener event="create"
+                                       class="com.haiyang.flowable.listener.ManagerTaskHandler"/>
+            </extensionElements>
+        </userTask>
+        <userTask id="bossTask" name="老板审批">
+            <extensionElements>
+                <flowable:taskListener event="create"
+                                       class="com.haiyang.flowable.listener.BossTaskHandler"/>
+            </extensionElements>
+        </userTask>
+        <endEvent id="end" name="结束"/>
+
+        <sequenceFlow id="directorNotPassFlow" name="驳回" sourceRef="directorTak" targetRef="fillTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome=='驳回'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="bossNotPassFlow" name="驳回" sourceRef="bossTask" targetRef="fillTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome=='驳回'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="fillTask"/>
+        <sequenceFlow id="flow2" sourceRef="fillTask" targetRef="judgeTask"/>
+        <sequenceFlow id="judgeMore" name="大于500元" sourceRef="judgeTask" targetRef="bossTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${money > 500}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="judgeLess" name="小于500元" sourceRef="judgeTask" targetRef="directorTak">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${money <= 500}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="bossPassFlow" name="通过" sourceRef="bossTask" targetRef="end">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome=='通过'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="directorPassFlow" name="通过" sourceRef="directorTak" targetRef="end">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outcome=='通过'}]]></conditionExpression>
+        </sequenceFlow>
+    </process>
+</definitions>

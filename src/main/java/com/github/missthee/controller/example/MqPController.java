@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;
 import com.github.missthee.config.mq.MqProductor;
 import com.github.missthee.tool.Res;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @RestController
 @Api(value = "rabbitMqContronller", description = "rabbitmq测试类")
 @RequestMapping("/rabbitmq")
+@ConditionalOnProperty(name = "custom.rabbitmq.enable", havingValue = "true")
 public class MqPController {
     private static final String QUEUE_NAME = "direct-queue1";//队列
     //性能排序：fanout > direct >> topic。比例大约为11：10：6
