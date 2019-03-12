@@ -24,6 +24,7 @@ public class flowable {
 
     @Test
     public void generate() {
+       Object a= repositoryService;
         //开始事件
         StartEvent startEvent = new StartEvent();
         startEvent.setId("start");

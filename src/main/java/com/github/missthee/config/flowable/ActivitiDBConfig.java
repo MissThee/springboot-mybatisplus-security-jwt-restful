@@ -1,4 +1,4 @@
-package com.github.missthee.config.db;
+package com.github.missthee.config.flowable;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -9,31 +9,27 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import tk.mybatis.spring.annotation.MapperScan;
 
 import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 
 @Configuration
-@MapperScan(basePackages = {"com.github.missthee.db.primary.mapper"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
 @Slf4j
-public class PrimaryDBConfig {
-
-    @Bean(name = "primaryDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.primary")
+public class ActivitiDBConfig {
+    @Bean(name = "activitiDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.activiti")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "primarySqlSessionFactory")
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("primaryDataSource") DataSource dataSource) throws Exception {
+    @Bean(name = "activitiSqlSessionFactory")
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("activitiDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         try {
-            bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/primary/**/*.xml"));
+            bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/activiti/**/*.xml"));
         } catch (FileNotFoundException e) {
             log.info(e.getMessage() + ". File not exists.");
         }
@@ -41,13 +37,13 @@ public class PrimaryDBConfig {
         return bean.getObject();
     }
 
-    @Bean(name = "primaryTransactionManager")
-    public DataSourceTransactionManager transactionManager(@Qualifier("primaryDataSource") DataSource dataSource) {
+    @Bean(name = "activitiTransactionManager")
+    public DataSourceTransactionManager transactionManager(@Qualifier("activitiDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean(name = "primarySqlSessionTemplate")
-    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("primarySqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+    @Bean(name = "activitiSqlSessionTemplate")
+    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("activitiSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 }

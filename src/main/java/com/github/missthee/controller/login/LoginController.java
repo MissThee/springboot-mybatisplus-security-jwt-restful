@@ -3,6 +3,7 @@ package com.github.missthee.controller.login;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -17,8 +18,9 @@ import com.github.missthee.tool.Res;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Api(tags = "登录")
+@Api(tags = "登录获取用户信息、token获取用户信息")
 @RestController("FunLoginController")
+@RequestMapping("/uauth")
 public class LoginController {
 
     private final LoginService loginService;
@@ -70,10 +72,21 @@ public class LoginController {
         private Boolean isLongLogin = false;
     }
 
+
+    @ApiOperation(value = "获取用户信息", notes = "通过token获取用户信息，用于token有效期内的自动登录")
+    @PostMapping("/info")
+    @RequiresAuthentication
+    public Res<loginRes> info(@RequestHeader(value = "Authorization", required = false) String token) {
+        String id = javaJWT.getId(token);
+        LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(id));
+        return Res.success(new loginRes(loginDTO), "登录成功");
+    }
+
     @Data
     @AllArgsConstructor
     private class loginRes {
         private LoginDTO user;
     }
+
 }
 
