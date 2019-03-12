@@ -1,10 +1,11 @@
-package com.github.missthee.config.tkmapper.cache;
+package com.github.missthee.tool;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 @Component
 public class ApplicationContextHolder implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
@@ -20,5 +21,9 @@ public class ApplicationContextHolder implements ApplicationContextAware {
 
     public static <T> T getBean(Class<T> clazz) {
         return applicationContext.getBean(clazz);
+    }
+
+    public static <T> Map<String, T> getBeansOfType(Class<T> clazz) {
+        return applicationContext.getBeansOfType(clazz);
     }
 }

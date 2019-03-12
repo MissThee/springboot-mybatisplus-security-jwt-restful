@@ -1,5 +1,6 @@
 package com.github.missthee.config.db;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -24,7 +25,7 @@ public class SecondaryDBConfig {
     @Bean(name = "secondaryDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.secondary")
     public DataSource dataSource() {
-        return DataSourceBuilder.create().build();
+        return new HikariDataSource();
     }
 
     @Bean(name = "secondarySqlSessionFactory")
