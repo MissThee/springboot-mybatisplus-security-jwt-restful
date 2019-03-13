@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
 import org.flowable.engine.*;
 import org.flowable.engine.repository.Deployment;
+import org.flowable.engine.repository.DeploymentQuery;
 import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,41 +86,34 @@ public class ProcessManaController {
     //查询流程部署信息act_re_deployment
     @RequestMapping("searchProcessDeploy")
     public Res searchProcessDeploy(@RequestBody(required = false) JSONObject bJO) {
-        String id = getStringOrDefaultFromJO(bJO, "id", null);
-        String name = getStringOrDefaultFromJO(bJO, "name", null);
-        String nameLike = getStringOrDefaultFromJO(bJO, "nameLike", null);
-
-        List<Map<String, String>> deploymentList = repositoryService.createDeploymentQuery()
-                //条件
-//                .deploymentId(id)//根据部署ID查询
-//                .deploymentName(name)//根据部署Name查询
-//                .deploymentNameLike(nameLike)//根据部署Name模糊查询
-                //排序
-                .orderByDeploymentName().asc()
-                .orderByDeploymenTime().desc()
-                //结果集
-                .list()
-                .stream().map(JOTool::deploymentToJSON).collect(Collectors.toList());
+        String key = getStringOrDefaultFromJO(bJO, "key", null);
+        DeploymentQuery deploymentQuery = repositoryService.createDeploymentQuery();
+        //条件
+        if (key != null) {
+            deploymentQuery.deploymentKey(key);
+        }
+        //排序
+        deploymentQuery.orderByDeploymentName().asc();
+        deploymentQuery.orderByDeploymenTime().desc();
+        //结果集
+        List<Map<String, String>> deploymentList = deploymentQuery.list().stream().map(JOTool::deploymentToJSON).collect(Collectors.toList());
         return Res.success(deploymentList);
     }
 
     //查询流程定义信息act_re_procdef
     @RequestMapping("searchProcessDefinition")
     public Res searchProcessDefinition(@RequestBody(required = false) JSONObject bJO) {
-        String id = getStringOrDefaultFromJO(bJO, "id", null);
-        String name = getStringOrDefaultFromJO(bJO, "name", null);
-        String nameLike = getStringOrDefaultFromJO(bJO, "nameLike", null);
-        List<Map<String, String>> processDefinitionList = repositoryService.createProcessDefinitionQuery()
-                //条件
-//                .processDefinitionId(id)//根据流程定义ID查询
-//                .processDefinitionName(name)//根据流程定义Name查询
-//                .processDefinitionNameLike(nameLike)//根据流程定义Name模糊查询
-                //排序
-                .orderByProcessDefinitionName().asc()
-                .orderByProcessDefinitionVersion().desc()
-                //结果集
-                .list()
-                .stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
+        String key = getStringOrDefaultFromJO(bJO, "key", "");
+        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
+        //条件
+        if (key != null) {
+            processDefinitionQuery.processDefinitionKey(key);//根据流程定义key查询
+        }
+        //排序
+        processDefinitionQuery.orderByProcessDefinitionName().asc();
+        processDefinitionQuery.orderByProcessDefinitionVersion().desc();
+        //结果集
+        List<Map<String, String>> processDefinitionList = processDefinitionQuery.list().stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
         return Res.success(processDefinitionList);
     }
 
@@ -152,11 +147,23 @@ public class ProcessManaController {
         outputStream.close();
     }
 
-    //查询所有最新流程
+    //查询所有审批流程的最新流程
     @RequestMapping("searchNewestProcessDefinition")
     public Res searchNewestProcessDefinition() {
         List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().latestVersion().list();
         List<Map<String, String>> collect = processDefinitionList.stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
         return Res.success(collect);
+    }
+
+    //删除指定key所有版本流程定义
+    @RequestMapping("deleteProcessDefinitionByKey")
+    public Res deleteProcessDefinitionByKey(@RequestBody(required = false) JSONObject bJO) {
+        String key = getStringOrDefaultFromJO(bJO, "key", null);
+        List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().processDefinitionKey(key).list();
+        List<String> deploymentIdList = processDefinitionList.stream().map(ProcessDefinition::getDeploymentId).collect(Collectors.toList());
+        for (String deploymentId : deploymentIdList) {
+            repositoryService.deleteDeployment(deploymentId);
+        }
+        return Res.success("完成删除");
     }
 }

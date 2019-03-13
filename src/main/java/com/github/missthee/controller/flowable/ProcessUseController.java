@@ -3,6 +3,7 @@ package com.github.missthee.controller.flowable;
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
 import org.flowable.engine.*;
+import org.flowable.engine.history.HistoricDetail;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
@@ -83,7 +84,9 @@ public class ProcessUseController {
     public Res completeTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", "b2cf32f9-43d1-11e9-b7c1-0a0027000008");
         taskService.complete(taskId);
-        return Res.success("任务完成");
+        HistoricDetail historicDetail = historyService.createHistoricDetailQuery().taskId(taskId).singleResult();
+        String historicId = historicDetail.getId();
+        return Res.success(historicId, "任务完成");
     }
 
     //HistoryService
@@ -91,6 +94,5 @@ public class ProcessUseController {
     //act_hi_taskinst       历史任务实例。   完成一个任务，记录一条数据（仅任务节点会记录）
     //act_hi_actinst        历史任务实例。   每有一个节点被使用，记录一条数据（所有节点均记录）
     //act_hi_identitylink   历史任务实例。   每有一个用户进行操作，记录一条数据
-
 
 }
