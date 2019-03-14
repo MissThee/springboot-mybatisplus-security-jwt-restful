@@ -7,6 +7,7 @@ import com.github.missthee.test.staticproperty.AStaticClass;
 import com.github.missthee.tool.datastructure.TreeData;
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
+import com.zaxxer.hikari.pool.HikariPool;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -17,6 +18,7 @@ import org.apache.shiro.authz.annotation.*;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,9 +35,13 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.naming.SizeLimitExceededException;
 import javax.script.ScriptException;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.*;
 
 
@@ -47,13 +53,15 @@ public class ExampleController {
     private final UserService userService;
     private final JavaJWT javaJWT;
     private final ComputeService computeService;
+    private final DataSource primaryDataSource;
 
     @Autowired
-    public ExampleController(UserService userService, JavaJWT javaJWT, ComputeService computeService) {
+    public ExampleController(UserService userService, JavaJWT javaJWT, ComputeService computeService, @Qualifier("primaryDataSource") DataSource dataSource) {
 
         this.userService = userService;
         this.javaJWT = javaJWT;
         this.computeService = computeService;
+        this.primaryDataSource = dataSource;
     }
 
     @PostMapping("excel/output")
@@ -68,9 +76,9 @@ public class ExampleController {
         ExcelExportByTemplate.export(response, wb, "文件名");
     }
 
-    @PostMapping("returnStr")
-    public String getProperty123() {
-        return "string12312rfqwfq";
+    @PostMapping("dbinfo")
+    public String dbInfo() throws SQLException, FileNotFoundException {
+        return primaryDataSource.toString();
     }
 
     @PostMapping("getProperty")

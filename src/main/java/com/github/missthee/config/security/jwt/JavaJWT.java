@@ -100,7 +100,7 @@ public class JavaJWT {
 
     public boolean verifyToken(String token) {
         if (StringUtils.isEmpty(token)) {
-            log.debug("CHECK TOEKN: NULL");
+//            log.debug("CHECK TOEKN: NULL");
             return false;
         }
         DecodedJWT decodedJWT = JWT.decode(token);
@@ -114,7 +114,7 @@ public class JavaJWT {
                 .withIssuer(issuer)
                 .build();
         verifier.verify(token);
-        log.debug("CHECK TOEKN: Fine");
+//        log.debug("CHECK TOEKN: Fine");
         return true;
     }
 

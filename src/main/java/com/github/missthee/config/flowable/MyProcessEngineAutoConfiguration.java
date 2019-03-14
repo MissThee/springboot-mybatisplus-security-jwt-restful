@@ -30,7 +30,7 @@ public class MyProcessEngineAutoConfiguration extends ProcessEngineAutoConfigura
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringProcessEngineConfiguration springProcessEngineConfiguration(@Qualifier("activitiDataSource") DataSource dataSource, @Qualifier("activitiTransactionManager") PlatformTransactionManager platformTransactionManager, ObjectProvider<IdGenerator> processIdGenerator, ObjectProvider<IdGenerator> globalIdGenerator, ObjectProvider<AsyncExecutor> asyncExecutorProvider, ObjectProvider<AsyncExecutor> asyncHistoryExecutorProvider) throws IOException {
+    public SpringProcessEngineConfiguration springProcessEngineConfiguration(@Qualifier("actDataSource") DataSource dataSource, @Qualifier("actTransactionManager") PlatformTransactionManager platformTransactionManager, ObjectProvider<IdGenerator> processIdGenerator, ObjectProvider<IdGenerator> globalIdGenerator, ObjectProvider<AsyncExecutor> asyncExecutorProvider, ObjectProvider<AsyncExecutor> asyncHistoryExecutorProvider) throws IOException {
         SpringProcessEngineConfiguration conf = new SpringProcessEngineConfiguration();
         List<Resource> resources = this.discoverDeploymentResources(this.flowableProperties.getProcessDefinitionLocationPrefix(), this.flowableProperties.getProcessDefinitionLocationSuffixes(), this.flowableProperties.isCheckProcessDefinitions());
         if (resources != null && !resources.isEmpty()) {
