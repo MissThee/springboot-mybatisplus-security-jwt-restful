@@ -3,6 +3,7 @@ package com.github.missthee.controller.flowable;
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
 import org.flowable.engine.*;
+import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,13 +62,41 @@ public class ProcessUse1Controller {
         //实际开发中常用
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processIdOrKey, businessKey);
 //        runtimeService.startProcessInstanceByKey(key,businessKey,map );
-        return Res.success(processInstance.getBusinessKey(),"启动成功");
+        return Res.success(processInstance.getBusinessKey(), "启动成功");
     }
 
+    //查询任务
     @RequestMapping("queryMyTask")
     public Res queryMyTask(@RequestBody(required = false) JSONObject bJO) {
         String assignee = getStringOrDefaultFromJO(bJO, "assignee", "test1");
         List<Map<String, String>> taskList = taskService.createTaskQuery().taskAssignee(assignee).list().stream().map(JOTool::taskToJSON).collect(Collectors.toList());
         return Res.success(taskList);
+    }
+
+    //办理任务
+    @RequestMapping("completeTask")
+    public Res completeTask(@RequestBody(required = false) JSONObject bJO) {
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", "");
+        taskService.complete(taskId);
+        return Res.success();
+    }
+
+    //查询历史任务
+    @RequestMapping("queryHistoryTask")
+    public Res queryHistoryTask(@RequestBody(required = false) JSONObject bJO) {
+        String assignee = getStringOrDefaultFromJO(bJO, "assignee", "test1");
+        List<Map<String, String>> hisTaskList = historyService.createHistoricTaskInstanceQuery().taskAssignee(assignee).list().stream().map(JOTool::historyTaskToJSON).collect(Collectors.toList());
+        return Res.success(hisTaskList);
+    }
+
+    //    判断流程是否完成
+    @RequestMapping("isFinished")
+    public Res isFinished(@RequestBody(required = false) JSONObject bJO) {
+        String id = getStringOrDefaultFromJO(bJO, "id", "");
+        List<Map<String, String>> collect = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(id)
+                .list()
+                .stream().map(JOTool::historicProcessToJSON).collect(Collectors.toList());
+        return Res.success(collect);
     }
 }

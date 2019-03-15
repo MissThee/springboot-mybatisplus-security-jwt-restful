@@ -1,9 +1,11 @@
 package com.github.missthee.controller.flowable;
 
 import com.alibaba.fastjson.JSONObject;
+import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.task.api.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,5 +65,22 @@ public class JOTool {
             put("事务办理人", task.getAssignee());
         }};
     }
+    protected static Map<String, String>  historicProcessToJSON(HistoricProcessInstance historicProcessInstance) {
+        return new HashMap<String, String>() {{
+            put("历史流程实例ID", historicProcessInstance.getId());
+            put("历史流程实例名称", historicProcessInstance.getName());
+            put("历史流程实例对应业务id", historicProcessInstance.getBusinessKey());
+        }};
+    }
 
+    protected static Map<String, String> historyTaskToJSON(HistoricTaskInstance historicTaskInstance) {
+        return new HashMap<String, String>() {{
+            put("历史任务ID", historicTaskInstance.getId());
+            put("历史任务名称", historicTaskInstance.getName());
+            put("历史流程实例ID", historicTaskInstance.getProcessInstanceId());
+            put("历史执行实例ID", historicTaskInstance.getExecutionId());
+            put("历史流程定义ID", historicTaskInstance.getProcessDefinitionId());
+            put("历史事务办理人", historicTaskInstance.getAssignee());
+        }};
+    }
 }
