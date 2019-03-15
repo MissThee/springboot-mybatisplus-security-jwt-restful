@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.util.StringUtils;
@@ -23,6 +24,7 @@ import java.io.FileNotFoundException;
 @MapperScan(basePackages = {"com.github.missthee.db.primary.mapper"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
 @Slf4j
 public class PrimaryDBConfig {
+
     @Bean(name = "primaryDataSourceHikari")
     @ConfigurationProperties(prefix = "spring.datasource.primary.hikari")
     public HikariConfig primaryDataSourceHikari() {
@@ -33,6 +35,7 @@ public class PrimaryDBConfig {
         return hikariConfig;
     }
 
+    @Primary
     @Bean(name = "primaryDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.primary")
     public DataSource dataSource(@Qualifier("primaryDataSourceHikari") HikariConfig hikariConfig) {
@@ -41,6 +44,7 @@ public class PrimaryDBConfig {
         return build;
     }
 
+    @Primary
     @Bean(name = "primaryTransactionManager")
     public DataSourceTransactionManager transactionManager(@Qualifier("primaryDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);

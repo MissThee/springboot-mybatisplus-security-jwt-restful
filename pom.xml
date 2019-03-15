@@ -138,7 +138,7 @@
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-boot-starter-process</artifactId>
-            <version>6.4.1</version>
+            <version>${flowable.version}</version>
         </dependency>
         <!--oracle驱动(本地)-->
         <dependency>
@@ -166,6 +166,8 @@
             <artifactId>data-structure</artifactId>
             <version>1.0</version>
         </dependency>
+
+
         <!--  ==================暂未使用=============== -->
         <!--读取xml工具类-->
         <!--<dependency>-->

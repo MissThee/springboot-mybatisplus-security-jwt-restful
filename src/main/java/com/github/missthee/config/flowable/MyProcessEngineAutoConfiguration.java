@@ -4,9 +4,7 @@ import org.flowable.common.engine.impl.cfg.IdGenerator;
 import org.flowable.common.engine.impl.persistence.StrongUuidGenerator;
 import org.flowable.job.service.impl.asyncexecutor.AsyncExecutor;
 import org.flowable.spring.SpringProcessEngineConfiguration;
-import org.flowable.spring.boot.FlowableMailProperties;
-import org.flowable.spring.boot.FlowableProperties;
-import org.flowable.spring.boot.ProcessEngineAutoConfiguration;
+import org.flowable.spring.boot.*;
 import org.flowable.spring.boot.app.FlowableAppProperties;
 import org.flowable.spring.boot.idm.FlowableIdmProperties;
 import org.flowable.spring.boot.process.FlowableProcessProperties;
@@ -24,6 +22,7 @@ import java.util.List;
 
 @Configuration
 public class MyProcessEngineAutoConfiguration extends ProcessEngineAutoConfiguration {
+
     public MyProcessEngineAutoConfiguration(FlowableProperties flowableProperties, FlowableProcessProperties processProperties, FlowableAppProperties appProperties, FlowableIdmProperties idmProperties, FlowableMailProperties mailProperties) {
         super(flowableProperties, processProperties, appProperties, idmProperties, mailProperties);
     }
@@ -78,4 +77,5 @@ public class MyProcessEngineAutoConfiguration extends ProcessEngineAutoConfigura
         conf.setIdGenerator(idGenerator);
         return conf;
     }
+
 }

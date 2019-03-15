@@ -84,9 +84,10 @@ public class ProcessUseController {
     public Res completeTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", "b2cf32f9-43d1-11e9-b7c1-0a0027000008");
         taskService.complete(taskId);
-        HistoricDetail historicDetail = historyService.createHistoricDetailQuery().taskId(taskId).singleResult();
-        String historicId = historicDetail.getId();
-        return Res.success(historicId, "任务完成");
+        //流程完结之前不会写入到历史表，此处查不到记录
+//        HistoricDetail historicDetail = historyService.createHistoricDetailQuery().taskId(taskId).singleResult();
+//        String historicId = historicDetail.getId();
+        return Res.success("任务完成");
     }
 
     //HistoryService
