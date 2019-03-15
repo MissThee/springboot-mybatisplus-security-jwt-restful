@@ -11,4 +11,6 @@ public interface UserService {
     int insertOne(User user);
 
     List<User> selectByNickname(String username);
+
+    int alterOne(Integer id);
 }

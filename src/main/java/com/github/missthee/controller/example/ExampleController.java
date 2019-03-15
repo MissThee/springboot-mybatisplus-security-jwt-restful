@@ -77,7 +77,7 @@ public class ExampleController {
     }
 
     @PostMapping("dbinfo")
-    public String dbInfo() throws SQLException, FileNotFoundException {
+    public String dbInfo() {
         return primaryDataSource.toString();
     }
 
@@ -141,11 +141,17 @@ public class ExampleController {
             put("result", result);
             put("user", user);
         }};
-        if (result > 0) {
-            return Res.success(jO, "成功");
-        } else {
-            return Res.failure(jO, "失败");
-        }
+        return Res.res(result > 0, jO);
+    }
+
+    @PostMapping("alterUser")
+    public Res<JSONObject> alterUser(@RequestBody JSONObject bJO) {
+        Integer id=bJO.getInteger("id");
+        int result = userService.alterOne(id);
+        JSONObject jO = new JSONObject() {{
+            put("result", result);
+        }};
+        return Res.res(result > 0, jO);
     }
 
     @RequestMapping("tree")

@@ -7,8 +7,8 @@ import tk.mybatis.mapper.mapperhelper.MapperHelper;
 import tk.mybatis.mapper.mapperhelper.MapperTemplate;
 import tk.mybatis.mapper.mapperhelper.SqlHelper;
 
-public class MyExampleProvider extends MapperTemplate {
-    public MyExampleProvider(Class<?> mapperClass, MapperHelper mapperHelper) {
+public class MySelectByExampleProvider extends MapperTemplate {
+    public MySelectByExampleProvider(Class<?> mapperClass, MapperHelper mapperHelper) {
         super(mapperClass, mapperHelper);
     }
 

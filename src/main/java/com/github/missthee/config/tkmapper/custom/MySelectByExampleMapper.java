@@ -6,16 +6,16 @@ import tk.mybatis.mapper.annotation.RegisterMapper;
 import java.util.List;
 
 @RegisterMapper
-public interface MyExampleMapper<T> {
-    @SelectProvider(type = MyExampleProvider.class, method = "dynamicSQL")
+public interface MySelectByExampleMapper<T> {
+    @SelectProvider(type = MySelectByExampleProvider.class, method = "dynamicSQL")
     T selectAvgByExample(Object var1);
 
-    @SelectProvider(type = MyExampleProvider.class, method = "dynamicSQL")
+    @SelectProvider(type = MySelectByExampleProvider.class, method = "dynamicSQL")
     T selectSumByExample(Object var1);
 
-    @SelectProvider(type = MyExampleProvider.class, method = "dynamicSQL")
+    @SelectProvider(type = MySelectByExampleProvider.class, method = "dynamicSQL")
     List<T> selectAvgListByExample(Object var1);
 
-    @SelectProvider(type = MyExampleProvider.class, method = "dynamicSQL")
+    @SelectProvider(type = MySelectByExampleProvider.class, method = "dynamicSQL")
     List<T> selectSumListByExample(Object var1);
 }

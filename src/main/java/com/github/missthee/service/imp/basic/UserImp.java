@@ -46,6 +46,17 @@ public class UserImp implements UserService, UserInfoForJWT {
     }
 
     @Override
+    public int alterOne(Integer id) {
+        User user = new User();
+        user.setId(id);
+        user.setNickname("修改名字");
+        Example example = new Example(User.class);
+        example.selectProperties(User.ID, User.USERNAME);
+        example.createCriteria().andEqualTo(User.ID, id);
+        return userMapper.updateByExample(user, example);
+    }
+
+    @Override
     public String getSecret(Object obj) {
         String userId = String.valueOf(obj);
         if (!"null".equals(userId) && !"".equals(userId)) {
@@ -56,6 +67,4 @@ public class UserImp implements UserService, UserInfoForJWT {
         }
         return null;
     }
-
-
 }

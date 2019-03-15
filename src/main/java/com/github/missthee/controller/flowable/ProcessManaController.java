@@ -96,7 +96,7 @@ public class ProcessManaController {
         deploymentQuery.orderByDeploymentName().asc();
         deploymentQuery.orderByDeploymenTime().desc();
         //结果集
-        List<Map<String, String>> deploymentList = deploymentQuery.list().stream().map(JOTool::deploymentToJSON).collect(Collectors.toList());
+        List deploymentList = deploymentQuery.list().stream().map(JOTool::deploymentToJSON).collect(Collectors.toList());
         return Res.success(deploymentList);
     }
 
@@ -113,7 +113,7 @@ public class ProcessManaController {
         processDefinitionQuery.orderByProcessDefinitionName().asc();
         processDefinitionQuery.orderByProcessDefinitionVersion().desc();
         //结果集
-        List<Map<String, String>> processDefinitionList = processDefinitionQuery.list().stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
+        List processDefinitionList = processDefinitionQuery.list().stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
         return Res.success(processDefinitionList);
     }
 
@@ -151,7 +151,7 @@ public class ProcessManaController {
     @RequestMapping("searchNewestProcessDefinition")
     public Res searchNewestProcessDefinition() {
         List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().latestVersion().list();
-        List<Map<String, String>> collect = processDefinitionList.stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
+        List collect = processDefinitionList.stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
         return Res.success(collect);
     }
 

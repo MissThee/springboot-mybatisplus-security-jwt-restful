@@ -8,9 +8,11 @@ import org.flowable.spring.boot.*;
 import org.flowable.spring.boot.app.FlowableAppProperties;
 import org.flowable.spring.boot.idm.FlowableIdmProperties;
 import org.flowable.spring.boot.process.FlowableProcessProperties;
+import org.flowable.spring.boot.process.Process;
+import org.flowable.spring.boot.process.ProcessAsync;
+import org.flowable.spring.boot.process.ProcessAsyncHistory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -28,8 +30,8 @@ public class MyProcessEngineAutoConfiguration extends ProcessEngineAutoConfigura
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public SpringProcessEngineConfiguration springProcessEngineConfiguration(@Qualifier("actDataSource") DataSource dataSource, @Qualifier("actTransactionManager") PlatformTransactionManager platformTransactionManager, ObjectProvider<IdGenerator> processIdGenerator, ObjectProvider<IdGenerator> globalIdGenerator, ObjectProvider<AsyncExecutor> asyncExecutorProvider, ObjectProvider<AsyncExecutor> asyncHistoryExecutorProvider) throws IOException {
+    @SuppressWarnings("all")
+    public SpringProcessEngineConfiguration springProcessEngineConfiguration(@Qualifier("actDataSource") DataSource dataSource, @Qualifier("actTransactionManager") PlatformTransactionManager platformTransactionManager, @Process ObjectProvider<IdGenerator> processIdGenerator, ObjectProvider<IdGenerator> globalIdGenerator, @ProcessAsync ObjectProvider<AsyncExecutor> asyncExecutorProvider, @ProcessAsyncHistory ObjectProvider<AsyncExecutor> asyncHistoryExecutorProvider) throws IOException {
         SpringProcessEngineConfiguration conf = new SpringProcessEngineConfiguration();
         List<Resource> resources = this.discoverDeploymentResources(this.flowableProperties.getProcessDefinitionLocationPrefix(), this.flowableProperties.getProcessDefinitionLocationSuffixes(), this.flowableProperties.isCheckProcessDefinitions());
         if (resources != null && !resources.isEmpty()) {

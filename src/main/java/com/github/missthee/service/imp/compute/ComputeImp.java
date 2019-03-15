@@ -18,7 +18,6 @@ public class ComputeImp implements ComputeService {
         this.computeMapper = computeMapper;
     }
 
-
     @Override
     public List<Compute> selectGroupBy() {
         Example example = new Example(Compute.class);
