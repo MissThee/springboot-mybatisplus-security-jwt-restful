@@ -107,11 +107,11 @@
             <artifactId>springfox-swagger2</artifactId>
             <version>2.9.2</version>
         </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>io.springfox</groupId>-->
+            <!--<artifactId>springfox-swagger-ui</artifactId>-->
+            <!--<version>2.9.2</version>-->
+        <!--</dependency>-->
         <!--redis依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -140,7 +140,14 @@
             <artifactId>flowable-spring-boot-starter-process</artifactId>
             <version>6.4.1</version>
         </dependency>
-
+        <!--oracle驱动(本地)-->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0.2.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/ojdbc6.jar</systemPath>
+        </dependency>
         <!--自定义集合类计算工具,List<POJO>合计、平均-->
         <dependency>
             <groupId>com.github.MissThee</groupId>
@@ -194,14 +201,7 @@
         <!--<artifactId>graphiql-spring-boot-starter</artifactId>-->
         <!--<version>5.3.1</version>-->
         <!--</dependency>-->
-        <!--oracle驱动(本地)-->
-        <!--<dependency>-->
-        <!--<groupId>com.oracle</groupId>-->
-        <!--<artifactId>ojdbc6</artifactId>-->
-        <!--<version>11.2.0.2.0</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>${basedir}/lib/ojdbc6.jar</systemPath>-->
-        <!--</dependency>-->
+
         <!--meta model依赖-->
         <!--<dependency> &lt;!&ndash;meta model生成相关依赖&ndash;&gt;-->
         <!--<groupId>org.hibernate</groupId>-->
