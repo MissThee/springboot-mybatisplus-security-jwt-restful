@@ -3,6 +3,9 @@ package com.github.missthee.config.flowable;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.flowable.engine.impl.db.DbIdGenerator;
+import org.flowable.spring.SpringProcessEngineConfiguration;
+import org.flowable.spring.boot.EngineConfigurationConfigurer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -38,5 +41,10 @@ public class ActDBConfig {
     @Bean(name = "actTransactionManager")
     public DataSourceTransactionManager transactionManager(@Qualifier("actDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
+    }
+    //不使用uuid主键生成器
+    @Bean
+    public EngineConfigurationConfigurer<SpringProcessEngineConfiguration> processEngineDbIdGeneratorConfigurer() {
+        return engineConfiguration -> engineConfiguration.setIdGenerator(new DbIdGenerator());
     }
 }

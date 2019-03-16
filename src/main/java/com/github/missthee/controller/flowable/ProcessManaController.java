@@ -65,13 +65,13 @@ public class ProcessManaController {
         Deployment deployment = repositoryService.createDeployment()
                 .key("QingJiaLiuCheng01")
                 .name("请假流程01")
-                .addClasspathResource("processes/DemoProcess.bpmn")
+                .addClasspathResource("processes-no-auto/DemoProcess.bpmn")
                 .deploy();
         return Res.success("act_re_deployment 部署: " + deployment.getId());
     }
 
     //流程部署（zip）
-    @RequestMapping("deploy/zip")
+    @RequestMapping("deployment/zip")
     public Res deployProcessByZip(MultipartFile file, String key, String name) throws IOException {
         key = StringUtils.isEmpty(key) ? "QingJiaLiuCheng01" : key;
         name = StringUtils.isEmpty(name) ? "请假流程01" : name;
