@@ -1,6 +1,7 @@
 package com.github.missthee.controller.flowable;
 
 import com.alibaba.fastjson.JSONObject;
+import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JOTool {
+public class FJSON {
     protected static String getStringOrDefaultFromJO(JSONObject jO, String key, String defaultValue) {
         if (jO == null) {
             return defaultValue;
@@ -104,8 +105,13 @@ public class JOTool {
     protected static Map<String, Object> historicProcessToJSON(HistoricProcessInstance historicProcessInstance) {
         return new LinkedHashMap<String, Object>() {{
             put("历史流程实例ID", historicProcessInstance.getId());
-            put("历史流程实例名称", historicProcessInstance.getName());
-            put("历史流程实例对应业务id", historicProcessInstance.getBusinessKey());
+            put("流程定义ID", historicProcessInstance.getProcessDefinitionId());
+            put("流程定义KEY", historicProcessInstance.getProcessDefinitionKey());
+            put("流程部署ID", historicProcessInstance.getDeploymentId());
+            put("历史流程实例的业务id", historicProcessInstance.getBusinessKey());
+            put("历史流程实例名称", historicProcessInstance.getName());//一般为空
+            put("历史流程实例开始ID", historicProcessInstance.getStartActivityId());
+            put("历史流程实例结束ID", historicProcessInstance.getEndActivityId());
             put("历史流程实例开始时间", historicProcessInstance.getStartTime());
             put("历史流程实例结束时间", historicProcessInstance.getEndTime());
         }};
@@ -132,6 +138,17 @@ public class JOTool {
             put("历史参数创建时间", historicVariableInstance.getCreateTime());
             put("历史参数流程实例ID", historicVariableInstance.getProcessInstanceId());
             put("历史参数任务ID", historicVariableInstance.getTaskId());
+        }};
+    }
+
+    protected static Map<String, Object> historicVariableInstanceToJSON(HistoricActivityInstance historicActivityInstance) {
+        return new LinkedHashMap<String, Object>() {{
+            put("历史活动ID", historicActivityInstance.getId());
+            put("历史活动名称", historicActivityInstance.getActivityName());
+            put("历史活动类型", historicActivityInstance.getActivityType());
+            put("历史活动办理人", historicActivityInstance.getAssignee());
+            put("历史活动流程实例ID", historicActivityInstance.getProcessInstanceId());
+            put("历史活动任务ID", historicActivityInstance.getTaskId());
         }};
     }
 }

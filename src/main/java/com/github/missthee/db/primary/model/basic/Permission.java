@@ -30,4 +30,6 @@ public class Permission  implements Serializable {
     public static final String PERMISSION = "permission";
 
     public static final String DB_PERMISSION = "permission";
+
+    private static final long serialVersionUID = 1L;
 }

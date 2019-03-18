@@ -40,7 +40,7 @@ public class LoginController {
             @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string", example = "123")
     })
     @PostMapping("/login")
-    public Res login(HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest, @RequestBody LoginModel loginModel) {
+    public Res login(HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest, @RequestBody LoginModel loginModel) throws Exception {
         String username = loginModel.getUsername();
         String password = loginModel.getPassword();
         if (StringUtils.isEmpty(username)) {
@@ -58,7 +58,7 @@ public class LoginController {
             return Res.failure("密码错误");
         }
         LoginDTO loginDTO = loginService.selectUserByUsername(username);
-        httpServletResponse.setHeader("Authorization", javaJWT.createToken(loginDTO.getId().toString(), isLongLogin ? 15 : 2));  //添加token
+        httpServletResponse.setHeader("Authorization", javaJWT.createToken(loginDTO.getId(), isLongLogin ? 15 : 2));  //添加token
         return Res.success(new loginRes(loginDTO), "登录成功");
     }
 

@@ -20,12 +20,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
-import static com.github.missthee.controller.flowable.JOTool.getBooleanOrDefaultFromJO;
-import static com.github.missthee.controller.flowable.JOTool.getStringOrDefaultFromJO;
+import static com.github.missthee.controller.flowable.FJSON.getBooleanOrDefaultFromJO;
+import static com.github.missthee.controller.flowable.FJSON.getStringOrDefaultFromJO;
 
 @RestController
 @RequestMapping("flowable/mana")
@@ -96,7 +95,8 @@ public class ProcessManaController {
         deploymentQuery.orderByDeploymentName().asc();
         deploymentQuery.orderByDeploymenTime().desc();
         //结果集
-        List deploymentList = deploymentQuery.list().stream().map(JOTool::deploymentToJSON).collect(Collectors.toList());
+        List<Deployment> list = deploymentQuery.list();
+        List deploymentList = list.stream().map(FJSON::deploymentToJSON).collect(Collectors.toList());
         return Res.success(deploymentList);
     }
 
@@ -113,7 +113,8 @@ public class ProcessManaController {
         processDefinitionQuery.orderByProcessDefinitionName().asc();
         processDefinitionQuery.orderByProcessDefinitionVersion().desc();
         //结果集
-        List processDefinitionList = processDefinitionQuery.list().stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
+        List<ProcessDefinition> list = processDefinitionQuery.list();
+        List processDefinitionList = list.stream().map(FJSON::processDefinitionToJSON).collect(Collectors.toList());
         return Res.success(processDefinitionList);
     }
 
@@ -150,17 +151,17 @@ public class ProcessManaController {
     //查询所有审批流程的最新流程
     @RequestMapping("searchNewestProcessDefinition")
     public Res searchNewestProcessDefinition() {
-        List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().latestVersion().list();
-        List collect = processDefinitionList.stream().map(JOTool::processDefinitionToJSON).collect(Collectors.toList());
-        return Res.success(collect);
+        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
+        List processDefList = list.stream().map(FJSON::processDefinitionToJSON).collect(Collectors.toList());
+        return Res.success(processDefList);
     }
 
     //删除指定key所有版本流程定义
     @RequestMapping("deleteProcessDefinitionByKey")
     public Res deleteProcessDefinitionByKey(@RequestBody(required = false) JSONObject bJO) {
         String key = getStringOrDefaultFromJO(bJO, "key", null);
-        List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().processDefinitionKey(key).list();
-        List<String> deploymentIdList = processDefinitionList.stream().map(ProcessDefinition::getDeploymentId).collect(Collectors.toList());
+        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().processDefinitionKey(key).list();
+        List<String> deploymentIdList = list.stream().map(ProcessDefinition::getDeploymentId).collect(Collectors.toList());
         for (String deploymentId : deploymentIdList) {
             repositoryService.deleteDeployment(deploymentId);
         }

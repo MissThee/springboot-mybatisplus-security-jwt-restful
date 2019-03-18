@@ -6,6 +6,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import java.util.*;
 public class JavaJWT {
 
     private static String JWT_TOKEN_KEY;
+    private static final String SECRET = "^@GSF%@#AN";
     private final String issuer = "spring-project";
     private final UserInfoForJWT userInfoForJWT;
 
@@ -38,25 +40,20 @@ public class JavaJWT {
     /**
      * @param expiresDayFromNow 有效时间（天）
      */
-    public String createToken(Object userId, int expiresDayFromNow) {
+    public String createToken(Object userId, int expiresDayFromNow) throws Exception {
+        if (userId == null) {
+            throw new Exception("Error when create token, id is null.");
+        }
         JWTCreator.Builder builder = JWT.create();
         //添加发布人信息【可直接解析】
         builder.withIssuer(issuer);
         builder.withExpiresAt(toDate(LocalDateTime.now().plusDays(expiresDayFromNow)));
         //添加claim附加信息【可直接解析】
-        String userIdStr = String.valueOf(userId);
-        if ("null".equals(userIdStr)) {
-            userIdStr = null;
-        }
-        builder.withClaim("id", userIdStr);
+        builder.withClaim("id", String.valueOf(userId));
         builder.withClaim("duration", expiresDayFromNow);
 //      builder.withArrayClaim("roleList", roleList.toArray(new String[]{}));
 //      builder.withArrayClaim("permissionList", permissionList.toArray(new String[]{}));
-        //添加header键值对【可直接解析】
-        //Map<String, Object> headerClaims = new HashMap();
-        //headerClaims.put("userId", "1234");
-        //builder.withHeader(headerClaims);
-        String token = builder.sign(Algorithm.HMAC256(userInfoForJWT.getSecret(userId).getBytes()));
+        String token = builder.sign(Algorithm.HMAC256(secretBuilder(userId)));
         log.debug("CREATE TOKEN：" + token);
         return token;
     }
@@ -65,28 +62,23 @@ public class JavaJWT {
         try {
             DecodedJWT decodedJWT = JWT.decode(token);
             if (decodedJWT.getClaim("duration").isNull()) {
-                log.debug("REFRESH TOKEN：[no duration]");
-                return null;
+                throw new Exception("Error when update token, no duration.");
             }
             if (decodedJWT.getClaim("id").isNull()) {
-                log.debug("REFRESH TOKEN：[no id]");
-                return null;
+                throw new Exception("Error when update token, no id.");
             }
             JWTCreator.Builder builder = JWT.create();
             builder.withIssuer(issuer);
             builder.withExpiresAt(toDate(LocalDateTime.now().plusDays(decodedJWT.getClaim("duration").asInt())));
-            String id = decodedJWT.getClaim("id").asString();
-            builder.withClaim("id", id);
+            builder.withClaim("id", decodedJWT.getClaim("id").asString());
             builder.withClaim("duration", decodedJWT.getClaim("duration").asInt());
 //          builder.withArrayClaim("roleList", decodedJWT.getClaim("roleList").asList(String.class).toArray(new String[]{}));
 //          builder.withArrayClaim("permissionList", decodedJWT.getClaim("permissionList").asList(String.class).toArray(new String[]{}));
-//          User user = userService.selectOneById(Integer.parseInt(id));
-            String newToken = builder.sign(Algorithm.HMAC256(userInfoForJWT.getSecret(id).getBytes()));
-            log.debug("REFRESH TOKEN：" + newToken);
+            String newToken = builder.sign(Algorithm.HMAC256(secretBuilder(decodedJWT.getClaim("id").asString())));
+            log.debug("UPDATE TOKEN：" + newToken);
             return newToken;
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("REFRESH TOKEN：[ERROR!]");
+            log.error("UPDATE TOKEN：" + e.getMessage());
             return null;
         }
     }
@@ -99,23 +91,23 @@ public class JavaJWT {
     }
 
     public boolean verifyToken(String token) {
-        if (StringUtils.isEmpty(token)) {
-//            log.debug("CHECK TOEKN: NULL");
+        try {
+            DecodedJWT decodedJWT = JWT.decode(token);
+            String id = decodedJWT.getClaim("id").asString();
+            Algorithm algorithm = Algorithm.HMAC256(secretBuilder(id));
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer(issuer)
+                    .build();
+            verifier.verify(token);
+        } catch (Exception ignored) {
             return false;
         }
-        DecodedJWT decodedJWT = JWT.decode(token);
-        String id = decodedJWT.getClaim("id").asString();
-        String secret = userInfoForJWT.getSecret(id);
-        if (secret == null) {
-            return false;
-        }
-        Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
-        JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer(issuer)
-                .build();
-        verifier.verify(token);
-//        log.debug("CHECK TOEKN: Fine");
         return true;
+    }
+
+    private byte[] secretBuilder(Object userId) {
+        String userSecret = userInfoForJWT.getSecret(userId);
+        return (SECRET + userSecret).getBytes();
     }
 
     /**
@@ -149,9 +141,9 @@ public class JavaJWT {
         } catch (Exception e) {
             return null;
         }
-
     }
-//    public static List<String> getRoleList(String token) {
+
+    //    public static List<String> getRoleList(String token) {
 //        DecodedJWT jwt = JWT.decode(token);
 //        return jwt.getClaim("roleList").asList(String.class);
 //    }
@@ -160,7 +152,6 @@ public class JavaJWT {
 //        DecodedJWT jwt = JWT.decode(token);
 //        return jwt.getClaim("permissionList").asList(String.class);
 //    }
-
     private Date toDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }

@@ -3,28 +3,32 @@ package com.github.missthee.controller.flowable;
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
 import org.flowable.engine.*;
+import org.flowable.engine.history.HistoricActivityInstance;
+import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.flowable.variable.api.history.HistoricVariableInstanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.github.missthee.controller.flowable.JOTool.getMapOrDefaultFromJO;
-import static com.github.missthee.controller.flowable.JOTool.getStringOrDefaultFromJO;
+import static com.github.missthee.controller.flowable.FJSON.getMapOrDefaultFromJO;
+import static com.github.missthee.controller.flowable.FJSON.getStringOrDefaultFromJO;
 
 @RestController
 @RequestMapping("flowable/use")
@@ -93,19 +97,27 @@ public class ProcessUseController {
     // act_ru_identitylink  存放正在执行任务的，办理人信息
     @RequestMapping("searchTask")
     public Res searchTask(@RequestBody(required = false) JSONObject bJO) {
-        String assignee = getStringOrDefaultFromJO(bJO, "assignee", "test1");
-        List taskList = taskService.createTaskQuery().taskAssignee(assignee).list().stream().map(JOTool::taskToJSON).collect(Collectors.toList());
-        return Res.success(taskList);
+        String assignee = getStringOrDefaultFromJO(bJO, "assignee", null);
+        TaskQuery taskQuery = taskService.createTaskQuery();
+        if (assignee != null) {
+            taskQuery.taskAssignee(assignee);
+        }
+        List<Task> list = taskQuery
+                .orderByProcessInstanceId().asc()
+                .list();
+        List taskList = list.stream().map(FJSON::taskToJSON).collect(Collectors.toList());
+        return Res.success(taskList, assignee);
     }
 
     //办理任务
     @RequestMapping("completeTask")
     public Res completeTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        Map<String, Object> varMap = getMapOrDefaultFromJO(bJO, "varMap", null);
         if (taskId == null) {
             return Res.failure("taskId is null");
         }
-        taskService.complete(taskId);
+        taskService.complete(taskId, varMap);
         return Res.success();
     }
 
@@ -130,9 +142,17 @@ public class ProcessUseController {
     //查询历史任务
     @RequestMapping("searchHistoryTask")
     public Res searchHistoryTask(@RequestBody(required = false) JSONObject bJO) {
-        String assignee = getStringOrDefaultFromJO(bJO, "assignee", "test1");
-        List hisTaskList = historyService.createHistoricTaskInstanceQuery().taskAssignee(assignee).list().stream().map(JOTool::historyTaskToJSON).collect(Collectors.toList());
-        return Res.success(hisTaskList);
+        String assignee = getStringOrDefaultFromJO(bJO, "assignee", null);
+        HistoricTaskInstanceQuery historicTaskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
+        if (assignee != null) {
+            historicTaskInstanceQuery.taskAssignee(assignee);
+        }
+        List<HistoricTaskInstance> list = historicTaskInstanceQuery
+                .orderByProcessInstanceId().asc()
+                .orderByExecutionId().asc()
+                .list();
+        List hisTaskList = list.stream().map(FJSON::historyTaskToJSON).collect(Collectors.toList());
+        return Res.success(hisTaskList, assignee);
     }
     //HistoryService
     //act_hi_procinst       历史流程实例。   启动一个流程，记录一条数据
@@ -140,7 +160,10 @@ public class ProcessUseController {
     //act_hi_actinst        历史任务实例。   每有一个节点被使用，记录一条数据（所有节点均记录）
     //act_hi_identitylink   历史任务实例。   每有一个用户进行操作，记录一条数据
 
-    //操作变量
+    //变量操作开始--------------------------------------------------------------------------
+    //操作变量。通过taskId或executionId
+    //act_ru_variable   正在执行流程中的变量
+    //act_hi_varinst    历史流程中的变量
     @RequestMapping("setVariableViaExecution")
     public Res setVariableViaExecution(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -150,7 +173,8 @@ public class ProcessUseController {
         //无变量则新增，有变量则覆盖。变量版本号增加，
         if (taskId != null) {
             if (variable != null) {
-                taskService.setVariable(taskId, "自定义变量task", variable);
+                taskService.setVariable(taskId, "自定义变量task", variable);//与流程实例绑定的变量。即使使用taskId设置变量，该变量也会与其流程实例绑定。
+//                taskService.setVariableLocal(taskId, "自定义变量task", variable);//与任务绑定的变量。该变量会与任务单独绑定，流程中其他任务无法访问变量，任务执行完后需在历史变量中查询。（不常用）
             }
             if (variableMap != null) {
                 taskService.setVariables(taskId, variableMap);
@@ -168,7 +192,7 @@ public class ProcessUseController {
         return Res.success();
     }
 
-    //获取变量
+    //获取变量。通过taskId或executionId
     @RequestMapping("getVariable")
     public Res getVariable(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -191,7 +215,7 @@ public class ProcessUseController {
         return Res.success(stringObjectHashMap);
     }
 
-    //获取历史变量
+    //获取历史变量。通过taskId或executionId
     @RequestMapping("getHistoryVariable")
     public Res getHistoryVariable(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -208,8 +232,43 @@ public class ProcessUseController {
         if (processInstanceId != null) {
             historicVariableInstanceQuery.processInstanceId(processInstanceId);
         }
-        List<Map<String, Object>> collect = historicVariableInstanceQuery.list()
-                .stream().map(JOTool::historicVariableInstanceToJSON).collect(Collectors.toList());
-        return Res.success(collect);
+        List<HistoricVariableInstance> list = historicVariableInstanceQuery
+                .orderByProcessInstanceId().asc()
+                .list();
+        List<Map<String, Object>> hisVarList = list.stream().map(FJSON::historicVariableInstanceToJSON).collect(Collectors.toList());
+        return Res.success(hisVarList);
+    }
+    //变量操作结束--------------------------------------------------------------------------
+
+
+    //查询历史流程实例
+    @RequestMapping("searchHistoryProcess")
+    public Res searchHistoryProcess(@RequestBody(required = false) JSONObject bJO) {
+        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
+        HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery();
+        if (processInstanceId != null) {
+            historicProcessInstanceQuery.processInstanceId(processInstanceId);
+        }
+        List<HistoricProcessInstance> list = historicProcessInstanceQuery
+                .orderByProcessDefinitionId().asc()
+                .list();
+        List hisTaskList = list.stream().map(FJSON::historicProcessToJSON).collect(Collectors.toList());
+        return Res.success(hisTaskList);
+    }
+
+    //查询历史活动实例
+    @RequestMapping("searchHistoryAct")
+    public Res searchHistoryAct(@RequestBody(required = false) JSONObject bJO) {
+        String activityId = getStringOrDefaultFromJO(bJO, "activityId", null);
+        HistoricActivityInstanceQuery historicActivityInstanceQuery = historyService.createHistoricActivityInstanceQuery();
+        if (activityId != null) {
+            historicActivityInstanceQuery.activityId(activityId);
+        }
+        List<HistoricActivityInstance> list = historicActivityInstanceQuery
+                .orderByProcessInstanceId().asc()
+                .orderByExecutionId().asc()
+                .list();
+        List hisTaskList = list.stream().map(FJSON::historicVariableInstanceToJSON).collect(Collectors.toList());
+        return Res.success(hisTaskList);
     }
 }
