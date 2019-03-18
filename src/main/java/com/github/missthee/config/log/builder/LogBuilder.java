@@ -9,120 +9,131 @@ import org.springframework.http.HttpHeaders;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LogBuilder {
-    private static final List<Class> BASE_TYPE_LIST = new ArrayList<Class>() {{
-        add(byte.class);
-        add(Byte.class);
-        add(short.class);
-        add(Short.class);
-        add(int.class);
-        add(Integer.class);
-        add(long.class);
-        add(Long.class);
-        add(float.class);
-        add(Float.class);
-        add(double.class);
-        add(Double.class);
-        add(boolean.class);
-        add(Boolean.class);
-        add(char.class);
-        add(Character.class);
-        add(String.class);
-    }};
 
-    public static String requestLogAspect(HttpServletRequest request, ProceedingJoinPoint joinPoint, String headLabel) {
+    public static String requestLogBuilder(HttpServletRequest request, ProceedingJoinPoint joinPoint, Exception exception, Map<String, Object> extractParamMap) {
+        String headLabel = "REQ";
         StringBuilder stringBuilder = new StringBuilder();
-        // 输出请求内容
-        stringBuilder.append("\r\n-------------------↓" + headLabel + "↓--------------------");
-        stringBuilder.append("\r\nURI      : " + request.getRequestURI());
-        stringBuilder.append("\r\nMETHOD   : " + request.getMethod());
-        stringBuilder.append("\r\nIP       : " + request.getRemoteAddr());
+        //输出请求内容
+        stringBuilder.append(paramFormatter("URI", request.getRequestURI()));
+        stringBuilder.append(paramFormatter("METHOD", request.getMethod()));
+        stringBuilder.append(paramFormatter("IP", request.getRemoteAddr()));
+        //输出切点内容
         if (joinPoint != null) {
-            stringBuilder.append(addJoinPointInfo(joinPoint));
-        }
-        Enumeration<String> enu = request.getParameterNames();
-        StringBuilder paramSB = new StringBuilder();
-        while (enu.hasMoreElements()) {
-            String paraName = enu.nextElement();
-            paramSB.append(paraName);
-            paramSB.append("=");
-            paramSB.append(request.getParameter(paraName));
-            paramSB.append("  ");
-        }
-        stringBuilder.append("\r\nPARAM    : " + paramSB.toString());
-        try {
-            stringBuilder.append("\r\nUSER     : " + SecurityUtils.getSubject().getPrincipal().toString());
-        } catch (Exception e) {
-            stringBuilder.append("\r\nUSER     : GUEST");
-        }
-        stringBuilder.append("\r\n-------------------↑" + headLabel + "↑--------------------");
-        return stringBuilder.toString();
-    }
-
-
-    public static String requestLogAspect(HttpServletRequest request, ProceedingJoinPoint joinPoint) {
-        return requestLogAspect(request, joinPoint, "REQ");
-    }
-
-    public static String requestLog(HttpServletRequest request, String headLabel) {
-        return requestLogAspect(request, null, headLabel);
-    }
-
-    public static String requestLog(HttpServletRequest request) {
-        return requestLogAspect(request, null, "REQ");
-    }
-
-    public static String responseLogAspect(Object returnObj, String headLabel) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\r\n-------------------↓" + headLabel + "↓--------------------");
-        Class<?> returnValueClass = returnObj.getClass();
-        Field[] declaredFields = returnValueClass.getDeclaredFields();
-
-        if (BASE_TYPE_LIST.contains(returnValueClass)) {
-            stringBuilder.append("\r\nRES : " + returnObj);
-        } else {
-
-            for (Field field : declaredFields) {
-                try {
-                    String propertyName = field.getName();
-                    Object value = GetterAndSetter.invokeGetMethod(returnObj, field.getName());
-                    String valueStr;
-                    try {
-                        valueStr = JSON.toJSONString(value);
-                    } catch (Exception ignord) {
-                        valueStr = String.valueOf(value);
-                    }
-                    stringBuilder.append("\r\n" + String.format("%-8s", propertyName.toUpperCase()) + " : " + valueStr);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            stringBuilder.append(paramFormatter("CLASS", joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName()));
+            //获取所有参数：
+            Object[] argsObj = joinPoint.getArgs();
+            List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse || e instanceof HttpHeaders)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
+            try {
+                stringBuilder.append(paramFormatter("ARGS[J]", JSONArray.toJSONString(argsObjList)));
+            } catch (Exception e) {
+                stringBuilder.append(paramFormatter("ARGS", argsObjList));
             }
         }
-        stringBuilder.append("\r\n-------------------↑" + headLabel + "↑--------------------");
+        //输出请求参数
+        if (request.getParameterNames() != null && request.getParameterNames().hasMoreElements()) {
+            Enumeration<String> enu = request.getParameterNames();
+            StringBuilder paramSB = new StringBuilder();
+            while (enu.hasMoreElements()) {
+                String paraName = enu.nextElement();
+                paramSB.append(paraName);
+                paramSB.append("=");
+                paramSB.append(request.getParameter(paraName));
+                paramSB.append("  ");
+            }
+            stringBuilder.append(paramFormatter("PARAM", paramSB));
+            try {
+                stringBuilder.append(paramFormatter("USER", SecurityUtils.getSubject().getPrincipal()));
+            } catch (Exception e) {
+                stringBuilder.append(paramFormatter("USER", "GUEST"));
+            }
+        }
+        //输出异常，并修改分隔行label
+        if (exception != null) {
+            stringBuilder.append(paramFormatter("EXCEPTION", exception.getMessage()));
+            headLabel = "EXCEPTION";
+        }
+        if (extractParamMap != null) {
+            for (String key : extractParamMap.keySet()) {
+                stringBuilder.append(paramFormatter(key, extractParamMap.get(key)));
+            }
+        }
+        //添加分隔行
+        stringBuilder.insert(0, splitRow(headLabel, false));
+        stringBuilder.append(splitRow(headLabel, true));
         return stringBuilder.toString();
+    }
+
+    public static String requestLogBuilder(HttpServletRequest request, ProceedingJoinPoint joinPoint, Exception exception) {
+        return requestLogBuilder(request, joinPoint, exception, null);
+    }
+
+    public static String requestLogBuilder(HttpServletRequest request, ProceedingJoinPoint joinPoint, Map<String, Object> extractParamMap) {
+        return requestLogBuilder(request, joinPoint, null, extractParamMap);
+    }
+
+    public static String requestLogBuilder(HttpServletRequest request, Exception exception, Map<String, Object> extractParamMap) {
+        return requestLogBuilder(request, null, exception, extractParamMap);
+    }
+
+    public static String requestLogBuilder(HttpServletRequest request, ProceedingJoinPoint joinPoint) {
+        return requestLogBuilder(request, joinPoint, null, null);
+    }
+
+    public static String requestLogBuilder(HttpServletRequest request, Exception exception) {
+        return requestLogBuilder(request, null, exception, null);
     }
 
     public static String responseLogAspect(Object returnObj) {
-        return responseLogAspect(returnObj, "RES");
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder resContent = new StringBuilder();
+        try {
+            Field[] declaredFields = returnObj.getClass().getDeclaredFields();
+            for (Field field : declaredFields) {
+
+                String propertyName = field.getName();
+                Object value = GetterAndSetter.invokeGetMethod(returnObj, field.getName());
+                String valueStr;
+                try {
+                    valueStr = JSON.toJSONString(value);
+                } catch (Exception ignord) {
+                    valueStr = String.valueOf(value);
+                }
+                resContent.append(paramFormatter(propertyName.toUpperCase(), valueStr));
+
+            }
+        } catch (Exception ignored) {
+            resContent = new StringBuilder(paramFormatter("RES", returnObj));
+        }
+        stringBuilder.append(resContent);
+        //添加分隔行
+        stringBuilder.insert(0, splitRow("RES", false));
+        stringBuilder.append(splitRow("RES", true));
+        return stringBuilder.toString();
     }
 
-    private static String addJoinPointInfo(ProceedingJoinPoint joinPoint) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\r\nCLASS    : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-        //获取所有参数：
-        Object[] argsObj = joinPoint.getArgs();
-        List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse || e instanceof HttpHeaders)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
-        try {
-            stringBuilder.append("\r\nARGS[J]  : " + JSONArray.toJSONString(argsObjList));
-        } catch (Exception e) {
-            stringBuilder.append("\r\nARGS     : " + argsObjList);
+    /**
+     * 分隔行文字
+     *
+     * @param headLabel
+     * @param isEnd
+     * @return
+     */
+    private static String splitRow(String headLabel, boolean isEnd) {
+        if (isEnd) {
+            return "\r\n-------------------" + headLabel + " Start--------------------";
+        } else {
+            return "\r\n-------------------" + headLabel + " End----------------------";
         }
-        return stringBuilder.toString();
+    }
+
+    private static String paramFormatter(String key, Object value) {
+        return "\r\n" + String.format("%-8s", key.toUpperCase()) + " : " + value;
     }
 }

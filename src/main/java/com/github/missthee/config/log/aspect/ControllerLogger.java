@@ -28,7 +28,7 @@ public class ControllerLogger {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes != null) {
                 HttpServletRequest request = attributes.getRequest();
-                stringBuilder.append(LogBuilder.requestLogAspect(request,joinPoint));
+                stringBuilder.append(LogBuilder.requestLogBuilder(request,joinPoint));
             }
         } catch (Exception e) {
             stringBuilder.append("\r\n!!!!!!!!!!!!!!!!!!!REQ-LOG-ERROR!!!!!!!!!!!!!!!!!!!");

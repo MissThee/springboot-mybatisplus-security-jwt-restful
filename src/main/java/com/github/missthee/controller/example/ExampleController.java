@@ -106,6 +106,12 @@ public class ExampleController {
         throw new Exception("A unknown exception");
     }
 
+    @PostMapping("error1")
+    public Res error1() throws Exception {
+        Integer.parseInt("zz");
+        return Res.success();
+    }
+
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
     public Res<Map<String, Object>> getInfo(@RequestHeader(value = "Authorization", required = false) String token) {
@@ -146,7 +152,7 @@ public class ExampleController {
 
     @PostMapping("alterUser")
     public Res<JSONObject> alterUser(@RequestBody JSONObject bJO) {
-        Integer id=bJO.getInteger("id");
+        Integer id = bJO.getInteger("id");
         int result = userService.alterOne(id);
         JSONObject jO = new JSONObject() {{
             put("result", result);

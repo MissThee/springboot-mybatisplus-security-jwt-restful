@@ -27,7 +27,7 @@ public class ExceptionController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public Object httpMessageNotReadableException(HttpServletRequest request, Exception e) {
-        log.debug(LogBuilder.requestLog(request,"ERROR") + "\r\nEXCEPTION : " + e.getMessage());
+        log.debug(LogBuilder.requestLogBuilder(request, e));
         JSONObject jO = new JSONObject();
         if (String.valueOf(e).contains("Required request body is missing")) {
             jO.put("msg", "HttpMessageNotReadableException: 请求体缺少body。" + e);
@@ -41,7 +41,7 @@ public class ExceptionController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public Object missingRequestHeaderExceptionException(HttpServletRequest request, Exception e) {
-        log.debug(LogBuilder.requestLog(request,"ERROR") + "\r\nEXCEPTION : " + e.getMessage());
+        log.debug(LogBuilder.requestLogBuilder(request, e));
         JSONObject jO = new JSONObject();
         String paramName = null;
         try {
@@ -58,7 +58,7 @@ public class ExceptionController {
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     @Order
     public Object exceptionHandler(HttpServletRequest request, Exception e) {
-        log.debug(LogBuilder.requestLog(request,"ERROR") + "\r\nEXCEPTION : " + e.getMessage());
+        log.debug(LogBuilder.requestLogBuilder(request, e));
         e.printStackTrace();
         JSONObject jO = new JSONObject();
         jO.put("msg", "Exception: " + e);

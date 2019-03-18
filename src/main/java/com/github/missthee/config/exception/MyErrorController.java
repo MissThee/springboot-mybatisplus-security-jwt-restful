@@ -1,5 +1,6 @@
 package com.github.missthee.config.exception;
 
+import com.github.missthee.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
@@ -30,27 +31,22 @@ public class MyErrorController extends BasicErrorController {
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
         Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
         HttpStatus status = getStatus(request);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         String uri, eStr;
         if (status.is4xxClientError()) {
-            uri = body.getOrDefault("path", "").toString();
-            eStr = body.getOrDefault("error", "").toString();
-            map.put("msg", body.getOrDefault("error", ""));
+            uri = String.valueOf(body.getOrDefault("path", ""));
+            eStr = String.valueOf(body.getOrDefault("error", ""));
+            resultMap.put("msg", body.getOrDefault("error", ""));
         } else {
             uri = "";
-            eStr = body.toString();
-            map.put("msg", body);
+            eStr = String.valueOf(body);
+            resultMap.put("msg", body);
         }
-        String stringBuilder =
-                "\r\n-------------------↓ERROR↓--------------------" +
-                        "\r\nURI    : " + (uri == null ? request.getRequestURI() : uri) +
-                        "\r\nMETHOD : " + request.getMethod() +
-                        "\r\nIP     : " + request.getRemoteAddr() +
-                        "\r\nPARAMS : " + request.getQueryString() +
-                        "\r\nERROR  : " + (eStr == null ? "" : eStr) +
-                        "\r\n-------------------↑ERROR↑--------------------";
-        log.error(stringBuilder);
-        return new ResponseEntity<>(map, status);
+        String str = LogBuilder.requestLogBuilder(request, new Exception(eStr), new HashMap<String, Object>() {{
+            put("PATH", uri);
+        }});
+        log.error(str);
+        return new ResponseEntity<>(resultMap, status);
     }
 
     /**

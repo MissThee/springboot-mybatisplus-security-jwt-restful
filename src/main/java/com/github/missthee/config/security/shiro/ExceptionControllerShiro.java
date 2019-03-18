@@ -7,8 +7,6 @@ import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,7 +26,7 @@ public class ExceptionControllerShiro {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
     public Object unauthorizedException(HttpServletRequest request, Exception e) {
-        log.debug(LogBuilder.requestLog(request,"ERROR") + "\r\nEXCEPTION : " + e.getMessage());
+        log.debug(LogBuilder.requestLogBuilder(request,null, e));
         JSONObject jO = new JSONObject();
         jO.put("msg", "UnauthorizedException:" + HttpStatus.FORBIDDEN.getReasonPhrase());
         return jO;
@@ -39,7 +37,7 @@ public class ExceptionControllerShiro {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public Object unauthenticatedException(HttpServletRequest request, Exception e) {
-        log.debug(LogBuilder.requestLog(request,"ERROR") + "\r\nEXCEPTION : " + e.getMessage());
+        log.debug(LogBuilder.requestLogBuilder(request,null, e));
         JSONObject jO = new JSONObject();
         jO.put("msg", "UnauthenticatedException:" + HttpStatus.UNAUTHORIZED.getReasonPhrase());
         return jO;
