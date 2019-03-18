@@ -5,6 +5,7 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -20,10 +21,21 @@ import java.util.LinkedHashMap;
 public class ShiroConfig {
 
     @Bean
-    public DefaultWebSecurityManager securityManager(MyRealm myRealm, MyDefaultWebSessionManager myDefaultWebSessionManager) {
+    public DefaultWebSecurityManager securityManager(MyRealm myRealm) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         manager.setRealm(myRealm);//自定义认证器
-        manager.setSessionManager(myDefaultWebSessionManager);
+        manager.setSessionManager(new DefaultWebSessionManager() {
+            @Override
+            public boolean isServletContainerSessions() {
+                return true;
+            }
+
+            {
+                setSessionIdCookieEnabled(false);
+                setSessionValidationSchedulerEnabled(false);
+                setSessionIdUrlRewritingEnabled(false);
+            }
+        });
         manager.setRememberMeManager(null);//关闭RememberMe功能
         return manager;
     }

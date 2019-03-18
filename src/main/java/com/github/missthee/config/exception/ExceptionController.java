@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 //controller异常捕捉返回
 @ApiIgnore
 @RestControllerAdvice
-@Order
+@Order(100)
 @Slf4j
 public class ExceptionController {
 
@@ -56,7 +56,7 @@ public class ExceptionController {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-    @Order
+    @Order()
     public Object exceptionHandler(HttpServletRequest request, Exception e) {
         log.debug(LogBuilder.requestLogBuilder(request, e));
         e.printStackTrace();

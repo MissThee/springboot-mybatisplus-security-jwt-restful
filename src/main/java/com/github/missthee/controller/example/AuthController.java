@@ -26,6 +26,7 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
@@ -44,7 +45,7 @@ import java.util.*;
 //权限访问测试
 @RestController
 @RequestMapping("/auth")
-@RequiresRoles({"role"})
+@RequiresRoles({"role"})//相同注解，方法注解会覆盖类注解。方法无注解则使用类注解
 public class AuthController {
 
     //-----以下为权限测试，若需测试权限功能，需将本controller访问url先加入到shiro的检测路径中。-----

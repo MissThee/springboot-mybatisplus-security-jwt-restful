@@ -1,12 +1,12 @@
-package com.github.missthee.config.security.shiro;
+package com.github.missthee.config.security.security;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.UnauthenticatedException;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,24 +20,24 @@ import javax.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 @Order(1)
 @Slf4j
-public class ExceptionControllerShiro {
+public class ExceptionControllerSecurity {
     //访问无权限接口
-    @ExceptionHandler(UnauthorizedException.class)
+    @ExceptionHandler(AccessDeniedException.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
     public Object unauthorizedException(HttpServletRequest request, Exception e) {
-        log.debug(LogBuilder.requestLogBuilder(request,null, e));
+        log.debug(LogBuilder.requestLogBuilder(request, null, e));
         JSONObject jO = new JSONObject();
         jO.put("msg", e.getClass().getSimpleName() + ":" + e.getMessage());
         return jO;
     }
 
     //需要登录
-    @ExceptionHandler(UnauthenticatedException.class)
+    @ExceptionHandler(BadCredentialsException.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public Object unauthenticatedException(HttpServletRequest request, Exception e) {
-        log.debug(LogBuilder.requestLogBuilder(request,null, e));
+        log.debug(LogBuilder.requestLogBuilder(request, null, e));
         JSONObject jO = new JSONObject();
         jO.put("msg", e.getClass().getSimpleName() + ":" + e.getMessage());
         return jO;

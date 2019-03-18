@@ -46,12 +46,12 @@ public class MyJWTFilter extends AuthenticatingFilter {
                 AuthenticationToken authenticationToken = new AuthenticationToken() {
                     @Override
                     public Object getPrincipal() {
-                        return userId;//将用户权限放置getPrincipal
+                        return userId;
                     }
 
                     @Override
                     public Object getCredentials() {
-                        return "";//之后的验证未使用此值,仅使用principal
+                        return "";
                     }
                 };
                 // 提交给realm为本次访问进行登入

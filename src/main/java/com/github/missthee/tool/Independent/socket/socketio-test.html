@@ -3024,7 +3024,7 @@
             }
         }, {}], 36: [function (_dereq_, module, exports) {
             var re = /^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
-            var parts = ["source", "protocol", "authority", "userInfo", "user", "password", "host", "port", "relative", "path", "directory", "file", "query", "anchor"];
+            var parts = ["source", "protocol", "authority", "userInfoForSecurity", "user", "password", "host", "port", "relative", "path", "directory", "file", "query", "anchor"];
             module.exports = function parseuri(str) {
                 var src = str, b = str.indexOf("["), e = str.indexOf("]");
                 if (b != -1 && e != -1) {
@@ -3151,7 +3151,7 @@
             }
         }, {}], 44: [function (_dereq_, module, exports) {
             var re = /^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
-            var parts = ["source", "protocol", "authority", "userInfo", "user", "password", "host", "port", "relative", "path", "directory", "file", "query", "anchor"];
+            var parts = ["source", "protocol", "authority", "userInfoForSecurity", "user", "password", "host", "port", "relative", "path", "directory", "file", "query", "anchor"];
             module.exports = function parseuri(str) {
                 var m = re.exec(str || ""), uri = {}, i = 14;
                 while (i--) {
@@ -4592,14 +4592,14 @@
         receiveMsgEl.scrollTop = receiveMsgEl.scrollHeight;
     }
 
-    function updateOnlineReceiver(userInfo) {
+    function updateOnlineReceiver(userInfoForSecurity) {
         receiverListEl.innerHTML = "";
-        for (let userId in userInfo) {
+        for (let userId in userInfoForSecurity) {
             let node = document.createElement("input");
             node.type = "radio";
             node.name = "onlineUserListRadio";
             node.value = userId;
-            let nodeText = document.createTextNode(userInfo[userId]);
+            let nodeText = document.createTextNode(userInfoForSecurity[userId]);
             let nodeBr = document.createElement("br");
             receiverListEl.appendChild(nodeBr);
             receiverListEl.appendChild(node);

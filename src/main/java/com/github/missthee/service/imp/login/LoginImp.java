@@ -1,10 +1,14 @@
 package com.github.missthee.service.imp.login;
 
+import com.github.missthee.config.security.security.filter.UserInfoForSecurity;
 import com.github.missthee.config.security.shiro.UserInfoForShiro;
 import ma.glasnost.orika.MapperFacade;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.github.missthee.db.primary.mapper.basic.*;
 import com.github.missthee.db.primary.model.basic.*;
@@ -16,9 +20,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-public class LoginImp implements LoginService, UserInfoForShiro {
+public class LoginImp implements LoginService, UserInfoForShiro, UserInfoForSecurity {
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
@@ -118,5 +123,25 @@ public class LoginImp implements LoginService, UserInfoForShiro {
             addRoles(loginDTO.getRoleValueList());
             addStringPermissions(loginDTO.getPermissionValueList());
         }};
+    }
+
+
+    @Override
+    public UserDetails loadUserById(String id) throws UsernameNotFoundException {
+        LoginDTO loginDTO = selectUserById(Integer.parseInt(id));
+        return transToUserDetails(loginDTO);
+    }
+
+    private UserDetails transToUserDetails(LoginDTO loginDTO) {
+        if (loginDTO == null) {
+            throw new UsernameNotFoundException("User not found", new Throwable());
+        }
+        List<String> authList = new ArrayList<String>() {{
+            addAll(loginDTO.getRoleValueList().stream().map(e -> "ROLE_" + e).collect(Collectors.toSet()));
+            addAll(loginDTO.getPermissionValueList());
+        }};
+        //权限如果前缀是ROLE_，security就会认为这是个角色信息，而不是权限，例如ROLE_MENBER就是MENBER角色，CAN_SEND就是CAN_SEND权限
+        Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet = authList.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
+        return new org.springframework.security.core.userdetails.User(String.valueOf(loginDTO.getId()), "", simpleGrantedAuthoritySet);//返回包括权限角色的User(此User为security提供的实体类)给security;
     }
 }

@@ -20,6 +20,7 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.missthee.config.security.jwt.JavaJWT;
@@ -181,6 +182,12 @@ public class ExampleController {
         private Integer id;
         private String name;
         private Integer parentId;
+    }
+
+    @RequestMapping("/se")
+    @PreAuthorize("hasRole('role1') and hasRole('role2')")
+    public Res se() {
+        return Res.success("role1 role2");
     }
 
     //-----以下为权限测试，若需测试权限功能，需将本controller访问url先加入到shiro的检测路径中。-----
