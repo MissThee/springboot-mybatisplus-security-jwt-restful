@@ -27,9 +27,9 @@ public class ExceptionControllerSecurity {
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
     public Object unauthorizedException(HttpServletRequest request, Exception e) {
         log.debug(LogBuilder.requestLogBuilder(request, null, e));
-        JSONObject jO = new JSONObject();
-        jO.put("msg", e.getClass().getSimpleName() + ":" + e.getMessage());
-        return jO;
+        return new JSONObject() {{
+            put("msg", e.getClass().getSimpleName() + ":" + e.getMessage());
+        }};
     }
 
     //需要登录
@@ -38,8 +38,8 @@ public class ExceptionControllerSecurity {
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public Object unauthenticatedException(HttpServletRequest request, Exception e) {
         log.debug(LogBuilder.requestLogBuilder(request, null, e));
-        JSONObject jO = new JSONObject();
-        jO.put("msg", e.getClass().getSimpleName() + ":" + e.getMessage());
-        return jO;
+        return new JSONObject() {{
+            put("msg", e.getClass().getSimpleName() + ":" + e.getMessage());
+        }};
     }
 }

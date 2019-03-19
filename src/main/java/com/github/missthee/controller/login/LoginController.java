@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Api(tags = "登录获取用户信息、token获取用户信息")
 @RestController("FunLoginController")
-@RequestMapping("/uauth")
+//@RequestMapping("/uauth")
 public class LoginController {
 
     private final LoginService loginService;

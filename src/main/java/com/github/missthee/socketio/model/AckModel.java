@@ -1,7 +1,7 @@
 package com.github.missthee.socketio.model;
 
 import lombok.Data;
-
+//相应实体类
 @Data
 public class AckModel {
     boolean result;

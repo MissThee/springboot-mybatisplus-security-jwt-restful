@@ -5,5 +5,5 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserInfoForSecurity {
-    UserDetails loadUserById(String id) throws UsernameNotFoundException;
+    UserDetails loadUserById(Object id) throws UsernameNotFoundException;
 }

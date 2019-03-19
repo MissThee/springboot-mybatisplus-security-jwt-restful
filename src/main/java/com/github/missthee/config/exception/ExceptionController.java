@@ -37,7 +37,7 @@ public class ExceptionController {
         return jO;
     }
 
-    @ExceptionHandler(MissingRequestHeaderException.class)
+    @ExceptionHandler(MissingRequestHeaderException.class)//ServletRequestBindingException  2.1.0之前
     @ResponseBody
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public Object missingRequestHeaderExceptionException(HttpServletRequest request, Exception e) {

@@ -127,8 +127,8 @@ public class LoginImp implements LoginService, UserInfoForShiro, UserInfoForSecu
 
 
     @Override
-    public UserDetails loadUserById(String id) throws UsernameNotFoundException {
-        LoginDTO loginDTO = selectUserById(Integer.parseInt(id));
+    public UserDetails loadUserById(Object id) throws UsernameNotFoundException {
+        LoginDTO loginDTO = selectUserById((Integer)id);
         return transToUserDetails(loginDTO);
     }
 

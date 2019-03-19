@@ -18,11 +18,11 @@ import com.github.missthee.socketio.model.MessageModel;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
+//SocketIOServer自定义事件（功能实现）
 @Component
 @Slf4j
 public class MessageEventHandler {
-    //此示例暂未与数据库中数据做任何关联
+    //此示例暂未与数据库中数据做任何关联，使用静态变量临时存储
     private static SocketIOServer socketIoServer;
     private static Map<String, List<UUID>> userIdUUIDsMap = new ConcurrentHashMap<>();
     private static Map<UUID, String> UUIDUserIdMap = new ConcurrentHashMap<>();

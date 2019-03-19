@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+//发送消息实体类
 @Data
 public class MessageModel {
     String fromId;

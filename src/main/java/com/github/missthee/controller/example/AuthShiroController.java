@@ -44,11 +44,10 @@ import java.util.*;
 @ApiIgnore
 //权限访问测试
 @RestController
-@RequestMapping("/auth")
-@RequiresRoles({"role"})//相同注解，方法注解会覆盖类注解。方法无注解则使用类注解
-public class AuthController {
+@RequestMapping("/authShiro")
+@RequiresRoles({"role"})//相同注解同为@RequiresRoles或@RequiresPermissions等，方法上注解会覆盖类上注解。
+public class AuthShiroController {
 
-    //-----以下为权限测试，若需测试权限功能，需将本controller访问url先加入到shiro的检测路径中。-----
     @RequestMapping("/everyone")
     public Res everyone() {
         return Res.success("WebController：everyone");

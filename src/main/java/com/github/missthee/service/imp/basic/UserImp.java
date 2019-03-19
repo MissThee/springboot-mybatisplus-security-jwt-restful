@@ -57,9 +57,9 @@ public class UserImp implements UserService, UserInfoForJWT {
     }
 
     @Override
-    public String getSecret(Object obj) {
-        String userId = String.valueOf(obj);
-        if (!"null".equals(userId) && !"".equals(userId)) {
+    public String getSecret(Object userId) {
+        String userIdStr = String.valueOf(userId);
+        if (!"null".equals(userId) && !"".equals(userIdStr)) {
             User user = userMapper.selectByPrimaryKey(userId);
             if (user != null) {
                 return user.getPassword();

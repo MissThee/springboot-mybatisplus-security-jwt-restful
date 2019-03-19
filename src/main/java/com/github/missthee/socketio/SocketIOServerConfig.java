@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.github.missthee.config.security.jwt.JavaJWT;
-
+//SocketIOServer配置类
 @Configuration
 public class SocketIOServerConfig {
     private static String hostname;
