@@ -2,6 +2,7 @@ package com.github.missthee.socketio;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,12 @@ import org.springframework.stereotype.Component;
 @Order(value = 1)
 public class MyCommandLineRunner implements CommandLineRunner {
     private final SocketIOServer socketIOServer;
+    private Boolean socketIOEnable;
+
+    @Value("${socketio.socketIOEnable:false}")
+    public void setHostname(Boolean a) {
+        socketIOEnable = a;
+    }
 
     @Autowired
     public MyCommandLineRunner(SocketIOServer server) {
@@ -19,6 +26,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        socketIOServer.start();
+        if(socketIOEnable) {
+            socketIOServer.start();
+        }
     }
 }

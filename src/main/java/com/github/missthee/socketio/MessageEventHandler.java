@@ -7,13 +7,13 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
+import com.github.missthee.tool.Res;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.github.missthee.config.security.jwt.JavaJWT;
 import com.github.missthee.db.primary.model.basic.User;
 import com.github.missthee.service.interf.basic.UserService;
-import com.github.missthee.socketio.model.AckModel;
 import com.github.missthee.socketio.model.MessageModel;
 
 import java.util.*;
@@ -22,11 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Slf4j
 public class MessageEventHandler {
-    //此示例暂未与数据库中数据做任何关联，使用静态变量临时存储
+   
     private static SocketIOServer socketIoServer;
-    private static Map<String, List<UUID>> userIdUUIDsMap = new ConcurrentHashMap<>();
-    private static Map<UUID, String> UUIDUserIdMap = new ConcurrentHashMap<>();
-    private static Map<String, String> userIdNicknameMap = new ConcurrentHashMap<>();
+    private static Map<String, List<UUID>> userIdUUIDsMap = new ConcurrentHashMap<>();  //存储已登录的<用户id,连接时产生的多个uuid>对应关系
+    private static Map<UUID, String> UUIDUserIdMap = new ConcurrentHashMap<>();         //存储已登录的<uuid,用户id>。（仅为方便查询，可直接遍历userIdUUIDsMap，得到对应值）
+    private static Map<String, String> userIdNicknameMap = new ConcurrentHashMap<>();   //存储已登录的<用户id,昵称>。（仅为方便查询，可直接查询数据库得到值，但直接数据库读取开销大，尽量做成缓存）
     private final JavaJWT javaJWT;
     private final UserService userService;
 
@@ -59,7 +59,7 @@ public class MessageEventHandler {
         log.debug("message触发");
         //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
-            ackRequest.sendAckData(AckModel.success());
+            ackRequest.sendAckData(Res.success());
         }
     }
 
@@ -68,7 +68,7 @@ public class MessageEventHandler {
         log.debug("broadcast触发: " + data.getContent());
         //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
         if (ackRequest.isAckRequested()) {
-            ackRequest.sendAckData(AckModel.success());
+            ackRequest.sendAckData(Res.success());
         }
         data.setFromId(UUIDUserIdMap.get(client.getSessionId()));
         data.setFromNickname(userIdNicknameMap.get(data.getFromId()));
@@ -79,14 +79,13 @@ public class MessageEventHandler {
     public static void toOneUserByUserId(SocketIOClient client, AckRequest ackRequest, MessageModel data) {   //向客户端推消息
         log.debug("toOneUserByUserId触发：" + data.getContent() + "；" + UUIDUserIdMap.get(client.getSessionId()) + "→" + data.getToId() + ":" + data.getMsg());
         //当前端send/emit有回调函数时，ackRequest.isAckRequested()==true
+        //ackRequest.sendAckData()，回传回调参数
         if (data.getToId() == null) {
             if (ackRequest.isAckRequested()) {
-                ackRequest.sendAckData(AckModel.failure());
+                ackRequest.sendAckData(Res.failure());
             }
         } else {
-            if (ackRequest.isAckRequested()) {
-                ackRequest.sendAckData(AckModel.success());
-            }
+            Boolean[] isSuccess = {false};
             data.setFromId(UUIDUserIdMap.get(client.getSessionId()));
             data.setFromNickname(userIdNicknameMap.get(data.getFromId()));
             data.setToNickname(userIdNicknameMap.get(data.getToId()));
@@ -97,12 +96,16 @@ public class MessageEventHandler {
                             "msgToMe",
                             new AckCallback<String>(String.class) {
                                 @Override
-                                public void onSuccess(String result) {
+                                public void onSuccess(String result) { //接收客户端回执的回调函数
+                                    isSuccess[0] = true;
                                     log.debug("客户端回执: " + client.getSessionId() + " data: " + result);
                                 }
                             },
                             data);
                 }
+            }
+            if (ackRequest.isAckRequested()) {
+                ackRequest.sendAckData(Res.res(isSuccess[0], data));
             }
         }
     }

@@ -5,6 +5,7 @@ import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.runtime.ActivityInstance;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
@@ -82,13 +83,6 @@ public class FJSON {
         }};
     }
 
-    protected static Map<String, Object> executionToJSON(Execution execution) {
-        return new LinkedHashMap<String, Object>() {{
-            put("执行实例ID", execution.getId());
-            put("执行实例名称", execution.getName());
-            put("执行实例对应流程实例id", execution.getProcessInstanceId());
-        }};
-    }
 
     protected static Map<String, Object> taskToJSON(Task task) {
         return new LinkedHashMap<String, Object>() {{
@@ -141,7 +135,7 @@ public class FJSON {
         }};
     }
 
-    protected static Map<String, Object> historicVariableInstanceToJSON(HistoricActivityInstance historicActivityInstance) {
+    protected static Map<String, Object> historicActivityInstanceToJSON(HistoricActivityInstance historicActivityInstance) {
         return new LinkedHashMap<String, Object>() {{
             put("历史活动ID", historicActivityInstance.getId());
             put("历史活动名称", historicActivityInstance.getActivityName());
@@ -151,4 +145,22 @@ public class FJSON {
             put("历史活动任务ID", historicActivityInstance.getTaskId());
         }};
     }
+
+    protected static Map<String, Object> activityInstanceToJSON(ActivityInstance activityInstance) {
+        return new LinkedHashMap<String, Object>() {{
+            put("活动实例ID", activityInstance.getId());
+            put("活动实例对应流程实例id", activityInstance.getProcessInstanceId());
+            put("活动实例活动id", activityInstance.getActivityId());
+        }};
+    }
+
+    protected static Map<String, Object> executionToJSON(Execution execution) {
+        return new LinkedHashMap<String, Object>() {{
+            put("执行实例ID", execution.getId());
+            put("执行实例名称", execution.getName());
+            put("执行实例对应流程实例id", execution.getProcessInstanceId());
+            put("执行实例活动id", execution.getActivityId());
+        }};
+    }
+
 }

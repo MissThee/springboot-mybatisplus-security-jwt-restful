@@ -8,8 +8,7 @@ import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.ProcessDefinition;
-import org.flowable.engine.runtime.Execution;
-import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.engine.runtime.*;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
@@ -173,7 +172,7 @@ public class ProcessUseController {
         //无变量则新增，有变量则覆盖。变量版本号增加，
         if (taskId != null) {
             if (variable != null) {
-                taskService.setVariable(taskId, "自定义变量task", variable);//与流程实例绑定的变量。即使使用taskId设置变量，该变量也会与其流程实例绑定。
+                taskService.setVariable(taskId, "自定义变量task", variable);//与流程/执行实例绑定的变量。即使使用taskId设置变量，该变量也会与其对应的流程/执行实例绑定。
 //                taskService.setVariableLocal(taskId, "自定义变量task", variable);//与任务绑定的变量。该变量会与任务单独绑定，流程中其他任务无法访问变量，任务执行完后需在历史变量中查询。（不常用）
             }
             if (variableMap != null) {
@@ -268,7 +267,34 @@ public class ProcessUseController {
                 .orderByProcessInstanceId().asc()
                 .orderByExecutionId().asc()
                 .list();
-        List hisTaskList = list.stream().map(FJSON::historicVariableInstanceToJSON).collect(Collectors.toList());
+        List hisTaskList = list.stream().map(FJSON::historicActivityInstanceToJSON).collect(Collectors.toList());
         return Res.success(hisTaskList);
     }
+
+    //查询执行实例
+    @RequestMapping("searchExecution")
+    public Res searchExecution(@RequestBody(required = false) JSONObject bJO) {
+        String activityId = getStringOrDefaultFromJO(bJO, "activityId", null);
+        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
+        ExecutionQuery executionQuery = runtimeService.createExecutionQuery();
+        if (activityId == null) {
+            return Res.failure();
+        }
+        //可理解为通过执行实例id与执行实例所在图中的节点id确定一个执行实例
+        executionQuery.processInstanceId(processInstanceId);
+        executionQuery.activityId(activityId);//activityId为图中，receiveTask的Id属性设置的值，通过此值拿取指点节点上的执行实例
+        Execution execution = executionQuery.singleResult();
+        int fakeValue = 0;
+        try {
+            Thread.sleep(1000);
+            fakeValue = 100;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        runtimeService.setVariable(execution.getId(), "测试字段", fakeValue);
+        runtimeService.signalEventReceived("signalName参数", execution.getId());
+        return Res.success();
+    }
+
+
 }

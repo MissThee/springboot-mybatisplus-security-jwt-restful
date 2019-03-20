@@ -33,7 +33,7 @@ public class MyJWTVerificationFilter extends OncePerRequestFilter {
         String token = httpServletRequest.getHeader("Authorization");
         Authentication authentication;
         if (javaJWT.verifyToken(token)) {
-            String userId = javaJWT.getId(token);
+            String userId = javaJWT.getId(httpServletRequest);
             UserDetails userDetails = userInfoForSecurity.loadUserById(userId);
             authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
         } else {

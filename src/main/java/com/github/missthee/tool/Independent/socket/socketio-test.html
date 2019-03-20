@@ -33,6 +33,7 @@
     <br>
     <fieldset>
         <legend>连接socket.io</legend>
+        <div>socket端口号：<input id="socketPort" value="8097"/></div>
         <div>用户id：<input id="userId" value="" disabled="disabled"/></div>
         <div>用户昵称：<input id="userNickname" value="" disabled="disabled"/></div>
         <div>
@@ -4474,6 +4475,8 @@
     let usernameEl = document.getElementById('username');
     let passwordEl = document.getElementById('password');
     let tokenEl = document.getElementById('token');
+    let socketPortEl = document.getElementById('socketPort');
+
     let socket;
 
     function initSocket() {
@@ -4481,7 +4484,7 @@
             socket.close();
             socket.removeAllListeners();
         }
-        socket = io('http://localhost:8097?token=' + tokenEl.value, {forceNew: true});
+        socket = io('http://localhost:'+socketPortEl.value+'?token=' + tokenEl.value, {forceNew: true});
         socket.on('connect', function () {
             console.log('socket连接成功');
             changeColor("lightgreen");
@@ -4560,6 +4563,7 @@
         }
         let msg = msgEl.value;
         socket.emit('toOneUserByUserId', {"content": "指定用户消息测试", "toId": receiverId, "msg": msg}, function (data) {
+            showSendMsg(data.data);
             console.log('toOneUserByUserId事件测试回执：', data);
         })
     }
@@ -4581,6 +4585,14 @@
     function showBroadcastMsg(data) {
         let node = document.createElement("div");
         node.innerText = data.fromNickname + " 广播 [" + data.time + "] " + " : " + data.msg;
+        receiveMsgEl.appendChild(node);
+        receiveMsgEl.scrollTop = receiveMsgEl.scrollHeight;
+    }
+
+    function showSendMsg(data) {
+        let node = document.createElement("div");
+        node.innerText = data.fromNickname + " → " + data.toNickname + " [" + data.time + "] " + " : " + data.msg;
+        node.style.color = "green";
         receiveMsgEl.appendChild(node);
         receiveMsgEl.scrollTop = receiveMsgEl.scrollHeight;
     }

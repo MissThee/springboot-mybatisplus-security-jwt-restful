@@ -41,7 +41,7 @@ public class MyJWTFilter extends AuthenticatingFilter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String token = httpServletRequest.getHeader("Authorization");
         if (javaJWT.verifyToken(token)) {
-            String userId = javaJWT.getId(token);
+            String userId = javaJWT.getId(httpServletRequest);
             if (!StringUtils.isEmpty(userId)) {
                 AuthenticationToken authenticationToken = new AuthenticationToken() {
                     @Override

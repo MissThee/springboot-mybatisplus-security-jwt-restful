@@ -76,8 +76,8 @@ public class LoginController {
     @ApiOperation(value = "获取用户信息", notes = "通过token获取用户信息，用于token有效期内的自动登录")
     @PostMapping("/info")
     @RequiresAuthentication
-    public Res<loginRes> info(@RequestHeader(value = "Authorization", required = false) String token) {
-        String id = javaJWT.getId(token);
+    public Res<loginRes> info(HttpServletRequest httpServletRequest) {
+        String id = javaJWT.getId(httpServletRequest);
         LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(id));
         return Res.success(new loginRes(loginDTO), "登录成功");
     }

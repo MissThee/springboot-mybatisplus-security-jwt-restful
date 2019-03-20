@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -134,9 +135,9 @@ public class JavaJWT {
         }
     }
 
-    public String getId(HttpServletResponse httpServletResponse) {
+    public String getId(HttpServletRequest httpServletRequest) {
         try {
-            String token = httpServletResponse.getHeader(JWT_TOKEN_KEY);
+            String token = httpServletRequest.getHeader(JWT_TOKEN_KEY);
             return getId(token);
         } catch (Exception e) {
             return null;

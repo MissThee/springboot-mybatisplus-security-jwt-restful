@@ -35,6 +35,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.naming.SizeLimitExceededException;
 import javax.script.ScriptException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.File;
@@ -114,8 +115,8 @@ public class ExampleController {
 
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
-    public Res<Map<String, Object>> getInfo(@RequestHeader(value = "Authorization", required = false) String token) {
-        String userIdByToken = javaJWT.getId(token);//通过token解析获得
+    public Res<Map<String, Object>> getInfo(HttpServletRequest httpServletRequest) {
+        String userIdByToken = javaJWT.getId(httpServletRequest);//通过token解析获得
         Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
         Map<String, Object> map = new HashMap<String, Object>() {{
             put("userIdByToken", userIdByToken);
