@@ -21,7 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.List;
-
+//重写配置类，使flowable使用单独的数据库
 @Configuration
 public class MyProcessEngineAutoConfiguration extends ProcessEngineAutoConfiguration {
 

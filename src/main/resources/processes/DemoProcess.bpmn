@@ -3,9 +3,14 @@
   <process id="DemoProcess" isClosed="false" isExecutable="true" name="DemoProcess" processType="None">
     <startEvent id="_2" name="StartEvent"/>
     <endEvent id="_3" name="EndEvent"/>
-    <userTask activiti:assignee="test1" activiti:exclusive="true" id="_4" name="审批1"/>
-    <userTask activiti:assignee="re1" activiti:exclusive="true" id="_5" name="审批2"/>
-    <userTask activiti:assignee="re2" activiti:exclusive="true" id="_6" name="审批3"/>
+    <userTask activiti:assignee="test1" activiti:exclusive="true" id="_4" name="鐎光剝澹�?1"/>
+    <userTask activiti:assignee="re1" activiti:exclusive="true" id="_5" name="鐎光剝澹�?2">
+      <extensionElements>
+        <activiti:taskListener event="create"/>
+        <activiti:taskListener event="create"/>
+      </extensionElements>
+    </userTask>
+    <userTask activiti:assignee="re2" activiti:exclusive="true" id="_6" name="鐎光剝澹�?3"/>
     <sequenceFlow id="_7" sourceRef="_2" targetRef="_4"/>
     <sequenceFlow id="_8" sourceRef="_4" targetRef="_5"/>
     <sequenceFlow id="_9" sourceRef="_5" targetRef="_6"/>

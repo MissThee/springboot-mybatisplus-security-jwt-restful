@@ -2,6 +2,8 @@ package com.github.missthee.controller.flowable;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
+import org.flowable.bpmn.model.*;
+import org.flowable.bpmn.model.Process;
 import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
@@ -9,6 +11,8 @@ import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.*;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
@@ -16,18 +20,20 @@ import org.flowable.task.api.history.HistoricTaskInstanceQuery;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.flowable.variable.api.history.HistoricVariableInstanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.HashMap;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.github.missthee.controller.flowable.FJSON.getMapOrDefaultFromJO;
-import static com.github.missthee.controller.flowable.FJSON.getStringOrDefaultFromJO;
+import static com.github.missthee.controller.flowable.FJSON.*;
 
 @RestController
 @RequestMapping("flowable/use")
@@ -47,9 +53,10 @@ public class ProcessUseController {
     private final IdentityService identityService;
     //管理器
     private final ManagementService managementService;
+    private final ProcessEngine processEngine;
 
     @Autowired
-    public ProcessUseController(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService, FormService formService, HistoryService historyService, IdentityService identityService, ManagementService managementService) {
+    public ProcessUseController(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService, FormService formService, HistoryService historyService, IdentityService identityService, ManagementService managementService, @Qualifier("processEngine") ProcessEngine processEngine) {
         this.runtimeService = runtimeService;
         this.taskService = taskService;
         this.repositoryService = repositoryService;
@@ -57,6 +64,7 @@ public class ProcessUseController {
         this.historyService = historyService;
         this.identityService = identityService;
         this.managementService = managementService;
+        this.processEngine = processEngine;
     }
 
     //流程定义。当流程图被部署之后，查询出来的数据。仅为定义的流程，没有实际执行。
@@ -74,6 +82,7 @@ public class ProcessUseController {
     public Res startProcess(@RequestBody(required = false) JSONObject bJO) {
         String processDefKey = getStringOrDefaultFromJO(bJO, "processDefKey", "DemoProcess");
         String businessKey = getStringOrDefaultFromJO(bJO, "businessKey", "审批表单1");
+        Map<String, Object> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);
 //        runtimeService.startProcessInstanceById(processId);
         //参数1：流程定义id
         //参数2：Map<String,Object> 流程变量
@@ -83,12 +92,8 @@ public class ProcessUseController {
 //        runtimeService.startProcessInstanceById(processId,businessKey );
         //实际开发中常用一下方法
 //        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processIdOrKey, businessKey);
-        Map variables = new HashMap<String, Object>() {{
-            put("请假天数", 2);
-            put("请假时间", new Date());
-        }};
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefKey, businessKey, variables);
-        return Res.success(processInstance.getBusinessKey(), "启动成功");
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefKey, businessKey, variableMap);
+        return Res.success(processInstanceToJSON(processInstance), "启动成功");
     }
 
     //查询任务
@@ -97,41 +102,117 @@ public class ProcessUseController {
     @RequestMapping("searchTask")
     public Res searchTask(@RequestBody(required = false) JSONObject bJO) {
         String assignee = getStringOrDefaultFromJO(bJO, "assignee", null);
+        String candidateUser = getStringOrDefaultFromJO(bJO, "candidateUser", null);
         TaskQuery taskQuery = taskService.createTaskQuery();
         if (assignee != null) {
-            taskQuery.taskAssignee(assignee);
+            taskQuery.taskAssignee(assignee);//按办理人查询
+        }
+        if (candidateUser != null) {
+            taskQuery.taskCandidateUser(candidateUser);//按候选办理人查询。仅无办理人，且有候选人的任务可查到
         }
         List<Task> list = taskQuery
                 .orderByProcessInstanceId().asc()
+                .orderByTaskCreateTime().desc()
                 .list();
         List taskList = list.stream().map(FJSON::taskToJSON).collect(Collectors.toList());
         return Res.success(taskList, assignee);
+    }
+
+    //任务拾取
+    @RequestMapping("claimTask")
+    public Res claimTask(@RequestBody(required = false) JSONObject bJO) {
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        String assignee = getStringOrDefaultFromJO(bJO, "assignee", null);
+        if (StringUtils.isEmpty(taskId)) {
+            return Res.failure("empty taskId");
+        }
+        if (StringUtils.isEmpty(assignee)) {
+            return Res.failure("empty assignee");
+        }
+        //claim 会检查assignee字段是否已有办理人。若有，抛出异常；若没有，设置办理人。
+        //setAssignee 直接设置办理人。
+        //共同点：除claim会检查是否已有办理人外，两者均可给任意任务（不论有无候选办理人），设置任意办理人（不论设置的办理人是否在候选办理人中）
+        taskService.claim(taskId, assignee);
+        return Res.success();
+    }
+
+    //回退任务拾取
+    @RequestMapping("returnTask")
+    public Res returnTask(@RequestBody(required = false) JSONObject bJO) {
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        if (StringUtils.isEmpty(taskId)) {
+            return Res.failure("empty taskId");
+        }
+        taskService.setAssignee(taskId, null);
+        return Res.success();
+    }
+
+    //查询任务的候选办理人
+    @RequestMapping("getIdentityLinksForTask")
+    public Res getIdentityLinksForTask(@RequestBody(required = false) JSONObject bJO) {
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        if (taskId == null) {
+            return Res.failure("null taskId");
+        }
+        //其中办理人会额外加入到查询结果中
+        List<IdentityLink> identityLinkList = taskService.getIdentityLinksForTask(taskId);
+        List<Map<String, Object>> list = identityLinkList.stream().map(FJSON::identityLinkToJSON).collect(Collectors.toList());
+        return Res.success(list);
+    }
+
+    //添加任务的候选办理人
+    //act_ru_identitylink
+    //增加候选办理人时，每个候选办理人有两条数据，类型分别为participant和candidate。其中participant在设置候选办理人、办理人时均会插入
+    //删除候选办理人时，仅删除candidate类的记录。
+    @RequestMapping("optionCandidateUser")
+    public Res addCandidateUser(@RequestBody(required = false) JSONObject bJO) {
+        Boolean isAdd = getBooleanOrDefaultFromJO(bJO, "isAdd", null);
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        String candidateUser = getStringOrDefaultFromJO(bJO, "candidateUser", null);
+        if (isAdd == null) {
+            return Res.failure("null isAdd");
+        }
+        if (StringUtils.isEmpty(taskId)) {
+            return Res.failure("empty taskId");
+        }
+        if (StringUtils.isEmpty(candidateUser)) {
+            return Res.failure("empty candidateUser");
+        }
+        if (isAdd) {
+            taskService.addCandidateUser(taskId, candidateUser);
+        } else {
+            taskService.deleteCandidateUser(taskId, candidateUser);
+        }
+        List<IdentityLink> identityLinkList = taskService.getIdentityLinksForTask(taskId);
+        List<Map<String, Object>> list = identityLinkList.stream().map(FJSON::identityLinkToJSON).collect(Collectors.toList());
+        return Res.success(list);
     }
 
     //办理任务
     @RequestMapping("completeTask")
     public Res completeTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
-        Map<String, Object> varMap = getMapOrDefaultFromJO(bJO, "varMap", null);
-        if (taskId == null) {
-            return Res.failure("taskId is null");
+        Map<String, Object> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);
+        if (StringUtils.isEmpty(taskId)) {
+            return Res.failure("empty taskId");
         }
-        taskService.complete(taskId, varMap);
+        taskService.complete(taskId, variableMap);
         return Res.success();
     }
+
 
     //判断流程是否完成
     @RequestMapping("processIsFinished")
     public Res processIsFinished(@RequestBody(required = false) JSONObject bJO) {
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
         if (processInstanceId == null) {
-            return Res.failure("processInstanceId is null");
+            return Res.failure("null processInstanceId");
         }
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .singleResult();
         if (historicProcessInstance == null) {
-            return Res.failure("Process not exist");
+            return Res.failure("process not exist");
         }
         return Res.success(new JSONObject() {{
             put("isFinished", historicProcessInstance.getEndTime() != null);
@@ -206,7 +287,7 @@ public class ProcessUseController {
             variable = runtimeService.getVariable(executionId, "自定义变量execution");
             variables = runtimeService.getVariables(executionId);
         } else {
-            return Res.failure("need taskId or executionId");
+            return Res.failure("null taskId and executionId");
         }
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("variable", variable);
@@ -271,8 +352,9 @@ public class ProcessUseController {
         return Res.success(hisTaskList);
     }
 
-    //查询执行实例
-    @RequestMapping("searchExecution")
+    //执行实例，下一步。以节点id（activitiId）和流程实例id（processInstanceId），确定当前节点的执行实例（可能有多个），将执行实例前进一步
+    //已知当节点不为UserTask时，无法使用任务查询到当前的节点执行情况，只能通过此方式，获取流程实例，进行操作（遗留问题：当一个节点有1个以上的实行实例时，如何区分不同的实例）
+    @RequestMapping("triggerExecution")
     public Res searchExecution(@RequestBody(required = false) JSONObject bJO) {
         String activityId = getStringOrDefaultFromJO(bJO, "activityId", null);
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -284,6 +366,9 @@ public class ProcessUseController {
         executionQuery.processInstanceId(processInstanceId);
         executionQuery.activityId(activityId);//activityId为图中，receiveTask的Id属性设置的值，通过此值拿取指点节点上的执行实例
         Execution execution = executionQuery.singleResult();
+        if (execution == null) {
+            return Res.failure("no execution");
+        }
         int fakeValue = 0;
         try {
             Thread.sleep(1000);
@@ -292,9 +377,66 @@ public class ProcessUseController {
             e.printStackTrace();
         }
         runtimeService.setVariable(execution.getId(), "测试字段", fakeValue);
-        runtimeService.signalEventReceived("signalName参数", execution.getId());
+        runtimeService.trigger(execution.getId());
         return Res.success();
     }
 
+    //查询任务的流程进度图片(任务id)
+    @RequestMapping("progressImg")
+    public void progressImg(HttpServletResponse httpServletResponse, @RequestBody(required = false) JSONObject bJO) throws IOException {
+        Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
+        if (taskId != null) {
+            processInstanceId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
+        } else if (processInstanceId != null) {
 
+        } else {
+            Res.failure("need taskId or processInstanceId");
+        }
+        List<String> highLightedActivities = new ArrayList<>();     // 构造已执行的节点ID集合
+        List<String> highLightedFlows = new ArrayList<>();          // 构造已执行的路径ID集合
+        // 获取流程中已经执行的节点，按照执行先后顺序排序
+        String processDefinitionId = null;
+        List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceId().desc().list();
+        for (HistoricActivityInstance activityInstance : historicActivityInstanceList) {
+            if (isOnlyLast) {
+                if (highLightedActivities.size() > 0) {
+                    highLightedFlows.clear();
+                    break;
+                }
+            }
+            if (processDefinitionId == null) {
+                processDefinitionId = activityInstance.getProcessDefinitionId();
+            }
+            switch (activityInstance.getActivityType()) {
+                case "sequenceFlow":
+                    highLightedFlows.add(activityInstance.getActivityId());
+                    break;
+                case "startEvent":
+                case "userTask":
+                case "endEvent":
+                default:
+                    highLightedActivities.add(activityInstance.getActivityId());
+                    break;
+            }
+        }
+        // 获取bpmnModel
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        {
+//            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+            Map<String, List<GraphicInfo>> flowLocationMap = bpmnModel.getFlowLocationMap();
+            for (String key : flowLocationMap.keySet()) {
+                System.out.println(key);
+                for (GraphicInfo graphicInfo : flowLocationMap.get(key)) {
+                    System.out.println(graphicInfo);
+                }
+
+            }
+        }
+        // 使用默认配置获得流程图表生成器，并生成追踪图片字符流
+        ProcessDiagramGenerator processDiagramGenerator = processEngine.getProcessEngineConfiguration().getProcessDiagramGenerator();
+        InputStream inputStream = processDiagramGenerator.generateDiagram(bpmnModel, "png", highLightedActivities, highLightedFlows, "宋体", "宋体", "宋体", null, 1.0D, false);
+        Res.out(httpServletResponse, inputStream);
+    }
 }

@@ -31,6 +31,7 @@ public class ActDBConfig {
     }
 
     @Bean(name = "actDataSource")
+    @Primary
     @ConfigurationProperties(prefix = "spring.datasource.act")
     public DataSource dataSource(@Qualifier("actDataSourceHikari") HikariConfig hikariConfig) {
         HikariDataSource build = new HikariDataSource();
@@ -39,6 +40,7 @@ public class ActDBConfig {
     }
 
     @Bean(name = "actTransactionManager")
+    @Primary
     public DataSourceTransactionManager transactionManager(@Qualifier("actDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }

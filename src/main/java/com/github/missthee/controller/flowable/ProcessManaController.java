@@ -138,14 +138,7 @@ public class ProcessManaController {
     public void imgByProcessId(HttpServletResponse httpServletResponse, @RequestBody(required = false) JSONObject bJO) throws IOException {
         String id = getStringOrDefaultFromJO(bJO, "id", null);
         InputStream processDiagramInputStream = repositoryService.getProcessDiagram(id);
-        ServletOutputStream outputStream = httpServletResponse.getOutputStream();
-        int len;
-        byte[] buff = new byte[100];
-        while ((len = processDiagramInputStream.read(buff)) > 0) {
-            outputStream.write(buff, 0, len);
-            outputStream.flush();
-        }
-        outputStream.close();
+        Res.out(httpServletResponse, processDiagramInputStream);
     }
 
     //查询所有审批流程的最新流程

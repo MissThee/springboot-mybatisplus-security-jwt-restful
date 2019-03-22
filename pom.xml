@@ -145,6 +145,11 @@
             <artifactId>flowable-spring-boot-starter-process</artifactId>
             <version>${flowable.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-json-converter</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
         <!--oracle驱动(本地)-->
         <dependency>
             <groupId>com.oracle</groupId>

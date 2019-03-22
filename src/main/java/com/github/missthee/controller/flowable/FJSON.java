@@ -8,6 +8,7 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ActivityInstance;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
@@ -163,4 +164,12 @@ public class FJSON {
         }};
     }
 
+    protected static Map<String, Object> identityLinkToJSON(IdentityLink identityLink) {
+        return new LinkedHashMap<String, Object>() {{
+            put("人员ID", identityLink.getUserId());
+            put("任务ID", identityLink.getTaskId());
+            put("执行实例对应流程实例id", identityLink.getProcessInstanceId());
+            put("执行实例活动id", identityLink.getType());
+        }};
+    }
 }

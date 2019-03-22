@@ -5,6 +5,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -70,6 +74,16 @@ public class Res<T> implements Serializable {
         return new Res<>(false, null, "");
     }
 
+    public static void out(HttpServletResponse httpServletResponse, InputStream inputStream) throws IOException {
+        ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+        int len;
+        byte[] buff = new byte[100];
+        while ((len = inputStream.read(buff)) > 0) {
+            outputStream.write(buff, 0, len);
+            outputStream.flush();
+        }
+        outputStream.close();
+    }
     private Boolean result;
     private T data;
     private String msg;
