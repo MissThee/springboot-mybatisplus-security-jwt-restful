@@ -3,13 +3,14 @@ package com.github.missthee.controller.flowable;
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
 import org.flowable.bpmn.model.*;
-import org.flowable.bpmn.model.Process;
+import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
-import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.repository.DiagramLayout;
+import org.flowable.engine.repository.DiagramNode;
 import org.flowable.engine.runtime.*;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.image.ProcessDiagramGenerator;
@@ -68,18 +69,18 @@ public class ProcessUseController {
     }
 
     //流程定义。当流程图被部署之后，查询出来的数据。仅为定义的流程，没有实际执行。
-    ProcessDefinition processDefinition;
+//    ProcessDefinition processDefinition;
     //流程定义的执行实例。
-    ProcessInstance processInstance;
+//    ProcessInstance processInstance;
     //描述流程执行的每一个节点。ProcessDefinition分支时，ProcessDefinition有一个ProcessInstance；有分支时则有多个
-    Execution execution;
-    //任务实例
-    Task task;
+//    Execution execution;
+    //任务实例，如果任务为userTask，则Execution会有一个task实例
+//    Task task;
 
     //启动流程
     // act_ru_execution     流程启动一次，只要没执行完，就会有数据
     @RequestMapping("startProcess")
-    public Res startProcess(@RequestBody(required = false) JSONObject bJO) {
+    public Res<Map<String, Object>> startProcess(@RequestBody(required = false) JSONObject bJO) {
         String processDefKey = getStringOrDefaultFromJO(bJO, "processDefKey", "DemoProcess");
         String businessKey = getStringOrDefaultFromJO(bJO, "businessKey", "审批表单1");
         Map<String, Object> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);
@@ -192,9 +193,14 @@ public class ProcessUseController {
     @RequestMapping("completeTask")
     public Res completeTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        String comment = getStringOrDefaultFromJO(bJO, "comment", null);
         Map<String, Object> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);
         if (StringUtils.isEmpty(taskId)) {
             return Res.failure("empty taskId");
+        }
+        if(comment!=null) {
+            Authentication.setAuthenticatedUserId("设置的批注人id");//批注人为线程绑定变量，需在同一线程内设置批注人信息
+            taskService.addComment(taskId, taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId(), comment);
         }
         taskService.complete(taskId, variableMap);
         return Res.success();
@@ -297,7 +303,7 @@ public class ProcessUseController {
 
     //获取历史变量。通过taskId或executionId
     @RequestMapping("getHistoryVariable")
-    public Res getHistoryVariable(@RequestBody(required = false) JSONObject bJO) {
+    public Res<List<Map<String, Object>>> getHistoryVariable(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         String executionId = getStringOrDefaultFromJO(bJO, "executionId", null);
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -381,9 +387,9 @@ public class ProcessUseController {
         return Res.success();
     }
 
-    //查询任务的流程进度图片(任务id)
-    @RequestMapping("progressImg")
-    public void progressImg(HttpServletResponse httpServletResponse, @RequestBody(required = false) JSONObject bJO) throws IOException {
+    //查询任务的流程进度图片
+    @RequestMapping("imgWithHighLight")
+    public void imgWithHighLight(HttpServletResponse httpServletResponse, @RequestBody(required = false) JSONObject bJO) throws IOException {
         Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -396,7 +402,7 @@ public class ProcessUseController {
         }
         List<String> highLightedActivities = new ArrayList<>();     // 构造已执行的节点ID集合
         List<String> highLightedFlows = new ArrayList<>();          // 构造已执行的路径ID集合
-        // 获取流程中已经执行的节点，按照执行先后顺序排序
+        // 获取流程中已经执行的节点，按照执行倒序排序
         String processDefinitionId = null;
         List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceId().desc().list();
         for (HistoricActivityInstance activityInstance : historicActivityInstanceList) {
@@ -423,20 +429,142 @@ public class ProcessUseController {
         }
         // 获取bpmnModel
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        {
-//            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-            Map<String, List<GraphicInfo>> flowLocationMap = bpmnModel.getFlowLocationMap();
-            for (String key : flowLocationMap.keySet()) {
-                System.out.println(key);
-                for (GraphicInfo graphicInfo : flowLocationMap.get(key)) {
-                    System.out.println(graphicInfo);
-                }
-
-            }
-        }
         // 使用默认配置获得流程图表生成器，并生成追踪图片字符流
         ProcessDiagramGenerator processDiagramGenerator = processEngine.getProcessEngineConfiguration().getProcessDiagramGenerator();
         InputStream inputStream = processDiagramGenerator.generateDiagram(bpmnModel, "png", highLightedActivities, highLightedFlows, "宋体", "宋体", "宋体", null, 1.0D, false);
         Res.out(httpServletResponse, inputStream);
     }
+
+    //查询流程图片
+    @RequestMapping("img")
+    public void img(HttpServletResponse httpServletResponse, @RequestBody(required = false) JSONObject bJO) throws IOException {
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
+        if (taskId != null) {
+            processInstanceId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
+        } else if (processInstanceId != null) {
+
+        } else {
+            Res.failure("need taskId or processInstanceId");
+        }
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+        InputStream processDiagramInputStream = repositoryService.getProcessDiagram(processInstance.getProcessDefinitionId());
+        Res.out(httpServletResponse, processDiagramInputStream);
+    }
+
+    //查询流程图片中高亮元素坐标(流程线，流程节点)
+    @RequestMapping("img/highLightData/all")
+    public Res imgHighLightDataAll(@RequestBody(required = false) JSONObject bJO) {
+        Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
+        if (taskId != null) {
+            processInstanceId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
+        } else if (processInstanceId != null) {
+
+        } else {
+            Res.failure("need taskId or processInstanceId");
+        }
+        List<String> highLightedActivities = new ArrayList<>();     // 构造已执行的节点ID集合
+        List<String> highLightedFlows = new ArrayList<>();          // 构造已执行的路径ID集合
+        // 获取流程中已经执行的节点，按照执行倒序排序
+        String processDefinitionId = null;
+        List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceId().desc().list();
+        for (HistoricActivityInstance activityInstance : historicActivityInstanceList) {
+            if (isOnlyLast) {
+                if (highLightedActivities.size() > 0) {
+                    highLightedFlows.clear();
+                    break;
+                }
+            }
+            if (processDefinitionId == null) {
+                processDefinitionId = activityInstance.getProcessDefinitionId();
+            }
+            switch (activityInstance.getActivityType()) {
+                case "sequenceFlow":
+                    highLightedFlows.add(activityInstance.getActivityId());
+                    break;
+                case "startEvent":
+                case "userTask":
+                case "endEvent":
+                default:
+                    highLightedActivities.add(activityInstance.getActivityId());
+                    break;
+            }
+        }
+        // 获取bpmnModel
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        List<List<Map>> flowLineList = new ArrayList<>();//线集合
+        {
+            Map<String, List<GraphicInfo>> flowLocationMap = bpmnModel.getFlowLocationMap();
+            for (String key : flowLocationMap.keySet()) {
+                if (highLightedFlows.contains(key)) {
+                    List<Map> flowLineNodeList = new ArrayList<>();
+                    for (GraphicInfo graphicInfo : flowLocationMap.get(key)) {
+                        flowLineNodeList.add(FJSON.FlowNodeToJSON(graphicInfo));
+                    }
+                    flowLineList.add(flowLineNodeList);
+                }
+            }
+        }
+        List<Map> flowNodeList = new ArrayList<>();//节点集合
+        {
+            Map<String, GraphicInfo> locationMap = bpmnModel.getLocationMap();
+            for (String key : locationMap.keySet()) {
+                if (highLightedActivities.contains(key)) {
+                    GraphicInfo flowNode = locationMap.get(key);
+                    flowNodeList.add(FlowNodeToJSON(flowNode));
+                }
+            }
+        }
+        Map<String, List> resultMap = new HashMap<String, List>() {{
+            put("flowLineList", flowLineList);
+            put("flowNodeList", flowNodeList);
+        }};
+        return Res.success(resultMap);
+    }
+
+    //查询流程图片中高亮元素坐标(流程节点)
+    @RequestMapping("img/highLightData/activity")
+    public Res imgHighLightDataActivity(@RequestBody(required = false) JSONObject bJO) {
+        Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
+        if (taskId != null) {
+            processInstanceId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
+        } else if (processInstanceId != null) {
+
+        } else {
+            Res.failure("need taskId or processInstanceId");
+        }
+        List<String> highLightedActivities = new ArrayList<>();     // 构造已执行的节点ID集合
+        // 获取流程中已经执行的节点，按照执行倒序排序
+        String processDefinitionId = null;
+        List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceId().desc().list();
+        for (HistoricActivityInstance activityInstance : historicActivityInstanceList) {
+            if (isOnlyLast) {
+                if (highLightedActivities.size() > 0) {
+                    break;
+                }
+            }
+            if (processDefinitionId == null) {
+                processDefinitionId = activityInstance.getProcessDefinitionId();
+            }
+            highLightedActivities.add(activityInstance.getActivityId());
+        }
+        DiagramLayout processDiagramLayout = repositoryService.getProcessDiagramLayout(processDefinitionId);
+        List<Map> flowActivityList = new ArrayList<>();
+        for (String highLightedActivity : highLightedActivities) {
+            DiagramNode diagramNode = processDiagramLayout.getNode(highLightedActivity);
+            if (diagramNode != null) {
+                flowActivityList.add(FlowNodeToJSON(diagramNode));
+            }
+        }
+        return Res.success(flowActivityList);
+    }
+
 }
+
+
+
+

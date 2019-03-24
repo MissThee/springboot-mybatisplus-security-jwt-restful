@@ -1,6 +1,7 @@
 package com.github.missthee.controller.flowable;
 
 import com.alibaba.fastjson.JSONObject;
+import org.flowable.bpmn.model.GraphicInfo;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.Deployment;
@@ -9,11 +10,13 @@ import org.flowable.engine.runtime.ActivityInstance;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.job.api.Job;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -170,6 +173,29 @@ public class FJSON {
             put("任务ID", identityLink.getTaskId());
             put("执行实例对应流程实例id", identityLink.getProcessInstanceId());
             put("执行实例活动id", identityLink.getType());
+        }};
+    }
+    protected static Map<String, Object> jobToJSON(Job job) {
+        return new LinkedHashMap<String, Object>() {{
+            put("定时器ID", job.getId());
+            put("定时器到期日期", job.getDuedate());
+            put("定时器类型", job.getJobType());
+        }};
+    }
+
+    protected static <T> Map<String, Double> FlowNodeToJSON(T nodeInfo) {
+        return new LinkedHashMap<String, Double>() {{
+            String[] keys = {"x", "y", "width", "height"};
+            try {
+                for (String key : keys) {
+                    Double value = (Double) nodeInfo.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1)).invoke(nodeInfo);
+                    if (!value.equals(0D)) {
+                        put(key, value);
+                    }
+
+                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+            }
         }};
     }
 }

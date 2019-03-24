@@ -3,11 +3,13 @@ package com.github.missthee.controller.flowable;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
+import lombok.AllArgsConstructor;
 import org.flowable.engine.*;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.DeploymentQuery;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
+import org.flowable.job.api.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
@@ -29,30 +31,12 @@ import static com.github.missthee.controller.flowable.FJSON.getStringOrDefaultFr
 @RestController
 @RequestMapping("flowable/mana")
 public class ProcessManaController {
-    //基础配置类
-    //private final ProcessEngine processEngine;
-    //流程部署、修改、删除服务。主要操作表：act_ge_bytearray,act_re_deployment,act_re_model,act_re_procdef
     private final RepositoryService repositoryService;
-    //流程的运行。主要操作表：act_ru...
-    private final RuntimeService runtimeService;
-    private final TaskService taskService;
-    //查询历史记录。主要操作表：act_hi...
-    private final HistoryService historyService;
-    //页面表单服务（较少使用）
-    private final FormService formService;
-    //对工作流的用户管理的表操作。主要操作表：act_id...
-    private final IdentityService identityService;
-    //管理器
-    private final ManagementService managementService;
+   private final ManagementService managementService;
 
     @Autowired
-    public ProcessManaController(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService, FormService formService, HistoryService historyService, IdentityService identityService, ManagementService managementService) {
-        this.runtimeService = runtimeService;
-        this.taskService = taskService;
+    public ProcessManaController(RepositoryService repositoryService, ManagementService managementService) {
         this.repositoryService = repositoryService;
-        this.formService = formService;
-        this.historyService = historyService;
-        this.identityService = identityService;
         this.managementService = managementService;
     }
 
@@ -159,5 +143,32 @@ public class ProcessManaController {
             repositoryService.deleteDeployment(deploymentId);
         }
         return Res.success("完成删除");
+    }
+
+    //挂起指定流程定义，使其不能再使用（挂起流程定义，不能再新建实例；挂起实例，实例不能再操作）
+    @RequestMapping("suspendProcessDefinitionById")
+    public Res suspendProcessDefinitionById(@RequestBody(required = false) JSONObject bJO) {
+        String id = getStringOrDefaultFromJO(bJO, "id", null);
+        //挂起流程实例的id，是否将其正在运行的实例挂起，挂起日期（null则为立即挂起）
+        repositoryService.suspendProcessDefinitionById(id,false,null);
+        return Res.success("完成挂起");
+    }
+
+    //激活指定流程定义
+    @RequestMapping("activateProcessDefinitionById")
+    public Res activateProcessDefinitionById(@RequestBody(required = false) JSONObject bJO) {
+        String id = getStringOrDefaultFromJO(bJO, "id", null);
+        //激活流程实例的id，是否将其正在运行的实例激活，激活日期（null则为立即挂起）
+        repositoryService.activateProcessDefinitionById(id,false,null);
+        return Res.success("完成激活");
+    }
+
+    //手动执行定时器
+    @RequestMapping("searchTimerJob")
+    public Res searchTimerJob(@RequestBody(required = false) JSONObject bJO) {
+        //激活流程实例的id，是否将其正在运行的实例激活，激活日期（null则为立即挂起）
+        List<Job> jobList = managementService.createTimerJobQuery().list();
+        List<Map<String, Object>> list = jobList.stream().map(FJSON::jobToJSON).collect(Collectors.toList());
+        return Res.success(list);
     }
 }
