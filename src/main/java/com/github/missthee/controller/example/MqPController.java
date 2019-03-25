@@ -7,7 +7,6 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;
 import com.github.missthee.config.mq.MqProductor;
 import com.github.missthee.tool.Res;
@@ -15,24 +14,13 @@ import com.github.missthee.tool.Res;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import static com.github.missthee.config.mq.init.ExchangeAndQueue.*;
+
 @Slf4j
 @RestController
-@Api(value = "rabbitMqContronller", description = "rabbitmq测试类")
 @RequestMapping("/rabbitmq")
-@ConditionalOnProperty(name = "custom.rabbitmq.enable", havingValue = "true")
+//@ConditionalOnProperty(name = "custom.rabbitmq.enable", havingValue = "true")
 public class MqPController {
-    private static final String QUEUE_NAME = "direct-queue1";//队列
-    //性能排序：fanout > direct >> topic。比例大约为11：10：6
-    private static final String FANOUT_EXCHANGE = "exchange-fanout";//   任何发送到Fanout Exchange的消息都会被转发到与该Exchange绑定(Binding)的所有Queue上
-
-    private static final String DIRECT_EXCHANGE = "exchange-direct";//   任何发送到Direct Exchange的消息都会被转发到RouteKey中指定的Queue。
-    private static final String DIRECT_EXCHANGE_ROUTINGKY_ORANGE = "orange";
-    private static final String DIRECT_EXCHANGE_ROUTINGKY_BLACK = "black";
-    private static final String DIRECT_EXCHANGE_ROUTINGKY_ALL = "all";
-
-    private static final String TOPIC_EXCHANGE = "exchange-topic";//     任何发送到Topic Exchange的消息都会被转发到所有关心RouteKey中指定话题的Queue上   //通配符模式
-
-    //private static final String HEADERS_EXCHANGE = "exchange-headers";// headers匹配
 
 
     private final RabbitTemplate rabbitTemplate;
@@ -42,31 +30,31 @@ public class MqPController {
         this.rabbitTemplate = mqProductor.rabbitTemplate();
     }
 
-    @RequestMapping("/simple")//通过默认交换机发送至队列，使用队列名
+    @RequestMapping("/simple")//通过默认交换机发送至队列，可使用队列名
     public Res sendMapMq() {
-        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-simple");
-        rabbitTemplate.convertAndSend(QUEUE_NAME, mqData);
+        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-simple消息测试");
+        rabbitTemplate.convertAndSend(QUEUE_DIRECT1, mqData);
         return Res.success(mqData);
     }
 
-    @RequestMapping("/ps")
+    @RequestMapping("/ps")//PubSub、发布/订阅、广播、fanout
     public Res sendPSMq() {
-        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-ps");
-        rabbitTemplate.convertAndSend(FANOUT_EXCHANGE, "[no routingKey]", mqData);
+        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-ps消息测试");
+        rabbitTemplate.convertAndSend(EXCHANGE_FANOUT, mqData);
         return Res.success(mqData);
     }
 
-    @RequestMapping(value = "/direct")
+    @RequestMapping(value = "/direct")//direct
     public Res sendDirectMq() {
-        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-direct");
-        rabbitTemplate.convertAndSend(DIRECT_EXCHANGE, DIRECT_EXCHANGE_ROUTINGKY_ORANGE, mqData);
+        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-direct消息测试");
+        rabbitTemplate.convertAndSend(EXCHANGE_DIRECT, "orange", mqData);
         return Res.success(mqData);
     }
 
-    @RequestMapping(value = "/topic")
+    @RequestMapping(value = "/topic")//topic
     public Res sendTopicMq() {
-        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-topic");
-        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, "a.orange", mqData);
+        MqData mqData = new MqData(LocalDateTime.now().toString(), "test-topic消息测试");
+        rabbitTemplate.convertAndSend(EXCHANGE_TOPIC, "a.orange", mqData);
         return Res.success(mqData);
     }
 

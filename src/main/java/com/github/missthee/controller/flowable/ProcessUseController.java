@@ -1,16 +1,24 @@
 package com.github.missthee.controller.flowable;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
 import org.flowable.bpmn.model.*;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.*;
+import org.flowable.engine.form.FormProperty;
+import org.flowable.engine.form.FormType;
+import org.flowable.engine.form.StartFormData;
+import org.flowable.engine.form.TaskFormData;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
+import org.flowable.engine.impl.form.DateFormType;
+import org.flowable.engine.impl.form.EnumFormType;
 import org.flowable.engine.repository.DiagramLayout;
 import org.flowable.engine.repository.DiagramNode;
+import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.*;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.image.ProcessDiagramGenerator;
@@ -30,6 +38,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -198,7 +208,7 @@ public class ProcessUseController {
         if (StringUtils.isEmpty(taskId)) {
             return Res.failure("empty taskId");
         }
-        if(comment!=null) {
+        if (comment != null) {
             Authentication.setAuthenticatedUserId("设置的批注人id");//批注人为线程绑定变量，需在同一线程内设置批注人信息
             taskService.addComment(taskId, taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId(), comment);
         }
@@ -454,7 +464,7 @@ public class ProcessUseController {
 
     //查询流程图片中高亮元素坐标(流程线，流程节点)
     @RequestMapping("img/highLightData/all")
-    public Res imgHighLightDataAll(@RequestBody(required = false) JSONObject bJO) {
+    public Res<Map<String, List>> imgHighLightDataAll(@RequestBody(required = false) JSONObject bJO) {
         Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -494,12 +504,12 @@ public class ProcessUseController {
         }
         // 获取bpmnModel
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        List<List<Map>> flowLineList = new ArrayList<>();//线集合
+        List<List<Map<String, Double>>> flowLineList = new ArrayList<>();//线集合
         {
             Map<String, List<GraphicInfo>> flowLocationMap = bpmnModel.getFlowLocationMap();
             for (String key : flowLocationMap.keySet()) {
                 if (highLightedFlows.contains(key)) {
-                    List<Map> flowLineNodeList = new ArrayList<>();
+                    List<Map<String, Double>> flowLineNodeList = new ArrayList<Map<String, Double>>();
                     for (GraphicInfo graphicInfo : flowLocationMap.get(key)) {
                         flowLineNodeList.add(FJSON.FlowNodeToJSON(graphicInfo));
                     }
@@ -507,7 +517,7 @@ public class ProcessUseController {
                 }
             }
         }
-        List<Map> flowNodeList = new ArrayList<>();//节点集合
+        List<Map<String, Double>> flowNodeList = new ArrayList<>();//节点集合
         {
             Map<String, GraphicInfo> locationMap = bpmnModel.getLocationMap();
             for (String key : locationMap.keySet()) {
@@ -526,7 +536,7 @@ public class ProcessUseController {
 
     //查询流程图片中高亮元素坐标(流程节点)
     @RequestMapping("img/highLightData/activity")
-    public Res imgHighLightDataActivity(@RequestBody(required = false) JSONObject bJO) {
+    public Res<List<Map<String, Double>>> imgHighLightDataActivity(@RequestBody(required = false) JSONObject bJO) {
         Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -553,7 +563,7 @@ public class ProcessUseController {
             highLightedActivities.add(activityInstance.getActivityId());
         }
         DiagramLayout processDiagramLayout = repositoryService.getProcessDiagramLayout(processDefinitionId);
-        List<Map> flowActivityList = new ArrayList<>();
+        List<Map<String, Double>> flowActivityList = new ArrayList<>();
         for (String highLightedActivity : highLightedActivities) {
             DiagramNode diagramNode = processDiagramLayout.getNode(highLightedActivity);
             if (diagramNode != null) {
@@ -562,7 +572,6 @@ public class ProcessUseController {
         }
         return Res.success(flowActivityList);
     }
-
 }
 
 

@@ -36,12 +36,12 @@ public class FJSON {
         }
     }
 
-    protected static Map<String, Object> getMapOrDefaultFromJO(JSONObject jO, String key, HashMap<String, Object> map) {
+    protected static <V> Map<String,V> getMapOrDefaultFromJO(JSONObject jO, String key, HashMap<String,V> map) {
         if (jO == null) {
             return map;
         } else {
             if (jO.containsKey(key)) {
-                return jO.getJSONObject(key);
+                return (Map<String,V>)jO.getJSONObject(key);
             } else {
                 return map;
             }
@@ -175,6 +175,7 @@ public class FJSON {
             put("执行实例活动id", identityLink.getType());
         }};
     }
+
     protected static Map<String, Object> jobToJSON(Job job) {
         return new LinkedHashMap<String, Object>() {{
             put("定时器ID", job.getId());

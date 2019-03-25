@@ -28,11 +28,12 @@ import java.util.zip.ZipInputStream;
 import static com.github.missthee.controller.flowable.FJSON.getBooleanOrDefaultFromJO;
 import static com.github.missthee.controller.flowable.FJSON.getStringOrDefaultFromJO;
 
+//管理流程相关方法
 @RestController
 @RequestMapping("flowable/mana")
 public class ProcessManaController {
     private final RepositoryService repositoryService;
-   private final ManagementService managementService;
+    private final ManagementService managementService;
 
     @Autowired
     public ProcessManaController(RepositoryService repositoryService, ManagementService managementService) {
@@ -40,33 +41,40 @@ public class ProcessManaController {
         this.managementService = managementService;
     }
 
-    //流程部署
-    // act_re_deployment    流程部署表，此表中的key，name由方法设置
-    // act_re_procdef       流程定义，此表中的key，name由bpmn中的设置读取
-    @RequestMapping("deployment")
-    public Res deployProcess() {
-        Deployment deployment = repositoryService.createDeployment()
-                .key("QingJiaLiuCheng01")
-                .name("请假流程01")
-                .addClasspathResource("processes-no-auto/DemoProcess.bpmn")
-                .deploy();
-        return Res.success("act_re_deployment 部署: " + deployment.getId());
-    }
+    //流程部署（使用resources目录下的流程配置文件）
+//    @RequestMapping("deployment")
+//    public Res deployProcess() {
+//        Deployment deployment = repositoryService.createDeployment()
+//                .key("LiuCheng01")
+//                .name("流程01")
+//                .addClasspathResource("processes-no-auto/DemoProcess.bpmn")
+//                .deploy();
+//        return Res.success("id: " + deployment.getId());
+//    }
 
-    //流程部署（zip）
+    //流程部署（使用流程配置打包的zip文件）
+    // act_re_deployment    流程部署表，此表中的key，name由方法设置
+    // act_re_procdef       流程定义，此表中的key，name由bpmn中的设置读取，相同key的流程会归为同一类，并增加版本号
     @RequestMapping("deployment/zip")
     public Res deployProcessByZip(MultipartFile file, String key, String name) throws IOException {
-        key = StringUtils.isEmpty(key) ? "QingJiaLiuCheng01" : key;
-        name = StringUtils.isEmpty(name) ? "请假流程01" : name;
+        if (StringUtils.isEmpty(key)) {
+            return Res.failure("empty key");
+        }
+        if (StringUtils.isEmpty(name)) {
+            return Res.failure("empty name");
+        }
+        key = StringUtils.isEmpty(key) ? "LiuCheng01" : key;
+        name = StringUtils.isEmpty(name) ? "流程01" : name;
         Deployment deployment = repositoryService.createDeployment()
                 .key(key)
                 .name(name)
                 .addZipInputStream(new ZipInputStream(file.getInputStream()))
                 .deploy();
-        return Res.success("act_re_deployment 部署: " + deployment.getId());
+        return Res.success("id: " + deployment.getId());
     }
 
-    //查询流程部署信息act_re_deployment
+    //查询流程部署信息
+    // act_re_deployment
     @RequestMapping("searchProcessDeploy")
     public Res searchProcessDeploy(@RequestBody(required = false) JSONObject bJO) {
         String key = getStringOrDefaultFromJO(bJO, "key", null);
@@ -84,7 +92,8 @@ public class ProcessManaController {
         return Res.success(deploymentList);
     }
 
-    //查询流程定义信息act_re_procdef
+    //查询流程定义信息
+    // act_re_procdef
     @RequestMapping("searchProcessDefinition")
     public Res searchProcessDefinition(@RequestBody(required = false) JSONObject bJO) {
         String key = getStringOrDefaultFromJO(bJO, "key", "");
@@ -150,7 +159,7 @@ public class ProcessManaController {
     public Res suspendProcessDefinitionById(@RequestBody(required = false) JSONObject bJO) {
         String id = getStringOrDefaultFromJO(bJO, "id", null);
         //挂起流程实例的id，是否将其正在运行的实例挂起，挂起日期（null则为立即挂起）
-        repositoryService.suspendProcessDefinitionById(id,false,null);
+        repositoryService.suspendProcessDefinitionById(id, false, null);
         return Res.success("完成挂起");
     }
 
@@ -159,7 +168,7 @@ public class ProcessManaController {
     public Res activateProcessDefinitionById(@RequestBody(required = false) JSONObject bJO) {
         String id = getStringOrDefaultFromJO(bJO, "id", null);
         //激活流程实例的id，是否将其正在运行的实例激活，激活日期（null则为立即挂起）
-        repositoryService.activateProcessDefinitionById(id,false,null);
+        repositoryService.activateProcessDefinitionById(id, false, null);
         return Res.success("完成激活");
     }
 

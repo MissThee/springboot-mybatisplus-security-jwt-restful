@@ -7,7 +7,7 @@ import java.util.concurrent.CyclicBarrier;
 public class TestMyMultithreadingAndWait {
     private static final int THREAD_NUMBER = 5;
 
-    public static void main(String[] args) throws InterruptedException, BrokenBarrierException {
+    public static void main(String[] args) throws InterruptedException{
         testMyRunnable1();
     }
 
@@ -46,7 +46,7 @@ public class TestMyMultithreadingAndWait {
     }
 
     //countDownLatch.await做阻塞同步示例
-    private static void testMyRunnable2() throws BrokenBarrierException, InterruptedException {
+    private static void testMyRunnable2() {
         CyclicBarrier cyclicBarrier = new CyclicBarrier(THREAD_NUMBER, new Runnable() {
             @Override
             public void run() {
