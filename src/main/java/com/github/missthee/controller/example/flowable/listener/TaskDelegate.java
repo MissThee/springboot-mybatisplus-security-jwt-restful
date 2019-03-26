@@ -1,13 +1,8 @@
-package com.github.missthee.controller.flowable.listener;
+package com.github.missthee.controller.example.flowable.listener;
 
-import com.github.missthee.db.primary.model.basic.User;
-import com.github.missthee.service.interf.basic.UserService;
-import com.github.missthee.tool.ApplicationContextHolder;
 import org.flowable.engine.*;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
-import org.flowable.engine.delegate.TaskListener;
-import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
