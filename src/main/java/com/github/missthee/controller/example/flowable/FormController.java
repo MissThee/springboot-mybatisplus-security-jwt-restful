@@ -1,6 +1,4 @@
-package com.github.missthee.controller.flowable;
-
-import org.flowable.form.api.FormService;
+package com.github.missthee.controller.example.flowable;
 
 public class FormController {
     org.flowable.form.api.FormService formServiceApi;

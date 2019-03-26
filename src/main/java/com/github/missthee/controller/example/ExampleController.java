@@ -54,15 +54,12 @@ public class ExampleController {
     private final UserService userService;
     private final JavaJWT javaJWT;
     private final ComputeService computeService;
-    private final DataSource primaryDataSource;
 
     @Autowired
-    public ExampleController(UserService userService, JavaJWT javaJWT, ComputeService computeService, @Qualifier("primaryDataSource") DataSource dataSource) {
-
+    public ExampleController(UserService userService, JavaJWT javaJWT, ComputeService computeService) {
         this.userService = userService;
         this.javaJWT = javaJWT;
         this.computeService = computeService;
-        this.primaryDataSource = dataSource;
     }
 
     @PostMapping("excel/output")
@@ -75,11 +72,6 @@ public class ExampleController {
         ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel, true);//使用${属性名}替换
         //流输出
         ExcelExportByTemplate.export(response, wb, "文件名");
-    }
-
-    @PostMapping("dbinfo")
-    public String dbInfo() {
-        return primaryDataSource.toString();
     }
 
     @PostMapping("getProperty")
@@ -125,14 +117,14 @@ public class ExampleController {
         return Res.success(map);
     }
 
-    //groupby测试(非标准扩展方法，不建议使用)。
+    //groupBy测试(非标准扩展方法，不建议使用)。
     @PostMapping("groupBy")
     public Res<List<Compute>> getInfo() {
         List<Compute> computeList = computeService.selectGroupBy();
         return Res.success(computeList);
     }
 
-    @PostMapping("addUser")
+    @PutMapping("user")
     public Res<JSONObject> addUser(@RequestBody JSONObject bJO) {
         String username = bJO.getString("username");
         String password = bJO.getString("password");
@@ -151,7 +143,7 @@ public class ExampleController {
         return Res.res(result > 0, jO);
     }
 
-    @PostMapping("alterUser")
+    @PatchMapping("user")
     public Res<JSONObject> alterUser(@RequestBody JSONObject bJO) {
         Integer id = bJO.getInteger("id");
         int result = userService.alterOne(id);
@@ -161,7 +153,7 @@ public class ExampleController {
         return Res.res(result > 0, jO);
     }
 
-    @RequestMapping("tree")
+    @GetMapping("tree")
     public Res<JSONArray> getTree(@RequestParam("c") Boolean compareSelfId, @RequestParam("r") Integer rootId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         List<TreeItem> li = new ArrayList<TreeItem>() {{
             add(new TreeItem(1, "name1", null));

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 @Aspect
 @Slf4j
 public class ControllerLogger {
-    @Pointcut("execution(public * *..controller..*.*(..))")
+    @Pointcut("execution(public !void *..controller..*.*(..))")
     public void webLog() {
     }
 

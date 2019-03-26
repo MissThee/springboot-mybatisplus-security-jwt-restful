@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.github.missthee.config.mq.init.ExchangeAndQueue.*;
+import static com.github.missthee.config.mq.init.MqInfo.*;
 
 //topic交换机模型，需要一个topic交换机，两个队列和三个binding
 @Configuration

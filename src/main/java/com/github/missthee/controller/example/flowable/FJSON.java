@@ -1,7 +1,6 @@
-package com.github.missthee.controller.flowable;
+package com.github.missthee.controller.example.flowable;
 
 import com.alibaba.fastjson.JSONObject;
-import org.flowable.bpmn.model.GraphicInfo;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.Deployment;
@@ -15,13 +14,10 @@ import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class FJSON {
     protected static String getStringOrDefaultFromJO(JSONObject jO, String key, String defaultValue) {

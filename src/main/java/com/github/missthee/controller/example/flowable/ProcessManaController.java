@@ -1,9 +1,8 @@
-package com.github.missthee.controller.flowable;
+package com.github.missthee.controller.example.flowable;
 
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
-import lombok.AllArgsConstructor;
 import org.flowable.engine.*;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.DeploymentQuery;
@@ -25,8 +24,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
-import static com.github.missthee.controller.flowable.FJSON.getBooleanOrDefaultFromJO;
-import static com.github.missthee.controller.flowable.FJSON.getStringOrDefaultFromJO;
+import static com.github.missthee.controller.example.flowable.FJSON.getBooleanOrDefaultFromJO;
+import static com.github.missthee.controller.example.flowable.FJSON.getStringOrDefaultFromJO;
 
 //管理流程相关方法
 @RestController
