@@ -18,9 +18,9 @@
         <!--LombokPlugin：使用lombok的@Data注解，取消生成setter/getter。-->
         <plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin">
             <!--实体类增加属性名String类型静态变量-->
-            <property name="addStaticPropertyName" value="false"/>
+            <property name="addStaticPropertyName" value="true"/>
             <!--实体类增加注释-->
-            <property name="addPropertyComment" value="false"/>
+            <property name="addPropertyComment" value="true"/>
             <!--实体类增加swagger注解-->
             <property name="addPropertySwaggerAnnotation" value="false"/>
             <!--mapper类增加@Component注解-->
@@ -41,16 +41,40 @@
         </jdbcConnection>
 
         <!-- 生成实体类地址 -->
-        <javaModelGenerator targetPackage="com.github.missthee.db.primary.model" targetProject="src/main/java"/>
+        <javaModelGenerator targetPackage="com.github.missthee.db.po.primary" targetProject="src/main/java"/>
 
         <!-- 生成mapper xml文件 -->
-        <sqlMapGenerator targetPackage="mybatis.mapper.primary.generate" targetProject="src/main/resources"/>
+        <!--<sqlMapGenerator targetPackage="mybatis.mapper.primary.generate" targetProject="src/main/resources"/>-->
 
         <!-- 生成mapper java文件 -->
-        <javaClientGenerator targetPackage="com.github.missthee.db.primary.mapper" targetProject="src/main/java" type="XMLMAPPER"/>
+        <!--<javaClientGenerator targetPackage="com.github.missthee.db.mapper.primary" targetProject="src/main/java" type="XMLMAPPER"/>-->
 
         <!--设置生成的表-->
-        <table schema="mybatis_test_db" tableName="compute"
+        <table schema="mybatis_test_db" tableName="user"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+        <table schema="mybatis_test_db" tableName="role"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+        <table schema="mybatis_test_db" tableName="permission"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+        <table schema="mybatis_test_db" tableName="role_permission"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+        <table schema="mybatis_test_db" tableName="user_role"
                enableCountByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"

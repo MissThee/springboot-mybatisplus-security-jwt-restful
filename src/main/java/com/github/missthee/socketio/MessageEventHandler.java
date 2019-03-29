@@ -7,13 +7,14 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
+import com.github.missthee.db.bo.login.LoginBO;
+import com.github.missthee.service.interf.login.LoginService;
 import com.github.missthee.tool.Res;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.github.missthee.config.security.jwt.JavaJWT;
-import com.github.missthee.db.primary.model.basic.User;
-import com.github.missthee.service.interf.basic.UserService;
+import com.github.missthee.service.interf.manage.UserService;
 import com.github.missthee.socketio.model.MessageModel;
 
 import java.util.*;
@@ -28,13 +29,13 @@ public class MessageEventHandler {
     private static Map<UUID, String> UUIDUserIdMap = new ConcurrentHashMap<>();         //存储已登录的<uuid,用户id>。（仅为方便查询，可直接遍历userIdUUIDsMap，得到对应值）
     private static Map<String, String> userIdNicknameMap = new ConcurrentHashMap<>();   //存储已登录的<用户id,昵称>。（仅为方便查询，可直接查询数据库得到值，但直接数据库读取开销大，尽量做成缓存）
     private final JavaJWT javaJWT;
-    private final UserService userService;
+    private final LoginService loginService;
 
     @Autowired
-    public MessageEventHandler(SocketIOServer server, UserService userService, JavaJWT javaJWT) {
+    public MessageEventHandler(SocketIOServer server, UserService userService, JavaJWT javaJWT, LoginService loginService) {
         socketIoServer = server;
-        this.userService = userService;
         this.javaJWT = javaJWT;
+        this.loginService = loginService;
     }
 
     @OnConnect
@@ -42,8 +43,8 @@ public class MessageEventHandler {
         log.debug("客户端:  " + client.getSessionId() + "  已连接");
         String userId = javaJWT.getId(client.getHandshakeData().getSingleUrlParam("token"));
 //        String userId=client.getHandshakeData().getHttpHeaders().get("Authorization");
-        User user = userService.selectOneById(Integer.parseInt(userId));
-        addUserInfo(user, client.getSessionId());
+        LoginBO loginDTO = loginService.selectUserById(Integer.parseInt(userId));
+        addUserInfo(loginDTO, client.getSessionId());
         updateUserListForWeb();
     }
 
@@ -115,9 +116,9 @@ public class MessageEventHandler {
     }
 
     //在线用户信息更新
-    private void addUserInfo(User user, UUID uuid) {
-        String userId = String.valueOf(user.getId());
-        String userNickname = user.getNickname();
+    private void addUserInfo(LoginBO loginDTO, UUID uuid) {
+        String userId = String.valueOf(loginDTO.getId());
+        String userNickname = loginDTO.getNickname();
         //更新UUIDUserIdMap
         UUIDUserIdMap.put(uuid, userId);
         //更新userIdUUIDsMap

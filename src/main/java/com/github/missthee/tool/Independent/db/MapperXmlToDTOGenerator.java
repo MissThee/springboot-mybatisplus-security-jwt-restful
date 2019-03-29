@@ -21,7 +21,7 @@
 //    private static void generateInFolder() {
 //        try {
 //            String xmlFolderPath = "mybatis/mapper/primary/custom/";
-//            String outPutPath = "src.main.java.com.github.missthee.db.primary.dto";
+//            String outPutPath = "src.main.java.com.github.missthee.db.dto";
 //            Boolean appendEnable = false;
 //            String fileType = "DTO";          //DTO、CLASS
 //            Boolean withInnerClass = true;

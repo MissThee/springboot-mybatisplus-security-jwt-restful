@@ -4,20 +4,15 @@ import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 //SocketIOServer启动类
 @Component
-@Order(value = 1)
+@ConditionalOnProperty(name = "socketio.socketIOEnable", havingValue = "true")
 public class MyCommandLineRunner implements CommandLineRunner {
     private final SocketIOServer socketIOServer;
-    private Boolean socketIOEnable;
-
-    @Value("${socketio.socketIOEnable:false}")
-    public void setHostname(Boolean a) {
-        socketIOEnable = a;
-    }
 
     @Autowired
     public MyCommandLineRunner(SocketIOServer server) {
@@ -26,8 +21,6 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if(socketIOEnable) {
-            socketIOServer.start();
-        }
+        socketIOServer.start();
     }
 }

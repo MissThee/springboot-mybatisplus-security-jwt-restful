@@ -146,13 +146,13 @@ pom.xml
 </project>
 
 
-settings.xml
+settings.xml (maven配置)
 <settings>
     <servers>
         <server>
             <id>ossrh</id>
             <username>MissThee</username>
-            <password>********</password>
+            <password>password here like: 123$%^ *****</password>
         </server>
     </servers>
 </settings>

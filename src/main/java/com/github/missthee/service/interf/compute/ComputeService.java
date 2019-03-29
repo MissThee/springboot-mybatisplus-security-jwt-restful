@@ -1,6 +1,6 @@
 package com.github.missthee.service.interf.compute;
 
-import com.github.missthee.db.primary.model.compute.Compute;
+import com.github.missthee.db.po.primary.compute.Compute;
 
 import java.util.List;
 

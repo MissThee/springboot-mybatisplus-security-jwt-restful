@@ -79,7 +79,7 @@
         <!--</javaTypeResolver>-->
 
         <!-- 生成实体类地址 -->
-        <javaModelGenerator targetPackage="com.github.missthee.db.primary.model" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="com.github.missthee.db.po.primary" targetProject="src/main/java">
             <!--[非必须]  for MyBatis3/MyBatis3Simple
             创建一个全参数构造函数 -->
             <property name="constructorBased" value="false"/>
@@ -113,7 +113,7 @@
             3，XMLMAPPER：会生成Mapper接口，接口完全依赖XML；
         注意，如果context是MyBatis3Simple：只支持ANNOTATEDMAPPER和XMLMAPPER
         -->
-        <javaClientGenerator targetPackage="com.github.missthee.db.primary.mapper" targetProject="src/main/java" type="XMLMAPPER">
+        <javaClientGenerator targetPackage="com.github.missthee.db.mapper.primary" targetProject="src/main/java" type="XMLMAPPER">
             <!--XMLMAPPER表示生成xml映射文件；ANNOTATEDMAPPER，表示生成的dao采用注解来写sql-->
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>

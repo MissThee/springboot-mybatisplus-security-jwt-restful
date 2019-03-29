@@ -24,7 +24,7 @@ import java.io.FileNotFoundException;
 
 @Configuration
 @ConditionalOnProperty(name = "spring.datasource.primary.enable", havingValue ="true")
-@MapperScan(basePackages = {"com.github.missthee.db.primary.mapper"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
+@MapperScan(basePackages = {"com.github.missthee.db.mapper.primary"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
 @Slf4j
 public class PrimaryDBConfig {
 

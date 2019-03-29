@@ -1,32 +1,22 @@
 package com.github.missthee.controller.example;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.github.missthee.test.staticproperty.test.TestModel;
-import com.github.missthee.test.staticproperty.AStaticClass;
 import com.github.missthee.tool.datastructure.TreeData;
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
-import com.zaxxer.hikari.pool.HikariPool;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.*;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.missthee.config.security.jwt.JavaJWT;
-import com.github.missthee.db.primary.model.basic.User;
-import com.github.missthee.db.primary.model.compute.Compute;
-import com.github.missthee.service.interf.basic.UserService;
+import com.github.missthee.db.po.primary.manage.User;
+import com.github.missthee.db.po.primary.compute.Compute;
+import com.github.missthee.service.interf.manage.UserService;
 import com.github.missthee.service.interf.compute.ComputeService;
 
 import com.github.missthee.tool.FileRec;
@@ -37,13 +27,9 @@ import javax.naming.SizeLimitExceededException;
 import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.*;
 
 
@@ -74,26 +60,6 @@ public class ExampleController {
         ExcelExportByTemplate.export(response, wb, "文件名");
     }
 
-    @PostMapping("getProperty")
-    public Res getProperty() {
-        Map<String, String> map = new HashMap<>();
-        map.put("privateStaticString", AStaticClass.getPrivateStaticString());
-        map.put("InnerStaticClass", AStaticClass.InnerStaticClass.getB());
-        AStaticClass aStaticClass = new AStaticClass();
-        aStaticClass.getPrivateString();
-        aStaticClass.getPublicString();
-        AStaticClass.InnerStaticClass innerStaticClass = new AStaticClass.InnerStaticClass();
-        innerStaticClass.getA();
-        return Res.success(map);
-    }
-
-    @PostMapping("setProperty")
-    public Res setProperty() {
-        AStaticClass.setPrivateStaticString(new Date().toString());
-        AStaticClass.InnerStaticClass.setB(new Date().toString());
-        return Res.success();
-    }
-
     @PostMapping("error")
     public Res error() throws Exception {
         throw new Exception("A unknown exception");
@@ -109,10 +75,10 @@ public class ExampleController {
     @PostMapping("infoByHeader")
     public Res<Map<String, Object>> getInfo(HttpServletRequest httpServletRequest) {
         String userIdByToken = javaJWT.getId(httpServletRequest);//通过token解析获得
-        Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
+//        Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
         Map<String, Object> map = new HashMap<String, Object>() {{
             put("userIdByToken", userIdByToken);
-            put("userIdBySubject", userIdBySubject);
+//            put("userIdBySubject", userIdBySubject);
         }};
         return Res.success(map);
     }
@@ -122,35 +88,6 @@ public class ExampleController {
     public Res<List<Compute>> getInfo() {
         List<Compute> computeList = computeService.selectGroupBy();
         return Res.success(computeList);
-    }
-
-    @PutMapping("user")
-    public Res<JSONObject> addUser(@RequestBody JSONObject bJO) {
-        String username = bJO.getString("username");
-        String password = bJO.getString("password");
-        String salt = new SecureRandomNumberGenerator().nextBytes().toHex();
-        User user = new User();
-        user.setUsername(username);
-        String md5Password = new Md5Hash(password, salt, 3).toString();
-        user.setPassword(md5Password);
-        user.setNickname(username);
-        user.setSalt(salt);
-        int result = userService.insertOne(user);
-        JSONObject jO = new JSONObject() {{
-            put("result", result);
-            put("user", user);
-        }};
-        return Res.res(result > 0, jO);
-    }
-
-    @PatchMapping("user")
-    public Res<JSONObject> alterUser(@RequestBody JSONObject bJO) {
-        Integer id = bJO.getInteger("id");
-        int result = userService.alterOne(id);
-        JSONObject jO = new JSONObject() {{
-            put("result", result);
-        }};
-        return Res.res(result > 0, jO);
     }
 
     @GetMapping("tree")
@@ -206,5 +143,15 @@ public class ExampleController {
             add("username");
         }});
         return Res.success(objects);
+    }
+
+    @Data
+    @Accessors(chain = true)
+    private static class TestModel {
+        private String test1 ;
+        private Date test2 ;
+        private String test3 = "测试文字3";
+        private String test4= "123";
+        private String test5= null;
     }
 }

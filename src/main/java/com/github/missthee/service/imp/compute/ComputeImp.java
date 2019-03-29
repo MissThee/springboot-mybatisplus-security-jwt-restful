@@ -2,8 +2,8 @@ package com.github.missthee.service.imp.compute;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.github.missthee.db.primary.mapper.compute.ComputeMapper;
-import com.github.missthee.db.primary.model.compute.Compute;
+import com.github.missthee.db.mapper.primary.compute.ComputeMapper;
+import com.github.missthee.db.po.primary.compute.Compute;
 import com.github.missthee.service.interf.compute.ComputeService;
 import tk.mybatis.mapper.entity.Example;
 

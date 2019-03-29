@@ -2,9 +2,10 @@ package com.github.missthee.config.log.builder;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +50,9 @@ public class LogBuilder {
             }
             stringBuilder.append(paramFormatter("PARAM", paramSB));
             try {
-                stringBuilder.append(paramFormatter("USER", SecurityUtils.getSubject().getPrincipal()));
+                String userId = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails()).getUsername();
+//               String userId =  SecurityUtils.getSubject().getPrincipal())
+                stringBuilder.append(paramFormatter("USER", userId));
             } catch (Exception e) {
                 stringBuilder.append(paramFormatter("USER", "GUEST"));
             }

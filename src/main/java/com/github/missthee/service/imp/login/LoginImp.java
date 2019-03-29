@@ -1,18 +1,15 @@
 package com.github.missthee.service.imp.login;
 
 import com.github.missthee.config.security.security.filter.UserInfoForSecurity;
-import com.github.missthee.config.security.shiro.UserInfoForShiro;
 import ma.glasnost.orika.MapperFacade;
-import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.authz.UnauthenticatedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.github.missthee.db.primary.mapper.basic.*;
-import com.github.missthee.db.primary.model.basic.*;
-import com.github.missthee.db.primary.dto.login.LoginDTO;
+import com.github.missthee.db.mapper.primary.manage.*;
+import com.github.missthee.db.po.primary.manage.*;
+import com.github.missthee.db.bo.login.LoginBO;
 import com.github.missthee.service.interf.login.LoginService;
 import tk.mybatis.mapper.entity.Example;
 
@@ -23,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class LoginImp implements LoginService, UserInfoForShiro, UserInfoForSecurity {
+public class LoginImp implements LoginService, UserInfoForSecurity {
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
@@ -43,7 +40,7 @@ public class LoginImp implements LoginService, UserInfoForShiro, UserInfoForSecu
     }
 
     @Override
-    public LoginDTO selectUserByUsername(String username) {
+    public LoginBO selectUserByUsername(String username) {
         //查找用户
         User user;
         {
@@ -52,25 +49,25 @@ public class LoginImp implements LoginService, UserInfoForShiro, UserInfoForSecu
                     .andEqualTo(User.USERNAME, username);
             user = userMapper.selectOneByExample(userExp);
         }
-        return getUserLoginInfo(user);
+        return buildLoginDTO(user);
     }
 
     @Override
-    public LoginDTO selectUserById(Integer id) {
+    public LoginBO selectUserById(Integer id) {
         //查找用户
         User user;
         {
             user = userMapper.selectByPrimaryKey(id);
             if (user == null) {
-                throw new UnauthenticatedException("无此账号信息");
+                throw new BadCredentialsException("无此账号信息");
             }
         }
-        return getUserLoginInfo(user);
+        return buildLoginDTO(user);
     }
 
-    private LoginDTO getUserLoginInfo(User user) {
-        //查找角色id集
-        List<Integer> roleIdList = new ArrayList<>();
+    private LoginBO buildLoginDTO(User user) {
+        //查找角色id集(用户-角色关系表)
+        List<Long> roleIdList = new ArrayList<>();
         {
             Example userRoleExp = new Example(UserRole.class);
             userRoleExp.createCriteria()
@@ -78,19 +75,20 @@ public class LoginImp implements LoginService, UserInfoForShiro, UserInfoForSecu
             List<UserRole> userRoleList = userRoleMapper.selectByExample(userRoleExp);
             userRoleList.forEach(e -> roleIdList.add(e.getRoleId()));
         }
-        //查找角色信息集
+        //查找角色信息集(角色表)
         List<Role> roleList;
         Set<String> roleValueList = new HashSet<>();
         if (roleIdList.size() > 0) {
             Example roleExp = new Example(Role.class);
             roleExp.createCriteria()
-                    .andIn(Role.ID, roleIdList);
-//                    .andEqualTo(Role_.IS_ENABLE, true);
+                    .andIn(Role.ID, roleIdList)
+                    .andEqualTo(Role.IS_ENABLE, true)
+                    .andEqualTo(Role.IS_DELETE, false);
             roleList = roleMapper.selectByExample(roleExp);
             roleList.forEach(e -> roleValueList.add(e.getRole()));
         }
-        //查找权限id集
-        List<Integer> permissionIdList = new ArrayList<>();
+        //查找权限id集(角色-权限关系表)
+        List<Long> permissionIdList = new ArrayList<>();
         if (roleIdList.size() > 0) {
             Example rolePermissionExp = new Example(RolePermission.class);
             rolePermissionExp.createCriteria()
@@ -98,43 +96,33 @@ public class LoginImp implements LoginService, UserInfoForShiro, UserInfoForSecu
             List<RolePermission> rolePermissionList = rolePermissionMapper.selectByExample(rolePermissionExp);
             rolePermissionList.forEach(e -> permissionIdList.add(e.getPermissionId()));
         }
-        //查找权限信息集
+        //查找权限信息集(权限表)
         List<Permission> permissionList;
         Set<String> permissionValueList = new HashSet<>();
         if (permissionIdList.size() > 0) {
             Example permissionExp = new Example(Permission.class);
             permissionExp.createCriteria()
-                    .andIn(Permission.ID, permissionIdList);
-//                    .andEqualTo(Permission_.IS_ENABLE, true) ;
+                    .andIn(Permission.ID, permissionIdList)
+                    .andEqualTo(Permission.IS_ENABLE, true)
+                    .andEqualTo(Permission.IS_DELETE, false);
             permissionList = permissionMapper.selectByExample(permissionExp);
             permissionList.forEach(e -> permissionValueList.add(e.getPermission()));
         }
-
-        LoginDTO loginDTO = mapperFacade.map(user, LoginDTO.class);
+        LoginBO loginDTO = mapperFacade.map(user, LoginBO.class);
         loginDTO.setRoleValueList(roleValueList);
         loginDTO.setPermissionValueList(permissionValueList);
         return loginDTO;
     }
 
     @Override
-    public SimpleAuthorizationInfo getSimpleAuthorizationInfo(Object obj) {
-        LoginDTO loginDTO = selectUserById(Integer.parseInt(String.valueOf(obj)));
-        return new SimpleAuthorizationInfo() {{
-            addRoles(loginDTO.getRoleValueList());
-            addStringPermissions(loginDTO.getPermissionValueList());
-        }};
-    }
-
-
-    @Override
-    public UserDetails loadUserById(Object id) throws UsernameNotFoundException {
-        LoginDTO loginDTO = selectUserById((Integer)id);
+    public UserDetails loadUserById(Object id) throws BadCredentialsException {
+        LoginBO loginDTO = selectUserById((Integer) id);
         return transToUserDetails(loginDTO);
     }
 
-    private UserDetails transToUserDetails(LoginDTO loginDTO) {
+    private UserDetails transToUserDetails(LoginBO loginDTO) {
         if (loginDTO == null) {
-            throw new UsernameNotFoundException("User not found", new Throwable());
+            throw new BadCredentialsException("User not found");
         }
         List<String> authList = new ArrayList<String>() {{
             addAll(loginDTO.getRoleValueList().stream().map(e -> "ROLE_" + e).collect(Collectors.toSet()));

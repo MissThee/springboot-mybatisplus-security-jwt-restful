@@ -1,8 +1,9 @@
 package com.github.missthee.service.interf.login;
 
-import com.github.missthee.db.primary.dto.login.LoginDTO;
+import com.github.missthee.db.bo.login.LoginBO;
 
 public interface LoginService {
-    LoginDTO selectUserByUsername(String username);
-    LoginDTO selectUserById(Integer id);
+    LoginBO selectUserByUsername(String username);
+
+    LoginBO selectUserById(Integer id);
 }

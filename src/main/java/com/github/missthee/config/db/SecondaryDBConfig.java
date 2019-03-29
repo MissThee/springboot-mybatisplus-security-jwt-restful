@@ -22,7 +22,7 @@ import java.io.FileNotFoundException;
 
 @Configuration
 @ConditionalOnProperty(name = "spring.datasource.secondary.enable", havingValue = "true")
-@MapperScan(basePackages = "com.github.missthee.db.secondary.mapper", sqlSessionTemplateRef = "secondarySqlSessionTemplate")
+@MapperScan(basePackages = "com.github.missthee.db.mapper.secondary", sqlSessionTemplateRef = "secondarySqlSessionTemplate")
 @Slf4j
 public class SecondaryDBConfig {
     @Bean(name = "secondaryDataSourceHikari")
