@@ -2,3 +2,5 @@
 log_application/
 
 log_tomcat/
+
+\.idea/
