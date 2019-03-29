@@ -1,10 +1,10 @@
 package com.github.missthee.db.po.primary.compute;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
-@Entity
+import org.springframework.data.annotation.Id;
+
 @Data
 @Accessors(chain = true)
 public class Compute implements Serializable {

@@ -88,23 +88,11 @@
             <artifactId>java-jwt</artifactId>
             <version>3.3.0</version>
         </dependency>
-        <!--shiro依赖-->
-        <!--<dependency>-->
-        <!--<groupId>org.apache.shiro</groupId>-->
-        <!--<artifactId>shiro-spring</artifactId>-->
-        <!--<version>1.4.0</version>-->
-        <!--</dependency>-->
         <!--通用mapper-->
         <dependency>
-            <groupId>tk.mybatis</groupId>
-            <artifactId>mapper-spring-boot-starter</artifactId>
-            <version>2.1.5</version>
-        </dependency>
-        <!--mybatis分页工具依赖-->
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <version>1.2.5</version>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.1.0</version>
         </dependency>
         <!-- swagger2 依赖 及 图形化依赖-->
         <dependency>
