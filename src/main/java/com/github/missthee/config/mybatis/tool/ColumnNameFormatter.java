@@ -1,4 +1,4 @@
-package com.github.missthee.config.tkmapper.tool;
+package com.github.missthee.config.mybatis.tool;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

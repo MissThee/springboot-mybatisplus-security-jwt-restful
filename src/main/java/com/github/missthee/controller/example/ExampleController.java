@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.missthee.config.security.jwt.JavaJWT;
 import com.github.missthee.db.po.primary.manage.User;
-import com.github.missthee.db.po.primary.compute.Compute;
 import com.github.missthee.service.interf.manage.UserService;
-import com.github.missthee.service.interf.compute.ComputeService;
 
 import com.github.missthee.tool.FileRec;
 import com.github.missthee.tool.Res;
@@ -39,13 +37,11 @@ import java.util.*;
 public class ExampleController {
     private final UserService userService;
     private final JavaJWT javaJWT;
-    private final ComputeService computeService;
 
     @Autowired
-    public ExampleController(UserService userService, JavaJWT javaJWT, ComputeService computeService) {
+    public ExampleController(UserService userService, JavaJWT javaJWT) {
         this.userService = userService;
         this.javaJWT = javaJWT;
-        this.computeService = computeService;
     }
 
     @PostMapping("excel/output")
@@ -81,13 +77,6 @@ public class ExampleController {
 //            put("userIdBySubject", userIdBySubject);
         }};
         return Res.success(map);
-    }
-
-    //groupBy测试(非标准扩展方法，不建议使用)。
-    @PostMapping("groupBy")
-    public Res<List<Compute>> getInfo() {
-        List<Compute> computeList = computeService.selectGroupBy();
-        return Res.success(computeList);
     }
 
     @GetMapping("tree")

@@ -1,6 +1,5 @@
 package com.github.missthee.service.interf.manage;
 
-import com.github.missthee.controller.manage.UserController;
 import com.github.missthee.db.dto.manage.usercontroller.InsertOneReq;
 import com.github.missthee.db.dto.manage.usercontroller.SelectListReq;
 import com.github.missthee.db.dto.manage.usercontroller.UpdateOneReq;

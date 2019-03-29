@@ -9,12 +9,7 @@
     <context id="generator1" targetRuntime="MyBatis3">
         <!-- 序列化接口 -->
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
-        <!-- 若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
-        <!--MapperPlugin：           生成继承CommenMapper的Mapper类-->
-        <!--LombokPlugin：           使用lombok的@Data注解，取消生成setter/getter。addStaticPropertyName增加实体类属性名String类型静态变量，addPropertyComment增加注释，addPropertySwaggerAnnotation增加swagger注解-->
-        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
-            <property name="mappers" value="com.github.missthee.config.tkmapper.common.CommonMapper"/>
-        </plugin>
+
         <!--LombokPlugin：使用lombok的@Data注解，取消生成setter/getter。-->
         <plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin">
             <!--实体类增加属性名String类型静态变量-->

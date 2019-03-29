@@ -1,5 +1,6 @@
 package com.github.missthee.service.imp.login;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.missthee.config.security.security.filter.UserInfoForSecurity;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import com.github.missthee.db.mapper.primary.manage.*;
 import com.github.missthee.db.po.primary.manage.*;
 import com.github.missthee.db.bo.login.LoginBO;
 import com.github.missthee.service.interf.login.LoginService;
-import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,10 +44,9 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
         //查找用户
         User user;
         {
-            Example userExp = new Example(User.class);
-            userExp.createCriteria()
-                    .andEqualTo(User.USERNAME, username);
-            user = userMapper.selectOneByExample(userExp);
+            QueryWrapper<User> userQW = new QueryWrapper<>();
+            userQW.eq(User.USERNAME, username);
+            user = userMapper.selectOne(userQW);
         }
         return buildLoginDTO(user);
     }
@@ -57,7 +56,7 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
         //查找用户
         User user;
         {
-            user = userMapper.selectByPrimaryKey(id);
+            user = userMapper.selectById(id);
             if (user == null) {
                 throw new BadCredentialsException("无此账号信息");
             }
@@ -69,43 +68,39 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
         //查找角色id集(用户-角色关系表)
         List<Long> roleIdList = new ArrayList<>();
         {
-            Example userRoleExp = new Example(UserRole.class);
-            userRoleExp.createCriteria()
-                    .andEqualTo(UserRole.USER_ID, user.getId());
-            List<UserRole> userRoleList = userRoleMapper.selectByExample(userRoleExp);
+            QueryWrapper<UserRole> userRoleQW = new QueryWrapper<>();
+            userRoleQW.eq(UserRole.USER_ID, user.getId());
+            List<UserRole> userRoleList = userRoleMapper.selectList(userRoleQW);
             userRoleList.forEach(e -> roleIdList.add(e.getRoleId()));
         }
         //查找角色信息集(角色表)
         List<Role> roleList;
         Set<String> roleValueList = new HashSet<>();
         if (roleIdList.size() > 0) {
-            Example roleExp = new Example(Role.class);
-            roleExp.createCriteria()
-                    .andIn(Role.ID, roleIdList)
-                    .andEqualTo(Role.IS_ENABLE, true)
-                    .andEqualTo(Role.IS_DELETE, false);
-            roleList = roleMapper.selectByExample(roleExp);
+            QueryWrapper<Role> roleQW = new QueryWrapper<>();
+            roleQW.in(Role.ID, roleIdList)
+                    .eq(Role.IS_ENABLE, true)
+                    .eq(Role.IS_DELETE, false);
+            roleList = roleMapper.selectList(roleQW);
             roleList.forEach(e -> roleValueList.add(e.getRole()));
         }
         //查找权限id集(角色-权限关系表)
         List<Long> permissionIdList = new ArrayList<>();
         if (roleIdList.size() > 0) {
-            Example rolePermissionExp = new Example(RolePermission.class);
-            rolePermissionExp.createCriteria()
-                    .andIn(RolePermission.ROLE_ID, roleIdList);
-            List<RolePermission> rolePermissionList = rolePermissionMapper.selectByExample(rolePermissionExp);
+            QueryWrapper<RolePermission> rolePermissionQW = new QueryWrapper<>();
+            rolePermissionQW.in(RolePermission.ROLE_ID, roleIdList);
+            List<RolePermission> rolePermissionList = rolePermissionMapper.selectList(rolePermissionQW);
             rolePermissionList.forEach(e -> permissionIdList.add(e.getPermissionId()));
         }
         //查找权限信息集(权限表)
         List<Permission> permissionList;
         Set<String> permissionValueList = new HashSet<>();
         if (permissionIdList.size() > 0) {
-            Example permissionExp = new Example(Permission.class);
-            permissionExp.createCriteria()
-                    .andIn(Permission.ID, permissionIdList)
-                    .andEqualTo(Permission.IS_ENABLE, true)
-                    .andEqualTo(Permission.IS_DELETE, false);
-            permissionList = permissionMapper.selectByExample(permissionExp);
+            QueryWrapper<Permission> permissionQW = new QueryWrapper<>();
+            permissionQW.in(Permission.ID, permissionIdList)
+                    .eq(Permission.IS_ENABLE, true)
+                    .eq(Permission.IS_DELETE, false);
+            permissionList = permissionMapper.selectList(permissionQW);
             permissionList.forEach(e -> permissionValueList.add(e.getPermission()));
         }
         LoginBO loginDTO = mapperFacade.map(user, LoginBO.class);

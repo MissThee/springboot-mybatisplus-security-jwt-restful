@@ -2,22 +2,18 @@ package com.github.missthee.db.po.primary.manage;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
-@Table(name = "role_permission")
 @Data
 @Accessors(chain = true)
 public class RolePermission implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "role_id")
     private Long roleId;
 
-    @Column(name = "permission_id")
     private Long permissionId;
 
     private static final long serialVersionUID = 1L;

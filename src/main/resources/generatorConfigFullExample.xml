@@ -32,7 +32,7 @@
         <!--LombokPlugin： 使用lombok的@Data注解，取消生成setter/getter-->
         <!--LombokSwaggerPlugin： 使用lombok的@Data注解,注释使用，取消生成setter/getter-->
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
-            <property name="mappers" value="com.github.missthee.config.tkmapper.common.CommonMapper" />
+            <property name="mappers" value="com.github.missthee.config.mybatis.common.CommonMapper" />
         </plugin>
         <!--<plugin type="com.custom.mybatis.generator.plugins.LombokPlugin" /> -->
         <plugin type="com.custom.mybatis.generator.plugins.LombokSwaggerPlugin"/>

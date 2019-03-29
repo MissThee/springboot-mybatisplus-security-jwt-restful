@@ -2,15 +2,14 @@ package com.github.missthee.db.po.primary.manage;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.*;
 import java.io.Serializable;
 @Data
 @Accessors(chain = true)
 public class Role implements Serializable {
     //id
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //角色名
@@ -20,11 +19,9 @@ public class Role implements Serializable {
     private String role;
 
     //可用
-    @Column(name = "is_enable")
     private Boolean isEnable;
 
     //已删除
-    @Column(name = "is_delete")
     private Boolean isDelete;
 
     private static final long serialVersionUID = 1L;
