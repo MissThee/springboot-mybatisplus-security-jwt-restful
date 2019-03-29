@@ -1,7 +1,6 @@
-package com.github.missthee.config.tkmapper.cache;
+package com.github.missthee.config.mybatis.cache;
 
 import com.github.missthee.tool.ApplicationContextHolder;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.cache.Cache;
 import org.springframework.data.redis.core.RedisTemplate;
 
