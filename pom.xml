@@ -131,7 +131,7 @@
         <dependency>
             <groupId>com.github.MissThee</groupId>
             <artifactId>data-structure</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 </project>

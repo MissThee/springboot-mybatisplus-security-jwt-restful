@@ -1,10 +1,10 @@
-package com.github.missthee.db.dto.manage.usercontroller;
+package com.github.missthee.db.dto.manage.permissioncontroller;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 public class SelectOneReq {
-    @ApiModelProperty(value = "用户id")
+    @ApiModelProperty(value = "权限id")
     private Long id;
 }

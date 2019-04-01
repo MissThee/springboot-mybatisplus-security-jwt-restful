@@ -1,4 +1,4 @@
-package com.github.missthee.db.dto.manage.usercontroller;
+package com.github.missthee.db.dto.manage.permissioncontroller;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

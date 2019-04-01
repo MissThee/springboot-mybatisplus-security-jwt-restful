@@ -1,5 +1,6 @@
 package com.github.missthee.config.db;
 
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +50,8 @@ public class SecondaryDBConfig {
     }
 
     @Bean(name = "secondarySqlSessionFactory")
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("secondaryDataSource") DataSource dataSource) throws Exception {
-        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+    public MybatisSqlSessionFactoryBean sqlSessionFactory(@Qualifier("secondaryDataSource") DataSource dataSource) throws Exception {
+        MybatisSqlSessionFactoryBean bean = new MybatisSqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         try {
             bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/secondary/**/*.xml"));
@@ -58,7 +59,7 @@ public class SecondaryDBConfig {
             log.info(e.getMessage() + ". File not exists.");
         }
         bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis.cfg.xml"));
-        return bean.getObject();
+        return bean;
     }
 
     @Bean(name = "secondarySqlSessionTemplate")

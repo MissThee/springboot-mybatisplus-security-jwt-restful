@@ -18,6 +18,7 @@ public class LoginReqDTO {
     private String username;
     @ApiModelProperty(value = "密码", required = true, example = "123")
     private String password;
+    @ApiModelProperty(value = "token有效时长。true-7天；false-2天", required = true, example = "123")
     private Boolean isLongLogin = false;
 
 }

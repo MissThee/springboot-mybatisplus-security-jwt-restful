@@ -1,32 +1,45 @@
 package com.github.missthee.db.po.primary.manage;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author mt
+ * @since 2019-04-01
+ */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@ApiModel(value="RolePermission对象", description="")
 public class RolePermission implements Serializable {
-    @Id
-    private Long id;
-
-    private Long roleId;
-
-    private Long permissionId;
 
     private static final long serialVersionUID = 1L;
 
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+
+    @TableField("role_id")
+    private Long roleId;
+
+    @TableField("permission_id")
+    private Long permissionId;
+
+
     public static final String ID = "id";
 
-    public static final String DB_ID = "id";
+    public static final String ROLE_ID = "role_id";
 
-    public static final String ROLE_ID = "roleId";
+    public static final String PERMISSION_ID = "permission_id";
 
-    public static final String DB_ROLE_ID = "role_id";
-
-    public static final String PERMISSION_ID = "permissionId";
-
-    public static final String DB_PERMISSION_ID = "permission_id";
 }

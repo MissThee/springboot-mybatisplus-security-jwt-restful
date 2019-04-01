@@ -1,56 +1,67 @@
 package com.github.missthee.db.po.primary.manage;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author mt
+ * @since 2019-04-01
+ */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class User   implements Serializable {
-    //主键
-    @Id
-    private Long id;
-
-    //昵称
-    private String nickname;
-
-    //用户名
-    private String username;
-
-    //密码
-    private String password;
-
-    //可用
-    private Boolean isEnable;
-
-    //已删除
-    private Boolean isDelete;
+@ApiModel(value="User对象", description="")
+public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String ID = "id";
+    @ApiModelProperty(value = "主键")
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
-    public static final String DB_ID = "id";
+    @ApiModelProperty(value = "昵称")
+    @TableField("nickname")
+    private String nickname;
+
+    @ApiModelProperty(value = "用户名")
+    @TableField("username")
+    private String username;
+
+    @ApiModelProperty(value = "密码")
+    @TableField("password")
+    private String password;
+
+    @ApiModelProperty(value = "可用")
+    @TableField("is_enable")
+    private Boolean isEnable;
+
+    @ApiModelProperty(value = "已删除")
+    @TableField("is_delete")
+    private Boolean isDelete;
+
+
+    public static final String ID = "id";
 
     public static final String NICKNAME = "nickname";
 
-    public static final String DB_NICKNAME = "nickname";
-
     public static final String USERNAME = "username";
-
-    public static final String DB_USERNAME = "username";
 
     public static final String PASSWORD = "password";
 
-    public static final String DB_PASSWORD = "password";
+    public static final String IS_ENABLE = "is_enable";
 
-    public static final String IS_ENABLE = "isEnable";
+    public static final String IS_DELETE = "is_delete";
 
-    public static final String DB_IS_ENABLE = "is_enable";
-
-    public static final String IS_DELETE = "isDelete";
-
-    public static final String DB_IS_DELETE = "is_delete";
 }

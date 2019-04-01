@@ -18,7 +18,7 @@ import com.github.missthee.tool.Res;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Api(tags = "登录获取用户信息、token获取用户信息")
+@Api(tags = "登录")
 @RestController
 public class LoginController {
 
@@ -31,13 +31,13 @@ public class LoginController {
         this.javaJWT = javaJWT;
     }
 
-    @ApiOperation(value = "登录", notes = "账号密码登录，获取token及用户信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "username", value = "账号", required = true, dataType = "string", example = "admin"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string", example = "123")
-    })
+    @ApiOperation(value = "登录", notes = "账号密码登录(返回的token在header中的authorization)")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "username", value = "账号", required = true, dataType = "string", example = "admin"),
+//            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string", example = "123")
+//    })
     @PostMapping("/login")
-    public Res login(HttpServletResponse httpServletResponse, @RequestBody LoginReqDTO loginModel) throws Exception {
+    public Res<LoginResDTO> login(HttpServletResponse httpServletResponse, @RequestBody LoginReqDTO loginModel) throws Exception {
         if (StringUtils.isEmpty(loginModel.getUsername())) {
             return Res.failure("用户名不能为空");
         }
@@ -56,7 +56,7 @@ public class LoginController {
     }
 
 
-    @ApiOperation(value = "获取用户信息", notes = "通过token获取用户信息，用于token有效期内的自动登录")
+    @ApiOperation(value = "获取用户信息", notes = "token获取用户信息")
     @PostMapping("/info")
     @PreAuthorize("isAuthenticated()")
     public Res<LoginResDTO> info( HttpServletRequest httpServletRequest) {

@@ -80,7 +80,7 @@ public class ExampleController {
     }
 
     @GetMapping("tree")
-    public Res<JSONArray> getTree(@RequestParam("c") Boolean compareSelfId, @RequestParam("r") Integer rootId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Res<Object> getTree(@RequestParam("c") Boolean compareSelfId, @RequestParam("r") Integer rootId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         List<TreeItem> li = new ArrayList<TreeItem>() {{
             add(new TreeItem(1, "name1", null));
             add(new TreeItem(2, "name2", 1));
@@ -89,7 +89,7 @@ public class ExampleController {
             add(new TreeItem(5, "name5", null));
             add(new TreeItem(6, "name6", 2));
         }};
-        JSONArray objects = TreeData.tree(li, rootId, compareSelfId == null ? false : compareSelfId, new HashMap<>());
+        List<Object> objects = TreeData.tree(li, rootId, compareSelfId == null ? false : compareSelfId, new HashMap<>());
         return Res.success(objects);
     }
 
