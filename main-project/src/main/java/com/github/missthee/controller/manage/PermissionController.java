@@ -1,8 +1,7 @@
 package com.github.missthee.controller.manage;
 
-import com.alibaba.fastjson.JSONArray;
 import com.github.missthee.db.dto.manage.permissioncontroller.*;
-import com.github.missthee.db.po.primary.manage.Permission;
+import com.github.missthee.db.entity.primary.manage.Permission;
 import com.github.missthee.service.interf.manage.PermissionService;
 import com.github.missthee.tool.Res;
 import com.github.missthee.tool.datastructure.TreeData;

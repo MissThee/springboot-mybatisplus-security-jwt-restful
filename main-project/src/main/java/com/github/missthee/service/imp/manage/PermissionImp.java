@@ -6,7 +6,7 @@ import com.github.missthee.db.dto.manage.permissioncontroller.InsertOneReq;
 import com.github.missthee.db.dto.manage.permissioncontroller.SelectTreeReq;
 import com.github.missthee.db.dto.manage.permissioncontroller.UpdateOneReq;
 import com.github.missthee.db.mapper.primary.manage.PermissionMapper;
-import com.github.missthee.db.po.primary.manage.Permission;
+import com.github.missthee.db.entity.primary.manage.Permission;
 import com.github.missthee.service.interf.manage.PermissionService;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;

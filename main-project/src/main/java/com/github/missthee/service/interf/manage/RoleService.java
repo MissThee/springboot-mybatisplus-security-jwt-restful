@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.missthee.db.dto.manage.rolecontroller.InsertOneReq;
 import com.github.missthee.db.dto.manage.rolecontroller.SelectListReq;
 import com.github.missthee.db.dto.manage.rolecontroller.UpdateOneReq;
-import com.github.missthee.db.po.primary.manage.Role;
-import com.github.missthee.db.po.primary.manage.Role;
+import com.github.missthee.db.entity.primary.manage.Role;
 
 import javax.management.InvalidAttributeValueException;
 import java.lang.reflect.InvocationTargetException;

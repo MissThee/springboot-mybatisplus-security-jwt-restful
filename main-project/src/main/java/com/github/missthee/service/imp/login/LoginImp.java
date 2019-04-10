@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.github.missthee.db.mapper.primary.manage.*;
-import com.github.missthee.db.po.primary.manage.*;
+import com.github.missthee.db.entity.primary.manage.*;
 import com.github.missthee.db.bo.login.LoginBO;
 import com.github.missthee.service.interf.login.LoginService;
 

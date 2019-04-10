@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.missthee.db.dto.manage.permissioncontroller.InsertOneReq;
 import com.github.missthee.db.dto.manage.permissioncontroller.SelectTreeReq;
 import com.github.missthee.db.dto.manage.permissioncontroller.UpdateOneReq;
-import com.github.missthee.db.po.primary.manage.Permission;
+import com.github.missthee.db.entity.primary.manage.Permission;
 
 import javax.management.InvalidAttributeValueException;
 import java.lang.reflect.InvocationTargetException;

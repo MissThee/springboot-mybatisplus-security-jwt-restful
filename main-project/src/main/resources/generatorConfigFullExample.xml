@@ -79,7 +79,7 @@
         <!--</javaTypeResolver>-->
 
         <!-- 生成实体类地址 -->
-        <javaModelGenerator targetPackage="com.github.missthee.db.po.primary" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="com.github.missthee.db.entity.primary" targetProject="src/main/java">
             <!--[非必须]  for MyBatis3/MyBatis3Simple
             创建一个全参数构造函数 -->
             <property name="constructorBased" value="false"/>

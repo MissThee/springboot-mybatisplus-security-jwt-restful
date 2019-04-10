@@ -1,4 +1,4 @@
-package com.github.missthee.db.po.primary.manage;
+package com.github.missthee.db.entity.primary.manage;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -21,25 +21,25 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="RolePermission对象", description="")
-public class RolePermission implements Serializable {
+@ApiModel(value="UserRole对象", description="")
+public class UserRole implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @TableField("user_id")
+    private Long userId;
+
     @TableField("role_id")
     private Long roleId;
-
-    @TableField("permission_id")
-    private Long permissionId;
 
 
     public static final String ID = "id";
 
-    public static final String ROLE_ID = "role_id";
+    public static final String USER_ID = "user_id";
 
-    public static final String PERMISSION_ID = "permission_id";
+    public static final String ROLE_ID = "role_id";
 
 }

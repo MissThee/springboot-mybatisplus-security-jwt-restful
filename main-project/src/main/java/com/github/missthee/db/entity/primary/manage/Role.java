@@ -1,4 +1,4 @@
-package com.github.missthee.db.po.primary.manage;
+package com.github.missthee.db.entity.primary.manage;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -22,26 +22,22 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="User对象", description="")
-public class User implements Serializable {
+@ApiModel(value="Role对象", description="")
+public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "昵称")
-    @TableField("nickname")
-    private String nickname;
+    @ApiModelProperty(value = "角色名")
+    @TableField("name")
+    private String name;
 
-    @ApiModelProperty(value = "用户名")
-    @TableField("username")
-    private String username;
-
-    @ApiModelProperty(value = "密码")
-    @TableField("password")
-    private String password;
+    @ApiModelProperty(value = "角色值")
+    @TableField("role")
+    private String role;
 
     @ApiModelProperty(value = "可用")
     @TableField("is_enable")
@@ -54,11 +50,9 @@ public class User implements Serializable {
 
     public static final String ID = "id";
 
-    public static final String NICKNAME = "nickname";
+    public static final String NAME = "name";
 
-    public static final String USERNAME = "username";
-
-    public static final String PASSWORD = "password";
+    public static final String ROLE = "role";
 
     public static final String IS_ENABLE = "is_enable";
 

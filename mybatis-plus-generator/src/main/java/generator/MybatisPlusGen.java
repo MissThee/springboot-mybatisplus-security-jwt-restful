@@ -10,24 +10,30 @@ import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
-/**
- * Created by Yangcq on 2018/08/16.
- */
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
 
 public class MybatisPlusGen {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        //获取本机信息
+        Map<String, String> map = System.getenv();
+        String userName = map.get("USERNAME");// 获取用户名
+        String computerName = map.get("COMPUTERNAME");// 获取计算机名
+        String userDomain = map.get("USERDOMAIN");// 获取计算机域名
+        //获取main-project路径
         String projectPath = System.getProperty("user.dir") + "/main-project";
+        //读取main-project中的配置文件
+        Properties properties = new Properties();
+        properties.load(new FileInputStream(new File(projectPath + "/src/main/resources/application.properties")));
 
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
         // 全局配置
         GlobalConfig gc = new GlobalConfig() {{
             setOutputDir(projectPath + "/src/main/java");
-            setAuthor("mt");
+            setAuthor(computerName + "," + userName);
             setFileOverride(false); //覆盖现有
             setOpen(false);         //生成完打开输出目录
             setSwagger2(true);      //注释使用swagger2
@@ -39,30 +45,30 @@ public class MybatisPlusGen {
         mpg.setGlobalConfig(gc);
 
         // 数据源配置
+        String propertiesKeyPrefix = "spring.datasource.primary.";
         DataSourceConfig dsc = new DataSourceConfig() {{
-            setUrl("jdbc:mysql://localhost:3306/mybatis_test_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&nullNamePatternMatchesAll=true&useSSL=false");
-            setDriverName("com.mysql.jdbc.Driver");
-            setUsername("user");
-            setPassword("1234");
+            setUrl(properties.getProperty(propertiesKeyPrefix + "jdbc-url"));
+            setDriverName(properties.getProperty(propertiesKeyPrefix + "driver-class-name"));
+            setUsername(properties.getProperty(propertiesKeyPrefix + "username"));
+            setPassword(properties.getProperty(propertiesKeyPrefix + "password"));
         }};
         mpg.setDataSource(dsc);
-        final String functionName = scanner("生成的文件所属包名");
-        String functionNameWithDot = "." + functionName;
+
         // 包配置
+        final String functionName = "." + scanner("生成的文件所属包名");
         PackageConfig pc = new PackageConfig() {{
             setParent("com.github.missthee");
-            setEntity("db.po.primary" + functionNameWithDot);
-            setMapper("db.mapper.primary" + functionNameWithDot);
-            setService("service.interf" + functionNameWithDot);
-            setServiceImpl("service.imp" + functionNameWithDot);
+            setEntity("db.entity.primary" + functionName);
+            setMapper("db.mapper.primary" + functionName);
+            setService("service.interf" + functionName);
+            setServiceImpl("service.imp" + functionName);
         }};
         mpg.setPackageInfo(pc);
 
-
         // 策略配置
         StrategyConfig strategy = new StrategyConfig();
-        strategy.setNaming(NamingStrategy.underline_to_camel);
-        strategy.setColumnNaming(NamingStrategy.underline_to_camel);
+        strategy.setNaming(NamingStrategy.underline_to_camel);//下划线转驼峰
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);//下划线转驼峰
         strategy.setEntityLombokModel(true);//lombok注解，无get、set
         strategy.setSkipView(true);//跳过视图
         strategy.setEntityColumnConstant(true);//跳过视图
@@ -70,8 +76,7 @@ public class MybatisPlusGen {
         strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
         mpg.setStrategy(strategy);
 
-
-        final String templateSelect = scanner("设置生成内容:\n\r1-entity; \n\r2-mapper.java; \n\r3-mapper.xml; \n\r4-service; \n\r5-impl; \n\r6-controller");
+        final String templateSelect = scanner("选择生成内容(可多选):\n\r1-entity; \n\r2-mapper.java; \n\r3-mapper.xml; \n\r4-service; \n\r5-impl; \n\r6-controller");
         // 配置模板
         TemplateConfig templateConfig = new TemplateConfig();
         templateConfig.setXml(null);
@@ -100,11 +105,10 @@ public class MybatisPlusGen {
                 }
             };
             {
-                String templatePath = "/templates/mapper.xml.ftl"; // 如果模板引擎是 freemarker
+                String templatePath = "/templates/mapper.xml.ftl"; // 模板引擎是freemarker
                 // 自定义输出配置
                 List<FileOutConfig> focList = new ArrayList<FileOutConfig>() {{
-                    // 自定义配置会被优先输出
-                    add(new FileOutConfig(templatePath) {
+                    add(new FileOutConfig(templatePath) {  // 自定义配置会被优先输出
                         @Override
                         public String outputFile(TableInfo tableInfo) {
                             // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
@@ -117,7 +121,6 @@ public class MybatisPlusGen {
             }
             mpg.setCfg(cfg);
         }
-
         mpg.setTemplateEngine(new FreemarkerTemplateEngine());
         mpg.execute();
     }

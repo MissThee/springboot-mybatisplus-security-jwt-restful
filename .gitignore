@@ -6,3 +6,5 @@ log_tomcat/
 \.idea/
 
 main-project/target/
+
+mybatis-plus-generator/target/

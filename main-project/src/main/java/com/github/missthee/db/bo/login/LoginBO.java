@@ -1,6 +1,6 @@
 package com.github.missthee.db.bo.login;
 
-import com.github.missthee.db.po.primary.manage.User;
+import com.github.missthee.db.entity.primary.manage.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

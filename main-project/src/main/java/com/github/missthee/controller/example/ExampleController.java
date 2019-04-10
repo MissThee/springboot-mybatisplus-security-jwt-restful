@@ -1,6 +1,5 @@
 package com.github.missthee.controller.example;
 
-import com.alibaba.fastjson.JSONArray;
 import com.github.missthee.tool.datastructure.TreeData;
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
@@ -14,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.missthee.config.security.jwt.JavaJWT;
-import com.github.missthee.db.po.primary.manage.User;
+import com.github.missthee.db.entity.primary.manage.User;
 import com.github.missthee.service.interf.manage.UserService;
 
 import com.github.missthee.tool.FileRec;
@@ -25,8 +24,10 @@ import javax.naming.SizeLimitExceededException;
 import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -47,13 +48,13 @@ public class ExampleController {
     @PostMapping("excel/output")
     public void excelTest(HttpServletResponse response) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException, NoSuchFieldException, ScriptException {
         //读取模板支持.xls（97-2003）或.xlsx（2007+）
-        Workbook wb = ExcelExportByTemplate.readFile("exceltemplate/test.xls");
+        Workbook wb = ExcelExportByTemplate.readExcel("exceltemplate/test.xls");
         //实体类
         TestModel testModel = new TestModel().setTest1("测试长文本长文本长文本长文本长文本长文本长文本长文本长文本");
         //参数：Workbook，工作簿编号（0开始），实体类，单元格自适应宽度
         ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel, true);//使用${属性名}替换
         //流输出
-        ExcelExportByTemplate.export(response, wb, "文件名");
+        ExcelExportByTemplate.exportToResponse(response, wb, "文件名");
     }
 
     @PostMapping("error")
@@ -127,7 +128,7 @@ public class ExampleController {
     //上传excel转为POJO
     @PostMapping(value = "/upload2")
     public Res fileUpload2(MultipartFile file) throws IOException, NoSuchMethodException, InvalidFormatException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException {
-        List<Object> objects = ExcelImport.excel2POJOList(file, User.class, new ArrayList<String>() {{
+        List<Object> objects = ExcelImport.excel2POJOList(file.getInputStream(), User.class, new ArrayList<String>() {{
             add("nickname");
             add("username");
         }});

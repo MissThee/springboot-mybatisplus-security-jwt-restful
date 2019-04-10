@@ -36,7 +36,7 @@
         </jdbcConnection>
 
         <!-- 生成实体类地址 -->
-        <javaModelGenerator targetPackage="com.github.missthee.db.po.primary" targetProject="src/main/java"/>
+        <javaModelGenerator targetPackage="com.github.missthee.db.entity.primary" targetProject="src/main/java"/>
 
         <!-- 生成mapper xml文件 -->
         <!--<sqlMapGenerator targetPackage="mybatis.mapper.primary.generate" targetProject="src/main/resources"/>-->

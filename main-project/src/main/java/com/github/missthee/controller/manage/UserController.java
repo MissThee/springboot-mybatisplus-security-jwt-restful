@@ -1,7 +1,7 @@
 package com.github.missthee.controller.manage;
 
 import com.github.missthee.db.dto.manage.usercontroller.*;
-import com.github.missthee.db.po.primary.manage.User;
+import com.github.missthee.db.entity.primary.manage.User;
 import com.github.missthee.service.interf.manage.UserService;
 import com.github.missthee.tool.Res;
 import io.swagger.annotations.Api;

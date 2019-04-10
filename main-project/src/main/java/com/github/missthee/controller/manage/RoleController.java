@@ -1,7 +1,7 @@
 package com.github.missthee.controller.manage;
 
 import com.github.missthee.db.dto.manage.rolecontroller.*;
-import com.github.missthee.db.po.primary.manage.Role;
+import com.github.missthee.db.entity.primary.manage.Role;
 import com.github.missthee.service.interf.manage.RoleService;
 import com.github.missthee.tool.Res;
 import io.swagger.annotations.Api;

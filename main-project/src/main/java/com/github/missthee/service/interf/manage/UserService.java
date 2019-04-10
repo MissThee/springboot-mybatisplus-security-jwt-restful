@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.missthee.db.dto.manage.usercontroller.InsertOneReq;
 import com.github.missthee.db.dto.manage.usercontroller.SelectListReq;
 import com.github.missthee.db.dto.manage.usercontroller.UpdateOneReq;
-import com.github.missthee.db.po.primary.manage.User;
+import com.github.missthee.db.entity.primary.manage.User;
 
 import javax.management.InvalidAttributeValueException;
 import java.lang.reflect.InvocationTargetException;
