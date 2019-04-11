@@ -10,3 +10,5 @@ main-project/target/
 mybatis-plus-generator/target/
 
 target/
+
+*.iml
