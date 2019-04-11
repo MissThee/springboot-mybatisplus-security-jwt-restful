@@ -8,3 +8,5 @@ log_tomcat/
 main-project/target/
 
 mybatis-plus-generator/target/
+
+target/
