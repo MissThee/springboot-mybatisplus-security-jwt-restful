@@ -10,7 +10,7 @@ public class NameFormatter {
      */
     public static String toHump(String para) {
         StringBuilder result = new StringBuilder();
-        String a[] = para.split("_");
+        String[] a = para.split("_");
         for (String s : a) {
             if (!para.contains("_")) {
                 result.append(s);

@@ -17,13 +17,13 @@ import javax.annotation.security.PermitAll;
 public class AuthSecurityController {
 
     @RequestMapping("/permit")
-    @PermitAll
+    @PermitAll//此方法只有@PermitAll有效，则和不写一样
     public Res PermitAll() {
         return Res.success("PermitAll");
     }
 
     @RequestMapping("/deny")
-    @DenyAll
+    @DenyAll//拒绝所有
     public Res DenyAll() {
         return Res.success("DenyAll");
     }
