@@ -1,6 +1,7 @@
 package com.github.missthee.db.vo.login;
 
 import com.github.missthee.db.dto.login.LoginDTO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -8,6 +9,7 @@ import lombok.experimental.Accessors;
 public class LoginVO {
     @Data
     @Accessors(chain = true)
+    @ApiModel("LoginVO.LoginReq")
     public static class LoginReq {
         @ApiModelProperty(value = "账号", required = true, example = "admin")
         private String username;
@@ -19,6 +21,7 @@ public class LoginVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("LoginVO.LoginRes")
     public static class LoginRes {
         @ApiModelProperty(value = "用户对象")
         private LoginDTO user;

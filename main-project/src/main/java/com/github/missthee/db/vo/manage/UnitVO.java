@@ -3,6 +3,7 @@ package com.github.missthee.db.vo.manage;
 import com.github.missthee.db.dto.manage.unit.UnitInsertOneDTO;
 import com.github.missthee.db.dto.manage.unit.UnitUpdateOneDTO;
 import com.github.missthee.db.entity.primary.manage.Unit;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ import java.util.List;
 public class UnitVO {
     @Data
     @Accessors(chain = true)
+    @ApiModel("UnitVO.DeleteOneReq")
     public static class DeleteOneReq {
         @ApiModelProperty(value = "id", example = "0")
         private Long id;
@@ -22,12 +24,14 @@ public class UnitVO {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
+    @ApiModel("UnitVO.InsertOneReq")
     public static class InsertOneReq extends UnitInsertOneDTO {
 
     }
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("UnitVO.InsertOneRes")
     public static class InsertOneRes {
         @ApiModelProperty(value = "新增的组织结构id")
         private Long id;
@@ -35,6 +39,7 @@ public class UnitVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("UnitVO.SelectOneReq")
     public static class SelectOneReq {
         @ApiModelProperty(value = "组织结构id")
         private Long id;
@@ -42,6 +47,7 @@ public class UnitVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("UnitVO.SelectOneRes")
     public static class SelectOneRes {
         @ApiModelProperty(value = "组织结构对象")
         private Unit unit;
@@ -49,6 +55,7 @@ public class UnitVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("UnitVO.SelectTreeReq")
     public static class SelectTreeReq {
         @ApiModelProperty(value = "排序<字段名,是正序>", example = "{'name':true}")
         private LinkedHashMap<String, Boolean> orderBy;
@@ -60,6 +67,7 @@ public class UnitVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("UnitVO.SelectTreeRes")
     public static class SelectTreeRes {
         @ApiModelProperty(value = "组织结构树")
         private List<Object> unitTree;
@@ -68,6 +76,7 @@ public class UnitVO {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
+    @ApiModel("UnitVO.UpdateOneReq")
     public static class UpdateOneReq extends UnitUpdateOneDTO {
 
     }

@@ -3,6 +3,7 @@ package com.github.missthee.db.vo.manage;
 import com.github.missthee.db.dto.manage.permission.PermissionInsertOneDTO;
 import com.github.missthee.db.dto.manage.permission.PermissionUpdateOneDTO;
 import com.github.missthee.db.entity.primary.manage.Permission;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,10 +11,10 @@ import lombok.experimental.Accessors;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-
 public class PermissionVO {
     @Data
     @Accessors(chain = true)
+    @ApiModel("PermissionVO.DeleteOneReq")
     public static class DeleteOneReq {
         @ApiModelProperty(value = "id", example = "0")
         private Long id;
@@ -22,12 +23,14 @@ public class PermissionVO {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
+    @ApiModel("PermissionVO.InsertOneReq")
     public static class InsertOneReq extends PermissionInsertOneDTO {
 
     }
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("PermissionVO.InsertOneRes")
     public static class InsertOneRes {
         @ApiModelProperty(value = "新增的权限id")
         private Long id;
@@ -35,6 +38,7 @@ public class PermissionVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("PermissionVO.SelectOneReq")
     public static class SelectOneReq {
         @ApiModelProperty(value = "权限id")
         private Long id;
@@ -42,6 +46,7 @@ public class PermissionVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("PermissionVO.SelectOneRes")
     public static class SelectOneRes {
         @ApiModelProperty(value = "权限对象")
         private Permission permission;
@@ -49,6 +54,7 @@ public class PermissionVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("PermissionVO.SelectTreeReq")
     public static class SelectTreeReq {
         @ApiModelProperty(value = "排序<字段名,是正序>", example = "{'name':true}")
         private LinkedHashMap<String, Boolean> orderBy;
@@ -60,6 +66,7 @@ public class PermissionVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("PermissionVO.SelectTreeRes")
     public static class SelectTreeRes {
         @ApiModelProperty(value = "权限树")
         private List<Object> permissionTree;
@@ -68,6 +75,7 @@ public class PermissionVO {
     @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
+    @ApiModel("PermissionVO.UpdateOneReq")
     public static class UpdateOneReq extends PermissionUpdateOneDTO {
         @ApiModelProperty(value = "权限id")
         private Long id;
