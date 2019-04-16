@@ -3,6 +3,7 @@ package com.github.missthee.controller.example.flowable;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
+import io.swagger.annotations.Api;
 import org.flowable.engine.*;
 import org.flowable.engine.form.FormProperty;
 import org.flowable.engine.form.FormType;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.missthee.controller.example.flowable.FJSON.*;
-
+@Api(tags = "审批-审批流程流转(带form变量约束)")
 @RestController
 @RequestMapping("flowable/form")
 public class ProcessUseWithFormController {
@@ -61,7 +63,7 @@ public class ProcessUseWithFormController {
     }
 
     //查询流程开始节点的表单属性
-    @RequestMapping("getStartFormData")
+    @PostMapping("getStartFormData")
     public Res<JSONObject> getStartFormData(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -102,7 +104,7 @@ public class ProcessUseWithFormController {
     }
 
     //查询流程中开始节点的表单渲染
-    @RequestMapping("getRenderedStartForm")
+    @PostMapping("getRenderedStartForm")
     public Res getRenderedStartForm(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -119,7 +121,7 @@ public class ProcessUseWithFormController {
     }
 
     //开始一个流程，并添加表单的内容
-    @RequestMapping("startForm")
+    @PostMapping("startForm")
     public Res startForm(@RequestBody(required = false) JSONObject bJO) {
         String processDefKey = getStringOrDefaultFromJO(bJO, "processDefKey", null);
         Map<String, String> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", new HashMap<String, String>() {{
@@ -139,7 +141,7 @@ public class ProcessUseWithFormController {
     }
 
     //查询流程中任务的表单属性
-    @RequestMapping("getTaskFormData")
+    @PostMapping("getTaskFormData")
     public Res<JSONObject> getTaskFormData(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         if (taskId != null) {
@@ -174,7 +176,7 @@ public class ProcessUseWithFormController {
 
 
     //保存表单值，不完成任务
-    @RequestMapping("saveTaskFormData")
+    @PostMapping("saveTaskFormData")
     public Res saveTaskFormData(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         Map<String, String> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);
@@ -186,7 +188,7 @@ public class ProcessUseWithFormController {
     }
 
     //保存表单值，完成任务
-    @RequestMapping("submitTaskFormData")
+    @PostMapping("submitTaskFormData")
     public Res submitTaskFormData(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         Map<String, String> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);

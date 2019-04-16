@@ -3,6 +3,7 @@ package com.github.missthee.controller.example.flowable;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.Res;
+import io.swagger.annotations.Api;
 import org.flowable.engine.*;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.DeploymentQuery;
@@ -12,6 +13,7 @@ import org.flowable.job.api.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +28,7 @@ import java.util.zip.ZipInputStream;
 
 import static com.github.missthee.controller.example.flowable.FJSON.getBooleanOrDefaultFromJO;
 import static com.github.missthee.controller.example.flowable.FJSON.getStringOrDefaultFromJO;
-
+@Api(tags = "审批-流程部署管理")
 //管理流程相关方法
 @RestController
 @RequestMapping("flowable/mana")
@@ -41,7 +43,7 @@ public class ProcessManaController {
     }
 
     //流程部署（使用resources目录下的流程配置文件）
-//    @RequestMapping("deployment")
+//    @PostMapping("deployment")
 //    public Res deployProcess() {
 //        Deployment deployment = repositoryService.createDeployment()
 //                .key("LiuCheng01")
@@ -54,7 +56,7 @@ public class ProcessManaController {
     //流程部署（使用流程配置打包的zip文件）
     // act_re_deployment    流程部署表，此表中的key，name由方法设置
     // act_re_procdef       流程定义，此表中的key，name由bpmn中的设置读取，相同key的流程会归为同一类，并增加版本号
-    @RequestMapping("deployment/zip")
+    @PostMapping("deployment/zip")
     public Res deployProcessByZip(MultipartFile file, String key, String name) throws IOException {
         if (StringUtils.isEmpty(key)) {
             return Res.failure("empty key");
@@ -74,7 +76,7 @@ public class ProcessManaController {
 
     //查询流程部署信息
     // act_re_deployment
-    @RequestMapping("searchProcessDeploy")
+    @PostMapping("searchProcessDeploy")
     public Res searchProcessDeploy(@RequestBody(required = false) JSONObject bJO) {
         String key = getStringOrDefaultFromJO(bJO, "key", null);
         DeploymentQuery deploymentQuery = repositoryService.createDeploymentQuery();
@@ -93,7 +95,7 @@ public class ProcessManaController {
 
     //查询流程定义信息
     // act_re_procdef
-    @RequestMapping("searchProcessDefinition")
+    @PostMapping("searchProcessDefinition")
     public Res searchProcessDefinition(@RequestBody(required = false) JSONObject bJO) {
         String key = getStringOrDefaultFromJO(bJO, "key", "");
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
@@ -111,7 +113,7 @@ public class ProcessManaController {
     }
 
     //删除流程定义信息act_re_deployment
-    @RequestMapping("deleteProcessDef")
+    @PostMapping("deleteProcessDef")
     public Res deleteProcessDef(@RequestBody(required = false) JSONObject bJO) {
         String id = getStringOrDefaultFromJO(bJO, "id", null);
         Boolean forceDelete = getBooleanOrDefaultFromJO(bJO, "forceDelete", false);
@@ -126,7 +128,7 @@ public class ProcessManaController {
     //使用流程部署方法，修改流程图之后，保持key不变，再次部署，即可更新
 
     //查询流程图片(流程定义id)
-    @RequestMapping("imgByProcessDefId")
+    @PostMapping("imgByProcessDefId")
     public void imgByProcessId(HttpServletResponse httpServletResponse, @RequestBody(required = false) JSONObject bJO) throws IOException {
         String id = getStringOrDefaultFromJO(bJO, "id", null);
         InputStream processDiagramInputStream = repositoryService.getProcessDiagram(id);
@@ -134,7 +136,7 @@ public class ProcessManaController {
     }
 
     //查询所有审批流程的最新流程
-    @RequestMapping("searchNewestProcessDefinition")
+    @PostMapping("searchNewestProcessDefinition")
     public Res searchNewestProcessDefinition() {
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
         List processDefList = list.stream().map(FJSON::processDefinitionToJSON).collect(Collectors.toList());
@@ -142,7 +144,7 @@ public class ProcessManaController {
     }
 
     //删除指定key所有版本流程定义
-    @RequestMapping("deleteProcessDefinitionByKey")
+    @PostMapping("deleteProcessDefinitionByKey")
     public Res deleteProcessDefinitionByKey(@RequestBody(required = false) JSONObject bJO) {
         String key = getStringOrDefaultFromJO(bJO, "key", null);
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().processDefinitionKey(key).list();
@@ -154,7 +156,7 @@ public class ProcessManaController {
     }
 
     //挂起指定流程定义，使其不能再使用（挂起流程定义，不能再新建实例；挂起实例，实例不能再操作）
-    @RequestMapping("suspendProcessDefinitionById")
+    @PostMapping("suspendProcessDefinitionById")
     public Res suspendProcessDefinitionById(@RequestBody(required = false) JSONObject bJO) {
         String id = getStringOrDefaultFromJO(bJO, "id", null);
         //挂起流程实例的id，是否将其正在运行的实例挂起，挂起日期（null则为立即挂起）
@@ -163,7 +165,7 @@ public class ProcessManaController {
     }
 
     //激活指定流程定义
-    @RequestMapping("activateProcessDefinitionById")
+    @PostMapping("activateProcessDefinitionById")
     public Res activateProcessDefinitionById(@RequestBody(required = false) JSONObject bJO) {
         String id = getStringOrDefaultFromJO(bJO, "id", null);
         //激活流程实例的id，是否将其正在运行的实例激活，激活日期（null则为立即挂起）
@@ -172,7 +174,7 @@ public class ProcessManaController {
     }
 
     //手动执行定时器
-    @RequestMapping("searchTimerJob")
+    @PostMapping("searchTimerJob")
     public Res searchTimerJob(@RequestBody(required = false) JSONObject bJO) {
         //激活流程实例的id，是否将其正在运行的实例激活，激活日期（null则为立即挂起）
         List<Job> jobList = managementService.createTimerJobQuery().list();
