@@ -1,6 +1,6 @@
 package com.github.missthee.controller.manage;
 
-import com.github.missthee.db.dto.manage.permissioncontroller.*;
+import com.github.missthee.db.vo.manage.PermissionVO;
 import com.github.missthee.db.entity.primary.manage.Permission;
 import com.github.missthee.service.interf.manage.PermissionService;
 import com.github.missthee.tool.Res;
@@ -33,35 +33,41 @@ public class PermissionController {
 
     @ApiOperation(value = "增加权限", notes = "")
     @PutMapping()
-    public Res<InsertOneRes> insertOne(@RequestBody InsertOneReq insertOneReq) {
+    public Res<PermissionVO.InsertOneRes> insertOne(@RequestBody PermissionVO.InsertOneReq insertOneReq) {
         Boolean isDuplicate = permissionService.isDuplicate(insertOneReq.getPermission());
         if (isDuplicate) {
             return Res.failure("权限值已存在");
         }
         Long id = permissionService.insertOne(insertOneReq);
-        return Res.res(id == null, new InsertOneRes(id));
+        PermissionVO.InsertOneRes insertOneRes = new PermissionVO.InsertOneRes().setId(id);
+        return Res.res(id == null, insertOneRes);
     }
 
     @ApiOperation(value = "删除权限（逻辑删除）", notes = "")
     @DeleteMapping()
-    public Res deleteOne(@RequestBody DeleteOneReq deleteOneReq) {
+    public Res deleteOne(@RequestBody PermissionVO.DeleteOneReq deleteOneReq) {
         Boolean result = permissionService.deleteOne(deleteOneReq.getId());
         return Res.res(result);
     }
 
     @ApiOperation(value = "删除权限（物理删除）", notes = "")
     @DeleteMapping("/physical")
-    public Res deleteOnePhysical(@RequestBody DeleteOneReq deleteOneReq) {
+    public Res deleteOnePhysical(@RequestBody PermissionVO.DeleteOneReq deleteOneReq) {
         Boolean result = permissionService.deleteOnePhysical(deleteOneReq.getId());
         return Res.res(result);
     }
 
     @ApiOperation(value = "修改权限", notes = "")
     @PatchMapping()
-    public Res updateOne(@RequestBody UpdateOneReq updateOneReq) {
+    public Res updateOne(@RequestBody PermissionVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, NoSuchFieldException, InvalidAttributeValueException, IllegalAccessException, InvocationTargetException {
         Boolean isDuplicateExceptSelf = permissionService.isDuplicateExceptSelf(updateOneReq.getPermission(), updateOneReq.getId());
         if (isDuplicateExceptSelf) {
-            return Res.failure("角色值已存在");
+            return Res.failure("权限值已存在");
+        }
+        List<Permission> permissionList = permissionService.selectList(true, null);
+        List<Object> childIdList = TreeData.getChildIdList(permissionList, updateOneReq.getId());
+        if (childIdList.contains(updateOneReq.getParentId())) {
+            return Res.failure("不能将本权限，放置到本权限的子节点之下");
         }
         Boolean result = permissionService.updateOne(updateOneReq);
         return Res.res(result);
@@ -69,23 +75,25 @@ public class PermissionController {
 
     @ApiOperation(value = "查找权限（单个）", notes = "")
     @PostMapping()
-    public Res<SelectOneRes> selectOne(@RequestBody SelectOneReq findOneReq) {
+    public Res<PermissionVO.SelectOneRes> selectOne(@RequestBody PermissionVO.SelectOneReq findOneReq) {
         Permission permission = permissionService.selectOne(findOneReq.getId());
-        return Res.success(new SelectOneRes(permission));
+        PermissionVO.SelectOneRes selectOneRes = new PermissionVO.SelectOneRes().setPermission(permission);
+        return Res.success(selectOneRes);
     }
 
     @ApiOperation(value = "查找权限（树状）", notes = "")
     @PostMapping("/tree")
-    public Res<SelectTreeRes> selectList(@RequestBody SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
-        List<Permission> permissionList = permissionService.selectList(selectListReq);
+    public Res<PermissionVO.SelectTreeRes> selectList(@RequestBody PermissionVO.SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
+        List<Permission> permissionList = permissionService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
         List<Object> tree = TreeData.tree(permissionList, selectListReq.getRootId(), false, new HashMap<String, String>() {{
             put("type", "type");
             put("name", "name");
-            put("value", "value");
+            put("permission", "permission");
             put("isEnable", "isEnable");
             put("isDelete", "isDelete");
         }});
-        return Res.success(new SelectTreeRes(tree));
+        PermissionVO.SelectTreeRes selectTreeRes = new PermissionVO.SelectTreeRes().setPermissionTree(tree);
+        return Res.success(selectTreeRes);
     }
 }
 

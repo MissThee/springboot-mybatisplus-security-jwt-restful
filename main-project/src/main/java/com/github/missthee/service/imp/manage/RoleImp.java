@@ -2,9 +2,8 @@ package com.github.missthee.service.imp.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.missthee.db.dto.manage.rolecontroller.InsertOneReq;
-import com.github.missthee.db.dto.manage.rolecontroller.SelectListReq;
-import com.github.missthee.db.dto.manage.rolecontroller.UpdateOneReq;
+import com.github.missthee.db.dto.manage.role.RoleInsertOneDTO;
+import com.github.missthee.db.dto.manage.role.RoleUpdateOneDTO;
 import com.github.missthee.db.mapper.primary.manage.RoleMapper;
 import com.github.missthee.db.mapper.primary.manage.RolePermissionMapper;
 import com.github.missthee.db.entity.primary.manage.Role;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,12 +34,12 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
     }
 
     @Override
-    public Long insertOne(InsertOneReq insertOneReq) {
-        Role role = mapperFacade.map(insertOneReq, Role.class);
+    public Long insertOne(RoleInsertOneDTO roleInsertOneDTO) {
+        Role role = mapperFacade.map(roleInsertOneDTO, Role.class);
         roleMapper.insert(role);
         Long roleId = role.getId();
         if (roleId != null) {
-            updateRolePermission(insertOneReq.getPermissionIdList(), role.getId());
+            updateRolePermission(roleInsertOneDTO.getPermissionIdList(), role.getId());
         }
         return roleId;
     }
@@ -60,13 +60,13 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
     }
 
     @Override
-    public Boolean updateOne(UpdateOneReq updateOneReq) {
+    public Boolean updateOne(RoleUpdateOneDTO roleUpdateOneDTO) {
         //拷贝用户信息，生成Role对象
-        Role role = mapperFacade.map(updateOneReq, Role.class);
+        Role role = mapperFacade.map(roleUpdateOneDTO, Role.class);
         //更新信息
         Boolean result = roleMapper.updateById(role) > 0;
         if (result) {
-            updateRolePermission(updateOneReq.getPermissionIdList(), role.getId());
+            updateRolePermission(roleUpdateOneDTO.getPermissionIdList(), role.getId());
         }
         return result;
     }
@@ -77,10 +77,10 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
     }
 
     @Override
-    public List<Role> selectList(SelectListReq selectListReq) {
+    public List<Role> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
         QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Role.IS_DELETE, selectListReq.getIsDelete());
-        for (Map.Entry<String, Boolean> entry : selectListReq.getOrderBy().entrySet()) {
+        queryWrapper.eq(Role.IS_DELETE, isDelete);
+        for (Map.Entry<String, Boolean> entry : orderBy.entrySet()) {
             queryWrapper.orderBy(true, entry.getValue(), entry.getKey());
         }
         return roleMapper.selectList(queryWrapper);

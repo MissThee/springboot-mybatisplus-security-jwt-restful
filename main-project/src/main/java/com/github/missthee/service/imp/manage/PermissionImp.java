@@ -2,9 +2,8 @@ package com.github.missthee.service.imp.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.missthee.db.dto.manage.permissioncontroller.InsertOneReq;
-import com.github.missthee.db.dto.manage.permissioncontroller.SelectTreeReq;
-import com.github.missthee.db.dto.manage.permissioncontroller.UpdateOneReq;
+import com.github.missthee.db.dto.manage.permission.PermissionInsertOneDTO;
+import com.github.missthee.db.dto.manage.permission.PermissionUpdateOneDTO;
 import com.github.missthee.db.mapper.primary.manage.PermissionMapper;
 import com.github.missthee.db.entity.primary.manage.Permission;
 import com.github.missthee.service.interf.manage.PermissionService;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +29,8 @@ public class PermissionImp extends ServiceImpl<PermissionMapper, Permission> imp
     }
 
     @Override
-    public Long insertOne(InsertOneReq insertOneReq) {
-        Permission permission = mapperFacade.map(insertOneReq, Permission.class);
+    public Long insertOne(PermissionInsertOneDTO permissionInsertOneDTO) {
+        Permission permission = mapperFacade.map(permissionInsertOneDTO, Permission.class);
         permissionMapper.insert(permission);
         Long permissionId = permission.getId();
         return permissionId;
@@ -49,9 +49,9 @@ public class PermissionImp extends ServiceImpl<PermissionMapper, Permission> imp
     }
 
     @Override
-    public Boolean updateOne(UpdateOneReq updateOneReq) {
+    public Boolean updateOne(PermissionUpdateOneDTO permissionUpdateOneDTO) {
         //拷贝用户信息，生成Permission对象
-        Permission permission = mapperFacade.map(updateOneReq, Permission.class);
+        Permission permission = mapperFacade.map(permissionUpdateOneDTO, Permission.class);
         //更新信息
         Boolean result = permissionMapper.updateById(permission) > 0;
         return result;
@@ -63,13 +63,15 @@ public class PermissionImp extends ServiceImpl<PermissionMapper, Permission> imp
     }
 
     @Override
-    public List<Permission> selectList(SelectTreeReq selectListReq) {
+    public List<Permission> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
         QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
-        if (selectListReq.getIsDelete()) {//相较于user和role，permission不能仅显示已删除节点，因为仅已删除的节点不能构建完整的树结构
-            queryWrapper.eq(Permission.IS_DELETE, selectListReq.getIsDelete());
+        if (!isDelete) {//相较于user和role，permission不能仅显示已删除节点，因为仅已删除的节点不能构建完整的树结构
+            queryWrapper.eq(Permission.IS_DELETE, isDelete);
         }
-        for (Map.Entry<String, Boolean> entry : selectListReq.getOrderBy().entrySet()) {
-            queryWrapper.orderBy(true, entry.getValue(), entry.getKey());
+        if (orderBy != null) {
+            for (Map.Entry<String, Boolean> entry : orderBy.entrySet()) {
+                queryWrapper.orderBy(true, entry.getValue(), entry.getKey());
+            }
         }
         return permissionMapper.selectList(queryWrapper);
     }

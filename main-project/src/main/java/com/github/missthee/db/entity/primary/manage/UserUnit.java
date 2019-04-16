@@ -19,20 +19,20 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="RolePermission对象", description="")
-public class RolePermission implements Serializable {
+@ApiModel(value="UserUnit对象", description="")
+public class UserUnit implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableField("role_id")
-    private Long roleId;
+    @TableField("user_id")
+    private Long userId;
 
-    @TableField("permission_id")
-    private Long permissionId;
+    @TableField("unit_id")
+    private Long unitId;
 
 
-    public static final String ROLE_ID = "role_id";
+    public static final String USER_ID = "user_id";
 
-    public static final String PERMISSION_ID = "permission_id";
+    public static final String UNIT_ID = "unit_id";
 
 }

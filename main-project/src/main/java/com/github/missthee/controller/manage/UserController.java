@@ -1,7 +1,8 @@
 package com.github.missthee.controller.manage;
 
-import com.github.missthee.db.dto.manage.usercontroller.*;
-import com.github.missthee.db.entity.primary.manage.User;
+import com.github.missthee.db.dto.manage.user.UserInTableDTO;
+import com.github.missthee.db.dto.manage.user.UserInTableDetailDTO;
+import com.github.missthee.db.vo.manage.UserVO;
 import com.github.missthee.service.interf.manage.UserService;
 import com.github.missthee.tool.Res;
 import io.swagger.annotations.Api;
@@ -31,48 +32,48 @@ public class UserController {
 
     @ApiOperation(value = "增加用户", notes = "")
     @PutMapping()
-    public Res<InsertOneRes> insertOne(@RequestBody InsertOneReq insertOneReq) {
+    public Res<UserVO.InsertOneRes> insertOne(@RequestBody UserVO.InsertOneReq insertOneReq) {
         Boolean isDuplicate = userService.isDuplicate(insertOneReq.getUsername());
         if (isDuplicate) {
             return Res.failure("用户名已存在");
         }
         Long id = userService.insertOne(insertOneReq);
-        return Res.res(id == null, new InsertOneRes(id));
+        return Res.res(id == null, new UserVO.InsertOneRes().setId(id));
     }
 
     @ApiOperation(value = "删除用户（逻辑删除）", notes = "")
     @DeleteMapping()
-    public Res deleteOne(@RequestBody DeleteOneReq deleteOneReq) {
+    public Res deleteOne(@RequestBody UserVO.DeleteOneReq deleteOneReq) {
         Boolean result = userService.deleteOne(deleteOneReq.getId());
         return Res.res(result);
     }
 
     @ApiOperation(value = "删除用户（物理删除）", notes = "")
     @DeleteMapping("/physical")
-    public Res deleteOnePhysical(@RequestBody DeleteOneReq deleteOneReq) {
+    public Res deleteOnePhysical(@RequestBody UserVO.DeleteOneReq deleteOneReq) {
         Boolean result = userService.deleteOnePhysical(deleteOneReq.getId());
         return Res.res(result);
     }
 
     @ApiOperation(value = "修改用户", notes = "")
     @PatchMapping()
-    public Res updateOne(@RequestBody UpdateOneReq updateOneReq) {
+    public Res updateOne(@RequestBody UserVO.UpdateOneReq updateOneReq) {
         Boolean result = userService.updateOne(updateOneReq);
         return Res.res(result);
     }
 
     @ApiOperation(value = "查找用户（单个） ", notes = "")
     @PostMapping()
-    public Res<SelectOneRes> selectOne(@RequestBody SelectOneReq findOneReq) {
-        User user = userService.selectOne(findOneReq.getId());
-        return Res.success(new SelectOneRes(user));
+    public Res<UserVO.SelectOneRes> selectOne(@RequestBody UserVO.SelectOneReq findOneReq) {
+        UserInTableDetailDTO userInTableDetailBo = userService.selectOne(findOneReq.getId());
+        return Res.success(new UserVO.SelectOneRes().setUser(userInTableDetailBo));
     }
 
     @ApiOperation(value = "查找用户（多个） ", notes = "")
     @PostMapping("/all")
-    public Res<SelectListRes> selectList(@RequestBody SelectListReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
-        List<User> userList = userService.selectList(selectListReq);
-        return Res.success(new SelectListRes(userList));
+    public Res<UserVO.SelectListRes> selectList(@RequestBody UserVO.SelectListReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
+        List<UserInTableDTO> userInTableBoList = userService.selectList(selectListReq);
+        return Res.success(new UserVO.SelectListRes().setUserInTableBoList(userInTableBoList));
     }
 }
 

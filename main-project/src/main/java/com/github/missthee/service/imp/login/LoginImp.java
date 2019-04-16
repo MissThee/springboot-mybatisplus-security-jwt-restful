@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.github.missthee.db.mapper.primary.manage.*;
 import com.github.missthee.db.entity.primary.manage.*;
-import com.github.missthee.db.bo.login.LoginBO;
+import com.github.missthee.db.dto.login.LoginDTO;
 import com.github.missthee.service.interf.login.LoginService;
 
 import java.util.ArrayList;
@@ -36,35 +36,37 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
         this.rolePermissionMapper = rolePermissionMapper;
         this.permissionMapper = permissionMapper;
         this.mapperFacade = mapperFacade;
-
     }
 
     @Override
-    public LoginBO selectUserByUsername(String username) {
+    public LoginDTO selectUserByUsername(String username) {
         //查找用户
         User user;
         {
             QueryWrapper<User> userQW = new QueryWrapper<>();
-            userQW.eq(User.USERNAME, username);
+            userQW.eq(User.USERNAME, username)
+                    .eq(User.IS_DELETE, false);
             user = userMapper.selectOne(userQW);
         }
         return buildLoginDTO(user);
     }
 
     @Override
-    public LoginBO selectUserById(Integer id) {
-        //查找用户
+    public LoginDTO selectUserById(Integer id) {
         User user;
         {
-            user = userMapper.selectById(id);
-            if (user == null) {
-                throw new BadCredentialsException("无此账号信息");
-            }
+            QueryWrapper<User> userQW = new QueryWrapper<>();
+            userQW.eq(User.ID, id)
+                    .eq(User.IS_DELETE, false);
+            user = userMapper.selectOne(userQW);
+        }
+        if (user == null) {
+            throw new BadCredentialsException("无此账号信息");
         }
         return buildLoginDTO(user);
     }
 
-    private LoginBO buildLoginDTO(User user) {
+    private LoginDTO buildLoginDTO(User user) {
         //查找角色id集(用户-角色关系表)
         List<Long> roleIdList = new ArrayList<>();
         {
@@ -103,19 +105,19 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
             permissionList = permissionMapper.selectList(permissionQW);
             permissionList.forEach(e -> permissionValueList.add(e.getPermission()));
         }
-        LoginBO loginDTO = mapperFacade.map(user, LoginBO.class);
-        loginDTO.setRoleValueList(roleValueList);
-        loginDTO.setPermissionValueList(permissionValueList);
-        return loginDTO;
+        LoginDTO loginBO = mapperFacade.map(user, LoginDTO.class);
+        loginBO.setRoleValueList(roleValueList);
+        loginBO.setPermissionValueList(permissionValueList);
+        return loginBO;
     }
 
     @Override
     public UserDetails loadUserById(Object id) throws BadCredentialsException {
-        LoginBO loginDTO = selectUserById((Integer) id);
+        LoginDTO loginDTO = selectUserById((Integer) id);
         return transToUserDetails(loginDTO);
     }
 
-    private UserDetails transToUserDetails(LoginBO loginDTO) {
+    private UserDetails transToUserDetails(LoginDTO loginDTO) {
         if (loginDTO == null) {
             throw new BadCredentialsException("User not found");
         }

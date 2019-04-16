@@ -40,7 +40,7 @@ public class MybatisPlusGen {
             setEnableCache(false);  //xml中二级缓存标志
             setBaseResultMap(true); //sml生成映射baseMap
             setServiceName("%sService");
-            setServiceImplName("%sServiceImp");
+            setServiceImplName("%sImp");
         }};
         mpg.setGlobalConfig(gc);
 
