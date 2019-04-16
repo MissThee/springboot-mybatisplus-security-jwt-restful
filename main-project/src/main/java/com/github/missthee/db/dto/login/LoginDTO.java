@@ -13,4 +13,5 @@ import java.util.Set;
 public class LoginDTO extends User {
     private Set<String> roleValueList;
     private Set<String> permissionValueList;
+    private String unitName;
 }

@@ -13,10 +13,7 @@ import com.github.missthee.db.entity.primary.manage.*;
 import com.github.missthee.db.dto.login.LoginDTO;
 import com.github.missthee.service.interf.login.LoginService;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,15 +24,19 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
     private final RolePermissionMapper rolePermissionMapper;
     private final PermissionMapper permissionMapper;
     private final MapperFacade mapperFacade;
+    private final UnitMapper unitMapper;
+    private final UserUnitMapper userUnitMapper;
 
     @Autowired
-    public LoginImp(UserMapper userMapper, UserRoleMapper userRoleMapper, RoleMapper roleMapper, RolePermissionMapper rolePermissionMapper, PermissionMapper permissionMapper, MapperFacade mapperFacade) {
+    public LoginImp(UserMapper userMapper, UserRoleMapper userRoleMapper, RoleMapper roleMapper, RolePermissionMapper rolePermissionMapper, PermissionMapper permissionMapper, MapperFacade mapperFacade, UnitMapper unitMapper, UserUnitMapper userUnitMapper) {
         this.userMapper = userMapper;
         this.userRoleMapper = userRoleMapper;
         this.roleMapper = roleMapper;
         this.rolePermissionMapper = rolePermissionMapper;
         this.permissionMapper = permissionMapper;
         this.mapperFacade = mapperFacade;
+        this.unitMapper = unitMapper;
+        this.userUnitMapper = userUnitMapper;
     }
 
     @Override
@@ -105,9 +106,26 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
             permissionList = permissionMapper.selectList(permissionQW);
             permissionList.forEach(e -> permissionValueList.add(e.getPermission()));
         }
+        //查询user_unit关系集合
+        List<UserUnit> userUnitList;
+        {
+            QueryWrapper<UserUnit> userUnitQW = new QueryWrapper<>();
+            userUnitQW.eq(UserUnit.USER_ID, user.getId());
+            userUnitList = userUnitMapper.selectList(userUnitQW);
+        }
+        //查询unit集合
+        Unit unit = new Unit();
+        if (userUnitList.size() > 0) {
+            QueryWrapper<Unit> unitQW = new QueryWrapper<>();
+            unitQW.in(Unit.ID, userUnitList.stream().map(UserUnit::getUnitId).collect(Collectors.toList()))
+                    .eq(Unit.IS_DELETE, false);
+            unit = unitMapper.selectOne(unitQW);
+        }
+        //整合信息
         LoginDTO loginBO = mapperFacade.map(user, LoginDTO.class);
         loginBO.setRoleValueList(roleValueList);
         loginBO.setPermissionValueList(permissionValueList);
+        loginBO.setUnitName(unit.getName());
         return loginBO;
     }
 
