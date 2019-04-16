@@ -1,4 +1,4 @@
-package com.github.missthee.db.bo.manage;
+package com.github.missthee.db.dto.manage.user;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class UserInTableDetailBo {
+public class UserInTableDetailDTO {
     @ApiModelProperty(value = "主键")
     private Long id;
 
@@ -26,7 +26,5 @@ public class UserInTableDetailBo {
 
     @ApiModelProperty(value = "所属组织机构id")
     private Long unitId;
-
-
 
 }
