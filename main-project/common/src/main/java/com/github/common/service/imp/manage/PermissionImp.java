@@ -82,14 +82,14 @@ public class PermissionImp extends ServiceImpl<PermissionMapper, Permission> imp
     }
 
     @Override
-    public Boolean isDuplicate(String permission) {
+    public Boolean isExist(String permission) {
         QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(Permission.PERMISSION, permission);
         return permissionMapper.selectList(queryWrapper).size() > 0;
     }
 
     @Override
-    public Boolean isDuplicateExceptSelf(String permission, Long id) {
+    public Boolean isExistExceptSelf(String permission, Long id) {
         QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(Permission.PERMISSION, permission)
                 .ne(Permission.ID, id);

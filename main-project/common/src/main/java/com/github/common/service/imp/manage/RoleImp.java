@@ -92,14 +92,14 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
     }
 
     @Override
-    public Boolean isDuplicate(String role) {
+    public Boolean isExist(String role) {
         QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(Role.ROLE, role);
         return roleMapper.selectList(queryWrapper).size() > 0;
     }
 
     @Override
-    public Boolean isDuplicateExceptSelf(String role, Long id) {
+    public Boolean isExistExceptSelf(String role, Long id) {
         QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(Role.ROLE, role)
                 .ne(Role.ID, id);

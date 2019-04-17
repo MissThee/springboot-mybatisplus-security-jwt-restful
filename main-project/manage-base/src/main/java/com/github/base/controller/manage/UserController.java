@@ -33,7 +33,7 @@ public class UserController {
     @ApiOperation(value = "增加用户", notes = "")
     @PutMapping()
     public Res<UserVO.InsertOneRes> insertOne(@RequestBody UserVO.InsertOneReq insertOneReq) {
-        Boolean isDuplicate = userService.isDuplicate(insertOneReq.getUsername());
+        Boolean isDuplicate = userService.isExist(insertOneReq.getUsername());
         if (isDuplicate) {
             return Res.failure("用户名已存在");
         }

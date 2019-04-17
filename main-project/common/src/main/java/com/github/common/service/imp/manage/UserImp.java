@@ -184,7 +184,7 @@ public class UserImp extends ServiceImpl<UserMapper, User> implements UserServic
     }
 
     @Override
-    public Boolean isDuplicate(String username) {
+    public Boolean isExist(String username) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(User.USERNAME, username);
         return userMapper.selectList(queryWrapper).size() > 0;

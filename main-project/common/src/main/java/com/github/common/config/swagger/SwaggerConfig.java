@@ -1,6 +1,6 @@
 package com.github.common.config.swagger;
 
-import org.assertj.core.util.Lists;
+import com.google.common.collect.Lists;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -19,7 +19,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.github.base.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.github"))
                 .paths(PathSelectors.any())
                 .build()
                 .securityContexts(Lists.newArrayList(securityContext()))

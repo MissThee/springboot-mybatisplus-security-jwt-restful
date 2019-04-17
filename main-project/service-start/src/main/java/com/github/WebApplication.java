@@ -1,4 +1,4 @@
-package com.github.main;
+package com.github;
 
 
 import org.springframework.boot.SpringApplication;
@@ -8,7 +8,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication(
-        exclude = {DataSourceAutoConfiguration.class}
+        exclude = {DataSourceAutoConfiguration.class},
+        scanBasePackages = {"com.github"}
 )//相当于@Configuration,@EnableAutoConfiguration和 @ComponentScan 并具有他们的默认属性值
 //@EnableAsync//启用异步调用
 public class WebApplication extends SpringBootServletInitializer {

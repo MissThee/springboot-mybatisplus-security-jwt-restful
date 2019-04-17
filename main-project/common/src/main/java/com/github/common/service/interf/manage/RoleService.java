@@ -23,7 +23,7 @@ public interface RoleService extends IService<Role> {
 
     Boolean deleteOnePhysical(Long id);
 
-    Boolean isDuplicate(String role);
+    Boolean isExist(String role);
 
-    Boolean isDuplicateExceptSelf(String role, Long id);
+    Boolean isExistExceptSelf(String role, Long id);
 }

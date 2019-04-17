@@ -6,6 +6,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +33,7 @@ public class LogBuilder {
             Object[] argsObj = joinPoint.getArgs();
             List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse || e instanceof HttpHeaders)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
             try {
-                stringBuilder.append(paramFormatter("ARGS[J]", JSONArray.toJSONString(argsObjList)));
+                stringBuilder.append(paramFormatter("ARGS[J]",  JSONArray.toJSONString(argsObjList)));
             } catch (Exception e) {
                 stringBuilder.append(paramFormatter("ARGS", argsObjList));
             }

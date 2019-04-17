@@ -23,7 +23,7 @@ public interface PermissionService extends IService<Permission> {
 
     Boolean deleteOnePhysical(Long id);
 
-    Boolean isDuplicate(String permission);
+    Boolean isExist(String permission);
 
-    Boolean isDuplicateExceptSelf(String permission, Long id);
+    Boolean isExistExceptSelf(String permission, Long id);
 }

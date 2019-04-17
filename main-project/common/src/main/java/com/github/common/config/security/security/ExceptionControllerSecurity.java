@@ -1,6 +1,5 @@
 package com.github.common.config.security.security;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.common.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 //controller异常捕捉返回
 @ApiIgnore
@@ -27,7 +27,7 @@ public class ExceptionControllerSecurity {
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
     public Object unauthorizedException(HttpServletRequest request, Exception e) {
         log.debug(LogBuilder.requestLogBuilder(request, null, e));
-        return new JSONObject() {{
+        return new HashMap<String, String>() {{
             put("msg", e.getClass().getSimpleName() + ":" + e.getMessage());
         }};
     }
@@ -38,7 +38,7 @@ public class ExceptionControllerSecurity {
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public Object unauthenticatedException(HttpServletRequest request, Exception e) {
         log.debug(LogBuilder.requestLogBuilder(request, null, e));
-        return new JSONObject() {{
+        return new HashMap<String, String>() {{
             put("msg", e.getClass().getSimpleName() + ":" + e.getMessage());
         }};
     }

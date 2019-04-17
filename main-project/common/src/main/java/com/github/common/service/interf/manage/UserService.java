@@ -25,5 +25,5 @@ public interface UserService extends IService<User> {
 
     Boolean deleteOnePhysical(Long id);
 
-    Boolean isDuplicate(String username);
+    Boolean isExist(String username);
 }

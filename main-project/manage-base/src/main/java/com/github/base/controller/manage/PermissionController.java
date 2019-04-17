@@ -34,7 +34,7 @@ public class PermissionController {
     @ApiOperation(value = "增加权限", notes = "")
     @PutMapping()
     public Res<PermissionVO.InsertOneRes> insertOne(@RequestBody PermissionVO.InsertOneReq insertOneReq) {
-        Boolean isDuplicate = permissionService.isDuplicate(insertOneReq.getPermission());
+        Boolean isDuplicate = permissionService.isExist(insertOneReq.getPermission());
         if (isDuplicate) {
             return Res.failure("权限值已存在");
         }
@@ -60,7 +60,7 @@ public class PermissionController {
     @ApiOperation(value = "修改权限", notes = "")
     @PatchMapping()
     public Res updateOne(@RequestBody PermissionVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, NoSuchFieldException, InvalidAttributeValueException, IllegalAccessException, InvocationTargetException {
-        Boolean isDuplicateExceptSelf = permissionService.isDuplicateExceptSelf(updateOneReq.getPermission(), updateOneReq.getId());
+        Boolean isDuplicateExceptSelf = permissionService.isExistExceptSelf(updateOneReq.getPermission(), updateOneReq.getId());
         if (isDuplicateExceptSelf) {
             return Res.failure("权限值已存在");
         }

@@ -32,7 +32,7 @@ public class RoleController {
     @ApiOperation(value = "增加角色", notes = "")
     @PutMapping()
     public Res<RoleVO.InsertOneRes> insertOne(@RequestBody RoleVO.InsertOneReq insertOneReq) {
-        Boolean isDuplicate = roleService.isDuplicate(insertOneReq.getRole());
+        Boolean isDuplicate = roleService.isExist(insertOneReq.getRole());
         if (isDuplicate) {
             return Res.failure("角色值已存在");
         }
@@ -57,7 +57,7 @@ public class RoleController {
     @ApiOperation(value = "修改角色", notes = "")
     @PatchMapping()
     public Res updateOne(@RequestBody RoleVO.UpdateOneReq updateOneReq) {
-        Boolean isDuplicateExceptSelf = roleService.isDuplicateExceptSelf(updateOneReq.getRole(), updateOneReq.getId());
+        Boolean isDuplicateExceptSelf = roleService.isExistExceptSelf(updateOneReq.getRole(), updateOneReq.getId());
         if (isDuplicateExceptSelf) {
             return Res.failure("角色值已存在");
         }
