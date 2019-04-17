@@ -165,7 +165,7 @@ public class UserImp extends ServiceImpl<UserMapper, User> implements UserServic
             for (UserRole userRole : userRoleList) {
                 if (item.getId().equals(userRole.getUserId())) {
                     Long roleId = userRole.getRoleId();
-                    Role role = roleMap.get(roleId);
+                    Role role = roleMap.getOrDefault(roleId,new Role());
                     UserInTableDTO.RoleInfo roleInfo = mapperFacade.map(role, UserInTableDTO.RoleInfo.class);
                     roleInfoList.add(roleInfo);
                 }
@@ -174,7 +174,7 @@ public class UserImp extends ServiceImpl<UserMapper, User> implements UserServic
             for (UserUnit userUnit : userUnitList) {
                 if (item.getId().equals(userUnit.getUserId())) {
                     Long unitId = userUnit.getUnitId();
-                    Unit unit = unitMap.get(unitId);
+                    Unit unit = unitMap.getOrDefault(unitId, new Unit());
                     item.setUnitName(unit.getName());
                 }
             }

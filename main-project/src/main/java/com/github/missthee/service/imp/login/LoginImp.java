@@ -1,6 +1,7 @@
 package com.github.missthee.service.imp.login;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.missthee.config.security.SpecialPermission;
 import com.github.missthee.config.security.security.filter.UserInfoForSecurity;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
         }
         //查找角色信息集(角色表)
         List<Role> roleList;
-        Set<String> roleValueList = new HashSet<>();
+        List<String> roleValueList = new ArrayList<>();
         if (roleIdList.size() > 0) {
             QueryWrapper<Role> roleQW = new QueryWrapper<>();
             roleQW.in(Role.ID, roleIdList)
@@ -97,7 +98,7 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
         }
         //查找权限信息集(权限表)
         List<Permission> permissionList;
-        Set<String> permissionValueList = new HashSet<>();
+        List<String> permissionValueList = new ArrayList<>();
         if (permissionIdList.size() > 0) {
             QueryWrapper<Permission> permissionQW = new QueryWrapper<>();
             permissionQW.in(Permission.ID, permissionIdList)
@@ -114,19 +115,26 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
             userUnitList = userUnitMapper.selectList(userUnitQW);
         }
         //查询unit集合
-        Unit unit = new Unit();
-        if (userUnitList.size() > 0) {
-            QueryWrapper<Unit> unitQW = new QueryWrapper<>();
-            unitQW.in(Unit.ID, userUnitList.stream().map(UserUnit::getUnitId).collect(Collectors.toList()))
-                    .eq(Unit.IS_DELETE, false);
-            unit = unitMapper.selectOne(unitQW);
+        Unit unit = null;
+        {
+            if (userUnitList.size() > 0) {
+                QueryWrapper<Unit> unitQW = new QueryWrapper<>();
+                unitQW.in(Unit.ID, userUnitList.stream().map(UserUnit::getUnitId).collect(Collectors.toList()))
+                        .eq(Unit.IS_DELETE, false);
+                unit = unitMapper.selectOne(unitQW);
+            }
+            if (unit == null) {
+                unit = new Unit();
+            }
         }
+
         //整合信息
-        LoginDTO loginBO = mapperFacade.map(user, LoginDTO.class);
-        loginBO.setRoleValueList(roleValueList);
-        loginBO.setPermissionValueList(permissionValueList);
-        loginBO.setUnitName(unit.getName());
-        return loginBO;
+        LoginDTO loginDTO = mapperFacade.map(user, LoginDTO.class);
+        loginDTO.setRoleValueList(roleValueList);
+        addSpecialPermission(permissionValueList, user);
+        loginDTO.setPermissionValueList(permissionValueList);
+        loginDTO.setUnitName(unit.getName());
+        return loginDTO;
     }
 
     @Override
@@ -143,8 +151,19 @@ public class LoginImp implements LoginService, UserInfoForSecurity {
             addAll(loginDTO.getRoleValueList().stream().map(e -> "ROLE_" + e).collect(Collectors.toSet()));
             addAll(loginDTO.getPermissionValueList());
         }};
+        addSpecialPermission(authList, loginDTO);
         //权限如果前缀是ROLE_，security就会认为这是个角色信息，而不是权限，例如ROLE_MENBER就是MENBER角色，CAN_SEND就是CAN_SEND权限
         Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet = authList.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
         return new org.springframework.security.core.userdetails.User(String.valueOf(loginDTO.getId()), "", simpleGrantedAuthoritySet);//返回包括权限角色的User(此User为security提供的实体类)给security;
+    }
+
+    private void addSpecialPermission(Collection<String> authList, User user) {
+        if (user.getIsAdmin()) {
+            authList.add(SpecialPermission.ADMIN);
+        }
+        if (user.getIsBasic()) {
+            authList.add(SpecialPermission.ADMIN);
+            authList.add(SpecialPermission.BASIC);
+        }
     }
 }
