@@ -1,4 +1,4 @@
-package com.github.common.db.dto.manage.user;
+package com.github.common.dto.manage.user;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

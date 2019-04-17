@@ -1,4 +1,4 @@
-package com.github.missthee.config.security.jwt;
+package com.github.common.config.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;

@@ -1,7 +1,7 @@
-package com.github.missthee.config.security.security;
+package com.github.common.config.security.security;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.missthee.config.log.builder.LogBuilder;
+import com.github.common.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

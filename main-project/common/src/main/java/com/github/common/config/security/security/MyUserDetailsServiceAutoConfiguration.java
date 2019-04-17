@@ -1,4 +1,4 @@
-package com.github.missthee.config.security.security;
+package com.github.common.config.security.security;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
