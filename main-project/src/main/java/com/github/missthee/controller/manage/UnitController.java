@@ -55,12 +55,12 @@ public class UnitController {
     @ApiOperation(value = "修改组织结构", notes = "")
     @PatchMapping()
     public Res updateOne(@RequestBody UnitVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Boolean result = unitService.updateOne(updateOneReq);
         List<Unit> unitList = unitService.selectList(true, null);
         List<Object> childIdList = TreeData.getChildIdList(unitList, updateOneReq.getId());
         if (childIdList.contains(updateOneReq.getParentId())) {
             return Res.failure("不能将本组织结构，放置到本组织结构的子节点之下");
         }
+        Boolean result = unitService.updateOne(updateOneReq);
         return Res.res(result);
     }
 
