@@ -10,6 +10,97 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>main-project</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>common</module>
+        <module>manage-base</module>
+        <module>manage-letter</module>
+        <module>main</module>
+    </modules>
+    <dependencies>
+        <!--spring依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!--aop依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <!--测试依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <!--security依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!--监控依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--lombok依赖-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!--fastjson依赖-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
+        </dependency>
+        <!--mysql驱动依赖-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.44</version>
+        </dependency>
+        <!--jwt依赖-->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <!--mybatis plus-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+
+        <!--对象拷贝工具-->
+        <dependency>
+            <groupId>net.rakugakibox.spring.boot</groupId>
+            <artifactId>orika-spring-boot-starter</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
+        <!--自定义集合类计算工具,List<POJO>合计、平均-->
+        <dependency>
+            <groupId>com.github.MissThee</groupId>
+            <artifactId>collection-compute</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <!--自定义excel工具，导出成excel，导入成List<POJO>-->
+        <dependency>
+            <groupId>com.github.MissThee</groupId>
+            <artifactId>excel-tool</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <!--自定义树形数据构建工具，id和parentId构建树-->
+        <dependency>
+            <groupId>com.github.MissThee</groupId>
+            <artifactId>data-structure</artifactId>
+            <version>1.2</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -29,7 +120,7 @@
                         <entrypoint>
                             <arg>/bin/sh</arg>
                             <arg>-c</arg>
-                            <arg>java -cp /app/resources/:/app/classes/:/app/libs/* com.github.missthee.WebApplication $PARAMS</arg>
+                            <arg>java -cp /app/resources/:/app/classes/:/app/libs/* com.github.WebApplication $PARAMS</arg>
                         </entrypoint>
                     </container>
                     <from>
@@ -42,4 +133,6 @@
             </plugin>
         </plugins>
     </build>
+
+
 </project>
