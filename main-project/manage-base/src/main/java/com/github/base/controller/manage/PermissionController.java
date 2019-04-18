@@ -2,7 +2,7 @@ package com.github.base.controller.manage;
 
 import com.github.base.vo.manage.PermissionVO;
 import com.github.common.db.entity.primary.manage.Permission;
-import com.github.common.service.interf.manage.PermissionService;
+import com.github.base.service.interf.manage.PermissionService;
 import com.github.common.tool.Res;
 import com.github.missthee.tool.datastructure.TreeData;
 import io.swagger.annotations.Api;

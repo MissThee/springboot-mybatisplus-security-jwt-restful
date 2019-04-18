@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.db.entity.primary.manage.User;
-import com.github.common.service.interf.manage.UserService;
+import com.github.base.service.interf.manage.UserService;
 
 import com.github.common.tool.FileRec;
 import com.github.common.tool.Res;
@@ -34,14 +34,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/test")
 public class ExampleController {
-    private final UserService userService;
-    private final JavaJWT javaJWT;
-
-    @Autowired
-    public ExampleController(UserService userService, JavaJWT javaJWT) {
-        this.userService = userService;
-        this.javaJWT = javaJWT;
-    }
 
     @PostMapping("excel/output")
     public void excelTest(HttpServletResponse response) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException, NoSuchFieldException, ScriptException {
@@ -69,7 +61,7 @@ public class ExampleController {
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
     public Res<Map<String, Object>> getInfo(HttpServletRequest httpServletRequest) {
-        String userIdByToken = javaJWT.getId(httpServletRequest);//通过token解析获得
+        String userIdByToken = JavaJWT.getId(httpServletRequest);//通过token解析获得
 //        Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
         Map<String, Object> map = new HashMap<String, Object>() {{
             put("userIdByToken", userIdByToken);

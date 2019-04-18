@@ -8,10 +8,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import com.github.common.dto.login.LoginDTO;
+import com.github.base.dto.login.LoginDTO;
 import com.github.common.config.security.jwt.JavaJWT;
-import com.github.common.service.interf.manage.UserService;
-import com.github.common.service.interf.login.LoginService;
+import com.github.base.service.interf.manage.UserService;
+import com.github.base.service.interf.login.LoginService;
 import com.github.common.tool.Res;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +62,7 @@ public class LoginController {
     @PostMapping("/info")
     @PreAuthorize("isAuthenticated()")
     public Res<LoginVO.LoginRes> info(HttpServletRequest httpServletRequest) {
-        String id = javaJWT.getId(httpServletRequest);
+        String id = JavaJWT.getId(httpServletRequest);
         LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(id));
         if (loginDTO == null) {
             throw new BadCredentialsException("user not exist, when get user info");

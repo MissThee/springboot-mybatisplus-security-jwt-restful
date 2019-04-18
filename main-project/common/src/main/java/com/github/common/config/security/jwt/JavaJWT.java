@@ -112,7 +112,7 @@ public class JavaJWT {
     /**
      * @return int剩余有效时间(分钟)
      */
-    public long getTokenRemainingTime(String token) {
+    public static long getTokenRemainingTime(String token) {
         DecodedJWT jwt = JWT.decode(token);
         Date expiresDate = jwt.getExpiresAt();
         if (expiresDate == null) {
@@ -124,7 +124,7 @@ public class JavaJWT {
         }
     }
 
-    public String getId(String token) {
+    public static String getId(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("id").asString();
@@ -133,7 +133,7 @@ public class JavaJWT {
         }
     }
 
-    public String getId(HttpServletRequest httpServletRequest) {
+    public static String getId(HttpServletRequest httpServletRequest) {
         try {
             String token = httpServletRequest.getHeader(JWT_TOKEN_KEY);
             return getId(token);
@@ -151,7 +151,7 @@ public class JavaJWT {
 //        DecodedJWT jwt = JWT.decode(token);
 //        return jwt.getClaim("permissionList").asList(String.class);
 //    }
-    private Date toDate(LocalDateTime localDateTime) {
+    private static Date toDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

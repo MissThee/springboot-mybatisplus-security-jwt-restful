@@ -1,9 +1,9 @@
 package com.github.base.vo.manage;
 
-import com.github.common.dto.manage.user.UserInTableDTO;
-import com.github.common.dto.manage.user.UserInTableDetailDTO;
-import com.github.common.dto.manage.user.UserInsertOneDTO;
-import com.github.common.dto.manage.user.UserUpdateOneDTO;
+import com.github.base.dto.manage.user.UserInTableDTO;
+import com.github.base.dto.manage.user.UserInTableDetailDTO;
+import com.github.base.dto.manage.user.UserInsertOneDTO;
+import com.github.base.dto.manage.user.UserUpdateOneDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -79,5 +79,11 @@ public class UserVO {
     @ApiModel("UserVO.UpdateOneReq")
     public static class UpdateOneReq extends UserUpdateOneDTO {
 
+    }
+    @Data
+    @Accessors(chain = true)
+    @ApiModel("UserVO.ResetDefaultPasswordReq")
+    public class ResetDefaultPasswordReq {
+        private Long id;
     }
 }

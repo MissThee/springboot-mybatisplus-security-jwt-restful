@@ -2,7 +2,7 @@ package com.github.base.controller.manage;
 
 import com.github.base.vo.manage.RoleVO;
 import com.github.common.db.entity.primary.manage.Role;
-import com.github.common.service.interf.manage.RoleService;
+import com.github.base.service.interf.manage.RoleService;
 import com.github.common.tool.Res;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

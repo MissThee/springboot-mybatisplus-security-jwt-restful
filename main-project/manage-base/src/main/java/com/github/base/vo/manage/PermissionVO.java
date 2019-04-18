@@ -1,7 +1,7 @@
 package com.github.base.vo.manage;
 
-import com.github.common.dto.manage.permission.PermissionInsertOneDTO;
-import com.github.common.dto.manage.permission.PermissionUpdateOneDTO;
+import com.github.base.dto.manage.permission.PermissionInsertOneDTO;
+import com.github.base.dto.manage.permission.PermissionUpdateOneDTO;
 import com.github.common.db.entity.primary.manage.Permission;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

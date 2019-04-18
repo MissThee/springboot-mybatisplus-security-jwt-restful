@@ -1,6 +1,6 @@
 package com.github.base.vo.login;
 
-import com.github.common.dto.login.LoginDTO;
+import com.github.base.dto.login.LoginDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.github.base.vo.manage;
 
-import com.github.common.dto.manage.unit.UnitInsertOneDTO;
-import com.github.common.dto.manage.unit.UnitUpdateOneDTO;
+import com.github.base.dto.manage.unit.UnitInsertOneDTO;
+import com.github.base.dto.manage.unit.UnitUpdateOneDTO;
 import com.github.common.db.entity.primary.manage.Unit;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

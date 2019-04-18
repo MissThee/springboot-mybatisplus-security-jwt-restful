@@ -60,7 +60,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.44</version>
         </dependency>
         <!--mybatis plus-->
         <dependency>
@@ -82,6 +81,5 @@
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
         </dependency>
-
     </dependencies>
 </project>

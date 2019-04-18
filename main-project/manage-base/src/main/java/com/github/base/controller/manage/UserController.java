@@ -1,9 +1,9 @@
 package com.github.base.controller.manage;
 
-import com.github.common.dto.manage.user.UserInTableDTO;
-import com.github.common.dto.manage.user.UserInTableDetailDTO;
+import com.github.base.dto.manage.user.UserInTableDTO;
+import com.github.base.dto.manage.user.UserInTableDetailDTO;
 import com.github.base.vo.manage.UserVO;
-import com.github.common.service.interf.manage.UserService;
+import com.github.base.service.interf.manage.UserService;
 import com.github.common.tool.Res;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -59,6 +59,13 @@ public class UserController {
     @PatchMapping()
     public Res updateOne(@RequestBody UserVO.UpdateOneReq updateOneReq) {
         Boolean result = userService.updateOne(updateOneReq);
+        return Res.res(result);
+    }
+
+    @ApiOperation(value = "重置密码", notes = "")
+    @PatchMapping()
+    public Res resetDefaultPassword(@RequestBody UserVO.ResetDefaultPasswordReq resetDefaultPasswordReq) {
+        Boolean result = userService.resetDefaultPassword(resetDefaultPasswordReq.getId());
         return Res.res(result);
     }
 
