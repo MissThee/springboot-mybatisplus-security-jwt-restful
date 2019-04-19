@@ -3,6 +3,7 @@ package com.github.letter.controller.flowable;
 import com.alibaba.fastjson.JSONObject;
 import com.github.common.tool.Res;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.flowable.bpmn.model.*;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.*;
@@ -24,10 +25,7 @@ import org.flowable.variable.api.history.HistoricVariableInstanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,6 +35,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.github.letter.controller.flowable.FJSON.*;
+
 @Api(tags = "审批-审批流程流转")
 @RestController
 @RequestMapping("flowable/use")
@@ -79,8 +78,8 @@ public class ProcessUseController {
     //任务实例，如果任务为userTask，则Execution会有一个task实例
 //    Task task;
 
-    //启动流程
     // act_ru_execution     流程启动一次，只要没执行完，就会有数据
+    @ApiOperation(value = "启动流程", notes = "")
     @PostMapping("startProcess")
     public Res<Map<String, Object>> startProcess(@RequestBody(required = false) JSONObject bJO) {
         String processDefKey = getStringOrDefaultFromJO(bJO, "processDefKey", "DemoProcess");
@@ -99,19 +98,28 @@ public class ProcessUseController {
         return Res.success(processInstanceToJSON(processInstance), "启动成功");
     }
 
-    //查询任务
     // act_ru_task          启动流程中的任务，仅存放正在执行的任务，执行完的任务不在本表。
     // act_ru_identitylink  存放正在执行任务的，办理人信息
+    @ApiOperation(value = "查询任务", notes = "（按办理人查询，按候选办理人查询，按候选办理组查询）")
     @PostMapping("searchTask")
     public Res searchTask(@RequestBody(required = false) JSONObject bJO) {
         String assignee = getStringOrDefaultFromJO(bJO, "assignee", null);
         String candidateUser = getStringOrDefaultFromJO(bJO, "candidateUser", null);
+        List<String> candidateGroup = getCollectionOrDefaultFromJO(bJO, "candidateGroup", null);
+        Boolean isOnlyUnassigned = getBooleanOrDefaultFromJO(bJO, "isOnlyUnassigned", false);
         TaskQuery taskQuery = taskService.createTaskQuery();
         if (assignee != null) {
             taskQuery.taskAssignee(assignee);//按办理人查询
         }
         if (candidateUser != null) {
-            taskQuery.taskCandidateUser(candidateUser);//按候选办理人查询。仅无办理人，且有候选人的任务可查到
+            taskQuery.taskCandidateOrAssigned(candidateUser);//按候选办理人查询。
+//            taskQuery.taskCandidateUser(candidateUser);//按候选办理人查询。仅无办理人，且有候选人的任务可查到
+        }
+        if (candidateGroup != null) {
+            taskQuery.taskCandidateGroupIn(candidateGroup);//按候选组查询。
+        }
+        if (isOnlyUnassigned) {
+            taskQuery.taskUnassigned();
         }
         List<Task> list = taskQuery
                 .orderByProcessInstanceId().asc()
@@ -121,7 +129,7 @@ public class ProcessUseController {
         return Res.success(taskList, assignee);
     }
 
-    //任务拾取
+    @ApiOperation(value = "任务添加办理人（任务拾取）", notes = "")
     @PostMapping("claimTask")
     public Res claimTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -139,7 +147,7 @@ public class ProcessUseController {
         return Res.success();
     }
 
-    //回退任务拾取
+    @ApiOperation(value = "任务删除办理人（回退任务拾取）", notes = "")
     @PostMapping("returnTask")
     public Res returnTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -150,7 +158,7 @@ public class ProcessUseController {
         return Res.success();
     }
 
-    //查询任务的候选办理人
+    @ApiOperation(value = "查询任务的候选办理人", notes = "")
     @PostMapping("getIdentityLinksForTask")
     public Res getIdentityLinksForTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -163,35 +171,45 @@ public class ProcessUseController {
         return Res.success(list);
     }
 
-    //添加任务的候选办理人
     //act_ru_identitylink
-    //增加候选办理人时，每个候选办理人有两条数据，类型分别为participant和candidate。其中participant在设置候选办理人、办理人时均会插入
-    //删除候选办理人时，仅删除candidate类的记录。
-    @PostMapping("optionCandidateUser")
+    //增加候选办理人时，每个候选办理人有两条数据，类型分别为participant（参与过的人）和candidate（候选办理人）。其中participant在设置候选办理人、办理人时均会插入
+    @ApiOperation(value = "任务添加候选办理人", notes = "")
+    @PostMapping("candidateUser")
     public Res addCandidateUser(@RequestBody(required = false) JSONObject bJO) {
-        Boolean isAdd = getBooleanOrDefaultFromJO(bJO, "isAdd", null);
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
         String candidateUser = getStringOrDefaultFromJO(bJO, "candidateUser", null);
-        if (isAdd == null) {
-            return Res.failure("null isAdd");
-        }
         if (StringUtils.isEmpty(taskId)) {
             return Res.failure("empty taskId");
         }
         if (StringUtils.isEmpty(candidateUser)) {
             return Res.failure("empty candidateUser");
         }
-        if (isAdd) {
-            taskService.addCandidateUser(taskId, candidateUser);
-        } else {
-            taskService.deleteCandidateUser(taskId, candidateUser);
-        }
+        taskService.addCandidateUser(taskId, candidateUser);
         List<IdentityLink> identityLinkList = taskService.getIdentityLinksForTask(taskId);
         List<Map<String, Object>> list = identityLinkList.stream().map(FJSON::identityLinkToJSON).collect(Collectors.toList());
         return Res.success(list);
     }
 
-    //办理任务
+    //act_ru_identitylink
+    //删除候选办理人时，仅删除candidate类的记录。
+    @ApiOperation(value = "任务删除候选办理人", notes = "")
+    @DeleteMapping("candidateUser")
+    public Res deleteCandidateUser(@RequestBody(required = false) JSONObject bJO) {
+        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
+        String candidateUser = getStringOrDefaultFromJO(bJO, "candidateUser", null);
+        if (StringUtils.isEmpty(taskId)) {
+            return Res.failure("empty taskId");
+        }
+        if (StringUtils.isEmpty(candidateUser)) {
+            return Res.failure("empty candidateUser");
+        }
+        taskService.deleteCandidateUser(taskId, candidateUser);
+        List<IdentityLink> identityLinkList = taskService.getIdentityLinksForTask(taskId);
+        List<Map<String, Object>> list = identityLinkList.stream().map(FJSON::identityLinkToJSON).collect(Collectors.toList());
+        return Res.success(list);
+    }
+
+    @ApiOperation(value = "办理任务", notes = "")
     @PostMapping("completeTask")
     public Res completeTask(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -208,8 +226,7 @@ public class ProcessUseController {
         return Res.success();
     }
 
-
-    //判断流程是否完成
+    @ApiOperation(value = "查询流程是否完结", notes = "")
     @PostMapping("processIsFinished")
     public Res processIsFinished(@RequestBody(required = false) JSONObject bJO) {
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -227,7 +244,7 @@ public class ProcessUseController {
         }});
     }
 
-    //查询历史任务
+    @ApiOperation(value = "查询用户的历史任务", notes = "")
     @PostMapping("searchHistoryTask")
     public Res searchHistoryTask(@RequestBody(required = false) JSONObject bJO) {
         String assignee = getStringOrDefaultFromJO(bJO, "assignee", null);
@@ -249,9 +266,9 @@ public class ProcessUseController {
     //act_hi_identitylink   历史任务实例。   每有一个用户进行操作，记录一条数据
 
     //变量操作开始--------------------------------------------------------------------------
-    //操作变量。通过taskId或executionId
     //act_ru_variable   正在执行流程中的变量
     //act_hi_varinst    历史流程中的变量
+    @ApiOperation(value = "操作流程变量", notes = "通过taskId或executionId")
     @PostMapping("setVariableViaExecution")
     public Res setVariableViaExecution(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -280,7 +297,7 @@ public class ProcessUseController {
         return Res.success();
     }
 
-    //获取变量。通过taskId或executionId
+    @ApiOperation(value = "查询流程变量", notes = "通过taskId或executionId")
     @PostMapping("getVariable")
     public Res getVariable(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -303,7 +320,7 @@ public class ProcessUseController {
         return Res.success(stringObjectHashMap);
     }
 
-    //获取历史变量。通过taskId或executionId
+    @ApiOperation(value = "查询历史变量", notes = "通过taskId或executionId")
     @PostMapping("getHistoryVariable")
     public Res<List<Map<String, Object>>> getHistoryVariable(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -328,8 +345,8 @@ public class ProcessUseController {
     }
     //变量操作结束--------------------------------------------------------------------------
 
-
-    //查询历史流程实例
+    //历史查询开始--------------------------------------------------------------------------
+    @ApiOperation(value = "查询流程任务历史", notes = "通过taskId或executionId")
     @PostMapping("searchHistoryProcess")
     public Res searchHistoryProcess(@RequestBody(required = false) JSONObject bJO) {
         String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
@@ -344,7 +361,7 @@ public class ProcessUseController {
         return Res.success(hisTaskList);
     }
 
-    //查询历史活动实例
+    @ApiOperation(value = "查询流程历史活动实例", notes = "通过taskId或executionId")
     @PostMapping("searchHistoryAct")
     public Res searchHistoryAct(@RequestBody(required = false) JSONObject bJO) {
         String activityId = getStringOrDefaultFromJO(bJO, "activityId", null);
@@ -359,9 +376,10 @@ public class ProcessUseController {
         List hisTaskList = list.stream().map(FJSON::historicActivityInstanceToJSON).collect(Collectors.toList());
         return Res.success(hisTaskList);
     }
+    //历史查询结束--------------------------------------------------------------------------
 
-    //执行实例，下一步。以节点id（activitiId）和流程实例id（processInstanceId），确定当前节点的执行实例（可能有多个），将执行实例前进一步
     //已知当节点不为UserTask时，无法使用任务查询到当前的节点执行情况，只能通过此方式，获取流程实例，进行操作（遗留问题：当一个节点有1个以上的实行实例时，如何区分不同的实例）
+    @ApiOperation(value = "执行实例推进一步", notes = "以节点id（activitiId）和流程实例id（processInstanceId），确定当前节点的执行实例（可能有多个），将执行实例前进一步")
     @PostMapping("triggerExecution")
     public Res searchExecution(@RequestBody(required = false) JSONObject bJO) {
         String activityId = getStringOrDefaultFromJO(bJO, "activityId", null);
@@ -389,7 +407,8 @@ public class ProcessUseController {
         return Res.success();
     }
 
-    //查询任务的流程进度图片
+    //图形查询开始--------------------------------------------------------------------------
+    @ApiOperation(value = "查询单个流程的进度图片", notes = "")
     @PostMapping("imgWithHighLight")
     public void imgWithHighLight(HttpServletResponse httpServletResponse, @RequestBody(required = false) JSONObject bJO) throws IOException {
         Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
@@ -437,7 +456,7 @@ public class ProcessUseController {
         Res.out(httpServletResponse, inputStream);
     }
 
-    //查询流程图片
+    @ApiOperation(value = "查询流程图片", notes = "")
     @PostMapping("img")
     public void img(HttpServletResponse httpServletResponse, @RequestBody(required = false) JSONObject bJO) throws IOException {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -454,7 +473,7 @@ public class ProcessUseController {
         Res.out(httpServletResponse, processDiagramInputStream);
     }
 
-    //查询流程图片中高亮元素坐标(流程线，流程节点)
+    @ApiOperation(value = "查询流程图片中高亮元素坐标", notes = "(流程线，流程节点)")
     @PostMapping("img/highLightData/all")
     public Res<Map<String, List>> imgHighLightDataAll(@RequestBody(required = false) JSONObject bJO) {
         Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
@@ -526,7 +545,7 @@ public class ProcessUseController {
         return Res.success(resultMap);
     }
 
-    //查询流程图片中高亮元素坐标(流程节点)
+    @ApiOperation(value = "查询流程图片中高亮元素坐标", notes = "(流程节点)")
     @PostMapping("img/highLightData/activity")
     public Res<List<Map<String, Double>>> imgHighLightDataActivity(@RequestBody(required = false) JSONObject bJO) {
         Boolean isOnlyLast = getBooleanOrDefaultFromJO(bJO, "isOnlyLast", false);
@@ -564,6 +583,8 @@ public class ProcessUseController {
         }
         return Res.success(flowActivityList);
     }
+    //图形查询结束--------------------------------------------------------------------------
+
 }
 
 

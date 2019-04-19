@@ -10,6 +10,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.common.config.security.jwt.JavaJWT;
@@ -61,6 +62,7 @@ public class ExampleController {
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
     public Res<Map<String, Object>> getInfo(HttpServletRequest httpServletRequest) {
+        SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userIdByToken = JavaJWT.getId(httpServletRequest);//通过token解析获得
 //        Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
         Map<String, Object> map = new HashMap<String, Object>() {{

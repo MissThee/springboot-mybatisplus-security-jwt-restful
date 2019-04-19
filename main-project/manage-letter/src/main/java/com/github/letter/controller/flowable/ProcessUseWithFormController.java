@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.common.tool.Res;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.flowable.engine.*;
 import org.flowable.engine.form.FormProperty;
 import org.flowable.engine.form.FormType;
@@ -62,7 +63,7 @@ public class ProcessUseWithFormController {
         this.processEngine = processEngine;
     }
 
-    //查询流程开始节点的表单属性
+    @ApiOperation(value = "查询流程开始节点的表单属性", notes = "通过taskId或executionId")
     @PostMapping("getStartFormData")
     public Res<JSONObject> getStartFormData(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -103,7 +104,7 @@ public class ProcessUseWithFormController {
         return Res.success(jO);
     }
 
-    //查询流程中开始节点的表单渲染
+    @ApiOperation(value = "查询流程中开始节点的表单渲染", notes = "通过taskId或executionId")
     @PostMapping("getRenderedStartForm")
     public Res getRenderedStartForm(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -120,7 +121,7 @@ public class ProcessUseWithFormController {
         return Res.success(renderedStartForm);
     }
 
-    //开始一个流程，并添加表单的内容
+    @ApiOperation(value = "开始一个流程，并添加表单的内容", notes = "")
     @PostMapping("startForm")
     public Res startForm(@RequestBody(required = false) JSONObject bJO) {
         String processDefKey = getStringOrDefaultFromJO(bJO, "processDefKey", null);
@@ -140,7 +141,7 @@ public class ProcessUseWithFormController {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm").format(localDateTime);
     }
 
-    //查询流程中任务的表单属性
+    @ApiOperation(value = "查询流程中任务的表单属性", notes = "")
     @PostMapping("getTaskFormData")
     public Res<JSONObject> getTaskFormData(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -175,7 +176,7 @@ public class ProcessUseWithFormController {
     }
 
 
-    //保存表单值，不完成任务
+    @ApiOperation(value = "保存表单值，不完成任务", notes = "")
     @PostMapping("saveTaskFormData")
     public Res saveTaskFormData(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
@@ -187,7 +188,7 @@ public class ProcessUseWithFormController {
         return Res.success();
     }
 
-    //保存表单值，完成任务
+    @ApiOperation(value = "保存表单值，完成任务", notes = "")
     @PostMapping("submitTaskFormData")
     public Res submitTaskFormData(@RequestBody(required = false) JSONObject bJO) {
         String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);

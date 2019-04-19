@@ -15,9 +15,7 @@ import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FJSON {
     protected static String getStringOrDefaultFromJO(JSONObject jO, String key, String defaultValue) {
@@ -32,14 +30,26 @@ public class FJSON {
         }
     }
 
-    protected static <V> Map<String,V> getMapOrDefaultFromJO(JSONObject jO, String key, HashMap<String,V> map) {
+    protected static <V> Map<String, V> getMapOrDefaultFromJO(JSONObject jO, String key, Map<String, V> map) {
         if (jO == null) {
             return map;
         } else {
             if (jO.containsKey(key)) {
-                return (Map<String,V>)jO.getJSONObject(key);
+                return (Map<String, V>) jO.getJSONObject(key);
             } else {
                 return map;
+            }
+        }
+    }
+
+    protected static <T> List<T> getCollectionOrDefaultFromJO(JSONObject jO, String key, List<T> list) {
+        if (jO == null) {
+            return list;
+        } else {
+            if (jO.containsKey(key)) {
+                return (List<T>) jO.getJSONObject(key);
+            } else {
+                return list;
             }
         }
     }

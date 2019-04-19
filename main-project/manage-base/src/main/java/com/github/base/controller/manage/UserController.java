@@ -63,7 +63,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "重置密码", notes = "")
-    @PatchMapping()
+    @PatchMapping("/password/default")
     public Res resetDefaultPassword(@RequestBody UserVO.ResetDefaultPasswordReq resetDefaultPasswordReq) {
         Boolean result = userService.resetDefaultPassword(resetDefaultPasswordReq.getId());
         return Res.res(result);
