@@ -1,8 +1,12 @@
-package com.github.letter.controller.flowable;
+package com.github.flow.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import org.flowable.engine.form.FormData;
+import org.flowable.engine.form.FormProperty;
+import org.flowable.engine.form.FormType;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.impl.form.DateFormType;
+import org.flowable.engine.impl.form.EnumFormType;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ActivityInstance;
@@ -18,48 +22,56 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class FJSON {
-    protected static String getStringOrDefaultFromJO(JSONObject jO, String key, String defaultValue) {
-        if (jO == null) {
+    protected static String getStringOrDefaultFromJO(Map map, String key, String defaultValue) {
+        if (map == null) {
             return defaultValue;
         } else {
-            if (jO.containsKey(key)) {
-                return jO.getString(key);
+            if (map.containsKey(key)) {
+                Object o = map.get(key);
+                if (o != null) {
+                    return o.toString();
+                }
+                return defaultValue;
             } else {
                 return defaultValue;
             }
         }
     }
 
-    protected static <V> Map<String, V> getMapOrDefaultFromJO(JSONObject jO, String key, Map<String, V> map) {
-        if (jO == null) {
-            return map;
+    protected static <V> Map<String, V> getMapOrDefaultFromJO(Map map, String key, Map<String, V> defaultMap) {
+        if (map == null) {
+            return defaultMap;
         } else {
-            if (jO.containsKey(key)) {
-                return (Map<String, V>) jO.getJSONObject(key);
+            if (map.containsKey(key)) {
+                return (Map<String, V>) map.get(key);
             } else {
-                return map;
+                return defaultMap;
             }
         }
     }
 
-    protected static <T> List<T> getCollectionOrDefaultFromJO(JSONObject jO, String key, List<T> list) {
-        if (jO == null) {
+    protected static <T> List<T> getCollectionOrDefaultFromJO(Map map, String key, List<T> list) {
+        if (map == null) {
             return list;
         } else {
-            if (jO.containsKey(key)) {
-                return (List<T>) jO.getJSONObject(key);
+            if (map.containsKey(key)) {
+                return (List<T>) map.get(key);
             } else {
                 return list;
             }
         }
     }
 
-    protected static Boolean getBooleanOrDefaultFromJO(JSONObject jO, String key, Boolean defaultValue) {
-        if (jO == null) {
+    protected static Boolean getBooleanOrDefaultFromJO(Map map, String key, Boolean defaultValue) {
+        if (map == null) {
             return defaultValue;
         } else {
-            if (jO.containsKey(key)) {
-                return jO.getBoolean(key);
+            if (map.containsKey(key)) {
+                Object o = map.get(key);
+                if (o != null) {
+                    return (Boolean) o;
+                }
+                return defaultValue;
             } else {
                 return defaultValue;
             }
@@ -190,7 +202,7 @@ public class FJSON {
         }};
     }
 
-    protected static <T> Map<String, Double> FlowNodeToJSON(T nodeInfo) {
+    protected static <T> Map<String, Double> flowNodeToJSON(T nodeInfo) {
         return new LinkedHashMap<String, Double>() {{
             String[] keys = {"x", "y", "width", "height"};
             try {
@@ -204,5 +216,30 @@ public class FJSON {
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
             }
         }};
+    }
+
+    protected static ArrayList formDataToJSON(FormData taskFormData) {
+        List<FormProperty> formProperties = taskFormData.getFormProperties();
+        ArrayList<LinkedHashMap<String, Object>> arrayList = new ArrayList<>();
+        for (FormProperty formProperty : formProperties) {
+            if (formProperty.isReadable()) {
+                arrayList.add(new LinkedHashMap<String, Object>() {{
+                    put("id", formProperty.getId());
+                    put("name", formProperty.getName());
+                    put("value", formProperty.getValue());
+                    put("isWritable", formProperty.isWritable());
+                    put("isRequired", formProperty.isRequired());
+                    put("type", formProperty.getType().getName());
+                    FormType formType = formProperty.getType();
+                    if (formType instanceof DateFormType) {// date enum double boolean double long string
+                        //"datePattern"此值在每个类型中是固定的，于源码中查看。默认类型中仅datePattern、values有getInformation方法
+                        put("getInformation", formProperty.getType().getInformation("datePattern"));
+                    } else if (formType instanceof EnumFormType) {
+                        put("getInformation", formProperty.getType().getInformation("values"));
+                    }
+                }});
+            }
+        }
+        return arrayList;
     }
 }

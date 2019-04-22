@@ -14,7 +14,7 @@
     <modules>
         <module>common</module>
         <module>manage-base</module>
-        <module>manage-letter</module>
+        <module>manage-flow</module>
         <module>service-start</module>
     </modules>
     <dependencies>

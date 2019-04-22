@@ -1,4 +1,4 @@
-package com.github.letter.config.flowable;
+package com.github.flow.config;
 
 import org.flowable.common.engine.impl.cfg.IdGenerator;
 import org.flowable.common.engine.impl.persistence.StrongUuidGenerator;

@@ -3,7 +3,7 @@ package com.github.base.service.imp.login;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.common.db.entity.primary.manage.*;
 import com.github.common.config.security.SpecialPermission;
-import com.github.common.config.security.security.filter.UserInfoForSecurity;
+import com.github.common.config.security.springsecurity.filter.UserInfoForSecurity;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;

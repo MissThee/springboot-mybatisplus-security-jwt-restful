@@ -1,7 +1,8 @@
-package com.github.letter.controller.flowable;
+package com.github.flow.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.common.tool.Res;
+import com.github.flow.vo.ProcessUseVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.flowable.bpmn.model.*;
@@ -25,6 +26,7 @@ import org.flowable.variable.api.history.HistoricVariableInstanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +36,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.github.letter.controller.flowable.FJSON.*;
+import static com.github.flow.controller.FJSON.*;
 
 @Api(tags = "审批-审批流程流转")
 @RestController
@@ -68,33 +70,26 @@ public class ProcessUseController {
         this.managementService = managementService;
         this.processEngine = processEngine;
     }
-
-    //流程定义。当流程图被部署之后，查询出来的数据。仅为定义的流程，没有实际执行。
+//流程中的对象简介：
+    //1、流程定义。当流程图被部署之后，查询出来的数据。仅为定义的流程，没有实际执行。
 //    ProcessDefinition processDefinition;
-    //流程定义的执行实例。
+    //2、流程定义的执行实例。
 //    ProcessInstance processInstance;
-    //描述流程执行的每一个节点。ProcessDefinition分支时，ProcessDefinition有一个ProcessInstance；有分支时则有多个
+    //3、描述流程执行的每一个执行节点。ProcessDefinition分支时，ProcessDefinition有一个ProcessInstance；有分支时则有多个
 //    Execution execution;
-    //任务实例，如果任务为userTask，则Execution会有一个task实例
+    //4、任务实例，如果任务为userTask，则Execution会有一个task实例
 //    Task task;
+
 
     // act_ru_execution     流程启动一次，只要没执行完，就会有数据
     @ApiOperation(value = "启动流程", notes = "")
     @PostMapping("startProcess")
-    public Res<Map<String, Object>> startProcess(@RequestBody(required = false) JSONObject bJO) {
-        String processDefKey = getStringOrDefaultFromJO(bJO, "processDefKey", "DemoProcess");
-        String businessKey = getStringOrDefaultFromJO(bJO, "businessKey", "审批表单1");
-        Map<String, Object> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);
-//        runtimeService.startProcessInstanceById(processId);
-        //参数1：流程定义id
-        //参数2：Map<String,Object> 流程变量
-//        runtimeService.startProcessInstanceById(processId,map );
-        //参数1：流程定义id
-        //参数2：String 业务id (可设置此id为业务单号)
-//        runtimeService.startProcessInstanceById(processId,businessKey );
-        //实际开发中常用一下方法
-//        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processIdOrKey, businessKey);
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefKey, businessKey, variableMap);
+    public Res<Map<String, Object>> startProcess(ProcessUseVO.StartProcessReq req) {
+//        runtimeService.startProcessInstanceById(processId);//流程定义id
+//        runtimeService.startProcessInstanceById(processId,map );//流程定义id，Map<String,Object> 流程变量
+//        runtimeService.startProcessInstanceById(processId,businessKey );//流程定义id，String 业务id (可设置此id为业务单号)
+//        runtimeService.startProcessInstanceByKey(processKey, businessKey);//流程定义key，Map<String,Object> 流程变量
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(req.getProcessDefKey(), req.getBusinessKey(), req.getVariableMap());
         return Res.success(processInstanceToJSON(processInstance), "启动成功");
     }
 
@@ -102,23 +97,19 @@ public class ProcessUseController {
     // act_ru_identitylink  存放正在执行任务的，办理人信息
     @ApiOperation(value = "查询任务", notes = "（按办理人查询，按候选办理人查询，按候选办理组查询）")
     @PostMapping("searchTask")
-    public Res searchTask(@RequestBody(required = false) JSONObject bJO) {
-        String assignee = getStringOrDefaultFromJO(bJO, "assignee", null);
-        String candidateUser = getStringOrDefaultFromJO(bJO, "candidateUser", null);
-        List<String> candidateGroup = getCollectionOrDefaultFromJO(bJO, "candidateGroup", null);
-        Boolean isOnlyUnassigned = getBooleanOrDefaultFromJO(bJO, "isOnlyUnassigned", false);
+    public Res searchTask(ProcessUseVO.SearchTaskReq req) {
         TaskQuery taskQuery = taskService.createTaskQuery();
-        if (assignee != null) {
-            taskQuery.taskAssignee(assignee);//按办理人查询
+        if (req.getAssignee() != null) {
+            taskQuery.taskAssignee(req.getAssignee());//按办理人查询
         }
-        if (candidateUser != null) {
-            taskQuery.taskCandidateOrAssigned(candidateUser);//按候选办理人查询。
+        if (req.getCandidateUser() != null) {
+            taskQuery.taskCandidateOrAssigned(req.getCandidateUser());//按候选办理人查询。
 //            taskQuery.taskCandidateUser(candidateUser);//按候选办理人查询。仅无办理人，且有候选人的任务可查到
         }
-        if (candidateGroup != null) {
-            taskQuery.taskCandidateGroupIn(candidateGroup);//按候选组查询。
+        if (req.getCandidateGroup() != null) {
+            taskQuery.taskCandidateGroupIn(req.getCandidateGroup());//按候选组查询。
         }
-        if (isOnlyUnassigned) {
+        if (req.getIsOnlyUnassigned()) {
             taskQuery.taskUnassigned();
         }
         List<Task> list = taskQuery
@@ -126,25 +117,17 @@ public class ProcessUseController {
                 .orderByTaskCreateTime().desc()
                 .list();
         List taskList = list.stream().map(FJSON::taskToJSON).collect(Collectors.toList());
-        return Res.success(taskList, assignee);
+        return Res.success(taskList);
     }
 
     @ApiOperation(value = "任务添加办理人（任务拾取）", notes = "")
     @PostMapping("claimTask")
-    public Res claimTask(@RequestBody(required = false) JSONObject bJO) {
-        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
-        String assignee = getStringOrDefaultFromJO(bJO, "assignee", null);
-        if (StringUtils.isEmpty(taskId)) {
-            return Res.failure("empty taskId");
-        }
-        if (StringUtils.isEmpty(assignee)) {
-            return Res.failure("empty assignee");
-        }
+    public Res claimTask(@RequestBody @Validated ProcessUseVO.ClaimTaskReq req) {
         //claim 会检查assignee字段是否已有办理人。若有，抛出异常；若没有，设置办理人。
         //setAssignee 直接设置办理人。
         //共同点：除claim会检查是否已有办理人外，两者均可给任意任务（不论有无候选办理人），设置任意办理人（不论设置的办理人是否在候选办理人中）
-        taskService.claim(taskId, assignee);
-        return Res.success();
+        taskService.claim(req.getTaskId(), req.getAssignee());
+        return Res.success("成功");
     }
 
     @ApiOperation(value = "任务删除办理人（回退任务拾取）", notes = "")
@@ -522,7 +505,7 @@ public class ProcessUseController {
                 if (highLightedFlows.contains(key)) {
                     List<Map<String, Double>> flowLineNodeList = new ArrayList<Map<String, Double>>();
                     for (GraphicInfo graphicInfo : flowLocationMap.get(key)) {
-                        flowLineNodeList.add(FJSON.FlowNodeToJSON(graphicInfo));
+                        flowLineNodeList.add(FJSON.flowNodeToJSON(graphicInfo));
                     }
                     flowLineList.add(flowLineNodeList);
                 }
@@ -534,7 +517,7 @@ public class ProcessUseController {
             for (String key : locationMap.keySet()) {
                 if (highLightedActivities.contains(key)) {
                     GraphicInfo flowNode = locationMap.get(key);
-                    flowNodeList.add(FlowNodeToJSON(flowNode));
+                    flowNodeList.add(flowNodeToJSON(flowNode));
                 }
             }
         }
@@ -578,7 +561,7 @@ public class ProcessUseController {
         for (String highLightedActivity : highLightedActivities) {
             DiagramNode diagramNode = processDiagramLayout.getNode(highLightedActivity);
             if (diagramNode != null) {
-                flowActivityList.add(FlowNodeToJSON(diagramNode));
+                flowActivityList.add(flowNodeToJSON(diagramNode));
             }
         }
         return Res.success(flowActivityList);

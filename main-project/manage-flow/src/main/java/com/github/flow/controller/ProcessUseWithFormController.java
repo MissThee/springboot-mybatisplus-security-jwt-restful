@@ -1,20 +1,14 @@
-package com.github.letter.controller.flowable;
+package com.github.flow.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.common.tool.Res;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.flowable.engine.*;
-import org.flowable.engine.form.FormProperty;
-import org.flowable.engine.form.FormType;
 import org.flowable.engine.form.StartFormData;
 import org.flowable.engine.form.TaskFormData;
-import org.flowable.engine.impl.form.DateFormType;
-import org.flowable.engine.impl.form.EnumFormType;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
@@ -26,41 +20,25 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static com.github.letter.controller.flowable.FJSON.*;
+import static com.github.flow.controller.FJSON.*;
+
 @Api(tags = "审批-审批流程流转(带form变量约束)")
 @RestController
 @RequestMapping("flowable/form")
 public class ProcessUseWithFormController {
-    //基础配置类
-    //private final ProcessEngine processEngine;
-    //流程部署、修改、删除服务。主要操作表：act_ge_bytearray,act_re_deployment,act_re_model,act_re_procdef
     private final RepositoryService repositoryService;
-    //流程的运行。主要操作表：act_ru...
     private final RuntimeService runtimeService;
     private final TaskService taskService;
-    //查询历史记录。主要操作表：act_hi...
-    private final HistoryService historyService;
-    //页面表单服务（较少使用）
     private final FormService formService;
-    //对工作流的用户管理的表操作。主要操作表：act_id...
-    private final IdentityService identityService;
-    //管理器
-    private final ManagementService managementService;
-    private final ProcessEngine processEngine;
 
     @Autowired
-    public ProcessUseWithFormController(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService, FormService formService, HistoryService historyService, IdentityService identityService, ManagementService managementService, @Qualifier("processEngine") ProcessEngine processEngine) {
-        this.runtimeService = runtimeService;
-        this.taskService = taskService;
-        this.repositoryService = repositoryService;
-        this.formService = formService;
-        this.historyService = historyService;
-        this.identityService = identityService;
-        this.managementService = managementService;
-        this.processEngine = processEngine;
+    public ProcessUseWithFormController(@Qualifier("processEngine") ProcessEngine processEngine) {
+        this.runtimeService = processEngine.getRuntimeService();
+        this.taskService = processEngine.getTaskService();
+        this.repositoryService = processEngine.getRepositoryService();
+        this.formService = processEngine.getFormService();
     }
 
     @ApiOperation(value = "查询流程开始节点的表单属性", notes = "通过taskId或executionId")
@@ -82,43 +60,8 @@ public class ProcessUseWithFormController {
         jO.put("formKey", startFormData.getFormKey());
         ProcessDefinition processDefinition = startFormData.getProcessDefinition();
         jO.put("processDefinition", processDefinition.toString());
-        List<FormProperty> formProperties = startFormData.getFormProperties();
-        JSONArray jA = new JSONArray();
-        for (FormProperty formProperty : formProperties) {
-            jA.add(new JSONObject() {{
-                put("id", formProperty.getId());
-                put("name", formProperty.getName());
-                put("value", formProperty.getValue());
-                put("type", formProperty.getType());
-                FormType formType = formProperty.getType();
-                String getInformationKey = "";
-                if (formType instanceof DateFormType) {
-                    getInformationKey = "datePattern";
-                } else if (formType instanceof EnumFormType) {
-                    getInformationKey = "datePattern";
-                }
-                put("getInformation", formProperty.getType().getInformation(getInformationKey));
-            }});
-        }
-        jO.put("formProperty", jA);
+        jO.put("formProperty", formDataToJSON(startFormData));
         return Res.success(jO);
-    }
-
-    @ApiOperation(value = "查询流程中开始节点的表单渲染", notes = "通过taskId或executionId")
-    @PostMapping("getRenderedStartForm")
-    public Res getRenderedStartForm(@RequestBody(required = false) JSONObject bJO) {
-        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
-        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
-        if (taskId != null) {
-            processInstanceId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
-        } else if (processInstanceId != null) {
-
-        } else {
-            Res.failure("need taskId or processInstanceId");
-        }
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-        Object renderedStartForm = formService.getRenderedStartForm(processInstance.getProcessDefinitionId());
-        return Res.success(renderedStartForm);
     }
 
     @ApiOperation(value = "开始一个流程，并添加表单的内容", notes = "")
@@ -137,6 +80,7 @@ public class ProcessUseWithFormController {
         ProcessInstance processInstance = formService.submitStartFormData(processDefinition.getId(), variableMap);
         return Res.success(processInstanceToJSON(processInstance), "启动成功");
     }
+
     private String getFormatDate(LocalDateTime localDateTime) {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm").format(localDateTime);
     }
@@ -152,29 +96,9 @@ public class ProcessUseWithFormController {
         JSONObject jO = new JSONObject();
         jO.put("部署id", taskFormData.getDeploymentId());
         jO.put("formKey", taskFormData.getFormKey());
-        Task task = taskFormData.getTask();
-        List<FormProperty> formProperties = taskFormData.getFormProperties();
-        JSONArray jA = new JSONArray();
-        for (FormProperty formProperty : formProperties) {
-            jA.add(new JSONObject() {{
-                put("id", formProperty.getId());
-                put("name", formProperty.getName());
-                put("value", formProperty.getValue());
-                put("type", formProperty.getType());
-                FormType formType = formProperty.getType();
-                String getInformationKey = "";
-                if (formType instanceof DateFormType) {
-                    getInformationKey = "datePattern";//此值在每个类型中是固定的，于源码中查看
-                } else if (formType instanceof EnumFormType) {
-                    getInformationKey = "values";
-                }
-                put("getInformation", formProperty.getType().getInformation(getInformationKey));
-            }});
-        }
-        jO.put("formProperty", jA);
+        jO.put("formProperty", formDataToJSON(taskFormData));
         return Res.success(jO);
     }
-
 
     @ApiOperation(value = "保存表单值，不完成任务", notes = "")
     @PostMapping("saveTaskFormData")
