@@ -1,4 +1,4 @@
-package com.github.common.config.security.security.filter;
+package com.github.common.config.security.springsecurity.filter;
 
 import com.github.common.config.security.jwt.JavaJWT;
 import org.springframework.beans.factory.annotation.Autowired;
