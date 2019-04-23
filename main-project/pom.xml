@@ -17,9 +17,6 @@
         <module>manage-flow</module>
         <module>service-start</module>
     </modules>
-    <dependencies>
-
-    </dependencies>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -33,7 +30,6 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>1.18.6</version>
-                <optional>true</optional>
             </dependency>
             <!--jwt依赖-->
             <dependency>
@@ -79,9 +75,21 @@
             </dependency>
             <!--对象拷贝工具-->
             <dependency>
-                <groupId>net.rakugakibox.spring.boot</groupId>
-                <artifactId>orika-spring-boot-starter</artifactId>
-                <version>1.8.0</version>
+                <groupId>ma.glasnost.orika</groupId>
+                <artifactId>orika-core</artifactId>
+                <version>1.5.4</version>
+            </dependency>
+            <!--对象拷贝工具  三方springboot配置版-->
+            <!--<dependency>-->
+                <!--<groupId>net.rakugakibox.spring.boot</groupId>-->
+                <!--<artifactId>orika-spring-boot-starter</artifactId>-->
+                <!--<version>1.8.0</version>-->
+            <!--</dependency>-->
+            <!--flowable依赖-->
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-process</artifactId>
+                <version>6.4.1</version>
             </dependency>
             <!--自定义集合类计算工具,List<POJO>合计、平均-->
             <dependency>

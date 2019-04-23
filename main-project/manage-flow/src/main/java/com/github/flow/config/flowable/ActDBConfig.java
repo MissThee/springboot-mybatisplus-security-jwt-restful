@@ -1,4 +1,4 @@
-package com.github.flow.config;
+package com.github.flow.config.flowable;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

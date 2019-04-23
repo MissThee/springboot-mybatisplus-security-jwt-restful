@@ -42,11 +42,12 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
-        <!-- swagger2 依赖 及 图形化依赖-->
+        <!-- swagger2 依赖-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
         </dependency>
+        <!-- swagger2 图形化依赖-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
@@ -66,11 +67,6 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
-        <!--对象拷贝工具-->
-        <dependency>
-            <groupId>net.rakugakibox.spring.boot</groupId>
-            <artifactId>orika-spring-boot-starter</artifactId>
-        </dependency>
         <!--lombok依赖-->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -80,6 +76,11 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
+        </dependency>
+        <!--对象拷贝工具-->
+        <dependency>
+            <groupId>ma.glasnost.orika</groupId>
+            <artifactId>orika-core</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -10,17 +10,17 @@ import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 
-public class ProcessManaVO {
+public class ManaVO {
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.DeployProcessByZipRes")
+    @ApiModel("ManaVO.DeployProcessByZipRes")
     public static class DeployProcessByZipRes {
         private String id;
     }
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.SearchProcessDeployReq")
+    @ApiModel("ManaVO.SearchProcessDeployReq")
     public static class SearchDeployReq {
         @ApiModelProperty("部署key")
         private String key;
@@ -28,14 +28,14 @@ public class ProcessManaVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.SearchProcessDeployRes")
+    @ApiModel("ManaVO.SearchProcessDeployRes")
     public static class SearchProcessDeployRes {
         private List deploymentList;
     }
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.SearchProcessDefinitionReq")
+    @ApiModel("ManaVO.SearchProcessDefinitionReq")
     public static class SearchProcessDefinitionReq {
         @ApiModelProperty("流程定义key")
         private String key;
@@ -43,7 +43,16 @@ public class ProcessManaVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.DeleteProcessDefinitionReq")
+    @ApiModel("ManaVO.SearchProcessDefinitionRes")
+    public static class SearchProcessDefinitionRes {
+        @ApiModelProperty("流程定义key")
+        private List processDefinitionList;
+    }
+
+
+    @Data
+    @Accessors(chain = true)
+    @ApiModel("ManaVO.DeleteProcessDefinitionReq")
     public static class DeleteProcessDefinitionReq {
         @NotEmpty
         @ApiModelProperty("流程定义id")
@@ -54,7 +63,7 @@ public class ProcessManaVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.ImgByProcessIdReq")
+    @ApiModel("ManaVO.ImgByProcessIdReq")
     public static class ImgByProcessIdReq {
         @NotEmpty
         private String id;
@@ -62,7 +71,14 @@ public class ProcessManaVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.DeleteProcessDefinitionByKeyReq")
+    @ApiModel("ManaVO.SearchNewestProcessDefinitionRes")
+    public static class SearchNewestProcessDefinitionRes {
+        private List processDefList;
+    }
+
+    @Data
+    @Accessors(chain = true)
+    @ApiModel("ManaVO.DeleteProcessDefinitionByKeyReq")
     public static class DeleteProcessDefinitionByKeyReq {
         @NotEmpty
         @ApiModelProperty("流程定义key")
@@ -73,7 +89,7 @@ public class ProcessManaVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.SuspendProcessDefinitionByIdReq")
+    @ApiModel("ManaVO.SuspendProcessDefinitionByIdReq")
     public static class OperateProcessDefinitionByIdReq {
         @Pattern(regexp = "suspend|activate")
         @ApiModelProperty("挂起/激活。值可为:suspend,activate")
@@ -89,15 +105,9 @@ public class ProcessManaVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ProcessManaVO.ActivateProcessDefinitionByIdReq")
-    public static class ActivateProcessDefinitionByIdReq {
-        @NotEmpty
-        @ApiModelProperty("流程定义id")
-        private String id;
-        @ApiModelProperty(value = "是否将相关的实例也激活。默认false")
-        private Boolean isActivateRunningInstance = false;
-        @ApiModelProperty("激活日期。默认null，立即激活")
-        private Date activeDate = null;
+    @ApiModel("ManaVO.SearchTimerJobRes")
+    public static class SearchTimerJobRes {
+        private List jobList;
     }
 
 }

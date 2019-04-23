@@ -2,7 +2,7 @@ package com.github.flow.controller;
 
 
 import com.github.common.tool.Res;
-import com.github.flow.vo.ProcessManaVO;
+import com.github.flow.vo.ManaVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.flowable.engine.*;
@@ -26,20 +26,19 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
-@Api(tags = "审批-流程部署管理")
+@Api(tags = "工作流-流程部署管理")
 //管理流程相关方法
 @RestController
 @RequestMapping("flowable/mana")
-public class ProcessManaController {
+public class ManaController {
     private final RepositoryService repositoryService;
     private final ManagementService managementService;
 
     @Autowired
-    public ProcessManaController(RepositoryService repositoryService, ManagementService managementService) {
+    public ManaController(RepositoryService repositoryService, ManagementService managementService) {
         this.repositoryService = repositoryService;
         this.managementService = managementService;
     }
@@ -48,7 +47,7 @@ public class ProcessManaController {
     // act_re_procdef       流程定义，此表中的key，name由bpmn中的设置读取，相同key的流程会归为同一种流程，并增加版本号
     @ApiOperation(value = "流程定义信息-添加（使用bpmn的zip包）", notes = "")
     @PostMapping("deployment/zip")
-    public Res deployProcessByZip(MultipartFile file, String key, String name) throws IOException {
+    public Res<ManaVO.DeployProcessByZipRes> deployProcessByZip(MultipartFile file, String key, String name) throws IOException {
         String dateNow = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(LocalDateTime.now());
         key = StringUtils.isEmpty(key) ? ("UnnamedDeploy" + dateNow) : key;//本次部署的key
         name = StringUtils.isEmpty(name) ? ("未命名部署" + dateNow) : name;//本次部署的name
@@ -58,7 +57,7 @@ public class ProcessManaController {
                 .addZipInputStream(new ZipInputStream(file.getInputStream()))
 //                .addClasspathResource("processes-no-auto/DemoProcess.bpmn")//使用resources目录下的流程配置文件
                 .deploy();
-        return Res.success(new ProcessManaVO.DeployProcessByZipRes().setId(deployment.getId()));
+        return Res.success(new ManaVO.DeployProcessByZipRes().setId(deployment.getId()));
     }
 
     // act_re_deployment
@@ -81,7 +80,7 @@ public class ProcessManaController {
     // act_re_procdef
     @ApiOperation(value = "流程定义信息-查询单个", notes = "")
     @PostMapping("searchProcessDefinition")
-    public Res searchProcessDefinition(@RequestBody ProcessManaVO.SearchProcessDefinitionReq req) {
+    public Res<ManaVO.SearchProcessDefinitionRes> searchProcessDefinition(@RequestBody ManaVO.SearchProcessDefinitionReq req) {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         //条件
         if (req.getKey() != null) {
@@ -92,12 +91,12 @@ public class ProcessManaController {
                 .orderByProcessDefinitionVersion().desc()
                 .list();//结果集
         List processDefinitionList = list.stream().map(FJSON::processDefinitionToJSON).collect(Collectors.toList());
-        return Res.success(processDefinitionList);
+        return Res.success(new ManaVO.SearchProcessDefinitionRes().setProcessDefinitionList(processDefinitionList));
     }
 
     @ApiOperation(value = "流程定义信息-删除单个", notes = "")
     @PostMapping("deleteProcessDef")
-    public Res deleteProcessDefinition(@RequestBody @Validated ProcessManaVO.DeleteProcessDefinitionReq req) {
+    public Res deleteProcessDefinition(@RequestBody @Validated ManaVO.DeleteProcessDefinitionReq req) {
         //根据流程部署id删除流程定义。
         //true  ：如果当前id的流程正在执行，则会报错，无法删除
         //false : 如果当前id的流程正在执行，则会把此流程相关信息都删除，包含act_ru_*,act_hi_*等
@@ -114,23 +113,23 @@ public class ProcessManaController {
     //使用流程部署方法，修改流程图之后，保持key不变，再次部署，即可更新
     @ApiOperation(value = "流程定义信息-查询单个图片", notes = "")
     @PostMapping("imgByProcessDefId")
-    public void imgByProcessId(HttpServletResponse httpServletResponse, @RequestBody @Validated ProcessManaVO.ImgByProcessIdReq req) throws IOException {
+    public void imgByProcessId(HttpServletResponse httpServletResponse, @RequestBody @Validated ManaVO.ImgByProcessIdReq req) throws IOException {
         InputStream processDiagramInputStream = repositoryService.getProcessDiagram(req.getId());
         Res.out(httpServletResponse, processDiagramInputStream);
     }
 
     @ApiOperation(value = "流程定义信息-查询多个，所有定义最新版", notes = "")
     @PostMapping("searchNewestProcessDefinition")
-    public Res searchNewestProcessDefinition() {
+    public Res<ManaVO.SearchNewestProcessDefinitionRes> searchNewestProcessDefinition() {
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
         List processDefList = list.stream().map(FJSON::processDefinitionToJSON).collect(Collectors.toList());
-        return Res.success(processDefList);
+        return Res.success(new ManaVO.SearchNewestProcessDefinitionRes().setProcessDefList(processDefList));
     }
 
     @ApiOperation(value = "流程定义信息-删除多个，同一类", notes = "提供key，与此流程同一类的所有版本删除")
     @PostMapping("deleteProcessDefinitionByKey")
     @Transactional(rollbackFor = Exception.class)
-    public Res deleteProcessDefinitionByKey(@RequestBody @Validated ProcessManaVO.DeleteProcessDefinitionByKeyReq req) {
+    public Res deleteProcessDefinitionByKey(@RequestBody @Validated ManaVO.DeleteProcessDefinitionByKeyReq req) {
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().processDefinitionKey(req.getKey()).list();
         List<String> deploymentIdList = list.stream().map(ProcessDefinition::getDeploymentId).collect(Collectors.toList());
         for (String deploymentId : deploymentIdList) {
@@ -146,7 +145,7 @@ public class ProcessManaController {
 
     @ApiOperation(value = "流程定义-挂起/激活", notes = "使其不能再使用（挂起流程定义，不能再新建实例；挂起实例，实例不能再操作）")
     @PostMapping("suspendProcessDefinitionById")
-    public Res suspendProcessDefinitionById(@RequestBody @Validated ProcessManaVO.OperateProcessDefinitionByIdReq req) {
+    public Res suspendProcessDefinitionById(@RequestBody @Validated ManaVO.OperateProcessDefinitionByIdReq req) {
         if ("suspend".equals(req.getOperation())) {
             repositoryService.suspendProcessDefinitionById(req.getId(), req.getIsOperateRunningInstance(), req.getOperateDate());
             return Res.success("完成挂起");
@@ -154,16 +153,15 @@ public class ProcessManaController {
             repositoryService.activateProcessDefinitionById(req.getId(), req.getIsOperateRunningInstance(), req.getOperateDate());
             return Res.success("完成激活");
         } else {
-            return Res.success("操作参数有误，仅能为：suspend,activate");
+            return Res.failure("操作参数有误，仅能为：suspend,activate");
         }
     }
 
-
     @ApiOperation(value = "定时任务-查询所有", notes = "")
     @PostMapping("searchTimerJob")
-    public Res searchTimerJob() {
-        List<Job> jobList = managementService.createTimerJobQuery().list();
-        List<Map<String, Object>> list = jobList.stream().map(FJSON::jobToJSON).collect(Collectors.toList());
-        return Res.success(list);
+    public Res<ManaVO.SearchTimerJobRes> searchTimerJob() {
+        List<Job> job = managementService.createTimerJobQuery().list();
+        List jobList = job.stream().map(FJSON::jobToJSON).collect(Collectors.toList());
+        return Res.success(new ManaVO.SearchTimerJobRes().setJobList(jobList));
     }
 }

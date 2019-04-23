@@ -1,5 +1,6 @@
 package com.github.common.config.exception;
 
+import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
 import com.github.common.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -48,6 +49,13 @@ public class ControllerExceptionHandler {
 
         }
         return new ExceptionResultModel((paramName == null ? "" : "MissingRequestHeaderException: 请求体header中缺少必须的参数【" + paramName + "】。") + e);
+    }
+
+    @ExceptionHandler(MyMethodArgumentNotValidException.class)//ServletRequestBindingException  2.1.0之前
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public Object myMethodArgumentNotValidException(HttpServletRequest request, MissingRequestHeaderException e) {
+        log.debug(LogBuilder.requestLogBuilder(request, e));
+        return new ExceptionResultModel(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

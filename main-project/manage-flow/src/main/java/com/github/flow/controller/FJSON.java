@@ -1,5 +1,10 @@
 package com.github.flow.controller;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.flowable.engine.form.FormData;
 import org.flowable.engine.form.FormProperty;
 import org.flowable.engine.form.FormType;
@@ -13,15 +18,22 @@ import org.flowable.engine.runtime.ActivityInstance;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.identitylink.service.impl.persistence.entity.HistoricIdentityLinkEntity;
 import org.flowable.job.api.Job;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
+import org.flowable.variable.service.impl.persistence.entity.HistoricVariableInstanceEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+@Component
 public class FJSON {
+
+
     protected static String getStringOrDefaultFromJO(Map map, String key, String defaultValue) {
         if (map == null) {
             return defaultValue;
@@ -46,34 +58,6 @@ public class FJSON {
                 return (Map<String, V>) map.get(key);
             } else {
                 return defaultMap;
-            }
-        }
-    }
-
-    protected static <T> List<T> getCollectionOrDefaultFromJO(Map map, String key, List<T> list) {
-        if (map == null) {
-            return list;
-        } else {
-            if (map.containsKey(key)) {
-                return (List<T>) map.get(key);
-            } else {
-                return list;
-            }
-        }
-    }
-
-    protected static Boolean getBooleanOrDefaultFromJO(Map map, String key, Boolean defaultValue) {
-        if (map == null) {
-            return defaultValue;
-        } else {
-            if (map.containsKey(key)) {
-                Object o = map.get(key);
-                if (o != null) {
-                    return (Boolean) o;
-                }
-                return defaultValue;
-            } else {
-                return defaultValue;
             }
         }
     }
@@ -105,19 +89,6 @@ public class FJSON {
         }};
     }
 
-
-    protected static Map<String, Object> taskToJSON(Task task) {
-        return new LinkedHashMap<String, Object>() {{
-            put("任务ID", task.getId());
-            put("任务名称", task.getName());
-            put("任务创建时间", task.getCreateTime());
-            put("任务办理人", task.getAssignee());
-            put("执行实例ID", task.getExecutionId());
-            put("流程实例ID", task.getProcessInstanceId());
-            put("流程定义ID", task.getProcessDefinitionId());
-        }};
-    }
-
     protected static Map<String, Object> historicProcessToJSON(HistoricProcessInstance historicProcessInstance) {
         return new LinkedHashMap<String, Object>() {{
             put("历史流程实例ID", historicProcessInstance.getId());
@@ -134,6 +105,9 @@ public class FJSON {
     }
 
     protected static Map<String, Object> historyTaskToJSON(HistoricTaskInstance historicTaskInstance) {
+        MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+        mapperFactory.classMap(HistoricTaskInstance.class, MyHistoricTaskInstance.class)
+                .byDefault().register();
         return new LinkedHashMap<String, Object>() {{
             put("历史任务ID", historicTaskInstance.getId());
             put("历史任务名称", historicTaskInstance.getName());
@@ -144,6 +118,18 @@ public class FJSON {
             put("历史流程定义ID", historicTaskInstance.getProcessDefinitionId());
             put("历史任务结束时间", historicTaskInstance.getEndTime());
         }};
+    }
+
+    @Data
+    public static class MyHistoricTaskInstance {
+        private String id;
+        private String name;
+        private String createTime;
+        private String assignee;
+        private String executionId;
+        private String processInstanceId;
+        private String processDefinitionId;
+        private String endTime;
     }
 
     protected static Map<String, Object> historicVariableInstanceToJSON(HistoricVariableInstance historicVariableInstance) {
@@ -194,6 +180,7 @@ public class FJSON {
         }};
     }
 
+
     protected static Map<String, Object> jobToJSON(Job job) {
         return new LinkedHashMap<String, Object>() {{
             put("定时器ID", job.getId());
@@ -202,44 +189,5 @@ public class FJSON {
         }};
     }
 
-    protected static <T> Map<String, Double> flowNodeToJSON(T nodeInfo) {
-        return new LinkedHashMap<String, Double>() {{
-            String[] keys = {"x", "y", "width", "height"};
-            try {
-                for (String key : keys) {
-                    Double value = (Double) nodeInfo.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1)).invoke(nodeInfo);
-                    if (!value.equals(0D)) {
-                        put(key, value);
-                    }
 
-                }
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
-            }
-        }};
-    }
-
-    protected static ArrayList formDataToJSON(FormData taskFormData) {
-        List<FormProperty> formProperties = taskFormData.getFormProperties();
-        ArrayList<LinkedHashMap<String, Object>> arrayList = new ArrayList<>();
-        for (FormProperty formProperty : formProperties) {
-            if (formProperty.isReadable()) {
-                arrayList.add(new LinkedHashMap<String, Object>() {{
-                    put("id", formProperty.getId());
-                    put("name", formProperty.getName());
-                    put("value", formProperty.getValue());
-                    put("isWritable", formProperty.isWritable());
-                    put("isRequired", formProperty.isRequired());
-                    put("type", formProperty.getType().getName());
-                    FormType formType = formProperty.getType();
-                    if (formType instanceof DateFormType) {// date enum double boolean double long string
-                        //"datePattern"此值在每个类型中是固定的，于源码中查看。默认类型中仅datePattern、values有getInformation方法
-                        put("getInformation", formProperty.getType().getInformation("datePattern"));
-                    } else if (formType instanceof EnumFormType) {
-                        put("getInformation", formProperty.getType().getInformation("values"));
-                    }
-                }});
-            }
-        }
-        return arrayList;
-    }
 }
