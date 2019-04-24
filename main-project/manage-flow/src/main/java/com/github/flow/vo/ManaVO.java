@@ -1,5 +1,6 @@
 package com.github.flow.vo;
 
+import com.github.flow.dto.ProcessDefinitionDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -46,7 +47,7 @@ public class ManaVO {
     @ApiModel("ManaVO.SearchProcessDefinitionRes")
     public static class SearchProcessDefinitionRes {
         @ApiModelProperty("流程定义key")
-        private List processDefinitionList;
+        private List<ProcessDefinitionDTO> processDefinitionList;
     }
 
 
@@ -73,7 +74,7 @@ public class ManaVO {
     @Accessors(chain = true)
     @ApiModel("ManaVO.SearchNewestProcessDefinitionRes")
     public static class SearchNewestProcessDefinitionRes {
-        private List processDefList;
+        private List<ProcessDefinitionDTO> processDefList;
     }
 
     @Data

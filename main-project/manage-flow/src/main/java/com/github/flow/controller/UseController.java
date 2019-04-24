@@ -2,7 +2,9 @@ package com.github.flow.controller;
 
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
-import com.github.flow.dto.UseDTO;
+import com.github.flow.dto.IdentityLinkDTO;
+import com.github.flow.dto.ProcessInstanceDTO;
+import com.github.flow.dto.TaskDTO;
 import com.github.flow.vo.UseVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -78,7 +80,7 @@ public class UseController {
 //        runtimeService.startProcessInstanceById(processId,businessKey );//流程定义id，String 业务id (可设置此id为业务单号)
 //        runtimeService.startProcessInstanceByKey(processKey, businessKey);//流程定义key，Map<String,Object> 流程变量
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(req.getProcessDefKey(), req.getBusinessKey(), req.getVariableMap());
-        UseVO.StartProcessRes startProcessRes = new UseVO.StartProcessRes().setMyProcessInstance(mapperFacade.map(processInstance, UseDTO.MyProcessInstance.class));
+        UseVO.StartProcessRes startProcessRes = new UseVO.StartProcessRes().setProcessInstance(mapperFacade.map(processInstance, ProcessInstanceDTO.class));
         return Res.success(startProcessRes, "启动成功");
     }
 
@@ -106,7 +108,7 @@ public class UseController {
                 .orderByTaskCreateTime().desc();
         long total = taskQuery.count();
         List<Task> list = taskQuery.listPage(req.getPageIndex(), req.getPageSize());
-        List<UseDTO.MyTask> taskList = list.stream().map(e -> mapperFacade.map(e, UseDTO.MyTask.class)).collect(Collectors.toList());
+        List<TaskDTO> taskList = list.stream().map(e -> mapperFacade.map(e, TaskDTO.class)).collect(Collectors.toList());
         UseVO.SearchTaskRes searchTaskRes = new UseVO.SearchTaskRes()
                 .setTaskList(taskList)
                 .setTotal(total);
@@ -139,7 +141,7 @@ public class UseController {
     public Res getCandidateUser(@RequestBody @Validated UseVO.GetCandidateUserReq req) {
         //其中办理人会额外加入到查询结果中
         List<IdentityLink> list = taskService.getIdentityLinksForTask(req.getTaskId());
-        List<UseDTO.MyIdentityLink> identityLinkList = list.stream().map(e -> mapperFacade.map(e, UseDTO.MyIdentityLink.class)).collect(Collectors.toList());
+        List<IdentityLinkDTO> identityLinkList = list.stream().map(e -> mapperFacade.map(e, IdentityLinkDTO.class)).collect(Collectors.toList());
         UseVO.GetCandidateUserRes getCandidateUserRes = new UseVO.GetCandidateUserRes()
                 .setIdentityLinkList(identityLinkList);
         return Res.success(getCandidateUserRes);
@@ -255,7 +257,6 @@ public class UseController {
         return Res.success(getVariableRes);
     }
     //变量操作结束--------------------------------------------------------------------------
-
 
 //    @ApiIgnore("暂不使用")
 //    //已知当节点不为UserTask时，无法使用任务查询到当前的节点执行情况，只能通过此方式，获取流程实例，进行操作（遗留问题：当一个节点有1个以上的实行实例时，如何区分不同的实例）

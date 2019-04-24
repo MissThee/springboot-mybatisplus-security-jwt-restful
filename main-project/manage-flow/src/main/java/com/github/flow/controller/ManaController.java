@@ -2,9 +2,11 @@ package com.github.flow.controller;
 
 
 import com.github.common.tool.Res;
+import com.github.flow.dto.ProcessDefinitionDTO;
 import com.github.flow.vo.ManaVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import ma.glasnost.orika.MapperFacade;
 import org.flowable.engine.*;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
@@ -19,12 +21,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
@@ -36,11 +38,13 @@ import java.util.zip.ZipInputStream;
 public class ManaController {
     private final RepositoryService repositoryService;
     private final ManagementService managementService;
+    private final MapperFacade mapperFacade;
 
     @Autowired
-    public ManaController(RepositoryService repositoryService, ManagementService managementService) {
+    public ManaController(RepositoryService repositoryService, ManagementService managementService, MapperFacade mapperFacade) {
         this.repositoryService = repositoryService;
         this.managementService = managementService;
+        this.mapperFacade = mapperFacade;
     }
 
     // act_re_deployment    流程部署表，此表中的key，name由方法设置
@@ -90,7 +94,7 @@ public class ManaController {
                 .orderByProcessDefinitionName().asc()//排序
                 .orderByProcessDefinitionVersion().desc()
                 .list();//结果集
-        List processDefinitionList = list.stream().map(FJSON::processDefinitionToJSON).collect(Collectors.toList());
+        List processDefinitionList = list.stream().map(e -> mapperFacade.map(e, ProcessDefinitionDTO.class)).collect(Collectors.toList());
         return Res.success(new ManaVO.SearchProcessDefinitionRes().setProcessDefinitionList(processDefinitionList));
     }
 
@@ -111,18 +115,13 @@ public class ManaController {
 
     //修改流程定义信息act_re_deployment
     //使用流程部署方法，修改流程图之后，保持key不变，再次部署，即可更新
-    @ApiOperation(value = "流程定义信息-查询单个图片", notes = "")
-    @PostMapping("imgByProcessDefId")
-    public void imgByProcessId(HttpServletResponse httpServletResponse, @RequestBody @Validated ManaVO.ImgByProcessIdReq req) throws IOException {
-        InputStream processDiagramInputStream = repositoryService.getProcessDiagram(req.getId());
-        Res.out(httpServletResponse, processDiagramInputStream);
-    }
+
 
     @ApiOperation(value = "流程定义信息-查询多个，所有定义最新版", notes = "")
     @PostMapping("searchNewestProcessDefinition")
     public Res<ManaVO.SearchNewestProcessDefinitionRes> searchNewestProcessDefinition() {
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
-        List processDefList = list.stream().map(FJSON::processDefinitionToJSON).collect(Collectors.toList());
+        List processDefList = list.stream().map(e -> mapperFacade.map(e, ProcessDefinitionDTO.class)).collect(Collectors.toList());
         return Res.success(new ManaVO.SearchNewestProcessDefinitionRes().setProcessDefList(processDefList));
     }
 
@@ -157,11 +156,16 @@ public class ManaController {
         }
     }
 
-    @ApiOperation(value = "定时任务-查询所有", notes = "")
-    @PostMapping("searchTimerJob")
-    public Res<ManaVO.SearchTimerJobRes> searchTimerJob() {
-        List<Job> job = managementService.createTimerJobQuery().list();
-        List jobList = job.stream().map(FJSON::jobToJSON).collect(Collectors.toList());
-        return Res.success(new ManaVO.SearchTimerJobRes().setJobList(jobList));
-    }
+//    @ApiIgnore("暂不使用")
+//    @ApiOperation(value = "定时任务-查询所有", notes = "")
+//    @PostMapping("searchTimerJob")
+//    public Res<ManaVO.SearchTimerJobRes> searchTimerJob() {
+//        List<Job> job = managementService.createTimerJobQuery().list();
+//        List jobList = job.stream().map(e-> new LinkedHashMap<String, Object>() {{
+//            put("id", e.getId());//定时器ID
+//            put("duedate", e.getDuedate());//定时器到期日期
+//            put("jobType", e.getJobType());//定时器类型
+//        }}).collect(Collectors.toList());
+//        return Res.success(new ManaVO.SearchTimerJobRes().setJobList(jobList));
+//    }
 }

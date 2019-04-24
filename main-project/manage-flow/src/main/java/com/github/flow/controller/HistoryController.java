@@ -1,9 +1,13 @@
 package com.github.flow.controller;
 
 import com.github.common.tool.Res;
+import com.github.flow.dto.HistoricProcessInstanceDTO;
+import com.github.flow.dto.HistoricTaskInstanceDTO;
+import com.github.flow.dto.HistoricVariableInstanceDTO;
 import com.github.flow.vo.HistoryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import ma.glasnost.orika.MapperFacade;
 import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
@@ -20,23 +24,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-
 @Api(tags = "审批历史-审批流程流转")
 @RestController
 @PreAuthorize("isAuthenticated()")
 @RequestMapping("flowable/history")
 public class HistoryController {
-
+    private final MapperFacade mapperFacade;
     private final HistoryService historyService;
 
     @Autowired
-    public HistoryController(HistoryService historyService) {
+    public HistoryController(HistoryService historyService, MapperFacade mapperFacade) {
         this.historyService = historyService;
+        this.mapperFacade = mapperFacade;
     }
 
     @ApiOperation(value = "任务历史-查询多个")
     @PostMapping("task")
-    public Res searchHistoryTask(@RequestBody HistoryVO.SearchHistoryTaskReq req) {
+    public Res<HistoryVO.SearchHistoryTaskRes> searchHistoryTask(@RequestBody HistoryVO.SearchHistoryTaskReq req) {
         HistoricTaskInstanceQuery historicTaskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
         boolean hasCondition = false;
         if (req.getAssignee() != null) {
@@ -67,23 +71,23 @@ public class HistoryController {
             historicTaskInstanceQuery.taskCompletedBefore(req.getTaskCompletedBefore());
             hasCondition = true;
         }
-        if (hasCondition) {
-            historicTaskInstanceQuery
-                    .orderByProcessInstanceId().asc()
-                    .orderByExecutionId().asc()
-                    .orderByHistoricTaskInstanceEndTime().asc();
-            long total = historicTaskInstanceQuery.count();
-            List<HistoricTaskInstance> list = historicTaskInstanceQuery.list();
-            List hisTaskList = list.stream().map(FJSON::historyTaskToJSON).collect(Collectors.toList());
-            return Res.success(new HistoryVO.SearchHistoryTaskRes().setTotal(total).setHisTaskList(hisTaskList));
-        } else {
-            return Res.failure("至少需要一个查询条件");
+        if (!hasCondition) {
+            throw new MissingFormatArgumentException("缺少查询条件");
         }
+        historicTaskInstanceQuery
+                .orderByProcessInstanceId().asc()
+                .orderByExecutionId().asc()
+                .orderByHistoricTaskInstanceEndTime().asc();
+        long total = historicTaskInstanceQuery.count();
+        List<HistoricTaskInstance> list = historicTaskInstanceQuery.list();
+        List<HistoricTaskInstanceDTO> hisTaskList = list.stream().map(e -> mapperFacade.map(e, HistoricTaskInstanceDTO.class)).collect(Collectors.toList());
+        return Res.success(new HistoryVO.SearchHistoryTaskRes().setTotal(total).setHisTaskList(hisTaskList));
+
     }
 
     @ApiOperation(value = "流程变量历史-查询")
     @PostMapping("variable")
-    public Res getHistoryVariable(@RequestBody HistoryVO.GetHistoryVariableReq req) {
+    public Res<HistoryVO.GetHistoryVariableRes> getHistoryVariable(@RequestBody HistoryVO.GetHistoryVariableReq req) {
         HistoricVariableInstanceQuery historicVariableInstanceQuery = historyService.createHistoricVariableInstanceQuery();
         boolean hasCondition = false;
         if (req.getTaskId() != null) {
@@ -98,36 +102,39 @@ public class HistoryController {
             historicVariableInstanceQuery.processInstanceId(req.getProcessInstanceId());
             hasCondition = true;
         }
-        if (hasCondition) {
-            historicVariableInstanceQuery
-                    .orderByProcessInstanceId().asc();
-            long total = historicVariableInstanceQuery.count();
-            List<HistoricVariableInstance> list = historicVariableInstanceQuery  .listPage(req.getPageIndex(), req.getPageSize());
-            List hisVarList = list.stream().map(FJSON::historicVariableInstanceToJSON).collect(Collectors.toList());
-            return Res.success(hisVarList);
-        } else {
-            return Res.failure("至少需要一个查询条件");
+        if (!hasCondition) {
+            throw new MissingFormatArgumentException("缺少查询条件");
         }
+        historicVariableInstanceQuery
+                .orderByProcessInstanceId().asc();
+        long total = historicVariableInstanceQuery.count();
+        List<HistoricVariableInstance> list = historicVariableInstanceQuery.listPage(req.getPageIndex(), req.getPageSize());
+        List<HistoricVariableInstanceDTO> hisVarList = list.stream().map(e -> mapperFacade.map(e, HistoricVariableInstanceDTO.class)).collect(Collectors.toList());
+        HistoryVO.GetHistoryVariableRes getHistoryVariableRes = new HistoryVO.GetHistoryVariableRes().setHisVariableList(hisVarList).setTotal(total);
+        return Res.success(getHistoryVariableRes);
+
     }
 
     @ApiOperation(value = "流程实例历史-查询")
     @PostMapping("process")
-    public Res searchHistoryProcess(@RequestBody @Validated HistoryVO.SearchHistoryProcessReq req) {
+    public Res<HistoryVO.SearchHistoryProcessRes> searchHistoryProcess(@RequestBody @Validated HistoryVO.SearchHistoryProcessReq req) {
         HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery();
         boolean hasCondition = false;
         if (req.getInvolvedUser() != null) {
             historicProcessInstanceQuery.involvedUser(req.getInvolvedUser());
             hasCondition = true;
         }
-        if (hasCondition) {
-            List<HistoricProcessInstance> list = historicProcessInstanceQuery
-                    .orderByProcessDefinitionId().asc()
-                    .listPage(req.getPageIndex(), req.getPageSize());
-            List hisTaskList = list.stream().map(FJSON::historicProcessToJSON).collect(Collectors.toList());
-            return Res.success(hisTaskList);
-        } else {
-            return Res.failure("至少需要一个查询条件");
+        if (!hasCondition) {
+            throw new MissingFormatArgumentException("缺少查询条件");
         }
+        historicProcessInstanceQuery
+                .orderByProcessDefinitionId().asc();
+        long total = historicProcessInstanceQuery.count();
+        List<HistoricProcessInstance> list = historicProcessInstanceQuery.listPage(req.getPageIndex(), req.getPageSize());
+        List<HistoricProcessInstanceDTO> hisTaskList = list.stream().map(e -> mapperFacade.map(e, HistoricProcessInstanceDTO.class)).collect(Collectors.toList());
+        HistoryVO.SearchHistoryProcessRes searchHistoryProcessRes = new HistoryVO.SearchHistoryProcessRes().setHisTaskList(hisTaskList).setTotal(total);
+        return Res.success(searchHistoryProcessRes);
+
     }
 
 //    @ApiIgnore("暂不使用")

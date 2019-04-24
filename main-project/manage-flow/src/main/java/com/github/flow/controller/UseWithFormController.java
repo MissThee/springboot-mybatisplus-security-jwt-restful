@@ -1,152 +1,130 @@
 package com.github.flow.controller;
 
+import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
 import com.github.common.tool.Res;
+import com.github.flow.common.FUtils;
+import com.github.flow.dto.FormDataDTO;
+import com.github.flow.dto.ProcessInstanceDTO;
+import com.github.flow.vo.UseWithFormVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import ma.glasnost.orika.MapperFacade;
 import org.flowable.engine.*;
 import org.flowable.engine.form.*;
 import org.flowable.engine.impl.form.DateFormType;
 import org.flowable.engine.impl.form.EnumFormType;
 import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.github.flow.controller.FJSON.*;
 
-@Api(tags = "工作流-审批流程流转(带form变量约束)")
+@Api(tags = "工作流-审批流程流转(附带表单)")
 @RestController
 @RequestMapping("flowable/form")
 public class UseWithFormController {
+    private final FUtils fUtils;
     private final RepositoryService repositoryService;
     private final RuntimeService runtimeService;
     private final TaskService taskService;
     private final FormService formService;
+    private final MapperFacade mapperFacade;
 
     @Autowired
-    public UseWithFormController(@Qualifier("processEngine") ProcessEngine processEngine) {
+    public UseWithFormController(@Qualifier("processEngine") ProcessEngine processEngine, FUtils fUtils, MapperFacade mapperFacade) {
         this.runtimeService = processEngine.getRuntimeService();
         this.taskService = processEngine.getTaskService();
         this.repositoryService = processEngine.getRepositoryService();
         this.formService = processEngine.getFormService();
+        this.fUtils = fUtils;
+        this.mapperFacade = mapperFacade;
     }
 
-    @ApiOperation(value = "查询流程开始节点的表单属性", notes = "通过taskId或executionId")
-    @PostMapping("getStartFormData")
-    public Res<Map> getStartFormData(@RequestBody(required = false) Map bJO) {
-        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
-        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
-        if (taskId != null) {
-            processInstanceId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
-        } else if (processInstanceId != null) {
+    @ApiOperation(value = "表单-查询开始节点的表单属性", notes = "通过taskId或executionId")
+    @PostMapping("process")
+    public Res<UseWithFormVO.GetStartFormDataRes> getStartFormData(@RequestBody UseWithFormVO.GetStartFormDataReq req) throws MyMethodArgumentNotValidException {
+        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
+        String processDefinitionId = null;
+        if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
+            processDefinitionId = req.getProcessDefinitionId();
+        } else if (!StringUtils.isEmpty(req.getProcessDefinitionKey())) {
+            processDefinitionId = processDefinitionQuery.processDefinitionKey(req.getProcessDefinitionKey()).singleResult().getId();
+        }
+        if (StringUtils.isEmpty(processDefinitionId)) {
+            throw new MyMethodArgumentNotValidException("缺少查询条件processDefinitionId或processDefinitionKey");
+        }
+        StartFormData startFormData = formService.getStartFormData(processDefinitionId);
+        UseWithFormVO.GetStartFormDataRes getStartFormDataRes = new UseWithFormVO.GetStartFormDataRes()
+                .setFormProperty(formDataFormat(startFormData));
+        return Res.success(getStartFormDataRes);
+    }
 
+    @ApiOperation(value = "表单-开始流程，并添加表单的内容")
+    @PutMapping("process")
+    public Res startForm(@RequestBody UseWithFormVO.StartFormReq req) throws MyMethodArgumentNotValidException {
+        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
+        if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
+            processDefinitionQuery.processDefinitionId(req.getProcessDefinitionId());
+        } else if (!StringUtils.isEmpty(req.getProcessDefinitionKey())) {
+            processDefinitionQuery.processDefinitionKey(req.getProcessDefinitionKey());
         } else {
-            Res.failure("need taskId or processInstanceId");
+            throw new MyMethodArgumentNotValidException("需要processDefinitionId或processDefinitionKey");
         }
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-        StartFormData startFormData = formService.getStartFormData(processInstance.getProcessDefinitionId());
-        Map jO = new HashMap();
-        jO.put("部署id", startFormData.getDeploymentId());
-        jO.put("formKey", startFormData.getFormKey());
-        ProcessDefinition processDefinition = startFormData.getProcessDefinition();
-        jO.put("processDefinition", processDefinition.toString());
-        jO.put("formProperty", formDataFormat(startFormData));
-        return Res.success(jO);
+        ProcessDefinition processDefinition = processDefinitionQuery.latestVersion().singleResult();
+        ProcessInstance processInstance = formService.submitStartFormData(processDefinition.getId(), req.getVariableMap());
+        UseWithFormVO.StartFormRes startFormRes = new UseWithFormVO.StartFormRes().setProcessInstance(mapperFacade.map(processInstance, ProcessInstanceDTO.class));
+        return Res.success(startFormRes, "启动成功");
     }
 
-    @ApiOperation(value = "开始一个流程，并添加表单的内容", notes = "")
-    @PostMapping("startForm")
-    public Res startForm(@RequestBody(required = false) Map bJO) {
-        String processDefKey = getStringOrDefaultFromJO(bJO, "processDefKey", null);
-        Map<String, String> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", new HashMap<String, String>() {{
-            put("startDate", getFormatDate(LocalDateTime.now()));//重要！！：设置表单内容时，参数格式须严格按照设置的格式，否则参数值和类型会为空。即使设置了为必须值，也不会因为值为空报错，因为提供了此字段
-            put("endDate", getFormatDate(LocalDateTime.now().plusDays(10)));
-            put("reason", "没有理由");
-        }});
-        if (StringUtils.isEmpty(processDefKey)) {
-            return Res.failure("empty processDefKey");
-        }
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefKey).latestVersion().singleResult();
-        ProcessInstance processInstance = formService.submitStartFormData(processDefinition.getId(), variableMap);
-        return Res.success(processInstanceToJSON(processInstance), "启动成功");
+    @ApiOperation(value = "表单-查询属性")
+    @PostMapping
+    public Res<UseWithFormVO.GetTaskFormDataRes> getTaskFormData(@RequestBody @Validated UseWithFormVO.GetTaskFormDataReq req) {
+        TaskFormData taskFormData = formService.getTaskFormData(req.getTaskId());
+        UseWithFormVO.GetTaskFormDataRes getTaskFormDataRes = new UseWithFormVO.GetTaskFormDataRes()
+                .setFormProperty(formDataFormat(taskFormData))
+                .setFormKey(taskFormData.getFormKey());
+        return Res.success(getTaskFormDataRes);
     }
 
-    private String getFormatDate(LocalDateTime localDateTime) {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm").format(localDateTime);
+    @ApiOperation(value = "表单-保存属性")
+    @PatchMapping
+    public Res saveTaskFormData(@RequestBody @Validated UseWithFormVO.SaveTaskFormDataReq req) {
+        formService.saveFormData(req.getTaskId(), req.getVariableMap());
+        return Res.success("保存成功");
     }
 
-    @ApiOperation(value = "查询流程中任务的表单属性", notes = "")
-    @PostMapping("getTaskFormData")
-    public Res<Map> getTaskFormData(@RequestBody(required = false) Map bJO) {
-        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
-        if (taskId != null) {
-            Res.failure("need taskId or processInstanceId");
-        }
-        TaskFormData taskFormData = formService.getTaskFormData(taskId);
-        Map jO = new HashMap();
-        jO.put("部署id", taskFormData.getDeploymentId());
-        jO.put("formKey", taskFormData.getFormKey());
-        jO.put("formProperty", formDataFormat(taskFormData));
-        return Res.success(jO);
+    @ApiOperation(value = "表单-保存属性并完成任务")
+    @PutMapping
+    public Res submitTaskFormData(@RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) {
+        formService.submitTaskFormData(req.getTaskId(), req.getVariableMap());
+        return Res.success("操作成功");
     }
 
-    @ApiOperation(value = "保存表单值 ", notes = "")
-    @PostMapping("saveTaskFormData")
-    public Res saveTaskFormData(@RequestBody(required = false) Map bJO) {
-        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
-        Map<String, String> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);
-        if (taskId != null) {
-            Res.failure("need taskId or processInstanceId");
-        }
-        formService.saveFormData(taskId, variableMap);
-        return Res.success();
-    }
-
-    @ApiOperation(value = "保存表单值，并完成任务", notes = "")
-    @PostMapping("submitTaskFormData")
-    public Res submitTaskFormData(@RequestBody(required = false) Map bJO) {
-        String taskId = getStringOrDefaultFromJO(bJO, "taskId", null);
-        Map<String, String> variableMap = getMapOrDefaultFromJO(bJO, "variableMap", null);
-        if (taskId != null) {
-            Res.failure("need taskId or processInstanceId");
-        }
-        formService.submitTaskFormData(taskId, variableMap);
-        return Res.success();
-    }
-
-
-    private static ArrayList formDataFormat(FormData taskFormData) {
+    private List<FormDataDTO> formDataFormat(FormData taskFormData) {
         List<FormProperty> formProperties = taskFormData.getFormProperties();
-        ArrayList<LinkedHashMap<String, Object>> arrayList = new ArrayList<>();
+        List<FormDataDTO> list = new ArrayList<>();
         for (FormProperty formProperty : formProperties) {
             if (formProperty.isReadable()) {
-                arrayList.add(new LinkedHashMap<String, Object>() {{
-                    put("id", formProperty.getId());
-                    put("name", formProperty.getName());
-                    put("value", formProperty.getValue());
-                    put("isWritable", formProperty.isWritable());
-                    put("isRequired", formProperty.isRequired());
-                    put("type", formProperty.getType().getName());
-                    FormType formType = formProperty.getType();
-                    if (formType instanceof DateFormType) {// date enum double boolean double long string
-                        //"datePattern"此值在每个类型中是固定的，于源码中查看。默认类型中仅datePattern、values有getInformation方法
-                        put("getInformation", formProperty.getType().getInformation("datePattern"));
-                    } else if (formType instanceof EnumFormType) {
-                        put("getInformation", formProperty.getType().getInformation("values"));
-                    }
-                }});
+                FormDataDTO myFormProperty = mapperFacade.map(formProperty, FormDataDTO.class);
+                FormType formType = formProperty.getType();
+                myFormProperty.setType(formType.getName());//类型值可能为：date enum double boolean double long string
+                //"datePattern"、"values"此值在每个类型中是固定的，于源码中查看。默认类型中仅datePattern、values有getInformation方法
+                if (formType instanceof DateFormType) {
+                    myFormProperty.setInformation(formProperty.getType().getInformation("datePattern"));
+                } else if (formType instanceof EnumFormType) {
+                    myFormProperty.setInformation(formProperty.getType().getInformation("values"));
+                }
+                list.add(myFormProperty);
             }
         }
-        return arrayList;
+        return list;
     }
 }
 

@@ -1,6 +1,8 @@
 package com.github.flow.vo;
 
-import com.github.flow.dto.UseDTO;
+import com.github.flow.dto.IdentityLinkDTO;
+import com.github.flow.dto.ProcessInstanceDTO;
+import com.github.flow.dto.TaskDTO;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -23,7 +25,7 @@ public class UseVO {
     @Accessors(chain = true)
     @ApiModel("UseVO.StartProcessRes")
     public static class StartProcessRes {
-        private UseDTO.MyProcessInstance myProcessInstance;
+        private ProcessInstanceDTO processInstance;
     }
 
     @Data
@@ -45,7 +47,7 @@ public class UseVO {
     @ApiModel("UseVO.SearchTaskRes")
     public static class SearchTaskRes {
         private long total;
-        private List<UseDTO.MyTask> taskList;
+        private List<TaskDTO> taskList;
     }
 
     @Data
@@ -78,7 +80,7 @@ public class UseVO {
     @Accessors(chain = true)
     @ApiModel("UseVO.GetCandidateUserRes")
     public static class GetCandidateUserRes {
-        List<UseDTO.MyIdentityLink> identityLinkList;
+        List<IdentityLinkDTO> identityLinkList;
     }
 
 

@@ -1,5 +1,7 @@
 package com.github.flow.vo;
 
+import com.github.flow.dto.HistoricProcessInstanceDTO;
+import com.github.flow.dto.HistoricVariableInstanceDTO;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -35,6 +37,7 @@ public class HistoryVO {
         private List hisTaskList;
     }
 
+
     @Data
     @Accessors(chain = true)
     @ApiModel("HistoryVO.GetHistoryVariableReq")
@@ -50,6 +53,14 @@ public class HistoryVO {
 
     @Data
     @Accessors(chain = true)
+    @ApiModel("HistoryVO.GetHistoryVariableRes")
+    public static class GetHistoryVariableRes {
+        private long total;
+        private List<HistoricVariableInstanceDTO> hisVariableList;
+    }
+
+    @Data
+    @Accessors(chain = true)
     @ApiModel("HistoryVO.SearchHistoryProcessReq")
     public static class SearchHistoryProcessReq {
         private String involvedUser;
@@ -57,6 +68,14 @@ public class HistoryVO {
         private int pageIndex;
         @NotEmpty
         private int pageSize;
+    }
+
+    @Data
+    @Accessors(chain = true)
+    @ApiModel("HistoryVO.SearchHistoryProcessRes")
+    public static class SearchHistoryProcessRes {
+        private long total;
+        private List<HistoricProcessInstanceDTO> hisTaskList;
     }
 
 }
