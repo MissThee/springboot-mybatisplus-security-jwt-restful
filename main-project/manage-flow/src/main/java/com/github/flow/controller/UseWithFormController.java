@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-import static com.github.flow.controller.FJSON.*;
 
 @Api(tags = "工作流-审批流程流转(附带表单)")
 @RestController

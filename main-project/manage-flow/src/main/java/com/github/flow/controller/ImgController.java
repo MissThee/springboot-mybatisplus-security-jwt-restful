@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-@Api(tags = "审批历史-审批流程流转")
+@Api(tags = "工作流-图片")
 @RestController
 @RequestMapping("flowable/img")
 public class ImgController {

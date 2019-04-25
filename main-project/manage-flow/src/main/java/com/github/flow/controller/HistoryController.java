@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Api(tags = "审批历史-审批流程流转")
+@Api(tags = "工作流-历史")
 @RestController
 @PreAuthorize("isAuthenticated()")
 @RequestMapping("flowable/history")
@@ -38,7 +38,7 @@ public class HistoryController {
         this.mapperFacade = mapperFacade;
     }
 
-    @ApiOperation(value = "任务历史-查询多个")
+    @ApiOperation(value = "历史任务-查询多个")
     @PostMapping("task")
     public Res<HistoryVO.SearchHistoryTaskRes> searchHistoryTask(@RequestBody HistoryVO.SearchHistoryTaskReq req) {
         HistoricTaskInstanceQuery historicTaskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
@@ -85,7 +85,7 @@ public class HistoryController {
 
     }
 
-    @ApiOperation(value = "流程变量历史-查询")
+    @ApiOperation(value = "历史变量-查询")
     @PostMapping("variable")
     public Res<HistoryVO.GetHistoryVariableRes> getHistoryVariable(@RequestBody HistoryVO.GetHistoryVariableReq req) {
         HistoricVariableInstanceQuery historicVariableInstanceQuery = historyService.createHistoricVariableInstanceQuery();
@@ -115,7 +115,7 @@ public class HistoryController {
 
     }
 
-    @ApiOperation(value = "流程实例历史-查询")
+    @ApiOperation(value = "历史流程实例-查询")
     @PostMapping("process")
     public Res<HistoryVO.SearchHistoryProcessRes> searchHistoryProcess(@RequestBody @Validated HistoryVO.SearchHistoryProcessReq req) {
         HistoricProcessInstanceQuery historicProcessInstanceQuery = historyService.createHistoricProcessInstanceQuery();

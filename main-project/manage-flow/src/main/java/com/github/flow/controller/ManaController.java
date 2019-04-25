@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -50,7 +47,7 @@ public class ManaController {
     // act_re_deployment    流程部署表，此表中的key，name由方法设置
     // act_re_procdef       流程定义，此表中的key，name由bpmn中的设置读取，相同key的流程会归为同一种流程，并增加版本号
     @ApiOperation(value = "流程定义信息-添加（使用bpmn的zip包）", notes = "")
-    @PostMapping("deployment/zip")
+    @PutMapping("deployment/zip")
     public Res<ManaVO.DeployProcessByZipRes> deployProcessByZip(MultipartFile file, String key, String name) throws IOException {
         String dateNow = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(LocalDateTime.now());
         key = StringUtils.isEmpty(key) ? ("UnnamedDeploy" + dateNow) : key;//本次部署的key
@@ -99,7 +96,7 @@ public class ManaController {
     }
 
     @ApiOperation(value = "流程定义信息-删除单个", notes = "")
-    @PostMapping("deleteProcessDef")
+    @DeleteMapping("deleteProcessDef")
     public Res deleteProcessDefinition(@RequestBody @Validated ManaVO.DeleteProcessDefinitionReq req) {
         //根据流程部署id删除流程定义。
         //true  ：如果当前id的流程正在执行，则会报错，无法删除
@@ -126,7 +123,7 @@ public class ManaController {
     }
 
     @ApiOperation(value = "流程定义信息-删除多个，同一类", notes = "提供key，与此流程同一类的所有版本删除")
-    @PostMapping("deleteProcessDefinitionByKey")
+    @DeleteMapping("deleteProcessDefinitionByKey")
     @Transactional(rollbackFor = Exception.class)
     public Res deleteProcessDefinitionByKey(@RequestBody @Validated ManaVO.DeleteProcessDefinitionByKeyReq req) {
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().processDefinitionKey(req.getKey()).list();
@@ -143,7 +140,7 @@ public class ManaController {
     }
 
     @ApiOperation(value = "流程定义-挂起/激活", notes = "使其不能再使用（挂起流程定义，不能再新建实例；挂起实例，实例不能再操作）")
-    @PostMapping("suspendProcessDefinitionById")
+    @PatchMapping("suspendProcessDefinitionById")
     public Res suspendProcessDefinitionById(@RequestBody @Validated ManaVO.OperateProcessDefinitionByIdReq req) {
         if ("suspend".equals(req.getOperation())) {
             repositoryService.suspendProcessDefinitionById(req.getId(), req.getIsOperateRunningInstance(), req.getOperateDate());
