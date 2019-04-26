@@ -80,7 +80,7 @@ public class ManaController {
 
     // act_re_procdef
     @ApiOperation(value = "流程定义信息-查询单个", notes = "")
-    @PostMapping("searchProcessDefinition")
+    @PostMapping("processdefinition")
     public Res<ManaVO.SearchProcessDefinitionRes> searchProcessDefinition(@RequestBody ManaVO.SearchProcessDefinitionReq req) {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         //条件
@@ -96,7 +96,7 @@ public class ManaController {
     }
 
     @ApiOperation(value = "流程定义信息-删除单个", notes = "")
-    @DeleteMapping("deleteProcessDef")
+    @DeleteMapping("processdefinition")
     public Res deleteProcessDefinition(@RequestBody @Validated ManaVO.DeleteProcessDefinitionReq req) {
         //根据流程部署id删除流程定义。
         //true  ：如果当前id的流程正在执行，则会报错，无法删除
@@ -115,7 +115,7 @@ public class ManaController {
 
 
     @ApiOperation(value = "流程定义信息-查询多个，所有定义最新版", notes = "")
-    @PostMapping("searchNewestProcessDefinition")
+    @PostMapping("processdefinition/newest")
     public Res<ManaVO.SearchNewestProcessDefinitionRes> searchNewestProcessDefinition() {
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
         List processDefList = list.stream().map(e -> mapperFacade.map(e, ProcessDefinitionDTO.class)).collect(Collectors.toList());
@@ -123,7 +123,7 @@ public class ManaController {
     }
 
     @ApiOperation(value = "流程定义信息-删除多个，同一类", notes = "提供key，与此流程同一类的所有版本删除")
-    @DeleteMapping("deleteProcessDefinitionByKey")
+    @DeleteMapping("processdefinition/key")
     @Transactional(rollbackFor = Exception.class)
     public Res deleteProcessDefinitionByKey(@RequestBody @Validated ManaVO.DeleteProcessDefinitionByKeyReq req) {
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().processDefinitionKey(req.getKey()).list();
@@ -140,8 +140,8 @@ public class ManaController {
     }
 
     @ApiOperation(value = "流程定义-挂起/激活", notes = "使其不能再使用（挂起流程定义，不能再新建实例；挂起实例，实例不能再操作）")
-    @PatchMapping("suspendProcessDefinitionById")
-    public Res suspendProcessDefinitionById(@RequestBody @Validated ManaVO.OperateProcessDefinitionByIdReq req) {
+    @PatchMapping("processdefinition/state")
+    public Res operateProcessDefinitionById(@RequestBody @Validated ManaVO.OperateProcessDefinitionByIdReq req) {
         if ("suspend".equals(req.getOperation())) {
             repositoryService.suspendProcessDefinitionById(req.getId(), req.getIsOperateRunningInstance(), req.getOperateDate());
             return Res.success("完成挂起");
