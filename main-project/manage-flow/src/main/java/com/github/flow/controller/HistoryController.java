@@ -82,7 +82,6 @@ public class HistoryController {
         List<HistoricTaskInstance> list = historicTaskInstanceQuery.list();
         List<HistoricTaskInstanceDTO> hisTaskList = list.stream().map(e -> mapperFacade.map(e, HistoricTaskInstanceDTO.class)).collect(Collectors.toList());
         return Res.success(new HistoryVO.SearchHistoryTaskRes().setTotal(total).setHisTaskList(hisTaskList));
-
     }
 
     @ApiOperation(value = "历史变量-查询")
@@ -112,7 +111,6 @@ public class HistoryController {
         List<HistoricVariableInstanceDTO> hisVarList = list.stream().map(e -> mapperFacade.map(e, HistoricVariableInstanceDTO.class)).collect(Collectors.toList());
         HistoryVO.GetHistoryVariableRes getHistoryVariableRes = new HistoryVO.GetHistoryVariableRes().setHisVariableList(hisVarList).setTotal(total);
         return Res.success(getHistoryVariableRes);
-
     }
 
     @ApiOperation(value = "历史流程实例-查询")
@@ -134,7 +132,6 @@ public class HistoryController {
         List<HistoricProcessInstanceDTO> hisTaskList = list.stream().map(e -> mapperFacade.map(e, HistoricProcessInstanceDTO.class)).collect(Collectors.toList());
         HistoryVO.SearchHistoryProcessRes searchHistoryProcessRes = new HistoryVO.SearchHistoryProcessRes().setHisTaskList(hisTaskList).setTotal(total);
         return Res.success(searchHistoryProcessRes);
-
     }
 
 //    @ApiIgnore("暂不使用")

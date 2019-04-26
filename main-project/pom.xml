@@ -16,6 +16,7 @@
         <module>manage-base</module>
         <module>manage-flow</module>
         <module>service-start</module>
+        <module>manage-form</module>
     </modules>
     <dependencyManagement>
         <dependencies>

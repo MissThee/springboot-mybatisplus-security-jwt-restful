@@ -26,13 +26,13 @@ public class MybatisPlusGen {
         String projectPath = System.getProperty("user.dir") + "/main-project";
         //读取main-project中的配置文件
         Properties properties = new Properties();
-        properties.load(new FileInputStream(new File(projectPath + "/src/main/resources/application.properties")));
+        properties.load(new FileInputStream(new File(projectPath + "/common/src/main/resources/application-common.properties")));
 
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
         // 全局配置
         GlobalConfig gc = new GlobalConfig() {{
-            setOutputDir(projectPath + "/src/main/java");
+            setOutputDir(projectPath + "/manage-form/src/main/java");
             setAuthor(computerName + "," + userName);
             setFileOverride(false); //覆盖现有
             setOpen(false);         //生成完打开输出目录
@@ -57,7 +57,7 @@ public class MybatisPlusGen {
         // 包配置
         final String functionName = "." + scanner("生成的文件所属包名");
         PackageConfig pc = new PackageConfig() {{
-            setParent("com.github.missthee");
+            setParent("com.github.form");
             setEntity("db.entity.primary" + functionName);
             setMapper("db.mapper.primary" + functionName);
             setService("service.interf" + functionName);
