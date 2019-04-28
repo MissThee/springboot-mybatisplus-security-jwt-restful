@@ -23,6 +23,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class ManaController {
     @ApiOperation(value = "流程定义信息-添加（使用bpmn的zip包）", notes = "")
     @PutMapping("deployment/zip")
     public Res<ManaVO.DeployProcessByZipRes> deployProcessByZip(MultipartFile file, String key, String name) throws IOException {
-        String dateNow = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(LocalDateTime.now());
+        String dateNow = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").format(LocalDateTime.now());
         key = StringUtils.isEmpty(key) ? ("UnnamedDeploy" + dateNow) : key;//本次部署的key
         name = StringUtils.isEmpty(name) ? ("未命名部署" + dateNow) : name;//本次部署的name
         Deployment deployment = repositoryService.createDeployment()
@@ -79,7 +80,7 @@ public class ManaController {
 //    }
 
     // act_re_procdef
-    @ApiOperation(value = "流程定义信息-查询单个", notes = "")
+    @ApiOperation(value = "流程定义信息-查询多个（一类）", notes = "")
     @PostMapping("processdefinition")
     public Res<ManaVO.SearchProcessDefinitionRes> searchProcessDefinition(@RequestBody ManaVO.SearchProcessDefinitionReq req) {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
@@ -91,7 +92,7 @@ public class ManaController {
                 .orderByProcessDefinitionName().asc()//排序
                 .orderByProcessDefinitionVersion().desc()
                 .list();//结果集
-        List processDefinitionList = list.stream().map(e -> mapperFacade.map(e, ProcessDefinitionDTO.class)).collect(Collectors.toList());
+        List<ProcessDefinitionDTO> processDefinitionList = list.stream().map(e -> mapperFacade.map(e, ProcessDefinitionDTO.class)).collect(Collectors.toList());
         return Res.success(new ManaVO.SearchProcessDefinitionRes().setProcessDefinitionList(processDefinitionList));
     }
 

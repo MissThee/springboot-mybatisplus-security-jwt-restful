@@ -12,5 +12,5 @@ public class ProcessDefinitionDTO {
     @ApiModelProperty("部署KEY")
     private String getKey;
     @ApiModelProperty("部署版本")
-    private int getVersion;
+    private Integer getVersion;
 }

@@ -16,6 +16,7 @@ import org.flowable.engine.impl.form.EnumFormType;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
@@ -46,8 +47,8 @@ public class UseWithFormController {
         this.mapperFacade = mapperFacade;
     }
 
-    @ApiOperation(value = "表单-查询开始节点的表单属性", notes = "通过taskId或executionId")
-    @PostMapping("process")
+    @ApiOperation(value = "表单-查询开始节点的表单属性")
+    @PostMapping("start")
     public Res<UseWithFormVO.GetStartFormDataRes> getStartFormData(@RequestBody UseWithFormVO.GetStartFormDataReq req) throws MyMethodArgumentNotValidException {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         String processDefinitionId = null;
@@ -66,7 +67,7 @@ public class UseWithFormController {
     }
 
     @ApiOperation(value = "表单-开始流程，并添加表单的内容")
-    @PutMapping("process")
+    @PutMapping("start")
     public Res startForm(@RequestBody UseWithFormVO.StartFormReq req) throws MyMethodArgumentNotValidException {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
@@ -112,6 +113,11 @@ public class UseWithFormController {
         for (FormProperty formProperty : formProperties) {
             if (formProperty.isReadable()) {
                 FormDataDTO myFormProperty = mapperFacade.map(formProperty, FormDataDTO.class);
+//                FormDataDTO myFormProperty=new FormDataDTO() ;
+//                BeanUtils.copyProperties(formProperty,myFormProperty);
+//                MyCopier.copy(formProperty,myFormProperty);
+                myFormProperty.setIsRequired(formProperty.isRequired());
+                myFormProperty.setIsWritable(formProperty.isWritable());
                 FormType formType = formProperty.getType();
                 myFormProperty.setType(formType.getName());//类型值可能为：date enum double boolean double long string
                 //"datePattern"、"values"此值在每个类型中是固定的，于源码中查看。默认类型中仅datePattern、values有getInformation方法
@@ -125,6 +131,34 @@ public class UseWithFormController {
         }
         return list;
     }
+
+//    //查询流程中开始节点的表单渲染
+//    @PostMapping("render/start")
+//    public Res getRenderedStartForm(@RequestBody(required = false) Map bJO) throws MyMethodArgumentNotValidException {
+//        String taskId = (String) bJO.getOrDefault("taskId", null);
+//        String processInstanceId = (String) bJO.getOrDefault("processInstanceId", null);
+//        if (taskId != null) {
+//            processInstanceId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
+//        } else if (processInstanceId != null) {
+//
+//        } else {
+//            throw new MyMethodArgumentNotValidException("需要taskId、processInstanceId");
+//        }
+//        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+//        Object renderedStartForm = formService.getRenderedStartForm(processInstance.getProcessDefinitionId());
+//        return Res.success(renderedStartForm);
+//    }
+//
+//    //查询流程中开始节点的表单渲染
+//    @PostMapping("render")
+//    public Res getRenderedForm(@RequestBody(required = false) Map bJO) throws MyMethodArgumentNotValidException {
+//        String taskId = (String) bJO.getOrDefault("taskId", null);
+//        if (taskId != null) {
+//            return Res.success(formService.getRenderedTaskForm(taskId));
+//        } else {
+//            throw new MyMethodArgumentNotValidException("需要taskId");
+//        }
+//    }
 }
 
 
