@@ -55,13 +55,13 @@ public class MybatisPlusGen {
         mpg.setDataSource(dsc);
 
         // 包配置
-        final String functionName = "." + scanner("生成的文件所属包名");
+        final String functionName = scanner("生成的文件所属包名");
         PackageConfig pc = new PackageConfig() {{
             setParent("com.github.form");
-            setEntity("db.entity.primary" + functionName);
-            setMapper("db.mapper.primary" + functionName);
-            setService("service.interf" + functionName);
-            setServiceImpl("service.imp" + functionName);
+            setEntity("db.entity.primary" +"." +  functionName);
+            setMapper("db.mapper.primary" +"." +  functionName);
+            setService("service.interf" +"." +  functionName);
+            setServiceImpl("service.imp" +"." +  functionName);
         }};
         mpg.setPackageInfo(pc);
 
@@ -112,7 +112,7 @@ public class MybatisPlusGen {
                         @Override
                         public String outputFile(TableInfo tableInfo) {
                             // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-                            return projectPath + "/src/main/resources/mybatis/mapper/primary/generate/"
+                            return projectPath + "/manage-form/src/main/resources/mybatis/mapper/primary/generate/"
                                     + functionName + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                         }
                     });
