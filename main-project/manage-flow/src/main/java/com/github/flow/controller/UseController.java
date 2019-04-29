@@ -76,20 +76,20 @@ public class UseController {
 
 
     // act_ru_execution     流程启动一次，只要没执行完，就会有数据
-    @ApiOperation(value = "流程-启动", notes = "")
-    @PutMapping("process")
-    public Res<UseVO.StartProcessRes> startProcess(@RequestBody UseVO.StartProcessReq req) {
-        ProcessInstance processInstance;
-        if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
-            processInstance = runtimeService.startProcessInstanceById(req.getProcessDefinitionId(), req.getBusinessKey(), req.getVariableMap());
-        } else if (!StringUtils.isEmpty(req.getProcessDefinitionKey())) {
-            processInstance = runtimeService.startProcessInstanceByKey(req.getProcessDefinitionKey(), req.getBusinessKey(), req.getVariableMap());
-        } else {
-            throw new MissingFormatArgumentException("缺少条件。需要processDefinitionId或processDefinitionKey");
-        }
-        UseVO.StartProcessRes startProcessRes = new UseVO.StartProcessRes().setProcessInstance(mapperFacade.map(processInstance, ProcessInstanceDTO.class));
-        return Res.success(startProcessRes, "启动成功");
-    }
+//    @ApiOperation(value = "流程-启动", notes = "")
+//    @PutMapping("process")
+//    public Res<UseVO.StartProcessRes> startProcess(@RequestBody UseVO.StartProcessReq req) {
+//        ProcessInstance processInstance;
+//        if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
+//            processInstance = runtimeService.startProcessInstanceById(req.getProcessDefinitionId(), req.getBusinessKey(), req.getVariableMap());
+//        } else if (!StringUtils.isEmpty(req.getProcessDefinitionKey())) {
+//            processInstance = runtimeService.startProcessInstanceByKey(req.getProcessDefinitionKey(), req.getBusinessKey(), req.getVariableMap());
+//        } else {
+//            throw new MissingFormatArgumentException("缺少条件。需要processDefinitionId或processDefinitionKey");
+//        }
+//        UseVO.StartProcessRes startProcessRes = new UseVO.StartProcessRes().setProcessInstance(mapperFacade.map(processInstance, ProcessInstanceDTO.class));
+//        return Res.success(startProcessRes, "启动成功");
+//    }
 
     // act_ru_task          启动流程中的任务，仅存放正在执行的任务，执行完的任务不在本表。
     // act_ru_identitylink  存放正在执行任务的，办理人信息
@@ -122,31 +122,11 @@ public class UseController {
         return Res.success(searchTaskRes);
     }
 
-    @ApiOperation(value = "任务-办理人-添加（任务拾取）")
-    @PutMapping("task/assignee")
-    public Res claimTask(@RequestBody @Validated UseVO.ClaimTaskReq req) {
-        //claim 会检查assignee字段是否已有办理人。若有，抛出异常；若没有，设置办理人。
-        //setAssignee 直接设置办理人。
-        //共同点：除claim会检查是否已有办理人外，两者均可给任意任务（不论有无候选办理人），设置任意办理人（不论设置的办理人是否在候选办理人中）
-        try {
-            taskService.claim(req.getTaskId(), req.getAssignee());
-        } catch (Exception e) {
-            return Res.failure("添加办理人失败，已有办理人");
-        }
-        return Res.success("添加办理人成功");
-    }
-
-    @ApiOperation(value = "任务-办理人-删除（回退任务拾取）")
-    @DeleteMapping("task/assignee")
-    public Res returnTask(@RequestBody @Validated UseVO.ReturnTaskReq req) {
-        taskService.setAssignee(req.getTaskId(), null);
-        return Res.success("删除办理人成功");
-    }
-
     @ApiOperation(value = "任务-候选办理人-查询", notes = "")
     @PostMapping("task/candidateuser")
     public Res getCandidateUser(@RequestBody @Validated UseVO.GetCandidateUserReq req) {
         //其中办理人会额外加入到查询结果中
+
         List<IdentityLink> list = taskService.getIdentityLinksForTask(req.getTaskId());
         List<IdentityLinkDTO> identityLinkList = list.stream().map(e -> mapperFacade.map(e, IdentityLinkDTO.class)).collect(Collectors.toList());
         UseVO.GetCandidateUserRes getCandidateUserRes = new UseVO.GetCandidateUserRes()
@@ -180,21 +160,6 @@ public class UseController {
         return Res.success("删除成功");
     }
 
-    @ApiOperation(value = "任务-办理", notes = "")
-    @PutMapping("task")
-    public Res completeTask(HttpServletRequest httpServletRequest, @RequestBody @Validated UseVO.CompleteTaskReq req) {
-        if (req.getComment() != null) {
-            Authentication.setAuthenticatedUserId(JavaJWT.getId(httpServletRequest));//批注人为线程绑定变量，需在同一线程内设置批注人信息。setAuthenticatedUserId的实际实现类中，使用的ThreadLocal保存变量
-            String processInstanceId = taskService.createTaskQuery()
-                    .taskId(req.getTaskId())
-                    .singleResult()
-                    .getProcessInstanceId();
-            taskService.addComment(req.getTaskId(), processInstanceId, req.getComment());
-        }
-        taskService.complete(req.getTaskId(), req.getVariableMap());
-        return Res.success("操作成功");
-    }
-
     @ApiOperation(value = "流程-查询是否完结", notes = "")
     @PostMapping("process/isfinished")
     public Res processIsFinished(@RequestBody(required = false) UseVO.ProcessIsFinishedReq req) {
@@ -218,7 +183,6 @@ public class UseController {
     @ApiOperation(value = "流程变量-查询", notes = "通过taskId或executionId，已执行过的任务或执行实例只能在历史中查找，此处无法找到")
     @PostMapping("variable")
     public Res getVariable(@RequestBody UseVO.GetVariableReq req) {
-        //无变量则新增，有变量则覆盖。变量版本号增加，
         Object value = null;
         Object variables = null;
         if (req.getTaskId() != null) {
@@ -249,7 +213,6 @@ public class UseController {
     @ApiOperation(value = "流程变量-修改", notes = "通过taskId或executionId")
     @PatchMapping("variable")
     public Res setVariable(@RequestBody UseVO.SetVariableReq req)  {
-
         //无变量则新增，有变量则覆盖。变量版本号增加，
         if (req.getTaskId() != null) {
             if (req.getVariable() != null) {

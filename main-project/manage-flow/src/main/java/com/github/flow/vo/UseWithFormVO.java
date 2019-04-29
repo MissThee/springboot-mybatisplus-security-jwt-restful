@@ -24,7 +24,7 @@ public class UseWithFormVO {
     @Accessors(chain = true)
     @ApiModel("UseWithFormVO.GetStartFormDataRes")
     public static class GetStartFormDataRes {
-        private Map<String,FormDataDTO> formProperty;
+        private Map<String, FormDataDTO> formProperty;
     }
 
     @Data
@@ -34,7 +34,7 @@ public class UseWithFormVO {
         private String processDefinitionId;
         private String processDefinitionKey;
         private String businessKey;
-        private Map<String, String> variableMap=new HashMap<>();
+        private Map<String, String> variableMap = new HashMap<>();
     }
 
     @Data
@@ -56,16 +56,17 @@ public class UseWithFormVO {
     @Accessors(chain = true)
     @ApiModel(value = "UseWithFormVO.GetTaskFormDataRes")
     public static class GetTaskFormDataRes {
-        private Map<String,FormDataDTO> formProperty;
-        private String formKey;
+        private Map<String, FormDataDTO> formProperty;
+        private List<String> nextOutValueList;
     }
+
     @Data
     @Accessors(chain = true)
     @ApiModel(value = "UseWithFormVO.SaveTaskFormDataReq")
     public static class SaveTaskFormDataReq {
         @NotEmpty
         private String taskId;
-        private  Map<String, String> variableMap;
+        private Map<String, String> variableMap;
     }
 
     @Data
@@ -74,7 +75,8 @@ public class UseWithFormVO {
     public static class SubmitTaskFormDataReq {
         @NotEmpty
         private String taskId;
-        Map<String, String> variableMap;
+        private Map<String, String> variableMap;
+        private String comment;
     }
 
 

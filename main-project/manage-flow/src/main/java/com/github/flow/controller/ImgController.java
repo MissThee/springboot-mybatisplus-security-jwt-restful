@@ -134,18 +134,13 @@ public class ImgController {
             if (processDefinitionId == null) {
                 processDefinitionId = activityInstance.getProcessDefinitionId();
             }
-            switch (activityInstance.getActivityType()) {//集合中包含路径和节点，按照固定类型分类填充数组
-                case "sequenceFlow":
-                    if (isContainHighLightLine) {
-                        highLightedFlows.add(activityInstance.getActivityId());
-                    }
-                    break;
-                case "startEvent":
-                case "userTask":
-                case "endEvent":
-                default:
-                    highLightedActivities.add(activityInstance.getActivityId());
-                    break;
+            //集合中包含路径和节点，按照固定类型分类填充数组
+            if ("sequenceFlow".equals(activityInstance.getActivityType())) {
+                if (isContainHighLightLine) {
+                    highLightedFlows.add(activityInstance.getActivityId());
+                }
+            } else {
+                highLightedActivities.add(activityInstance.getActivityId());
             }
         }
         return processDefinitionId;

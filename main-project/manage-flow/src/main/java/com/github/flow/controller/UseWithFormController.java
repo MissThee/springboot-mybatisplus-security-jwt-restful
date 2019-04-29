@@ -1,6 +1,7 @@
 package com.github.flow.controller;
 
 import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
+import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
 import com.github.flow.common.FUtils;
 import com.github.flow.dto.FormDataDTO;
@@ -9,20 +10,30 @@ import com.github.flow.vo.UseWithFormVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
+import org.flowable.bpmn.model.*;
 import org.flowable.common.engine.api.FlowableException;
+import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.*;
 import org.flowable.engine.form.*;
+import org.flowable.engine.form.FormProperty;
 import org.flowable.engine.impl.form.DateFormType;
 import org.flowable.engine.impl.form.EnumFormType;
+import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
+import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
+import org.flowable.engine.runtime.ActivityInstance;
+import org.flowable.engine.runtime.ActivityInstanceQuery;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 
@@ -57,6 +68,7 @@ public class UseWithFormController {
         } else if (!StringUtils.isEmpty(req.getProcessDefinitionKey())) {
             processDefinitionId = processDefinitionQuery.processDefinitionKey(req.getProcessDefinitionKey()).latestVersion().singleResult().getId();
         }
+
         if (StringUtils.isEmpty(processDefinitionId)) {
             throw new MissingFormatArgumentException("缺少查询条件。需要processDefinitionId或processDefinitionKey");
         }
@@ -86,23 +98,67 @@ public class UseWithFormController {
     @ApiOperation(value = "表单-任务-查询属性")
     @PostMapping
     public Res<UseWithFormVO.GetTaskFormDataRes> getTaskFormData(@RequestBody @Validated UseWithFormVO.GetTaskFormDataReq req) {
+        // 收集本节点出口可选值
+        List<String> nextOutValueList = new ArrayList<>();
+        {
+            Task task = taskService.createTaskQuery().taskId(req.getTaskId()).singleResult();
+            if (task != null) {
+                ExecutionEntity ee = (ExecutionEntity) runtimeService.createExecutionQuery()
+                        .executionId(task.getExecutionId()).singleResult();
+                // 当前审批节点
+                String currentActivityId = ee.getActivityId();
+                BpmnModel bpmnModel = repositoryService.getBpmnModel(task.getProcessDefinitionId());
+                FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(currentActivityId);
+                //获取节点输出集合
+                List<SequenceFlow> outFlows = flowNode.getOutgoingFlows();
+                // 输出连线（规定图中下一节点为网关时，本节点只有一个输出；直接分支可为多条输出。）
+                if (outFlows != null) {
+                    if (outFlows.size() > 1) {
+                        for (SequenceFlow sequenceFlow : outFlows) {
+                            nextOutValueList.add(sequenceFlow.getName());
+                        }
+                    } else if (outFlows.size() == 1) {
+                        //获取第一条输出线
+                        SequenceFlow sequenceFlow = outFlows.get(0);
+                        //获取第一条输出线末端节点
+                        FlowElement flowElement = sequenceFlow.getTargetFlowElement();
+                        if (flowElement instanceof ExclusiveGateway) {
+                            List<SequenceFlow> outgoingFlowList = ((ExclusiveGateway) flowElement).getOutgoingFlows();
+                            for (SequenceFlow sequenceFlow1 : outgoingFlowList) {
+                                nextOutValueList.add(sequenceFlow1.getName());
+                            }
+                        }
+                    }
+                }
+            }
+        }
         TaskFormData taskFormData = formService.getTaskFormData(req.getTaskId());
         UseWithFormVO.GetTaskFormDataRes getTaskFormDataRes = new UseWithFormVO.GetTaskFormDataRes()
                 .setFormProperty(buildFormDataMap(taskFormData))
-                .setFormKey(taskFormData.getFormKey());
+                .setNextOutValueList(nextOutValueList);
         return Res.success(getTaskFormDataRes);
     }
 
     @ApiOperation(value = "表单-任务-保存属性")
     @PatchMapping
     public Res saveTaskFormData(@RequestBody @Validated UseWithFormVO.SaveTaskFormDataReq req) {
+        taskService.setAssignee(req.getTaskId(), null);
         formService.saveFormData(req.getTaskId(), req.getVariableMap());
         return Res.success("保存成功");
     }
 
     @ApiOperation(value = "表单-任务-保存属性并完成任务")
     @PutMapping
-    public Res submitTaskFormData(@RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) {
+    public Res submitTaskFormData(HttpServletRequest httpServletRequest, @RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) {
+        taskService.claim(req.getTaskId(), JavaJWT.getId(httpServletRequest));
+        if (!StringUtils.isEmpty(req.getComment())) {
+            Authentication.setAuthenticatedUserId(JavaJWT.getId(httpServletRequest));//批注人为线程绑定变量，需在同一线程内设置批注人信息。setAuthenticatedUserId的实际实现类中，使用的ThreadLocal保存变量
+            String processInstanceId = taskService.createTaskQuery()
+                    .taskId(req.getTaskId())
+                    .singleResult()
+                    .getProcessInstanceId();
+            taskService.addComment(req.getTaskId(), processInstanceId, req.getComment());
+        }
         formService.submitTaskFormData(req.getTaskId(), req.getVariableMap());
         return Res.success("操作成功");
     }
@@ -146,33 +202,6 @@ public class UseWithFormController {
         return myFormProperty;
     }
 
-//    //查询流程中开始节点的表单渲染
-//    @PostMapping("render/start")
-//    public Res getRenderedStartForm(@RequestBody(required = false) Map bJO) throws MyMethodArgumentNotValidException {
-//        String taskId = (String) bJO.getOrDefault("taskId", null);
-//        String processInstanceId = (String) bJO.getOrDefault("processInstanceId", null);
-//        if (taskId != null) {
-//            processInstanceId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
-//        } else if (processInstanceId != null) {
-//
-//        } else {
-//            throw new MyMethodArgumentNotValidException("需要taskId、processInstanceId");
-//        }
-//        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-//        Object renderedStartForm = formService.getRenderedStartForm(processInstance.getProcessDefinitionId());
-//        return Res.success(renderedStartForm);
-//    }
-//
-//    //查询流程中开始节点的表单渲染
-//    @PostMapping("render")
-//    public Res getRenderedForm(@RequestBody(required = false) Map bJO) throws MyMethodArgumentNotValidException {
-//        String taskId = (String) bJO.getOrDefault("taskId", null);
-//        if (taskId != null) {
-//            return Res.success(formService.getRenderedTaskForm(taskId));
-//        } else {
-//            throw new MyMethodArgumentNotValidException("需要taskId");
-//        }
-//    }
 }
 
 

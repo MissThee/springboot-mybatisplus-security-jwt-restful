@@ -139,16 +139,4 @@ public class ManaController {
         }
     }
 
-//    @ApiIgnore("暂不使用")
-//    @ApiOperation(value = "定时任务-查询所有", notes = "")
-//    @PostMapping("searchTimerJob")
-//    public Res<ManaVO.SearchTimerJobRes> searchTimerJob() {
-//        List<Job> job = managementService.createTimerJobQuery().list();
-//        List jobList = job.stream().map(e-> new LinkedHashMap<String, Object>() {{
-//            put("id", e.getId());//定时器ID
-//            put("duedate", e.getDuedate());//定时器到期日期
-//            put("jobType", e.getJobType());//定时器类型
-//        }}).collect(Collectors.toList());
-//        return Res.success(new ManaVO.SearchTimerJobRes().setJobList(jobList));
-//    }
 }

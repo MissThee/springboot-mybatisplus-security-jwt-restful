@@ -55,7 +55,7 @@ public class HistoryVO {
     @Accessors(chain = true)
     @ApiModel("HistoryVO.GetHistoryVariableRes")
     public static class GetHistoryVariableRes {
-        private Map<String,Object> hisVariableMap;
+        private Map<String,Object> variables;
     }
 
     @Data

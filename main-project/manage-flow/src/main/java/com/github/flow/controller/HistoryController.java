@@ -78,7 +78,7 @@ public class HistoryController {
                 .orderByExecutionId().asc()
                 .orderByHistoricTaskInstanceEndTime().asc();
         long total = historicTaskInstanceQuery.count();
-        List<HistoricTaskInstance> list = historicTaskInstanceQuery.list();
+        List<HistoricTaskInstance> list = historicTaskInstanceQuery.listPage(req.getPageIndex() * req.getPageSize(), (req.getPageIndex() + 1) * req.getPageSize());
         List<HistoricTaskInstanceDTO> hisTaskList = list.stream().map(e -> mapperFacade.map(e, HistoricTaskInstanceDTO.class)).collect(Collectors.toList());
         return Res.success(new HistoryVO.SearchHistoryTaskRes().setTotal(total).setHisTaskList(hisTaskList));
     }
@@ -87,24 +87,19 @@ public class HistoryController {
     @PostMapping("variable")
     public Res<HistoryVO.GetHistoryVariableRes> getHistoryVariable(@RequestBody HistoryVO.GetHistoryVariableReq req) {
         HistoricVariableInstanceQuery historicVariableInstanceQuery = historyService.createHistoricVariableInstanceQuery();
-        boolean hasCondition = false;
+        String processInstanceId;
         if (req.getTaskId() != null) {
-            historicVariableInstanceQuery.taskId(req.getTaskId());
-            hasCondition = true;
-        }
-        if (req.getExecutionId() != null) {
-            historicVariableInstanceQuery.executionId(req.getExecutionId());
-            hasCondition = true;
-        }
-        if (req.getProcessInstanceId() != null) {
-            historicVariableInstanceQuery.processInstanceId(req.getProcessInstanceId());
-            hasCondition = true;
-        }
-        if (!hasCondition) {
+            processInstanceId = historyService.createHistoricTaskInstanceQuery().taskId(req.getTaskId()).singleResult().getProcessInstanceId();
+        } else if (req.getExecutionId() != null) {
+            processInstanceId = historyService.createHistoricTaskInstanceQuery().executionId(req.getExecutionId()).singleResult().getProcessInstanceId();
+        } else if (req.getProcessInstanceId() != null) {
+            processInstanceId = req.getProcessInstanceId();
+        } else {
             throw new MissingFormatArgumentException("缺少查询条件。");
         }
-        List<HistoricVariableInstance> list =   historicVariableInstanceQuery.list();
-        Map<String,Object> hisVarMap = list.stream().collect(Collectors.toMap(e->e.getVariableName(),e->e.getValue()));
+        historicVariableInstanceQuery.processInstanceId(processInstanceId);
+        List<HistoricVariableInstance> list = historicVariableInstanceQuery.list();
+        Map<String, Object> hisVarMap = list.stream().collect(Collectors.toMap(HistoricVariableInstance::getVariableName, HistoricVariableInstance::getValue));
         HistoryVO.GetHistoryVariableRes getHistoryVariableRes = new HistoryVO.GetHistoryVariableRes().setHisVariableMap(hisVarMap);
         return Res.success(getHistoryVariableRes);
     }
@@ -130,22 +125,6 @@ public class HistoryController {
         return Res.success(searchHistoryProcessRes);
     }
 
-//    @ApiIgnore("暂不使用")
-//    @ApiOperation(value = "流程历史-活动实例节点-查询")
-//    @PostMapping("activity")
-//    public Res searchHistoryActivity(@RequestBody(required = false) JSONObject bJO) {
-//        String processId = getStringOrDefaultFromJO(bJO, "processId", null);
-//        HistoricActivityInstanceQuery historicActivityInstanceQuery = historyService.createHistoricActivityInstanceQuery();
-//        if (processId != null) {
-//            historicActivityInstanceQuery.processInstanceId(processId);
-//        }
-//        List<HistoricActivityInstance> list = historicActivityInstanceQuery
-//                .orderByProcessInstanceId().asc()
-//                .orderByExecutionId().asc()
-//                .list();
-//        List hisTaskList = list.stream().map(FJSON::historicActivityInstanceToJSON).collect(Collectors.toList());
-//        return Res.success(hisTaskList);
-//    }
 }
 
 
