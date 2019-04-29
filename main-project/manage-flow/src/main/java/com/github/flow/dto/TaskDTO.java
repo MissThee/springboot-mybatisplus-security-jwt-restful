@@ -8,17 +8,17 @@ import java.util.Date;
 @Data
 public class TaskDTO {
     @ApiModelProperty("任务ID")
-    private String Id;
+    private String id;
     @ApiModelProperty("任务名称")
-    private String Name;
+    private String name;
     @ApiModelProperty("任务创建时间")
-    private Date CreateTime;
+    private Date createTime;
     @ApiModelProperty("任务办理人")
-    private String Assignee;
+    private String assignee;
     @ApiModelProperty("执行实例ID")
-    private String ExecutionId;
+    private String executionId;
     @ApiModelProperty("流程实例ID")
-    private String ProcessInstanceId;
+    private String processInstanceId;
     @ApiModelProperty("流程定义ID")
-    private String ProcessDefinitionId;
+    private String processDefinitionId;
 }

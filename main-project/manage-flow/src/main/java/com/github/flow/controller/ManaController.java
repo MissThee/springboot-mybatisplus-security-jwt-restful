@@ -1,6 +1,7 @@
 package com.github.flow.controller;
 
 
+import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
 import com.github.common.tool.Res;
 import com.github.flow.dto.ProcessDefinitionDTO;
 import com.github.flow.vo.ManaVO;
@@ -59,25 +60,8 @@ public class ManaController {
                 .addZipInputStream(new ZipInputStream(file.getInputStream()))
 //                .addClasspathResource("processes-no-auto/DemoProcess.bpmn")//使用resources目录下的流程配置文件
                 .deploy();
-        return Res.success(new ManaVO.DeployProcessByZipRes().setId(deployment.getId()));
+        return Res.success(new ManaVO.DeployProcessByZipRes().setDeploymentId(deployment.getId()));
     }
-
-    // act_re_deployment
-//    @ApiOperation(value = "部署信息-查询单个", notes = "")
-//    @PostMapping("searchDeploy")
-//    public Res searchDeploy(@RequestBody ProcessManaVO.SearchDeployReq req) {
-//        DeploymentQuery deploymentQuery = repositoryService.createDeploymentQuery();
-//        //条件
-//        if (req.getKey() != null) {
-//            deploymentQuery.deploymentKey(req.getKey());
-//        }
-//        List<Deployment> list = deploymentQuery
-//                .orderByDeploymentName().asc() //排序
-//                .orderByDeploymenTime().desc()
-//                .list();//结果集
-//        List deploymentList = list.stream().map(FJSON::deploymentToJSON).collect(Collectors.toList());
-//        return Res.success(deploymentList);
-//    }
 
     // act_re_procdef
     @ApiOperation(value = "流程定义信息-查询多个（一类）", notes = "")
@@ -85,8 +69,8 @@ public class ManaController {
     public Res<ManaVO.SearchProcessDefinitionRes> searchProcessDefinition(@RequestBody ManaVO.SearchProcessDefinitionReq req) {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         //条件
-        if (req.getKey() != null) {
-            processDefinitionQuery.processDefinitionKey(req.getKey());//根据流程定义key查询
+        if (req.getProcessDefinitionKey() != null) {
+            processDefinitionQuery.processDefinitionKey(req.getProcessDefinitionKey());//根据流程定义key查询
         }
         List<ProcessDefinition> list = processDefinitionQuery
                 .orderByProcessDefinitionName().asc()//排序
@@ -103,7 +87,7 @@ public class ManaController {
         //true  ：如果当前id的流程正在执行，则会报错，无法删除
         //false : 如果当前id的流程正在执行，则会把此流程相关信息都删除，包含act_ru_*,act_hi_*等
         try {
-            repositoryService.deleteDeployment(req.getId(), req.getIsForceDelete());
+            repositoryService.deleteDeployment(req.getDeploymentId(), req.getIsForceDelete());
         } catch (Exception e) {
             e.printStackTrace();
             return Res.failure("失败，该流程定义可能被使用中");
@@ -120,14 +104,14 @@ public class ManaController {
     public Res<ManaVO.SearchNewestProcessDefinitionRes> searchNewestProcessDefinition() {
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
         List processDefList = list.stream().map(e -> mapperFacade.map(e, ProcessDefinitionDTO.class)).collect(Collectors.toList());
-        return Res.success(new ManaVO.SearchNewestProcessDefinitionRes().setProcessDefList(processDefList));
+        return Res.success(new ManaVO.SearchNewestProcessDefinitionRes().setProcessDefinitionList(processDefList));
     }
 
     @ApiOperation(value = "流程定义信息-删除多个，同一类", notes = "提供key，与此流程同一类的所有版本删除")
     @DeleteMapping("processdefinition/key")
     @Transactional(rollbackFor = Exception.class)
     public Res deleteProcessDefinitionByKey(@RequestBody @Validated ManaVO.DeleteProcessDefinitionByKeyReq req) {
-        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().processDefinitionKey(req.getKey()).list();
+        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().processDefinitionKey(req.getProcessDefinitionKey()).list();
         List<String> deploymentIdList = list.stream().map(ProcessDefinition::getDeploymentId).collect(Collectors.toList());
         for (String deploymentId : deploymentIdList) {
             try {
@@ -142,15 +126,16 @@ public class ManaController {
 
     @ApiOperation(value = "流程定义-挂起/激活", notes = "使其不能再使用（挂起流程定义，不能再新建实例；挂起实例，实例不能再操作）")
     @PatchMapping("processdefinition/state")
-    public Res operateProcessDefinitionById(@RequestBody @Validated ManaVO.OperateProcessDefinitionByIdReq req) {
+    public Res operateProcessDefinitionById(@RequestBody @Validated ManaVO.OperateProcessDefinitionByIdReq req) throws MyMethodArgumentNotValidException {
         if ("suspend".equals(req.getOperation())) {
-            repositoryService.suspendProcessDefinitionById(req.getId(), req.getIsOperateRunningInstance(), req.getOperateDate());
+            repositoryService.suspendProcessDefinitionById(req.getProcessDefinitionId(), req.getIsOperateRunningInstance(), req.getOperateDate());
             return Res.success("完成挂起");
         } else if ("activate".equals(req.getOperation())) {
-            repositoryService.activateProcessDefinitionById(req.getId(), req.getIsOperateRunningInstance(), req.getOperateDate());
+            repositoryService.activateProcessDefinitionById(req.getProcessDefinitionId(), req.getIsOperateRunningInstance(), req.getOperateDate());
             return Res.success("完成激活");
         } else {
-            return Res.failure("操作参数有误，仅能为：suspend,activate");
+            //已在注解中完成校验，此处异常不会激活
+            throw new MyMethodArgumentNotValidException("操作参数有误。仅能为：suspend,activate");
         }
     }
 

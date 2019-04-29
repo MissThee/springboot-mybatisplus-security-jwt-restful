@@ -3,7 +3,6 @@ package com.github.flow.controller;
 import com.github.common.tool.Res;
 import com.github.flow.dto.HistoricProcessInstanceDTO;
 import com.github.flow.dto.HistoricTaskInstanceDTO;
-import com.github.flow.dto.HistoricVariableInstanceDTO;
 import com.github.flow.vo.HistoryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Api(tags = "工作流-历史")
 @RestController
-@PreAuthorize("isAuthenticated()")
+//@PreAuthorize("isAuthenticated()")
 @RequestMapping("flowable/history")
 public class HistoryController {
     private final MapperFacade mapperFacade;
@@ -72,7 +71,7 @@ public class HistoryController {
             hasCondition = true;
         }
         if (!hasCondition) {
-            throw new MissingFormatArgumentException("缺少查询条件");
+            throw new MissingFormatArgumentException("缺少查询条件。");
         }
         historicTaskInstanceQuery
                 .orderByProcessInstanceId().asc()
@@ -102,14 +101,11 @@ public class HistoryController {
             hasCondition = true;
         }
         if (!hasCondition) {
-            throw new MissingFormatArgumentException("缺少查询条件");
+            throw new MissingFormatArgumentException("缺少查询条件。");
         }
-        historicVariableInstanceQuery
-                .orderByProcessInstanceId().asc();
-        long total = historicVariableInstanceQuery.count();
-        List<HistoricVariableInstance> list = historicVariableInstanceQuery.listPage(req.getPageIndex(), req.getPageSize());
-        List<HistoricVariableInstanceDTO> hisVarList = list.stream().map(e -> mapperFacade.map(e, HistoricVariableInstanceDTO.class)).collect(Collectors.toList());
-        HistoryVO.GetHistoryVariableRes getHistoryVariableRes = new HistoryVO.GetHistoryVariableRes().setHisVariableList(hisVarList).setTotal(total);
+        List<HistoricVariableInstance> list =   historicVariableInstanceQuery.list();
+        Map<String,Object> hisVarMap = list.stream().collect(Collectors.toMap(e->e.getVariableName(),e->e.getValue()));
+        HistoryVO.GetHistoryVariableRes getHistoryVariableRes = new HistoryVO.GetHistoryVariableRes().setHisVariableMap(hisVarMap);
         return Res.success(getHistoryVariableRes);
     }
 
@@ -123,12 +119,12 @@ public class HistoryController {
             hasCondition = true;
         }
         if (!hasCondition) {
-            throw new MissingFormatArgumentException("缺少查询条件");
+            throw new MissingFormatArgumentException("缺少查询条件。");
         }
         historicProcessInstanceQuery
                 .orderByProcessDefinitionId().asc();
         long total = historicProcessInstanceQuery.count();
-        List<HistoricProcessInstance> list = historicProcessInstanceQuery.listPage(req.getPageIndex(), req.getPageSize());
+        List<HistoricProcessInstance> list = historicProcessInstanceQuery.listPage(req.getPageIndex() * req.getPageSize(), (req.getPageIndex() + 1) * req.getPageSize());
         List<HistoricProcessInstanceDTO> hisTaskList = list.stream().map(e -> mapperFacade.map(e, HistoricProcessInstanceDTO.class)).collect(Collectors.toList());
         HistoryVO.SearchHistoryProcessRes searchHistoryProcessRes = new HistoryVO.SearchHistoryProcessRes().setHisTaskList(hisTaskList).setTotal(total);
         return Res.success(searchHistoryProcessRes);

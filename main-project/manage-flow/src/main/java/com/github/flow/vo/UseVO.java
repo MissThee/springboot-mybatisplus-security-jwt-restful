@@ -4,10 +4,13 @@ import com.github.flow.dto.IdentityLinkDTO;
 import com.github.flow.dto.ProcessInstanceDTO;
 import com.github.flow.dto.TaskDTO;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +19,10 @@ public class UseVO {
     @Accessors(chain = true)
     @ApiModel("UseVO.StartProcessReq")
     public static class StartProcessReq {
-        private String processDefKey;
+        private String processDefinitionId;
+        private String processDefinitionKey;
         private String businessKey;
-        private Map<String, Object> variableMap;
+        private Map<String, Object> variableMap=new HashMap<>();
     }
 
     @Data
@@ -36,17 +40,19 @@ public class UseVO {
         private String candidateUser;
         private List<String> candidateGroup;
         private Boolean isOnlyUnassigned = false;
-        @NotEmpty
-        private int pageIndex;
-        @NotEmpty
-        private int pageSize;
+        @NotNull
+        @ApiModelProperty("页序号。0开始")
+        private Integer pageIndex;
+        @NotNull
+        @ApiModelProperty("每页个数。")
+        private Integer pageSize;
     }
 
     @Data
     @Accessors(chain = true)
     @ApiModel("UseVO.SearchTaskRes")
     public static class SearchTaskRes {
-        private long total;
+        private Long total;
         private List<TaskDTO> taskList;
     }
 
@@ -149,13 +155,15 @@ public class UseVO {
         private String taskId;
         private String executionId;
         private String variableName;
+        @ApiModelProperty("是否返回所有变量。默认false")
+        private Boolean needAllVariable=false;
     }
 
     @Data
     @Accessors(chain = true)
     @ApiModel("UseVO.GetVariableRes")
     public static class GetVariableRes {
-        private Object variable;
+        private Object value;
         private Object variables;
     }
 

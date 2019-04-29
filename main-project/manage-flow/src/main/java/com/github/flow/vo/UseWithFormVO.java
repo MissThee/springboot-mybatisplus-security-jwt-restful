@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class UseWithFormVO {
     @Accessors(chain = true)
     @ApiModel("UseWithFormVO.GetStartFormDataRes")
     public static class GetStartFormDataRes {
-        private List<FormDataDTO> formProperty;
+        private Map<String,FormDataDTO> formProperty;
     }
 
     @Data
@@ -32,7 +33,8 @@ public class UseWithFormVO {
     public static class StartFormReq {
         private String processDefinitionId;
         private String processDefinitionKey;
-        private Map<String, String> variableMap;
+        private String businessKey;
+        private Map<String, String> variableMap=new HashMap<>();
     }
 
     @Data
@@ -54,7 +56,7 @@ public class UseWithFormVO {
     @Accessors(chain = true)
     @ApiModel(value = "UseWithFormVO.GetTaskFormDataRes")
     public static class GetTaskFormDataRes {
-        private List<FormDataDTO> formProperty;
+        private Map<String,FormDataDTO> formProperty;
         private String formKey;
     }
     @Data

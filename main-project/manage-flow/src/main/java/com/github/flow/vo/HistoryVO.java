@@ -1,14 +1,16 @@
 package com.github.flow.vo;
 
 import com.github.flow.dto.HistoricProcessInstanceDTO;
-import com.github.flow.dto.HistoricVariableInstanceDTO;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class HistoryVO {
 
@@ -23,17 +25,19 @@ public class HistoryVO {
         private String processInstanceBusinessKey;
         private Date taskCompletedAfter;
         private Date taskCompletedBefore;
-        @NotEmpty
-        private int pageIndex;
-        @NotEmpty
-        private int pageSize;
+        @NotNull
+        @ApiModelProperty("页序号。0开始")
+        private Integer pageIndex;
+        @NotNull
+        @ApiModelProperty("每页个数。")
+        private Integer pageSize;
     }
 
     @Data
     @Accessors(chain = true)
     @ApiModel("HistoryVO.searchHistoryTaskRes")
     public static class SearchHistoryTaskRes {
-        private long total;
+        private Long total;
         private List hisTaskList;
     }
 
@@ -45,18 +49,13 @@ public class HistoryVO {
         private String taskId;
         private String executionId;
         private String processInstanceId;
-        @NotEmpty
-        private int pageIndex;
-        @NotEmpty
-        private int pageSize;
     }
 
     @Data
     @Accessors(chain = true)
     @ApiModel("HistoryVO.GetHistoryVariableRes")
     public static class GetHistoryVariableRes {
-        private long total;
-        private List<HistoricVariableInstanceDTO> hisVariableList;
+        private Map<String,Object> hisVariableMap;
     }
 
     @Data
@@ -64,17 +63,19 @@ public class HistoryVO {
     @ApiModel("HistoryVO.SearchHistoryProcessReq")
     public static class SearchHistoryProcessReq {
         private String involvedUser;
-        @NotEmpty
-        private int pageIndex;
-        @NotEmpty
-        private int pageSize;
+        @NotNull
+        @ApiModelProperty("页序号。0开始")
+        private Integer pageIndex;
+        @NotNull
+        @ApiModelProperty("每页个数。")
+        private Integer pageSize;
     }
 
     @Data
     @Accessors(chain = true)
     @ApiModel("HistoryVO.SearchHistoryProcessRes")
     public static class SearchHistoryProcessRes {
-        private long total;
+        private Long total;
         private List<HistoricProcessInstanceDTO> hisTaskList;
     }
 

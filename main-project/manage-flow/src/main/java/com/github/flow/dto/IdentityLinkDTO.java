@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class IdentityLinkDTO {
     @ApiModelProperty("人员ID")
-    private String UserId;
+    private String userId;
 }

@@ -6,11 +6,11 @@ import lombok.Data;
 @Data
 public class ProcessDefinitionDTO {
     @ApiModelProperty("部署ID")
-    private String getId;
+    private String id;
     @ApiModelProperty("部署名称")
-    private String getName;
+    private String name;
     @ApiModelProperty("部署KEY")
-    private String getKey;
+    private String key;
     @ApiModelProperty("部署版本")
-    private Integer getVersion;
+    private Integer version;
 }

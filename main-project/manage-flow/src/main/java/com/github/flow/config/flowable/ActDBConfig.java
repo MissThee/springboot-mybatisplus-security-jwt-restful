@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @Slf4j
-@PropertySource(value = "classpath:application-letter.properties")
+@PropertySource(value = "classpath:application-flow.properties")
 public class ActDBConfig {
     @Bean(name = "actDataSourceHikari")
     @ConfigurationProperties(prefix = "spring.datasource.act.hikari")

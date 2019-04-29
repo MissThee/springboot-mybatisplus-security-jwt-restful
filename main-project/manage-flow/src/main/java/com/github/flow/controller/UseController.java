@@ -1,5 +1,6 @@
 package com.github.flow.controller;
 
+import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
 import com.github.flow.dto.IdentityLinkDTO;
@@ -18,6 +19,7 @@ import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,12 +78,15 @@ public class UseController {
     // act_ru_execution     流程启动一次，只要没执行完，就会有数据
     @ApiOperation(value = "流程-启动", notes = "")
     @PutMapping("process")
-    public Res<UseVO.StartProcessRes> startProcess(UseVO.StartProcessReq req) {
-//        runtimeService.startProcessInstanceById(processId);//流程定义id
-//        runtimeService.startProcessInstanceById(processId,map );//流程定义id，Map<String,Object> 流程变量
-//        runtimeService.startProcessInstanceById(processId,businessKey );//流程定义id，String 业务id (可设置此id为业务单号)
-//        runtimeService.startProcessInstanceByKey(processKey, businessKey);//流程定义key，Map<String,Object> 流程变量
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(req.getProcessDefKey(), req.getBusinessKey(), req.getVariableMap());
+    public Res<UseVO.StartProcessRes> startProcess(@RequestBody UseVO.StartProcessReq req) {
+        ProcessInstance processInstance;
+        if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
+            processInstance = runtimeService.startProcessInstanceById(req.getProcessDefinitionId(), req.getBusinessKey(), req.getVariableMap());
+        } else if (!StringUtils.isEmpty(req.getProcessDefinitionKey())) {
+            processInstance = runtimeService.startProcessInstanceByKey(req.getProcessDefinitionKey(), req.getBusinessKey(), req.getVariableMap());
+        } else {
+            throw new MissingFormatArgumentException("缺少条件。需要processDefinitionId或processDefinitionKey");
+        }
         UseVO.StartProcessRes startProcessRes = new UseVO.StartProcessRes().setProcessInstance(mapperFacade.map(processInstance, ProcessInstanceDTO.class));
         return Res.success(startProcessRes, "启动成功");
     }
@@ -109,7 +114,7 @@ public class UseController {
                 .orderByProcessInstanceId().asc()
                 .orderByTaskCreateTime().desc();
         long total = taskQuery.count();
-        List<Task> list = taskQuery.listPage(req.getPageIndex(), req.getPageSize());
+        List<Task> list = taskQuery.listPage(req.getPageIndex() * req.getPageSize(), (req.getPageIndex() + 1) * req.getPageSize());
         List<TaskDTO> taskList = list.stream().map(e -> mapperFacade.map(e, TaskDTO.class)).collect(Collectors.toList());
         UseVO.SearchTaskRes searchTaskRes = new UseVO.SearchTaskRes()
                 .setTaskList(taskList)
@@ -177,7 +182,7 @@ public class UseController {
 
     @ApiOperation(value = "任务-办理", notes = "")
     @PutMapping("task")
-    public Res completeTask(HttpServletRequest httpServletRequest, @RequestBody @Validated UseVO.CompleteTaskReq req) throws InterruptedException {
+    public Res completeTask(HttpServletRequest httpServletRequest, @RequestBody @Validated UseVO.CompleteTaskReq req) {
         if (req.getComment() != null) {
             Authentication.setAuthenticatedUserId(JavaJWT.getId(httpServletRequest));//批注人为线程绑定变量，需在同一线程内设置批注人信息。setAuthenticatedUserId的实际实现类中，使用的ThreadLocal保存变量
             String processInstanceId = taskService.createTaskQuery()
@@ -210,11 +215,40 @@ public class UseController {
     //act_hi_identitylink   历史任务实例。   每有一个用户进行操作，记录一条数据
 
     //变量操作开始--------------------------------------------------------------------------
+    @ApiOperation(value = "流程变量-查询", notes = "通过taskId或executionId，已执行过的任务或执行实例只能在历史中查找，此处无法找到")
+    @PostMapping("variable")
+    public Res getVariable(@RequestBody UseVO.GetVariableReq req) {
+        //无变量则新增，有变量则覆盖。变量版本号增加，
+        Object value = null;
+        Object variables = null;
+        if (req.getTaskId() != null) {
+            if (req.getVariableName() != null) {
+                value = taskService.getVariable(req.getTaskId(), req.getVariableName());
+            }
+            if (req.getNeedAllVariable()) {
+                variables = taskService.getVariables(req.getTaskId());
+            }
+        } else if (req.getExecutionId() != null) {
+            if (req.getVariableName() != null) {
+                value = runtimeService.getVariable(req.getExecutionId(), req.getVariableName());
+            }
+            if (req.getNeedAllVariable()) {
+                variables = runtimeService.getVariables(req.getExecutionId());
+            }
+        } else {
+            throw new MissingFormatArgumentException("查询失败，条件不足。需要taskId或executionId");
+        }
+        UseVO.GetVariableRes getVariableRes = new UseVO.GetVariableRes()
+                .setValue(value)
+                .setVariables(variables);
+        return Res.success(getVariableRes);
+    }
+
     //act_ru_variable   正在执行流程中的变量
     //act_hi_varinst    历史流程中的变量
     @ApiOperation(value = "流程变量-修改", notes = "通过taskId或executionId")
     @PatchMapping("variable")
-    public Res setVariable(@RequestBody UseVO.SetVariableReq req) {
+    public Res setVariable(@RequestBody UseVO.SetVariableReq req)  {
 
         //无变量则新增，有变量则覆盖。变量版本号增加，
         if (req.getTaskId() != null) {
@@ -233,31 +267,12 @@ public class UseController {
                 runtimeService.setVariables(req.getExecutionId(), req.getVariableMap());
             }
         } else {
-            return Res.failure("修改失败，条件不足");
+            throw new MissingFormatArgumentException("查询失败，条件不足。需要taskId或executionId");
         }
         return Res.success("修改成功");
     }
 
-    @ApiOperation(value = "流程变量-查询", notes = "通过taskId或executionId")
-    @PostMapping("variable")
-    public Res getVariable(@RequestBody UseVO.GetVariableReq req) {
-        //无变量则新增，有变量则覆盖。变量版本号增加，
-        Object variable;
-        Object variables;
-        if (req.getTaskId() != null) {
-            variable = taskService.getVariable(req.getTaskId(), req.getVariableName());
-            variables = taskService.getVariables(req.getTaskId());
-        } else if (req.getExecutionId() != null) {
-            variable = runtimeService.getVariable(req.getExecutionId(), req.getVariableName());
-            variables = runtimeService.getVariables(req.getExecutionId());
-        } else {
-            return Res.failure("查询失败，条件不足");
-        }
-        UseVO.GetVariableRes getVariableRes = new UseVO.GetVariableRes()
-                .setVariable(variable)
-                .setVariables(variables);
-        return Res.success(getVariableRes);
-    }
+
     //变量操作结束--------------------------------------------------------------------------
 
 //    @ApiIgnore("暂不使用")

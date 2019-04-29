@@ -5,6 +5,7 @@ import com.github.common.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -71,15 +72,5 @@ public class ControllerExceptionHandler {
             errorMessageSB.append("; ");
         }
         return new ExceptionResultModel("MethodArgumentNotValidException: 参数有误：" + errorMessageSB.toString());
-    }
-
-    //运行时所有异常
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-    @Order()
-    public Object exceptionHandler(HttpServletRequest request, Exception e) {
-        log.debug(LogBuilder.requestLogBuilder(request, e));
-        e.printStackTrace();
-        return new ExceptionResultModel("Exception: " + e);
     }
 }

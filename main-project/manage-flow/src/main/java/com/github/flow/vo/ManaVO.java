@@ -16,7 +16,7 @@ public class ManaVO {
     @Accessors(chain = true)
     @ApiModel("ManaVO.DeployProcessByZipRes")
     public static class DeployProcessByZipRes {
-        private String id;
+        private String deploymentId;
     }
 
     @Data
@@ -24,7 +24,7 @@ public class ManaVO {
     @ApiModel("ManaVO.SearchProcessDeployReq")
     public static class SearchDeployReq {
         @ApiModelProperty("部署key")
-        private String key;
+        private String deploymentKey;
     }
 
     @Data
@@ -39,7 +39,7 @@ public class ManaVO {
     @ApiModel("ManaVO.SearchProcessDefinitionReq")
     public static class SearchProcessDefinitionReq {
         @ApiModelProperty("流程定义key")
-        private String key;
+        private String processDefinitionKey;
     }
 
     @Data
@@ -57,24 +57,16 @@ public class ManaVO {
     public static class DeleteProcessDefinitionReq {
         @NotEmpty
         @ApiModelProperty("流程定义id")
-        private String id;
+        private String deploymentId;
         @ApiModelProperty("强制删除？包括所有执行中的相关流程实例、流程定义")
         private Boolean isForceDelete = false;
     }
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("ManaVO.ImgByProcessIdReq")
-    public static class ImgByProcessIdReq {
-        @NotEmpty
-        private String id;
-    }
-
-    @Data
-    @Accessors(chain = true)
     @ApiModel("ManaVO.SearchNewestProcessDefinitionRes")
     public static class SearchNewestProcessDefinitionRes {
-        private List<ProcessDefinitionDTO> processDefList;
+        private List<ProcessDefinitionDTO> processDefinitionList;
     }
 
     @Data
@@ -83,7 +75,7 @@ public class ManaVO {
     public static class DeleteProcessDefinitionByKeyReq {
         @NotEmpty
         @ApiModelProperty("流程定义key")
-        private String key;
+        private String processDefinitionKey;
         @ApiModelProperty("强制删除？包括所有执行中的相关流程实例、流程定义")
         private Boolean isForceDelete = false;
     }
@@ -97,7 +89,7 @@ public class ManaVO {
         private String operation;
         @NotEmpty
         @ApiModelProperty("流程定义id")
-        private String id;
+        private String processDefinitionId;
         @ApiModelProperty("是否将相关的实例也进行此操作。默认false")
         private Boolean isOperateRunningInstance = false;
         @ApiModelProperty("生效日期。默认null，立即生效")
