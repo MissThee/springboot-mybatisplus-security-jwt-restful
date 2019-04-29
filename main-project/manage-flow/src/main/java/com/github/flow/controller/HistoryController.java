@@ -100,7 +100,7 @@ public class HistoryController {
         historicVariableInstanceQuery.processInstanceId(processInstanceId);
         List<HistoricVariableInstance> list = historicVariableInstanceQuery.list();
         Map<String, Object> hisVarMap = list.stream().collect(Collectors.toMap(HistoricVariableInstance::getVariableName, HistoricVariableInstance::getValue));
-        HistoryVO.GetHistoryVariableRes getHistoryVariableRes = new HistoryVO.GetHistoryVariableRes().setHisVariableMap(hisVarMap);
+        HistoryVO.GetHistoryVariableRes getHistoryVariableRes = new HistoryVO.GetHistoryVariableRes().setVariables(hisVarMap);
         return Res.success(getHistoryVariableRes);
     }
 
