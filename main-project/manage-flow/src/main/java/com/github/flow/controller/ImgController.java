@@ -2,7 +2,6 @@ package com.github.flow.controller;
 
 import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
 import com.github.common.tool.Res;
-import com.github.flow.common.FUtils;
 import com.github.flow.dto.FlowLinePositionDTO;
 import com.github.flow.dto.FlowNodePositionDTO;
 import com.github.flow.vo.ImgVO;
@@ -29,9 +28,9 @@ import java.util.*;
 
 @Api(tags = "工作流-图片")
 @RestController
+//@PreAuthorize("isAuthenticated()")
 @RequestMapping("flowable/img")
 public class ImgController {
-    private final FUtils fUtils;
     private final RepositoryService repositoryService;
     private final RuntimeService runtimeService;
     private final TaskService taskService;
@@ -40,14 +39,13 @@ public class ImgController {
     private final MapperFacade mapperFacade;
 
     @Autowired
-    public ImgController(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService, HistoryService historyService, @Qualifier("processEngine") ProcessEngine processEngine, MapperFacade mapperFacade, FUtils fUtils) {
+    public ImgController(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService, HistoryService historyService, @Qualifier("processEngine") ProcessEngine processEngine, MapperFacade mapperFacade) {
         this.runtimeService = runtimeService;
         this.taskService = taskService;
         this.repositoryService = repositoryService;
         this.historyService = historyService;
         this.processEngine = processEngine;
         this.mapperFacade = mapperFacade;
-        this.fUtils = fUtils;
     }
 
     @ApiOperation(value = "图片")
@@ -57,7 +55,7 @@ public class ImgController {
         if (req.getProcessDefinitionId() != null) {
             processDefinitionId = req.getProcessDefinitionId();
         } else {
-            String processInstanceId = fUtils.processInstanceIdOrTaskIdToProcessInstanceId(req.getTaskId(), req.getProcessInstanceId());
+            String processInstanceId = processInstanceIdOrTaskIdToProcessInstanceId(req.getTaskId(), req.getProcessInstanceId());
             ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             processDefinitionId = processInstance.getProcessDefinitionId();
         }
@@ -69,10 +67,9 @@ public class ImgController {
     @ApiOperation(value = "图片-包含进度")
     @PostMapping("progress")
     public void imgWithHighLight(HttpServletResponse httpServletResponse, @RequestBody ImgVO.ImgWithHighLightReq req) throws IOException, MyMethodArgumentNotValidException {
-        String processInstanceId = fUtils.processInstanceIdOrTaskIdToProcessInstanceId(req.getTaskId(), req.getProcessInstanceId());
         List<String> highLightedActivities = new ArrayList<>();     // 构造已执行的节点ID集合
         List<String> highLightedFlows = new ArrayList<>();          // 构造已执行的路径ID集合
-        // 获取流程中已经执行的节点，按照执行倒序排序
+        String processInstanceId = processInstanceIdOrTaskIdToProcessInstanceId(req.getTaskId(), req.getProcessInstanceId());
         String processDefinitionId = makeActivityInstanceList(processInstanceId, req.getIsOnlyLast(), req.getIsContainHighLightLine(), highLightedActivities, highLightedFlows);
         // 获取bpmnModel
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
@@ -85,10 +82,9 @@ public class ImgController {
     @ApiOperation(value = "图片-中高亮元素坐标")
     @PostMapping("progress/data")
     public Res<ImgVO.ImgHighLightDataAllRes> imgHighLightDataAll(@RequestBody ImgVO.ImgHighLightDataAllReq req) throws MyMethodArgumentNotValidException {
-        String processInstanceId = fUtils.processInstanceIdOrTaskIdToProcessInstanceId(req.getTaskId(), req.getProcessInstanceId());
         List<String> highLightedActivities = new ArrayList<>();     // 构造已执行的节点ID集合
         List<String> highLightedFlows = new ArrayList<>();          // 构造已执行的路径ID集合
-        // 获取流程中已经执行的节点，按照执行倒序排序
+        String processInstanceId = processInstanceIdOrTaskIdToProcessInstanceId(req.getTaskId(), req.getProcessInstanceId());
         String processDefinitionId = makeActivityInstanceList(processInstanceId, req.getIsOnlyLast(), req.getIsContainHighLightLine(), highLightedActivities, highLightedFlows);
         // 获取bpmnModel
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
@@ -121,9 +117,23 @@ public class ImgController {
         return Res.success(imgHighLightDataAllRes);
     }
 
+    private String processInstanceIdOrTaskIdToProcessInstanceId(String taskId, String processInstanceId) throws MyMethodArgumentNotValidException {
+        if (taskId != null) {
+            return taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
+        } else if (processInstanceId != null) {
+            return processInstanceId;
+        } else {
+            throw new MyMethodArgumentNotValidException("需要taskId或processInstanceId。 need taskId or processInstanceId.");
+        }
+    }
+
     private String makeActivityInstanceList(String processInstanceId, boolean isOnlyLast, boolean isContainHighLightLine, List<String> highLightedActivities, List<String> highLightedFlows) {
         String processDefinitionId = null;
-        List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceId().desc().list();
+        // 获取流程中已经执行的节点，按照执行倒序排序
+        List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .orderByHistoricActivityInstanceId().desc()
+                .list();
         for (HistoricActivityInstance activityInstance : historicActivityInstanceList) {
             if (isOnlyLast) {
                 if (highLightedActivities.size() > 0) {
@@ -145,21 +155,6 @@ public class ImgController {
         }
         return processDefinitionId;
     }
-
-//    private static <T> Map<String, Double> flowNodeFormat(T nodeInfo) {//已由实体类替代
-//        return new LinkedHashMap<String, Double>() {{
-//            String[] keys = {"x", "y", "width", "height"};
-//            try {
-//                for (String key : keys) {
-//                    Double value = (Double) nodeInfo.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1)).invoke(nodeInfo);
-//                    if (!value.equals(0D)) {
-//                        put(key, value);
-//                    }
-//                }
-//            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
-//            }
-//        }};
-//    }
 
 
 }

@@ -1,11 +1,11 @@
-package com.github.common.config.exception;
+package com.github.common.config.exception.handler;
 
 import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
+import com.github.common.config.exception.model.ExceptionResultModel;
 import com.github.common.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -52,13 +52,6 @@ public class ControllerExceptionHandler {
         return new ExceptionResultModel((paramName == null ? "" : "MissingRequestHeaderException: 请求体header中缺少必须的参数【" + paramName + "】。") + e);
     }
 
-    @ExceptionHandler(MyMethodArgumentNotValidException.class)//ServletRequestBindingException  2.1.0之前
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public Object myMethodArgumentNotValidException(HttpServletRequest request, MissingRequestHeaderException e) {
-        log.debug(LogBuilder.requestLogBuilder(request, e));
-        return new ExceptionResultModel(e.getMessage());
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public Object methodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException e) {
@@ -73,4 +66,12 @@ public class ControllerExceptionHandler {
         }
         return new ExceptionResultModel("MethodArgumentNotValidException: 参数有误：" + errorMessageSB.toString());
     }
+
+    @ExceptionHandler(MyMethodArgumentNotValidException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public Object myMethodArgumentNotValidException(HttpServletRequest request, MyMethodArgumentNotValidException e) {
+        log.debug(LogBuilder.requestLogBuilder(request, e));
+        return new ExceptionResultModel(e.getMessage());
+    }
+
 }

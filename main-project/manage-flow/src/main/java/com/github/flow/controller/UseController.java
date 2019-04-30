@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Api(tags = "工作流-审批流程流转")
 @RestController
+//@PreAuthorize("isAuthenticated()")
 @RequestMapping("flowable/use")
 public class UseController {
     //基础配置类
@@ -54,7 +55,6 @@ public class UseController {
         this.managementService = managementService;
         this.processEngine = processEngine;
         this.mapperFacade = mapperFacade;
-
     }
 //流程中的对象简介：
     //1、流程定义。当流程图被部署之后，查询出来的数据。仅为定义的流程，没有实际执行。
@@ -100,43 +100,6 @@ public class UseController {
                 .setTaskList(taskList)
                 .setTotal(total);
         return Res.success(searchTaskRes);
-    }
-
-    @ApiOperation(value = "任务-候选办理人-查询", notes = "")
-    @PostMapping("task/candidateuser")
-    public Res getCandidateUser(@RequestBody @Validated UseVO.GetCandidateUserReq req) {
-        //其中办理人会额外加入到查询结果中
-        List<IdentityLink> list = taskService.getIdentityLinksForTask(req.getTaskId());
-        List<IdentityLinkDTO> identityLinkList = list.stream().map(e -> mapperFacade.map(e, IdentityLinkDTO.class)).collect(Collectors.toList());
-        UseVO.GetCandidateUserRes getCandidateUserRes = new UseVO.GetCandidateUserRes()
-                .setIdentityLinkList(identityLinkList);
-        return Res.success(getCandidateUserRes);
-    }
-
-    //act_ru_identitylink
-    //增加候选办理人时，每个候选办理人有两条数据，类型分别为participant（参与过的人）和candidate（候选办理人）。其中participant在设置候选办理人、办理人时均会插入
-    @ApiOperation(value = "任务-候选办理人-添加", notes = "")
-    @PutMapping("task/candidateuser")
-    public Res addCandidateUser(@RequestBody @Validated UseVO.AddCandidateUserReq req) {
-        try {
-            taskService.addCandidateUser(req.getTaskId(), req.getCandidateUser());
-        } catch (Exception e) {
-            return Res.success("添加失败");
-        }
-        return Res.success("添加成功");
-    }
-
-    //act_ru_identitylink
-    //删除候选办理人时，仅删除candidate类的记录。
-    @ApiOperation(value = "任务-候选办理人-删除", notes = "")
-    @DeleteMapping("task/candidateuser")
-    public Res<List<Map<String, Object>>> deleteCandidateUser(@RequestBody @Validated UseVO.DeleteCandidateUserReq req) {
-        try {
-            taskService.deleteCandidateUser(req.getTaskId(), req.getCandidateUser());
-        } catch (Exception e) {
-            return Res.success("删除失败");
-        }
-        return Res.success("删除成功");
     }
 
     @ApiOperation(value = "流程-查询是否完结", notes = "")

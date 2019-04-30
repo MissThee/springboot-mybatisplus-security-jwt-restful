@@ -1,4 +1,4 @@
-package com.github.common.config.exception;
+package com.github.common.config.exception.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

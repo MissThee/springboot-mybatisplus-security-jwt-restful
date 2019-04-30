@@ -1,6 +1,6 @@
 package com.github.flow.config.exception;
 
-import com.github.common.config.exception.ExceptionResultModel;
+import com.github.common.config.exception.model.ExceptionResultModel;
 import com.github.common.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.common.engine.api.FlowableException;

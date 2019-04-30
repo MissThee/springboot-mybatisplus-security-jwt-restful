@@ -19,20 +19,6 @@ public class ManaVO {
         private String deploymentId;
     }
 
-    @Data
-    @Accessors(chain = true)
-    @ApiModel("ManaVO.SearchProcessDeployReq")
-    public static class SearchDeployReq {
-        @ApiModelProperty("部署key")
-        private String deploymentKey;
-    }
-
-    @Data
-    @Accessors(chain = true)
-    @ApiModel("ManaVO.SearchProcessDeployRes")
-    public static class SearchProcessDeployRes {
-        private List deploymentList;
-    }
 
     @Data
     @Accessors(chain = true)
@@ -94,13 +80,6 @@ public class ManaVO {
         private Boolean isOperateRunningInstance = false;
         @ApiModelProperty("生效日期。默认null，立即生效")
         private Date operateDate = null;
-    }
-
-    @Data
-    @Accessors(chain = true)
-    @ApiModel("ManaVO.SearchTimerJobRes")
-    public static class SearchTimerJobRes {
-        private List jobList;
     }
 
 }

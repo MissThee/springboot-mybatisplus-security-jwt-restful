@@ -1,11 +1,12 @@
 package com.github.flow.controller;
 
+import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
-import com.github.flow.common.FUtils;
 import com.github.flow.dto.FormDataDTO;
 import com.github.flow.dto.ProcessInstanceDTO;
 import com.github.flow.vo.UseWithFormVO;
+import com.google.common.base.Joiner;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
@@ -23,6 +24,7 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +32,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-
 @Api(tags = "工作流-审批流程流转(附带表单)")
 @RestController
+//@PreAuthorize("isAuthenticated()")
 @RequestMapping("flowable/form")
 public class UseWithFormController {
-    private final FUtils fUtils;
     private final RepositoryService repositoryService;
     private final RuntimeService runtimeService;
     private final TaskService taskService;
@@ -43,12 +44,11 @@ public class UseWithFormController {
     private final MapperFacade mapperFacade;
 
     @Autowired
-    public UseWithFormController(@Qualifier("processEngine") ProcessEngine processEngine, FUtils fUtils, MapperFacade mapperFacade) {
+    public UseWithFormController(@Qualifier("processEngine") ProcessEngine processEngine, MapperFacade mapperFacade) {
         this.runtimeService = processEngine.getRuntimeService();
         this.taskService = processEngine.getTaskService();
         this.repositoryService = processEngine.getRepositoryService();
         this.formService = processEngine.getFormService();
-        this.fUtils = fUtils;
         this.mapperFacade = mapperFacade;
     }
 
@@ -135,7 +135,8 @@ public class UseWithFormController {
 
     @ApiOperation(value = "表单-任务-保存属性并完成任务")
     @PutMapping
-    public Res submitTaskFormData(HttpServletRequest httpServletRequest, @RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) {
+    @Transactional(rollbackFor = Exception.class)
+    public Res submitTaskFormData(HttpServletRequest httpServletRequest, @RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) throws MyMethodArgumentNotValidException {
         taskService.setAssignee(req.getTaskId(), JavaJWT.getId(httpServletRequest));
         if (!StringUtils.isEmpty(req.getComment())) {
             Authentication.setAuthenticatedUserId(JavaJWT.getId(httpServletRequest));//批注人为线程绑定变量，需在同一线程内设置批注人信息。setAuthenticatedUserId的实际实现类中，使用的ThreadLocal保存变量
@@ -145,12 +146,33 @@ public class UseWithFormController {
                     .getProcessInstanceId();
             taskService.addComment(req.getTaskId(), processInstanceId, req.getComment());
         }
-        taskService.setVariables(req.getTaskId(), req.getVariableMap());
-        formService.submitTaskFormData(req.getTaskId(), req.getFormVariableMap());
+        if (req.getVariableMap() != null) {
+            taskService.setVariables(req.getTaskId(), req.getVariableMap());
+        }
+        if (req.getFormVariableMap() != null) {
+            {//判断提交内容是否有当前任务表单之外的字段，有则抛出异常，回滚事务。
+                TaskFormData taskFormData = formService.getTaskFormData(req.getTaskId());
+                Map<String, FormDataDTO> stringFormDataDTOMap = buildFormDataMap(taskFormData);
+                Set<String> keySet = stringFormDataDTOMap.keySet();
+                Map<String, String> formVariableMap = req.getFormVariableMap();
+                List<String> invalidVariableList = new ArrayList<>();
+                for (String key : formVariableMap.keySet()) {
+                    if (!keySet.contains(key)) {
+                        invalidVariableList.add(key);
+                    }
+                }
+                if (invalidVariableList.size() > 0) {
+                    throw new MyMethodArgumentNotValidException("表单无以下字段，不可提交这些值：" + Joiner.on(",").join(invalidVariableList));
+                }
+            }
+            //        Map<String, String> filteredFormVariableMap = formVariableMap.entrySet().stream().filter(e -> keySet.contains(e.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            formService.saveFormData(req.getTaskId(), req.getFormVariableMap());
+        }
+        taskService.complete(req.getTaskId());
         return Res.success("操作成功");
     }
 
-    private List<FormDataDTO> buildFormDataList(FormData taskFormData) {
+    private List<FormDataDTO> buildFormDataList(FormData taskFormData) {//返回为集合类型
         List<FormProperty> formProperties = taskFormData.getFormProperties();
         List<FormDataDTO> list = new ArrayList<>();
         for (FormProperty formProperty : formProperties) {
@@ -162,7 +184,7 @@ public class UseWithFormController {
         return list;
     }
 
-    private Map<String, FormDataDTO> buildFormDataMap(FormData taskFormData) {
+    private Map<String, FormDataDTO> buildFormDataMap(FormData taskFormData) {//返回为对象类型，key为字段id
         List<FormProperty> formProperties = taskFormData.getFormProperties();
         Map<String, FormDataDTO> map = new HashMap<>();
         for (FormProperty formProperty : formProperties) {

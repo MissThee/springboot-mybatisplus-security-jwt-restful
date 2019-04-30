@@ -1,4 +1,4 @@
-package com.github.common.config.exception;
+package com.github.common.config.exception.handler;
 
 import com.github.common.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;

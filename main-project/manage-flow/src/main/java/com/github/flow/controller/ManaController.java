@@ -33,16 +33,15 @@ import java.util.zip.ZipInputStream;
 @Api(tags = "工作流-流程部署管理")
 //管理流程相关方法
 @RestController
+//@PreAuthorize("isAuthenticated()")
 @RequestMapping("flowable/mana")
 public class ManaController {
     private final RepositoryService repositoryService;
-    private final ManagementService managementService;
     private final MapperFacade mapperFacade;
 
     @Autowired
-    public ManaController(RepositoryService repositoryService, ManagementService managementService, MapperFacade mapperFacade) {
+    public ManaController(RepositoryService repositoryService, MapperFacade mapperFacade) {
         this.repositoryService = repositoryService;
-        this.managementService = managementService;
         this.mapperFacade = mapperFacade;
     }
 
@@ -64,7 +63,7 @@ public class ManaController {
     }
 
     // act_re_procdef
-    @ApiOperation(value = "流程定义信息-查询多个（一类）", notes = "")
+    @ApiOperation(value = "流程定义信息-查询多个（一类）")
     @PostMapping("processdefinition")
     public Res<ManaVO.SearchProcessDefinitionRes> searchProcessDefinition(@RequestBody ManaVO.SearchProcessDefinitionReq req) {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
@@ -114,7 +113,7 @@ public class ManaController {
     //修改流程定义信息act_re_deployment
     //使用流程部署方法，修改流程图之后，保持key不变，再次部署，即可更新
 
-    @ApiOperation(value = "流程定义信息-删除多个，同一类", notes = "提供key，与此流程同一类的所有版本删除")
+    @ApiOperation(value = "流程定义信息-删除多个(同一key)", notes = "提供key，与此流程同一类的所有版本删除")
     @DeleteMapping("processdefinition/key")
     @Transactional(rollbackFor = Exception.class)
     public Res deleteProcessDefinitionByKey(@RequestBody @Validated ManaVO.DeleteProcessDefinitionByKeyReq req) {

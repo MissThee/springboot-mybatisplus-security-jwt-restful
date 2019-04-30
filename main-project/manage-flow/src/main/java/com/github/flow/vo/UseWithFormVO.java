@@ -62,15 +62,6 @@ public class UseWithFormVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel(value = "UseWithFormVO.SaveTaskFormDataReq")
-    public static class SaveTaskFormDataReq {
-        @NotEmpty
-        private String taskId;
-        private Map<String, String> variableMap;
-    }
-
-    @Data
-    @Accessors(chain = true)
     @ApiModel(value = "UseWithFormVO.SubmitTaskFormDataReq")
     public static class SubmitTaskFormDataReq {
         @NotEmpty
