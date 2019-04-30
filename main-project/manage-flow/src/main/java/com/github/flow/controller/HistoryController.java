@@ -8,6 +8,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
 import org.flowable.engine.*;
+import org.flowable.engine.history.HistoricDetail;
+import org.flowable.engine.history.HistoricDetailQuery;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
@@ -83,9 +85,9 @@ public class HistoryController {
         return Res.success(new HistoryVO.SearchHistoryTaskRes().setTotal(total).setHisTaskList(hisTaskList));
     }
 
-    @ApiOperation(value = "历史变量-查询")
+    @ApiOperation(value = "历史变量-流程-查询")
     @PostMapping("variable")
-    public Res<HistoryVO.GetHistoryVariableRes> getHistoryVariable(@RequestBody HistoryVO.GetHistoryVariableReq req) {
+    public Res<HistoryVO.GetHistoryVariableRes> getProcessHistoryVariable(@RequestBody HistoryVO.GetHistoryVariableReq req) {
         HistoricVariableInstanceQuery historicVariableInstanceQuery = historyService.createHistoricVariableInstanceQuery();
         String processInstanceId;
         if (req.getTaskId() != null) {

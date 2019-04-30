@@ -21,4 +21,6 @@ public class TaskDTO {
     private String processInstanceId;
     @ApiModelProperty("流程定义ID")
     private String processDefinitionId;
+    @ApiModelProperty("是否被挂起。挂起的对象不能再进行流程操作")
+    private Boolean isSuspended;
 }

@@ -75,6 +75,7 @@ public class UseWithFormVO {
     public static class SubmitTaskFormDataReq {
         @NotEmpty
         private String taskId;
+        private Map<String, String> formVariableMap;
         private Map<String, String> variableMap;
         private String comment;
     }

@@ -13,4 +13,6 @@ public class ProcessDefinitionDTO {
     private String key;
     @ApiModelProperty("部署版本")
     private Integer version;
+    @ApiModelProperty("是否被挂起。被挂起的对象不能再进行流程操作")
+    private Boolean isSuspended;
 }

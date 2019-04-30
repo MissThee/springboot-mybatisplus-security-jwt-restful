@@ -1,6 +1,5 @@
 package com.github.flow.controller;
 
-import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
 import com.github.flow.common.FUtils;
@@ -11,7 +10,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
 import org.flowable.bpmn.model.*;
-import org.flowable.common.engine.api.FlowableException;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.*;
 import org.flowable.engine.form.*;
@@ -19,12 +17,8 @@ import org.flowable.engine.form.FormProperty;
 import org.flowable.engine.impl.form.DateFormType;
 import org.flowable.engine.impl.form.EnumFormType;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
-import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
-import org.flowable.engine.runtime.ActivityInstance;
-import org.flowable.engine.runtime.ActivityInstanceQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +52,7 @@ public class UseWithFormController {
         this.mapperFacade = mapperFacade;
     }
 
-    @ApiOperation(value = "表单-查询开始节点的表单属性")
+    @ApiOperation(value = "表单-查询开始节点表单属性")
     @PostMapping("start")
     public Res<UseWithFormVO.GetStartFormDataRes> getStartFormData(@RequestBody UseWithFormVO.GetStartFormDataReq req) {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
@@ -95,7 +89,7 @@ public class UseWithFormController {
         return Res.success(startFormRes, "创建成功");
     }
 
-    @ApiOperation(value = "表单-任务-查询属性")
+    @ApiOperation(value = "表单-任务-查询节点表单属性")
     @PostMapping
     public Res<UseWithFormVO.GetTaskFormDataRes> getTaskFormData(@RequestBody @Validated UseWithFormVO.GetTaskFormDataReq req) {
         // 收集本节点出口可选值
@@ -139,18 +133,10 @@ public class UseWithFormController {
         return Res.success(getTaskFormDataRes);
     }
 
-    @ApiOperation(value = "表单-任务-保存属性")
-    @PatchMapping
-    public Res saveTaskFormData(@RequestBody @Validated UseWithFormVO.SaveTaskFormDataReq req) {
-        taskService.setAssignee(req.getTaskId(), null);
-        formService.saveFormData(req.getTaskId(), req.getVariableMap());
-        return Res.success("保存成功");
-    }
-
     @ApiOperation(value = "表单-任务-保存属性并完成任务")
     @PutMapping
     public Res submitTaskFormData(HttpServletRequest httpServletRequest, @RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) {
-        taskService.claim(req.getTaskId(), JavaJWT.getId(httpServletRequest));
+        taskService.setAssignee(req.getTaskId(), JavaJWT.getId(httpServletRequest));
         if (!StringUtils.isEmpty(req.getComment())) {
             Authentication.setAuthenticatedUserId(JavaJWT.getId(httpServletRequest));//批注人为线程绑定变量，需在同一线程内设置批注人信息。setAuthenticatedUserId的实际实现类中，使用的ThreadLocal保存变量
             String processInstanceId = taskService.createTaskQuery()
@@ -159,7 +145,8 @@ public class UseWithFormController {
                     .getProcessInstanceId();
             taskService.addComment(req.getTaskId(), processInstanceId, req.getComment());
         }
-        formService.submitTaskFormData(req.getTaskId(), req.getVariableMap());
+        taskService.setVariables(req.getTaskId(), req.getVariableMap());
+        formService.submitTaskFormData(req.getTaskId(), req.getFormVariableMap());
         return Res.success("操作成功");
     }
 
@@ -185,6 +172,7 @@ public class UseWithFormController {
             }
         }
         return map;
+
     }
 
     private FormDataDTO buildFormDataDTO(FormProperty formProperty) {

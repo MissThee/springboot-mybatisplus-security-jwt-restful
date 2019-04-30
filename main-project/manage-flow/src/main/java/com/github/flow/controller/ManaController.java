@@ -76,8 +76,24 @@ public class ManaController {
                 .orderByProcessDefinitionName().asc()//排序
                 .orderByProcessDefinitionVersion().desc()
                 .list();//结果集
-        List<ProcessDefinitionDTO> processDefinitionList = list.stream().map(e -> mapperFacade.map(e, ProcessDefinitionDTO.class)).collect(Collectors.toList());
+        List<ProcessDefinitionDTO> processDefinitionList = list.stream().map(e -> {
+            ProcessDefinitionDTO processDefinitionDTO = mapperFacade.map(e, ProcessDefinitionDTO.class);
+            processDefinitionDTO.setIsSuspended(e.isSuspended());
+            return processDefinitionDTO;
+        }).collect(Collectors.toList());
         return Res.success(new ManaVO.SearchProcessDefinitionRes().setProcessDefinitionList(processDefinitionList));
+    }
+
+    @ApiOperation(value = "流程定义信息-查询多个，所有定义最新版", notes = "")
+    @PostMapping("processdefinition/newest")
+    public Res<ManaVO.SearchNewestProcessDefinitionRes> searchNewestProcessDefinition() {
+        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
+        List<ProcessDefinitionDTO> processDefList = list.stream().map(e -> {
+            ProcessDefinitionDTO processDefinitionDTO = mapperFacade.map(e, ProcessDefinitionDTO.class);
+            processDefinitionDTO.setIsSuspended(e.isSuspended());
+            return processDefinitionDTO;
+        }).collect(Collectors.toList());
+        return Res.success(new ManaVO.SearchNewestProcessDefinitionRes().setProcessDefinitionList(processDefList));
     }
 
     @ApiOperation(value = "流程定义信息-删除单个", notes = "")
@@ -97,15 +113,6 @@ public class ManaController {
 
     //修改流程定义信息act_re_deployment
     //使用流程部署方法，修改流程图之后，保持key不变，再次部署，即可更新
-
-
-    @ApiOperation(value = "流程定义信息-查询多个，所有定义最新版", notes = "")
-    @PostMapping("processdefinition/newest")
-    public Res<ManaVO.SearchNewestProcessDefinitionRes> searchNewestProcessDefinition() {
-        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
-        List processDefList = list.stream().map(e -> mapperFacade.map(e, ProcessDefinitionDTO.class)).collect(Collectors.toList());
-        return Res.success(new ManaVO.SearchNewestProcessDefinitionRes().setProcessDefinitionList(processDefList));
-    }
 
     @ApiOperation(value = "流程定义信息-删除多个，同一类", notes = "提供key，与此流程同一类的所有版本删除")
     @DeleteMapping("processdefinition/key")

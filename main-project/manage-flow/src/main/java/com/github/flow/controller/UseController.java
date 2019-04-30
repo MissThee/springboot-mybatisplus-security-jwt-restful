@@ -1,29 +1,22 @@
 package com.github.flow.controller;
 
-import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
-import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
 import com.github.flow.dto.IdentityLinkDTO;
-import com.github.flow.dto.ProcessInstanceDTO;
 import com.github.flow.dto.TaskDTO;
 import com.github.flow.vo.UseVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
-import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.runtime.*;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,7 +55,6 @@ public class UseController {
         this.processEngine = processEngine;
         this.mapperFacade = mapperFacade;
 
-
     }
 //流程中的对象简介：
     //1、流程定义。当流程图被部署之后，查询出来的数据。仅为定义的流程，没有实际执行。
@@ -74,22 +66,6 @@ public class UseController {
     //4、任务实例，如果任务为userTask，则Execution会有一个task实例
 //    Task task;
 
-
-    // act_ru_execution     流程启动一次，只要没执行完，就会有数据
-//    @ApiOperation(value = "流程-启动", notes = "")
-//    @PutMapping("process")
-//    public Res<UseVO.StartProcessRes> startProcess(@RequestBody UseVO.StartProcessReq req) {
-//        ProcessInstance processInstance;
-//        if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
-//            processInstance = runtimeService.startProcessInstanceById(req.getProcessDefinitionId(), req.getBusinessKey(), req.getVariableMap());
-//        } else if (!StringUtils.isEmpty(req.getProcessDefinitionKey())) {
-//            processInstance = runtimeService.startProcessInstanceByKey(req.getProcessDefinitionKey(), req.getBusinessKey(), req.getVariableMap());
-//        } else {
-//            throw new MissingFormatArgumentException("缺少条件。需要processDefinitionId或processDefinitionKey");
-//        }
-//        UseVO.StartProcessRes startProcessRes = new UseVO.StartProcessRes().setProcessInstance(mapperFacade.map(processInstance, ProcessInstanceDTO.class));
-//        return Res.success(startProcessRes, "启动成功");
-//    }
 
     // act_ru_task          启动流程中的任务，仅存放正在执行的任务，执行完的任务不在本表。
     // act_ru_identitylink  存放正在执行任务的，办理人信息
@@ -115,7 +91,11 @@ public class UseController {
                 .orderByTaskCreateTime().desc();
         long total = taskQuery.count();
         List<Task> list = taskQuery.listPage(req.getPageIndex() * req.getPageSize(), (req.getPageIndex() + 1) * req.getPageSize());
-        List<TaskDTO> taskList = list.stream().map(e -> mapperFacade.map(e, TaskDTO.class)).collect(Collectors.toList());
+        List<TaskDTO> taskList = list.stream().map(e ->{
+            TaskDTO taskDTO = mapperFacade.map(e, TaskDTO.class);
+            taskDTO.setIsSuspended(e.isSuspended());
+            return taskDTO;
+        }).collect(Collectors.toList());
         UseVO.SearchTaskRes searchTaskRes = new UseVO.SearchTaskRes()
                 .setTaskList(taskList)
                 .setTotal(total);
@@ -126,7 +106,6 @@ public class UseController {
     @PostMapping("task/candidateuser")
     public Res getCandidateUser(@RequestBody @Validated UseVO.GetCandidateUserReq req) {
         //其中办理人会额外加入到查询结果中
-
         List<IdentityLink> list = taskService.getIdentityLinksForTask(req.getTaskId());
         List<IdentityLinkDTO> identityLinkList = list.stream().map(e -> mapperFacade.map(e, IdentityLinkDTO.class)).collect(Collectors.toList());
         UseVO.GetCandidateUserRes getCandidateUserRes = new UseVO.GetCandidateUserRes()
@@ -172,101 +151,6 @@ public class UseController {
         UseVO.ProcessIsFinishedRes processIsFinishedRes = new UseVO.ProcessIsFinishedRes().setIsFinished(historicProcessInstance.getEndTime() != null);
         return Res.success(processIsFinishedRes);
     }
-
-    //HistoryService
-    //act_hi_procinst       历史流程实例。   启动一个流程，记录一条数据
-    //act_hi_taskinst       历史任务实例。   完成一个任务，记录一条数据（仅任务节点会记录）
-    //act_hi_actinst        历史任务实例。   每有一个节点被使用，记录一条数据（所有节点均记录）
-    //act_hi_identitylink   历史任务实例。   每有一个用户进行操作，记录一条数据
-
-    //变量操作开始--------------------------------------------------------------------------
-    @ApiOperation(value = "流程变量-查询", notes = "通过taskId或executionId，已执行过的任务或执行实例只能在历史中查找，此处无法找到")
-    @PostMapping("variable")
-    public Res getVariable(@RequestBody UseVO.GetVariableReq req) {
-        Object value = null;
-        Object variables = null;
-        if (req.getTaskId() != null) {
-            if (req.getVariableName() != null) {
-                value = taskService.getVariable(req.getTaskId(), req.getVariableName());
-            }
-            if (req.getNeedAllVariable()) {
-                variables = taskService.getVariables(req.getTaskId());
-            }
-        } else if (req.getExecutionId() != null) {
-            if (req.getVariableName() != null) {
-                value = runtimeService.getVariable(req.getExecutionId(), req.getVariableName());
-            }
-            if (req.getNeedAllVariable()) {
-                variables = runtimeService.getVariables(req.getExecutionId());
-            }
-        } else {
-            throw new MissingFormatArgumentException("查询失败，条件不足。需要taskId或executionId");
-        }
-        UseVO.GetVariableRes getVariableRes = new UseVO.GetVariableRes()
-                .setValue(value)
-                .setVariables(variables);
-        return Res.success(getVariableRes);
-    }
-
-    //act_ru_variable   正在执行流程中的变量
-    //act_hi_varinst    历史流程中的变量
-    @ApiOperation(value = "流程变量-修改", notes = "通过taskId或executionId")
-    @PatchMapping("variable")
-    public Res setVariable(@RequestBody UseVO.SetVariableReq req)  {
-        //无变量则新增，有变量则覆盖。变量版本号增加，
-        if (req.getTaskId() != null) {
-            if (req.getVariable() != null) {
-                taskService.setVariable(req.getTaskId(), req.getVariableName(), req.getVariable());//与流程/执行实例绑定的变量。即使使用taskId设置变量，该变量也会与其对应的流程/执行实例绑定。
-//                taskService.setVariableLocal(taskId, "自定义变量task", variable);//与任务绑定的变量。该变量会与任务单独绑定，流程中其他任务无法访问变量，任务执行完后需在历史变量中查询。（不常用）
-            }
-            if (req.getVariableMap() != null) {
-                taskService.setVariables(req.getTaskId(), req.getVariableMap());
-            }
-        } else if (req.getExecutionId() != null) {
-            if (req.getVariable() != null) {
-                runtimeService.setVariable(req.getExecutionId(), req.getVariableName(), req.getVariable());
-            }
-            if (req.getVariableMap() != null) {
-                runtimeService.setVariables(req.getExecutionId(), req.getVariableMap());
-            }
-        } else {
-            throw new MissingFormatArgumentException("查询失败，条件不足。需要taskId或executionId");
-        }
-        return Res.success("修改成功");
-    }
-
-
-    //变量操作结束--------------------------------------------------------------------------
-
-//    @ApiIgnore("暂不使用")
-//    //已知当节点不为UserTask时，无法使用任务查询到当前的节点执行情况，只能通过此方式，获取流程实例，进行操作（遗留问题：当一个节点有1个以上的实行实例时，如何区分不同的实例）
-//    @ApiOperation(value = "执行实例-推进一步", notes = "以节点id（activitiId）和流程实例id（processInstanceId），确定当前节点的执行实例（可能有多个），将执行实例前进一步")
-//    @PostMapping("execution/trigger")
-//    public Res searchExecution(@RequestBody(required = false) JSONObject bJO) {
-//        String activityId = getStringOrDefaultFromJO(bJO, "activityId", null);
-//        String processInstanceId = getStringOrDefaultFromJO(bJO, "processInstanceId", null);
-//        ExecutionQuery executionQuery = runtimeService.createExecutionQuery();
-//        if (activityId == null) {
-//            return Res.failure();
-//        }
-//        //可理解为通过执行实例id与执行实例所在图中的节点id确定一个执行实例
-//        executionQuery.processInstanceId(processInstanceId);
-//        executionQuery.activityId(activityId);//activityId为图中，receiveTask的Id属性设置的值，通过此值拿取指点节点上的执行实例
-//        Execution execution = executionQuery.singleResult();
-//        if (execution == null) {
-//            return Res.failure("no execution");
-//        }
-//        int fakeValue = 0;
-//        try {
-//            Thread.sleep(1000);
-//            fakeValue = 100;
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        runtimeService.setVariable(execution.getId(), "测试字段", fakeValue);
-//        runtimeService.trigger(execution.getId());
-//        return Res.success();
-//    }
 }
 
 
