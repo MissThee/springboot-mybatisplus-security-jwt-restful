@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class UseVO {
     @ApiModel("UseVO.SearchTaskRes")
     public static class SearchTaskRes {
         private Long total;
-        private List<TaskDTO> taskList;
+        private Collection<TaskDTO> taskList;
     }
 
     @Data

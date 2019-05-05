@@ -19,6 +19,8 @@ public class HistoricProcessInstanceDTO {
     private String startTime;
     @ApiModelProperty("历史流程实例结束时间")
     private String endTime;
+    @ApiModelProperty("流程是否结束")
+    private Boolean isEnded;
     @ApiModelProperty("流程定义ID")
     private String processDefinitionId;
     @ApiModelProperty("流程定义KEY")

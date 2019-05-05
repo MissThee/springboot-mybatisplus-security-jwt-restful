@@ -4,6 +4,7 @@ import com.github.common.tool.Res;
 import com.github.flow.dto.HistoricProcessInstanceDTO;
 import com.github.flow.dto.HistoricTaskInstanceDTO;
 import com.github.flow.vo.HistoryVO;
+import com.github.flow.vo.UseVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
@@ -96,8 +97,8 @@ public class HistoryController {
         } else {
             throw new MissingFormatArgumentException("缺少查询条件。");
         }
-        historicVariableInstanceQuery.processInstanceId(processInstanceId);
-        List<HistoricVariableInstance> list = historicVariableInstanceQuery.list();
+        List<HistoricVariableInstance> list = historicVariableInstanceQuery.processInstanceId(processInstanceId)
+                .list();
         Map<String, Object> hisVarMap = list.stream().collect(Collectors.toMap(HistoricVariableInstance::getVariableName, HistoricVariableInstance::getValue));
         HistoryVO.GetHistoryVariableRes getHistoryVariableRes = new HistoryVO.GetHistoryVariableRes().setVariables(hisVarMap);
         return Res.success(getHistoryVariableRes);
@@ -119,7 +120,11 @@ public class HistoryController {
                 .orderByProcessDefinitionId().asc();
         long total = historicProcessInstanceQuery.count();
         List<HistoricProcessInstance> list = historicProcessInstanceQuery.listPage(req.getPageIndex() * req.getPageSize(), (req.getPageIndex() + 1) * req.getPageSize());
-        List<HistoricProcessInstanceDTO> hisTaskList = list.stream().map(e -> mapperFacade.map(e, HistoricProcessInstanceDTO.class)).collect(Collectors.toList());
+        List<HistoricProcessInstanceDTO> hisTaskList = list.stream().map(e -> {
+            HistoricProcessInstanceDTO historicProcessInstanceDTO = mapperFacade.map(e, HistoricProcessInstanceDTO.class);
+            historicProcessInstanceDTO.setIsEnded(historicProcessInstanceDTO.getEndTime() != null);
+            return historicProcessInstanceDTO;
+        }).collect(Collectors.toList());
         HistoryVO.SearchHistoryProcessRes searchHistoryProcessRes = new HistoryVO.SearchHistoryProcessRes().setHisTaskList(hisTaskList).setTotal(total);
         return Res.success(searchHistoryProcessRes);
     }

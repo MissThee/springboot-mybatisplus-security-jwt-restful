@@ -7,9 +7,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UseWithFormVO {
     @Data
@@ -57,7 +55,7 @@ public class UseWithFormVO {
     @ApiModel(value = "UseWithFormVO.GetTaskFormDataRes")
     public static class GetTaskFormDataRes {
         private Map<String, FormDataDTO> formProperty;
-        private List<String> nextOutValueList;
+        private Collection<String> nextOutValueList;
     }
 
     @Data

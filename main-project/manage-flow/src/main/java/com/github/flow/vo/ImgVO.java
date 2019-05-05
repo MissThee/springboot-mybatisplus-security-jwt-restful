@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.Collection;
 import java.util.List;
 
 public class ImgVO {
@@ -55,8 +56,8 @@ public class ImgVO {
     @ApiModel("ImgVO.ImgHighLightDataAllRes")
     public static class ImgHighLightDataAllRes {
         @ApiModelProperty("线信息集合")
-        private List<List<FlowLinePositionDTO>> flowLineList;
+        private Collection<List<FlowLinePositionDTO>> flowLineList;
         @ApiModelProperty("点信息集合")
-        private List<FlowNodePositionDTO> flowNodeList;
+        private Collection<FlowNodePositionDTO> flowNodeList;
     }
 }

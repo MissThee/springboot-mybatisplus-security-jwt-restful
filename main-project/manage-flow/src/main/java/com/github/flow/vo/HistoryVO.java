@@ -1,12 +1,14 @@
 package com.github.flow.vo;
 
 import com.github.flow.dto.HistoricProcessInstanceDTO;
+import com.github.flow.dto.HistoricTaskInstanceDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ public class HistoryVO {
     @ApiModel("HistoryVO.searchHistoryTaskRes")
     public static class SearchHistoryTaskRes {
         private Long total;
-        private List hisTaskList;
+        private Collection<HistoricTaskInstanceDTO> hisTaskList;
     }
 
 
@@ -75,7 +77,7 @@ public class HistoryVO {
     @ApiModel("HistoryVO.SearchHistoryProcessRes")
     public static class SearchHistoryProcessRes {
         private Long total;
-        private List<HistoricProcessInstanceDTO> hisTaskList;
+        private Collection<HistoricProcessInstanceDTO> hisTaskList;
     }
 
 }

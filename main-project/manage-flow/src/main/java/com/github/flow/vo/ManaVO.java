@@ -36,18 +36,6 @@ public class ManaVO {
         private List<ProcessDefinitionDTO> processDefinitionList;
     }
 
-
-    @Data
-    @Accessors(chain = true)
-    @ApiModel("ManaVO.DeleteProcessDefinitionReq")
-    public static class DeleteProcessDefinitionReq {
-        @NotEmpty
-        @ApiModelProperty("流程定义id")
-        private String deploymentId;
-        @ApiModelProperty("强制删除？包括所有执行中的相关流程实例、流程定义")
-        private Boolean isForceDelete = false;
-    }
-
     @Data
     @Accessors(chain = true)
     @ApiModel("ManaVO.SearchNewestProcessDefinitionRes")
@@ -59,7 +47,8 @@ public class ManaVO {
     @Accessors(chain = true)
     @ApiModel("ManaVO.DeleteProcessDefinitionByKeyReq")
     public static class DeleteProcessDefinitionByKeyReq {
-        @NotEmpty
+        @ApiModelProperty("流程定义id")
+        private String processDefinitionId;
         @ApiModelProperty("流程定义key")
         private String processDefinitionKey;
         @ApiModelProperty("强制删除？包括所有执行中的相关流程实例、流程定义")

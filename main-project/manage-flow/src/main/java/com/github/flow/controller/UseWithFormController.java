@@ -4,7 +4,11 @@ import com.github.common.config.exception.custom.MyMethodArgumentNotValidExcepti
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
 import com.github.flow.dto.FormDataDTO;
+import com.github.flow.dto.ProcessDefinitionDTO;
 import com.github.flow.dto.ProcessInstanceDTO;
+import com.github.flow.dto.TaskDTO;
+import com.github.flow.vo.ManaVO;
+import com.github.flow.vo.UseVO;
 import com.github.flow.vo.UseWithFormVO;
 import com.google.common.base.Joiner;
 import io.swagger.annotations.Api;
@@ -22,6 +26,7 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import org.flowable.task.api.TaskQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +36,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Api(tags = "工作流-审批流程流转(附带表单)")
 @RestController
 //@PreAuthorize("isAuthenticated()")
-@RequestMapping("flowable/form")
+@RequestMapping("flowable")
 public class UseWithFormController {
     private final RepositoryService repositoryService;
     private final RuntimeService runtimeService;
@@ -52,20 +58,80 @@ public class UseWithFormController {
         this.mapperFacade = mapperFacade;
     }
 
+    @ApiOperation(value = "流程定义信息-查询多个，所有定义最新版", notes = "")
+    @PostMapping("processdefinition")
+    public Res<ManaVO.SearchNewestProcessDefinitionRes> searchNewestProcessDefinition() {
+        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().latestVersion().list();
+        List<ProcessDefinitionDTO> processDefList = list
+                .stream()
+                .map(e -> {
+                    ProcessDefinitionDTO processDefinitionDTO = mapperFacade.map(e, ProcessDefinitionDTO.class);
+                    processDefinitionDTO.setIsSuspended(e.isSuspended());
+                    return processDefinitionDTO;
+                })
+                .sorted((a, b) -> {
+                    //将未挂起的流程定义排在前面
+                    if (a.getIsSuspended() && !b.getIsSuspended()) {
+                        return 1;
+                    } else if (!a.getIsSuspended() && !b.getIsSuspended()) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                })
+                .collect(Collectors.toList());
+        return Res.success(new ManaVO.SearchNewestProcessDefinitionRes().setProcessDefinitionList(processDefList));
+    }
+
+    // act_ru_task          启动流程中的任务，仅存放正在执行的任务，执行完的任务不在本表。
+    // act_ru_identitylink  存放正在执行任务的，办理人信息
+    @ApiOperation(value = "任务-查询多个，待执行", notes = "（按办理人查询，按候选办理人查询，按候选办理组查询）")
+    @PostMapping("task")
+    public Res<UseVO.SearchTaskRes> searchTask(@RequestBody @Validated UseVO.SearchTaskReq req) {
+
+        TaskQuery taskQuery = taskService.createTaskQuery();
+        if (req.getAssignee() != null) {
+            taskQuery.taskAssignee(req.getAssignee());//按办理人查询
+        }
+        if (req.getCandidateUser() != null) {
+            taskQuery.taskCandidateOrAssigned(req.getCandidateUser());//按候选办理人查询。
+//            taskQuery.taskCandidateUser(candidateUser);//按候选办理人查询。仅无办理人，且有候选人的任务可查到
+        }
+        if (req.getCandidateGroup() != null && req.getCandidateGroup().size() > 0) {
+            taskQuery.taskCandidateGroupIn(req.getCandidateGroup());//按候选组查询。
+        }
+        if (req.getIsOnlyUnassigned()) {
+            taskQuery.taskUnassigned();
+        }
+        taskQuery
+                .orderByProcessInstanceId().asc()
+                .orderByTaskCreateTime().desc();
+        long total = taskQuery.count();
+        List<Task> list = taskQuery.listPage(req.getPageIndex() * req.getPageSize(), (req.getPageIndex() + 1) * req.getPageSize());
+        List<TaskDTO> taskList = list.stream().map(e -> {
+            TaskDTO taskDTO = mapperFacade.map(e, TaskDTO.class);
+            taskDTO.setIsSuspended(e.isSuspended());
+            return taskDTO;
+        }).collect(Collectors.toList());
+        UseVO.SearchTaskRes searchTaskRes = new UseVO.SearchTaskRes()
+                .setTaskList(taskList)
+                .setTotal(total);
+        return Res.success(searchTaskRes);
+    }
+
     @ApiOperation(value = "表单-查询开始节点表单属性")
-    @PostMapping("start")
+    @PostMapping("form/start")
     public Res<UseWithFormVO.GetStartFormDataRes> getStartFormData(@RequestBody UseWithFormVO.GetStartFormDataReq req) {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
-        String processDefinitionId = null;
+        String processDefinitionId;
         if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
             processDefinitionId = req.getProcessDefinitionId();
         } else if (!StringUtils.isEmpty(req.getProcessDefinitionKey())) {
             processDefinitionId = processDefinitionQuery.processDefinitionKey(req.getProcessDefinitionKey()).latestVersion().singleResult().getId();
-        }
-
-        if (StringUtils.isEmpty(processDefinitionId)) {
+        } else {
             throw new MissingFormatArgumentException("缺少查询条件。需要processDefinitionId或processDefinitionKey");
         }
+
         StartFormData startFormData = formService.getStartFormData(processDefinitionId);
         UseWithFormVO.GetStartFormDataRes getStartFormDataRes = new UseWithFormVO.GetStartFormDataRes()
                 .setFormProperty(buildFormDataMap(startFormData));
@@ -73,7 +139,7 @@ public class UseWithFormController {
     }
 
     @ApiOperation(value = "表单-任务-开始流程，并添加表单的内容")
-    @PutMapping("start")
+    @PutMapping("form/start")
     public Res startForm(@RequestBody UseWithFormVO.StartFormReq req) {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {
@@ -89,11 +155,11 @@ public class UseWithFormController {
         return Res.success(startFormRes, "创建成功");
     }
 
-    @ApiOperation(value = "表单-任务-查询节点表单属性")
-    @PostMapping
+    @ApiOperation(value = "表单-任务-查询节点表单属性，及多出口时的判断值")
+    @PostMapping("form/task")
     public Res<UseWithFormVO.GetTaskFormDataRes> getTaskFormData(@RequestBody @Validated UseWithFormVO.GetTaskFormDataReq req) {
         // 收集本节点出口可选值
-        List<String> nextOutValueList = new ArrayList<>();
+        Set<String> nextOutValueSet = new HashSet<>();
         {
             Task task = taskService.createTaskQuery().taskId(req.getTaskId()).singleResult();
             if (task != null) {
@@ -104,37 +170,43 @@ public class UseWithFormController {
                 BpmnModel bpmnModel = repositoryService.getBpmnModel(task.getProcessDefinitionId());
                 FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(currentActivityId);
                 //获取节点输出集合
-                List<SequenceFlow> outFlows = flowNode.getOutgoingFlows();
+                List<SequenceFlow> outgoingFlowList = flowNode.getOutgoingFlows();
                 // 输出连线（规定图中下一节点为网关时，本节点只有一个输出；直接分支可为多条输出。）
-                if (outFlows != null) {
-                    if (outFlows.size() > 1) {
-                        for (SequenceFlow sequenceFlow : outFlows) {
-                            nextOutValueList.add(sequenceFlow.getName());
+                if (outgoingFlowList != null) {
+                    if (outgoingFlowList.size() > 1) {
+                        for (SequenceFlow sequenceFlow : outgoingFlowList) {
+                            nextOutValueSet.add(sequenceFlow.getName());
                         }
-                    } else if (outFlows.size() == 1) {
+                    } else if (outgoingFlowList.size() == 1) {
                         //获取第一条输出线
-                        SequenceFlow sequenceFlow = outFlows.get(0);
+                        SequenceFlow sequenceFlow = outgoingFlowList.get(0);
                         //获取第一条输出线末端节点
                         FlowElement flowElement = sequenceFlow.getTargetFlowElement();
                         if (flowElement instanceof ExclusiveGateway) {
-                            List<SequenceFlow> outgoingFlowList = ((ExclusiveGateway) flowElement).getOutgoingFlows();
-                            for (SequenceFlow sequenceFlow1 : outgoingFlowList) {
-                                nextOutValueList.add(sequenceFlow1.getName());
+                            List<SequenceFlow> subOutgoingFlowList = ((ExclusiveGateway) flowElement).getOutgoingFlows();
+                            for (SequenceFlow sequenceFlow1 : subOutgoingFlowList) {
+                                nextOutValueSet.add(sequenceFlow1.getName());
                             }
                         }
                     }
                 }
             }
         }
-        TaskFormData taskFormData = formService.getTaskFormData(req.getTaskId());
+        TaskFormData taskFormData;
+        try {
+            taskFormData = formService.getTaskFormData(req.getTaskId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Res.failure("查询失败，无此任务");
+        }
         UseWithFormVO.GetTaskFormDataRes getTaskFormDataRes = new UseWithFormVO.GetTaskFormDataRes()
                 .setFormProperty(buildFormDataMap(taskFormData))
-                .setNextOutValueList(nextOutValueList);
+                .setNextOutValueList(nextOutValueSet);
         return Res.success(getTaskFormDataRes);
     }
 
     @ApiOperation(value = "表单-任务-保存属性并完成任务")
-    @PutMapping
+    @PutMapping("form/task")
     @Transactional(rollbackFor = Exception.class)
     public Res submitTaskFormData(HttpServletRequest httpServletRequest, @RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) throws MyMethodArgumentNotValidException {
         taskService.setAssignee(req.getTaskId(), JavaJWT.getId(httpServletRequest));
@@ -168,10 +240,21 @@ public class UseWithFormController {
             //        Map<String, String> filteredFormVariableMap = formVariableMap.entrySet().stream().filter(e -> keySet.contains(e.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             formService.saveFormData(req.getTaskId(), req.getFormVariableMap());
         }
-        taskService.complete(req.getTaskId());
+        try {
+            taskService.complete(req.getTaskId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Res.failure("操作失败，请稍后重试");
+        }
         return Res.success("操作成功");
     }
 
+    /**
+     * 构建表单属性list集合
+     *
+     * @param taskFormData
+     * @return 表单属性list集合
+     */
     private List<FormDataDTO> buildFormDataList(FormData taskFormData) {//返回为集合类型
         List<FormProperty> formProperties = taskFormData.getFormProperties();
         List<FormDataDTO> list = new ArrayList<>();
@@ -184,6 +267,12 @@ public class UseWithFormController {
         return list;
     }
 
+    /**
+     * 构建表单属性map集合
+     *
+     * @param taskFormData
+     * @return 表单属性map集合
+     */
     private Map<String, FormDataDTO> buildFormDataMap(FormData taskFormData) {//返回为对象类型，key为字段id
         List<FormProperty> formProperties = taskFormData.getFormProperties();
         Map<String, FormDataDTO> map = new HashMap<>();
@@ -194,9 +283,14 @@ public class UseWithFormController {
             }
         }
         return map;
-
     }
 
+    /**
+     * 表单中单个变量值的信息转为DTO
+     *
+     * @param formProperty
+     * @return 表单字段DTO
+     */
     private FormDataDTO buildFormDataDTO(FormProperty formProperty) {
         FormDataDTO myFormProperty = mapperFacade.map(formProperty, FormDataDTO.class);
         myFormProperty.setIsRequired(formProperty.isRequired());
@@ -211,7 +305,6 @@ public class UseWithFormController {
         }
         return myFormProperty;
     }
-
 }
 
 

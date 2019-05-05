@@ -127,6 +127,16 @@ public class ImgController {
         }
     }
 
+
+
+    /**将高亮节点、高亮连线存储到两个list中
+     * @param processInstanceId 流程实例id
+     * @param isOnlyLast 仅保存最后高亮节点
+     * @param isContainHighLightLine 是否保存高亮连线
+     * @param highLightedActivities 高亮节点集合
+     * @param highLightedFlows 高亮连线集合
+     * @return 此流程的流程定义id
+     */
     private String makeActivityInstanceList(String processInstanceId, boolean isOnlyLast, boolean isContainHighLightLine, List<String> highLightedActivities, List<String> highLightedFlows) {
         String processDefinitionId = null;
         // 获取流程中已经执行的节点，按照执行倒序排序
