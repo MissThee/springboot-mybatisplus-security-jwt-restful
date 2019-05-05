@@ -92,7 +92,7 @@ public class ManaController {
                 .key(key)
                 .name(name)
                 .addZipInputStream(new ZipInputStream(file.getInputStream()))
-//                .addClasspathResource("processes-no-auto/DemoProcess.bpmn")//使用resources目录下的流程配置文件
+                //.addClasspathResource("processes-no-auto/DemoProcess.bpmn")//使用resources目录下的流程配置文件
                 .deploy();
         return Res.success(new ManaVO.DeployProcessByZipRes().setDeploymentId(deployment.getId()));
     }

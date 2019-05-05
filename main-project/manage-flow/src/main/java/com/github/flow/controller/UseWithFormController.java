@@ -8,7 +8,6 @@ import com.github.flow.dto.ProcessDefinitionDTO;
 import com.github.flow.dto.ProcessInstanceDTO;
 import com.github.flow.dto.TaskDTO;
 import com.github.flow.vo.ManaVO;
-import com.github.flow.vo.UseVO;
 import com.github.flow.vo.UseWithFormVO;
 import com.google.common.base.Joiner;
 import io.swagger.annotations.Api;
@@ -87,7 +86,7 @@ public class UseWithFormController {
     // act_ru_identitylink  存放正在执行任务的，办理人信息
     @ApiOperation(value = "任务-查询多个，待执行", notes = "（按办理人查询，按候选办理人查询，按候选办理组查询）")
     @PostMapping("task")
-    public Res<UseVO.SearchTaskRes> searchTask(@RequestBody @Validated UseVO.SearchTaskReq req) {
+    public Res<UseWithFormVO.SearchTaskRes> searchTask(@RequestBody @Validated UseWithFormVO.SearchTaskReq req) {
 
         TaskQuery taskQuery = taskService.createTaskQuery();
         if (req.getAssignee() != null) {
@@ -113,7 +112,7 @@ public class UseWithFormController {
             taskDTO.setIsSuspended(e.isSuspended());
             return taskDTO;
         }).collect(Collectors.toList());
-        UseVO.SearchTaskRes searchTaskRes = new UseVO.SearchTaskRes()
+        UseWithFormVO.SearchTaskRes searchTaskRes = new UseWithFormVO.SearchTaskRes()
                 .setTaskList(taskList)
                 .setTotal(total);
         return Res.success(searchTaskRes);
