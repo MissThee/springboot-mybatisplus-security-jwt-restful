@@ -7,6 +7,10 @@
     <facet type="web" name="Web">
       <configuration>
         <webroots />
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src/main/java" />
+          <root url="file://$MODULE_DIR$/src/main/resources" />
+        </sourceRoots>
       </configuration>
     </facet>
   </component>
@@ -16,6 +20,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -67,12 +72,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-oxm:5.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:5.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: io.lettuce:lettuce-core:5.1.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.34.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.34.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.34.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.34.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.34.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.34.Final" level="project" />
     <orderEntry type="library" name="Maven: io.projectreactor:reactor-core:3.2.8.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-security:2.1.4.RELEASE" level="project" />
@@ -83,7 +82,6 @@
     <orderEntry type="library" name="Maven: io.springfox:springfox-swagger2:2.9.2" level="project" />
     <orderEntry type="library" name="Maven: io.swagger:swagger-annotations:1.5.20" level="project" />
     <orderEntry type="library" name="Maven: io.swagger:swagger-models:1.5.20" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.9.0" level="project" />
     <orderEntry type="library" name="Maven: io.springfox:springfox-spi:2.9.2" level="project" />
     <orderEntry type="library" name="Maven: io.springfox:springfox-core:2.9.2" level="project" />
     <orderEntry type="library" name="Maven: net.bytebuddy:byte-buddy:1.9.12" level="project" />
@@ -92,7 +90,6 @@
     <orderEntry type="library" name="Maven: io.springfox:springfox-spring-web:2.9.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:20.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml:classmate:1.4.0" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.26" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.plugin:spring-plugin-core:1.2.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.plugin:spring-plugin-metadata:1.2.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.mapstruct:mapstruct:1.2.0.Final" level="project" />
@@ -113,8 +110,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:5.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.6" level="project" />
     <orderEntry type="library" name="Maven: com.auth0:java-jwt:3.3.0" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.9.8" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.9.8" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.11" level="project" />
     <orderEntry type="library" name="Maven: ma.glasnost.orika:orika-core:1.5.4" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.24.0-GA" level="project" />
@@ -122,6 +117,7 @@
     <orderEntry type="library" name="Maven: com.carrotsearch:java-sizeof:0.0.5" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.janino:janino:3.0.12" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.janino:commons-compiler:3.0.12" level="project" />
+    <orderEntry type="module" module-name="manage-base" />
     <orderEntry type="library" name="Maven: com.github.MissThee:excel-tool:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi:3.17" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.1" level="project" />
@@ -132,5 +128,19 @@
     <orderEntry type="library" name="Maven: com.github.virtuald:curvesapi:1.04" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.MissThee:data-structure:1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.corundumstudio.socketio:netty-socketio:1.7.17" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-epoll:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-unix-common:4.1.34.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.26" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.9.8" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.9.8" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.9.0" level="project" />
   </component>
 </module>
