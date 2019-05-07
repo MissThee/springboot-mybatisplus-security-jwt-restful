@@ -305,6 +305,7 @@ public class UseWithFormController {
         return myFormProperty;
     }
 }
+//想要实现忽略节点 必须满足两个条件：1、节点上配置skip expression 的计算结果为true；2、当前流程实例中存在一个变量叫_FLOWABLE_SKIP_EXPRESSION_ENABLED =true；
 
 
 
