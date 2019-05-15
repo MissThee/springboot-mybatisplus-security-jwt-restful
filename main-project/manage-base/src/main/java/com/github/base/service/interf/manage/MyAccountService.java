@@ -16,8 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface MyAccountService extends IService<User> {
-    Boolean comparePassword(MyAccountComparePasswordDTO myAccountComparePasswordDTO);
+    Boolean comparePassword(Long id, String oldPassword);
 
-    Boolean updatePassword(MyAccountUpdatePasswordDTO myAccountUpdatePasswordDTO);
-
+    Boolean updatePassword(Long id, String oldPassword);
 }

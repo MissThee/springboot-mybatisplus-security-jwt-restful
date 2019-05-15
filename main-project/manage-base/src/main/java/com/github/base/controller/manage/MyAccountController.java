@@ -26,12 +26,10 @@ import javax.servlet.http.HttpServletRequest;
 //@PreAuthorize("isAuthenticated()")
 public class MyAccountController {
     private final MyAccountService myAccountService;
-    private final MapperFacade mapperFacade;
 
     @Autowired
-    public MyAccountController(MyAccountService myAccountService, MapperFacade mapperFacade) {
+    public MyAccountController(MyAccountService myAccountService) {
         this.myAccountService = myAccountService;
-        this.mapperFacade = mapperFacade;
     }
 
     @ApiOperation(value = "修改用户", notes = "")
@@ -42,19 +40,11 @@ public class MyAccountController {
             return Res.failure("无法获取当前用户信息，修改失败");
         }
         //检查输入的旧密码是否正确
-        {
-            MyAccountComparePasswordDTO myAccountComparePasswordDTO = mapperFacade.map(updatePasswordReq, MyAccountComparePasswordDTO.class);
-            myAccountComparePasswordDTO.setId(Long.parseLong(id));
-            if (!myAccountService.comparePassword(myAccountComparePasswordDTO)) {
-                return Res.failure("旧密码不正确");
-            }
+        if (!myAccountService.comparePassword(Long.parseLong(id), updatePasswordReq.getOldPassword())) {
+            return Res.failure("旧密码不正确");
         }
         //更新密码
-        {
-            MyAccountUpdatePasswordDTO myAccountUpdatePasswordDTO = mapperFacade.map(updatePasswordReq, MyAccountUpdatePasswordDTO.class);
-            myAccountUpdatePasswordDTO.setId(Long.parseLong(id));
-            Boolean result = myAccountService.updatePassword(myAccountUpdatePasswordDTO);
-            return Res.res(result);
-        }
+        Boolean result = myAccountService.updatePassword(Long.parseLong(id), updatePasswordReq.getNewPassword());
+        return Res.res(result);
     }
 }

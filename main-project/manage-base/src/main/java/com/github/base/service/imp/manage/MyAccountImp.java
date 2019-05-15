@@ -24,22 +24,21 @@ public class MyAccountImp extends ServiceImpl<UserMapper, User> implements MyAcc
         this.mapperFacade = mapperFacade;
     }
 
+
     @Override
-    public Boolean comparePassword(MyAccountComparePasswordDTO myAccountComparePasswordDTO) {
-        User user = userMapper.selectById(myAccountComparePasswordDTO.getId());
+    public Boolean comparePassword(Long id, String inputOldPassword) {
+        User user = userMapper.selectById(id);
         String userOldPassword = user.getPassword();
-        String inputOldPassword = myAccountComparePasswordDTO.getOldPassword();
         return new BCryptPasswordEncoder().matches(inputOldPassword, userOldPassword);
     }
 
     @Override
-    public Boolean updatePassword(MyAccountUpdatePasswordDTO myAccountUpdatePasswordDTO) {
+    public Boolean updatePassword(Long id, String newPassword) {
         User user = new User();
-        user.setId(myAccountUpdatePasswordDTO.getId());
-        user.setPassword(myAccountUpdatePasswordDTO.getNewPassword());
+        user.setId(id);
+        user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
         int resultNum = userMapper.updateById(user);
         return resultNum > 0;
     }
-
 
 }
