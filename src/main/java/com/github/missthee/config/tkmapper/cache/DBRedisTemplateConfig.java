@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-
+//配置mybatis使用的redisTemplate，主要是修改序列化与反序列化方式
 @Configuration
 public class DBRedisTemplateConfig {
     @Bean()

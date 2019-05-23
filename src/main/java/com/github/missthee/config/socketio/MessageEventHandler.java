@@ -1,4 +1,4 @@
-package com.github.missthee.socketio;
+package com.github.missthee.config.socketio;
 
 import com.corundumstudio.socketio.AckCallback;
 import com.corundumstudio.socketio.AckRequest;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import com.github.missthee.config.security.jwt.JavaJWT;
 import com.github.missthee.db.primary.model.basic.User;
 import com.github.missthee.service.interf.basic.UserService;
-import com.github.missthee.socketio.model.AckModel;
-import com.github.missthee.socketio.model.MessageModel;
+import com.github.missthee.config.socketio.model.AckModel;
+import com.github.missthee.config.socketio.model.MessageModel;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

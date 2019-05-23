@@ -1,50 +1,15 @@
 package com.github.missthee.controller.example;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.github.missthee.config.security.jwt.JavaJWT;
-import com.github.missthee.db.primary.model.basic.User;
-import com.github.missthee.db.primary.model.compute.Compute;
-import com.github.missthee.service.interf.basic.UserService;
-import com.github.missthee.service.interf.compute.ComputeService;
-import com.github.missthee.test.staticproperty.AStaticClass;
-import com.github.missthee.test.staticproperty.test.TestModel;
-import com.github.missthee.tool.FileRec;
+
 import com.github.missthee.tool.Res;
-import com.github.missthee.tool.datastructure.TreeData;
-import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
-import com.github.missthee.tool.excel.imports.ExcelImport;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.experimental.Accessors;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.*;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.Md5Hash;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.naming.SizeLimitExceededException;
-import javax.script.ScriptException;
-import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
 
 @ApiIgnore
 //权限访问测试
 @RestController
 @RequestMapping("/auth")
-@RequiresRoles({"role"})
 public class AuthController {
 
     //-----以下为权限测试，若需测试权限功能，需将本controller访问url先加入到shiro的检测路径中。-----

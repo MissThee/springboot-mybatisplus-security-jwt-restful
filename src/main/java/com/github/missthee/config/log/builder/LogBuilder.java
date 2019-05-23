@@ -127,9 +127,9 @@ public class LogBuilder {
      */
     private static String splitRow(String headLabel, boolean isEnd) {
         if (isEnd) {
-            return "\r\n-------------------" + headLabel + " Start--------------------";
+            return "\r\n-------------------" + headLabel + " End--------------------";
         } else {
-            return "\r\n-------------------" + headLabel + " End----------------------";
+            return "\r\n-------------------" + headLabel + " Start----------------------";
         }
     }
 

@@ -112,9 +112,9 @@ CREATE TABLE `user`  (
 -- ----------------------------
 INSERT INTO `user` VALUES (1, '管理员', 'admin', '4d9190258588d2a9ef90d42304b7ef1d', 'fb1a1a08c4b54fecb568522497b502f8');
 INSERT INTO `user` VALUES (2, 'test', 'test', '4d9190258588d2a9ef90d42304b7ef1d', 'fb1a1a08c4b54fecb568522497b502f8');
-INSERT INTO `user` VALUES (11, 'test', 'test', 'f9030e74bc61e9bdd152dc530842036b', 'cb5d802259fd760bfbd618636cbfe5d7');
-INSERT INTO `user` VALUES (12, 'test', 'test', 'f92aa409d25bd113ba5ed11fba0a2115', '2f26092792450933e9607b83561065fd');
-INSERT INTO `user` VALUES (13, 'test', 'test', 'ffe9c253031a2e5c41789a055b9659af', 'a137eff7c832b8a1b9fa3ae63608df41');
+INSERT INTO `user` VALUES (11, 'test1', 'test1', '4d9190258588d2a9ef90d42304b7ef1d', 'fb1a1a08c4b54fecb568522497b502f8');
+INSERT INTO `user` VALUES (12, 'test2', 'test2', '4d9190258588d2a9ef90d42304b7ef1d', 'fb1a1a08c4b54fecb568522497b502f8');
+INSERT INTO `user` VALUES (13, 'test3', 'test3', '4d9190258588d2a9ef90d42304b7ef1d', 'fb1a1a08c4b54fecb568522497b502f8');
 
 -- ----------------------------
 -- Table structure for user_role

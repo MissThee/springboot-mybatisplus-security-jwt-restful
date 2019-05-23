@@ -29,11 +29,14 @@ public class ShiroConfig {
     }
 
     //修改后的shiro授权验证流程：
-    //前端http请求 → MyJWTFilter过滤器: token验证通过，构建subject，放行；验证不通过，放行。
-    // → [若请求controller带需验证注解]MyRealm
-    // → 通过，放行；未通过，抛出异常。
-    //注：
-    //因未定制rememberMe功能，@RequireUser注解无专门对应用户，使用时作用同@RequiresAuthentication。
+    //1. 前端http请求
+    //2. MyJWTFilter过滤器，进行token验证:
+    //      a.token验证通过，为此次访问构建subject对象并授予已登录标志，将用户id存入subject中，放行；
+    //      b.验证不通过，放行。
+    //3. 若请求controller带需验证注解，如@RequreRole("xxx")，进入Shiro原生验证流程：
+    //      a.通过，放行，进入controller执行并返回；
+    //      b.未通过，抛出异常，返回异常状态码及信息
+    //注：因未定制rememberMe功能，@RequireUser注解无专门对应用户，使用时作用同@RequiresAuthentication。
     @Bean
     public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, JavaJWT javaJWT) {
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();

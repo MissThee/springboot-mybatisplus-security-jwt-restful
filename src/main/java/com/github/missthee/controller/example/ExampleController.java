@@ -2,17 +2,12 @@ package com.github.missthee.controller.example;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.missthee.test.staticproperty.test.TestModel;
-import com.github.missthee.test.staticproperty.AStaticClass;
 import com.github.missthee.tool.datastructure.TreeData;
-import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
-import com.zaxxer.hikari.pool.HikariPool;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.*;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -33,15 +28,10 @@ import com.github.missthee.tool.Res;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.naming.SizeLimitExceededException;
-import javax.script.ScriptException;
-import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.*;
 
 
@@ -53,52 +43,13 @@ public class ExampleController {
     private final UserService userService;
     private final JavaJWT javaJWT;
     private final ComputeService computeService;
-    private final DataSource primaryDataSource;
 
     @Autowired
-    public ExampleController(UserService userService, JavaJWT javaJWT, ComputeService computeService, @Qualifier("primaryDataSource") DataSource dataSource) {
+    public ExampleController(UserService userService, JavaJWT javaJWT, ComputeService computeService) {
 
         this.userService = userService;
         this.javaJWT = javaJWT;
         this.computeService = computeService;
-        this.primaryDataSource = dataSource;
-    }
-
-    @PostMapping("excel/output")
-    public void excelTest(HttpServletResponse response) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException, NoSuchFieldException, ScriptException {
-        //读取模板支持.xls（97-2003）或.xlsx（2007+）
-        Workbook wb = ExcelExportByTemplate.readFile("exceltemplate/test.xls");
-        //实体类
-        TestModel testModel = new TestModel().setTest1("测试长文本长文本长文本长文本长文本长文本长文本长文本长文本");
-        //参数：Workbook，工作簿编号（0开始），实体类，单元格自适应宽度
-        ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel, true);//使用${属性名}替换
-        //流输出
-        ExcelExportByTemplate.export(response, wb, "文件名");
-    }
-
-    @PostMapping("dbinfo")
-    public String dbInfo() {
-        return primaryDataSource.toString();
-    }
-
-    @PostMapping("getProperty")
-    public Res getProperty() {
-        Map<String, String> map = new HashMap<>();
-        map.put("privateStaticString", AStaticClass.getPrivateStaticString());
-        map.put("InnerStaticClass", AStaticClass.InnerStaticClass.getB());
-        AStaticClass aStaticClass = new AStaticClass();
-        aStaticClass.getPrivateString();
-        aStaticClass.getPublicString();
-        AStaticClass.InnerStaticClass innerStaticClass = new AStaticClass.InnerStaticClass();
-        innerStaticClass.getA();
-        return Res.success(map);
-    }
-
-    @PostMapping("setProperty")
-    public Res setProperty() {
-        AStaticClass.setPrivateStaticString(new Date().toString());
-        AStaticClass.InnerStaticClass.setB(new Date().toString());
-        return Res.success();
     }
 
     @PostMapping("error")

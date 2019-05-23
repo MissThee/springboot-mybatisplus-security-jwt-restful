@@ -21,7 +21,7 @@ public class MyRealm extends AuthorizingRealm {
     }
 
     /**
-     * 身份信息是否是支持的类型
+     * 身份信息是否是支持的类型，永远为true，不在此做判断
      */
     @Override
     public boolean supports(AuthenticationToken token) {

@@ -64,7 +64,7 @@ public class ProcessManaController {
         Deployment deployment = repositoryService.createDeployment()
                 .key("QingJiaLiuCheng01")
                 .name("请假流程01")
-                .addClasspathResource("processes-no-auto/DemoProcess.bpmn")
+                .addClasspathResource("processes/DemoProcess.bpmn")
                 .deploy();
         return Res.success("act_re_deployment 部署: " + deployment.getId());
     }

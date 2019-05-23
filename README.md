@@ -1,210 +1,244 @@
 # 简介
 
 开发自用整理，各分支：
-- `master`：为整合各种组件空项目，未划为多个分子项目，涉及组件：
-fastjson、flowable、RabbitMQ、Shiro、JWT、tk-mapper、Socket.IO、poi、graphql(已全部注释掉)
-- `mybatis-plus-module`：项目按功能划分为了多个子项目，基本就是将master中config包下配置及相应功能代码分开了，涉及组件与`master`相似，其中Shiro换为Security，tk-mapper换为mybatis-plus，去除RabbitMQ、graphql，增加swagger2-ui。无简介
-- `dev`：与`master`相似，将Shiro替换为了JWT(因为发现shiro用纯注解方式无法实现“拥有xx权限或xx角色可访问”这个逻辑)，com.github.missthee.tool.Independent有开发/部署常用工具的记录，许多混杂的测试demo
+- `master`：为整合各种组件空项目，未划为多个分子项目，涉及组件：fastjson、flowable、RabbitMQ、Shiro、JWT、tk-mapper、Socket.IO、poi、swagger2/ui
+- `mybatis-plus-module`：项目按功能划分为了多个子项目，基本就是将master中config包下配置及相应功能代码分开了，涉及组件与`master`相似，其中Shiro换为Security，tk-mapper换为mybatis-plus，去除RabbitMQ、graphql。无简介
+- `dev`：与`master`相似，其中Shiro换为Security(因为发现shiro用纯注解方式无法实现“拥有xx权限或xx角色可访问”这个逻辑)，com.github.missthee.tool.Independent有开发/部署常用工具的记录，许多混杂的测试demo
 
-使用TestDB.sql文件可导入项目所需基础表，及表格导出示例表
 ## 基础结构
 ```shell
 root
-  ├─lib
-  │      mybatis-generator-lombok-plugin-1.0-SNAPSHOT.jar    //mybatis生成自定义格式需引用的jar
-  │      mysql-connector-java-5.1.44-bin.jar    //mysql驱动
-  │      ojdbc6.jar    //oracle驱动
-  │
-  ├─log    测试时日志生成目录；生产环境使用profile=prod，日志存储在项目部署同级目录中
-  │  │  log_debug.log
-  │  │  log_debug_mybatis1.log
-  │  │  log_debug_mybatis2.log
-  │  │  log_debug_request.log
-  │  │  log_error.log
-  │  │  log_info.log
-  │  └─ log_warn.log
-  │   
-  ├─src
-  │  └─main
-  │      ├─java
-  │      │  └─server
-  │      │      │  WebApplication.java    //启动类
-  │      │      │
-  │      │      ├─config
-  │      │      │  ├─cors    //跨域
-  │      │      │  │      CorsConfig.java    //跨域配置
-  │      │      │  │
-  │      │      │  ├─db    //多数据库配置
-  │      │      │  │      PrimaryDBConfig.java    //第一数据库配置
-  │      │      │  │      SecondaryDBConfig.java    //第二数据库配置
-  │      │      │  │
-  │      │      │  ├─exception    //错误统一捕获处理
-  │      │      │  │      ExceptionController.java    //捕获controller中错误，格式化输出
-  │      │      │  │      MyErrorController.java    //自定义错误处理，主要用于地自定义404返回
-  │      │      │  │
-  │      │      │  ├─json    //json处理
-  │      │      │  │      SpringFastJsonConfig.java    //springboot改为使用FastJson配置
-  │      │      │  │
-  │      │      │  ├─log    //日志相关
-  │      │      │  │  ├─controller
-  │      │      │  │  │      ControllerLogger.java    //controller访问日志
-  │      │      │  │  │
-  │      │      │  │  └─format    //自定义日志样式（格式，颜色等。用于自定义分类输出日志后，在控制台还原springboot默认日志样式）
-  │      │      │  │          EasyHighlightingCompositeConverter.java
-  │      │      │  │          EasyPatternLayout.java
-  │      │      │  │          ProcessIdClassicConverter.java
-  │      │      │  │
-  │      │      │  ├─mq    //消息队列（本项目使用rabbitmq测试）
-  │      │      │  │  │  MqConnectionConfig.java    //连接配置
-  │      │      │  │  │  MqConsumer.java    //消费者配置
-  │      │      │  │  │  MqProductor.java    //生产者配置
-  │      │      │  │  │
-  │      │      │  │  └─init    //初始化配置（路由器，队列）
-  │      │      │  │          DirectExchangeConfig.java
-  │      │      │  │          FanoutExchangeConfig.java
-  │      │      │  │          TopicExchangeConfig.java
-  │      │      │  │
-  │      │      │  ├─security    //身份认证配置（shiro实现，前后端分离，将token存放于header中使用）
-  │      │      │  │      JavaJWT.java    //自定义认证方式。实现了给当前用户赋予权限，角色。进行验证
-  │      │      │  │      MyJWTFilter.java    //session的reddis支持
-  │      │      │  │      MyRealm.java    //shiro配置。注入自定义方法，增加注解支持等
-  │      │      │  │      ShiroConfig.java    //登入shiro方法
-  │      │      │  │
-  │      │      │  └─tkmapper    //mybatis通用mapper
-  │      │      │      ├─cache    //二级缓存redis支持
-  │      │      │      │      ApplicationContextHolder.java    
-  │      │      │      │      DBRedisTemplateConfig.java    
-  │      │      │      │      RedisCache.java    
-  │      │      │      │
-  │      │      │      ├─common    //通用mapper类
-  │      │      │      │      CommonMapper.java    //继承此类，实现基本sql语句方法
-  │      │      │      │
-  │      │      │      └─custom    //自定义额外通用方法
-  │      │      │              MyExampleMapper.java
-  │      │      │              MyExampleProvider.java
-  │      │      │              MyInsertMapper.java
-  │      │      │              MyInsertProvider.java
-  │      │      │              MySelectMapper.java
-  │      │      │              MySelectProvider.java
-  │      │      │              OrderStr.java
-  │      │      │
-  │      │      ├─controller
-  │      │      │  ├─example    //接口测试例子
-  │      │      │  │      ExampleController.java
-  │      │      │  │      MqCController.java
-  │      │      │  │      MqPController.java
-  │      │      │  │
-  │      │      │  ├─login    //登录/拉取用户信息方法
-  │      │      │  │      IndexController.java
-  │      │      │  │      LoginController.java
-  │      │      │  │
-  │      │      │  └─sheet    //表格导出接口例子
-  │      │      │          ComplexSheet.java
-  │      │      │          SimpleSheet.java
-  │      │      │
-  │      │      ├─db    //数据库相关类
-  │      │      │  ├─primary
-  │      │      │  │  ├─dto    //dto
-  │      │      │  │  │  └─login
-  │      │      │  │  │          LoginDTO.java
-  │      │      │  │  │
-  │      │      │  │  ├─mapper    //mapper（生成）
-  │      │      │  │  │  └─basic
-  │      │      │  │  │          PermissionMapper.java
-  │      │      │  │  │          RoleMapper.java
-  │      │      │  │  │          RolePermissionMapper.java
-  │      │      │  │  │          UserMapper.java
-  │      │      │  │  │          UserRoleMapper.java
-  │      │      │  │  │
-  │      │      │  │  └─model    //model（生成）
-  │      │      │  │      ├─basic
-  │      │      │  │      │      Permission.java
-  │      │      │  │      │      Role.java
-  │      │      │  │      │      RolePermission.java
-  │      │      │  │      │      User.java
-  │      │      │  │      │      UserRole.java
-  │      │      │  │      │
-  │      │      │  │      └─sheet
-  │      │      │  │              ComplexSheetData.java
-  │      │      │  │              ComplexSheetForm.java
-  │      │      │  │              SimpleSheet.java
-  │      │      │  │
-  │      │      │  └─secondary
-  │      │      │      ├─mapper
-  │      │      │      └─model
-  │      │      ├─service
-  │      │      │  ├─imp
-  │      │      │  |  ├─basic
-  │      │      │  │  │       UserImp.java
-  │      │      │  │  └─login
-  │      │      │  │          LoginImp.java
-  │      │      │  │
-  │      │      │  └─interf
-  │      │      │     ├─basic
-  │      │      │     │       UserImp.java
-  │      │      │     └─login
-  │      │      │             LoginImp.java
-  │      │      │
-  │      │      ├─socketio    //socketio相关
-  │      │      │  │  MessageEventHandler.java
-  │      │      │  │  MyCommandLineRunner.java
-  │      │      │  │  SocketIOServerConfig.java
-  │      │      │  │
-  │      │      │  └─model    //socketio辅助实体类
-  │      │      │          AckModel.java
-  │      │      │          MessageModel.java
-  │      │      │
-  │      │      └─tool    //封装工具类
-  │      │          │  ApplicationContextHelper.java    //获取bean
-  │      │          │  ExcelExport.java    //表格导出
-  │      │          │  ExcelImport.java    //表格导入
-  │      │          │  FileRec.java    //文件上传
-  │      │          │  ListCompute.java    //List<Model>增加合计/平均行
-  │      │          │  Res.java    //返回值包装类
-  │      │          │  ResponseOut.java    //使用流返回工具类（未用）
-  │      │          │  TreeData.java    //树形数据构建工具
-  │      │          │
-  │      │          └─Independent    //测试demo
-  │      │              │  axios-file-download-MT.html    //文件下载
-  │      │              │  ExcelReadTool.java    //表格读取工具
-  │      │              │  MapperXmlToDTOGenerator.java    //mapper.xml转实体类代码工具
-  │      │              │  socketio-test.html    //socket简易聊天
-  │      │              │  start-server8096.bat    //启动脚本
-  │      │              │
-  │      │              └─winsw    //windows服务注册工具
-  │      │                      ser-install.bat
-  │      │                      ser-restart.bat
-  │      │                      ser-start.bat
-  │      │                      ser-stop.bat
-  │      │                      ser-uninstall.bat
-  │      │                      trans2Serv.exe
-  │      │                      trans2Serv.xml
-  │      │
-  │      └─resources
-  │          │  application.properties
-  │          │  application.yml.bak
-  │          │  generatorConfig.xml
-  │          │  logback-spring.xml    //自定义日志配置
-  │          │
-  │          ├─mybatis
-  │          │  │  mybatis.cfg.xml
-  │          │  │
-  │          │  └─mapper
-  │          │      ├─primary
-  │          │      │  └─generate
-  │          │      └─secondary
-  │          │          └─generate
-  │          └─static
-  │              │  mybatis-generator-lombok-plugin-master.zip    //自定义mybatis生成工具相关类源码，可自行定制，打包jar包
-  │              │  mybatis_test_db.sql.sql    //测试用基础数据库表
-  │              │
-  │              └─files    //资源文件目录
-  │                      ces.png
-  │
-  └─target
-      └─generated-sources
-          └─annotations    //metamodel生成目录
+│  TestDB.sql    //测试用sql文件
+│
+├─lib    //引用的本地jar目录
+│      mysql-connector-java-5.1.44-bin.jar
+│      ojdbc6.jar
+│
+├─log_application     //本地测试生成的log
+│      log_all.log
+│      log_debug_mybatis1.log
+│      log_debug_mybatis2.log
+│      log_debug_request.log
+│      log_error.log
+│
+├─log_tomcat     //本地测试，tomcat生成的log
+│  ├─logs
+│  │      access_log.2019-04-17.log
+│  │
+│  └─work
+│      └─Tomcat
+│          └─localhost
+│              └─ROOT
+│
+└─src
+    └─main
+        ├─java
+        │  └─com
+        │      └─github
+        │          └─missthee
+        │              │  WebApplication.java    //启动类
+        │              │
+        │              ├─config    //配置目录
+        │              │  ├─cors    //跨域配置
+        │              │  │      CorsConfig.java
+        │              │  │
+        │              │  ├─db    //数据库配置
+        │              │  │      PrimaryDBConfig.java
+        │              │  │      SecondaryDBConfig.java
+        │              │  │
+        │              │  ├─exception    //全局异常拦截配置
+        │              │  │      ExceptionController.java
+        │              │  │      MyErrorController.java
+        │              │  │
+        │              │  ├─flowable    //flowable配置
+        │              │  │      ActDBConfig.java
+        │              │  │      MyProcessEngineAutoConfiguration.java
+        │              │  │      ResponseConfig.java
+        │              │  │
+        │              │  ├─json    //fastjson配置
+        │              │  │      SpringFastJsonConfig.java
+        │              │  │
+        │              │  ├─log    //日志输出配置
+        │              │  │  ├─aspect
+        │              │  │  │      ControllerLogger.java
+        │              │  │  │
+        │              │  │  ├─builder
+        │              │  │  │      GetterAndSetter.java
+        │              │  │  │      LogBuilder.java
+        │              │  │  │
+        │              │  │  └─format
+        │              │  │          EasyHighlightingCompositeConverter.java
+        │              │  │          EasyPatternLayout.java
+        │              │  │          ProcessIdClassicConverter.java
+        │              │  │
+        │              │  ├─mq    //RabbitMQ配置
+        │              │  │  │  MqConnectionConfig.java    //Mq连接配置（已配置在application.properties）
+        │              │  │  │  MqConsumer.java    //Mq消费者配置（未启用，使用默认配置）
+        │              │  │  │  MqProductor.java    //Mq生产者配置（主要配置rabbitTemplate，手动应答模式）
+        │              │  │  │
+        │              │  │  └─init    //测试路由、队列初始化
+        │              │  │          DirectExchangeConfig.java
+        │              │  │          FanoutExchangeConfig.java
+        │              │  │          TopicExchangeConfig.java
+        │              │  │
+        │              │  ├─security    //shiro、jwt配置
+        │              │  │  ├─jwt
+        │              │  │  │      JavaJWT.java    //jwt工具类
+        │              │  │  │      UserInfoForJWT.java    //jwt获取用户信息的接口
+        │              │  │  │
+        │              │  │  └─shiro
+        │              │  │          ExceptionControllerShiro.java    //shiro抛出异常拦截，统一返回
+        │              │  │          MyDefaultWebSessionManager.java    //关闭Shiro的session
+        │              │  │          MyJWTFilter.java    //自定义身份验证，登录验证依赖JWT
+        │              │  │          MyRealm.java    //自定义身份验证，获取用户角色、权限，为验证提供用户信息
+        │              │  │          ShiroConfig.java    //Shiro配置，将其他配置类整合进Shiro
+        │              │  │          UserInfoForShiro.java    //Shiro获取用户信息的接口
+        │              │  │
+        │              │  ├─socketio    //socket.io配置
+        │              │  │  │  MessageEventHandler.java    //监听事件
+        │              │  │  │  MyCommandLineRunner.java    //socket.io启动
+        │              │  │  │  SocketIOServerConfig.java   //socket.io配置
+        │              │  │  │
+        │              │  │  └─model
+        │              │  │          AckModel.java    //应答消息结构类
+        │              │  │          MessageModel.java    //发送/接收消息结构类
+        │              │  │
+        │              │  └─tkmapper    //通用mapper，及二级缓存使用redis配置
+        │              │      ├─cache    //通用mapper二级缓存使用redis的配置
+        │              │      │      DBRedisTemplateConfig.java    //redisTemplate的配置，主要为序列化/反序列化
+        │              │      │      MybatisRedisCacheConfig.java    //缓存存进Redis的配置
+        │              │      │
+        │              │      ├─common    //通用mapper自定义通用类
+        │              │      │      CommonMapper.java    //XxxMapper.java继承此类即可使用通用方法
+        │              │      │
+        │              │      └─custom    //通用mapper自定义扩展通用方法
+        │              │              MyInsertMapper.java
+        │              │              MyInsertProvider.java
+        │              │              MySelectByExampleMapper.java
+        │              │              MySelectByExampleProvider.java
+        │              │              OrderStr.java
+        │              │
+        │              ├─controller    //controller
+        │              │  ├─example
+        │              │  │      AuthController.java
+        │              │  │      ExampleController.java
+        │              │  │      MqCController.java
+        │              │  │      MqPController.java
+        │              │  │
+        │              │  ├─flowable
+        │              │  │      FJSON.java
+        │              │  │      ProcessManaController.java
+        │              │  │      ProcessUseController.java
+        │              │  │
+        │              │  ├─login
+        │              │  │      LoginController.java
+        │              │  │
+        │              │  └─sheet
+        │              │          ComplexSheet.java
+        │              │          SimpleSheet.java
+        │              │
+        │              ├─db    //数据库
+        │              │  └─primary    //第一数据库
+        │              │      ├─dto
+        │              │      │  └─login
+        │              │      │          LoginDTO.java
+        │              │      │
+        │              │      ├─mapper    //mapper类（由generator生成）
+        │              │      │  ├─basic
+        │              │      │  │      PermissionMapper.java
+        │              │      │  │      RoleMapper.java
+        │              │      │  │      RolePermissionMapper.java
+        │              │      │  │      UserMapper.java
+        │              │      │  │      UserRoleMapper.java
+        │              │      │  │
+        │              │      │  └─compute
+        │              │      │          ComputeMapper.java
+        │              │      │
+        │              │      └─model    //model类（由generator生成）
+        │              │          ├─basic
+        │              │          │      Permission.java
+        │              │          │      Role.java
+        │              │          │      RolePermission.java
+        │              │          │      User.java
+        │              │          │      UserRole.java
+        │              │          │
+        │              │          ├─compute
+        │              │          │      Compute.java
+        │              │          │
+        │              │          └─sheet
+        │              │                  ComplexSheetData.java
+        │              │                  ComplexSheetForm.java
+        │              │                  SimpleSheet.java
+        │              │
+        │              ├─service    //service
+        │              │  ├─imp    //service实现类
+        │              │  │  ├─basic
+        │              │  │  │      UserImp.java
+        │              │  │  │
+        │              │  │  ├─compute
+        │              │  │  │      ComputeImp.java
+        │              │  │  │
+        │              │  │  └─login
+        │              │  │          LoginImp.java
+        │              │  │
+        │              │  └─interf    //service接口
+        │              │      ├─basic
+        │              │      │      UserService.java
+        │              │      │
+        │              │      ├─compute
+        │              │      │      ComputeService.java
+        │              │      │
+        │              │      └─login
+        │              │              LoginService.java
+        │              │
+        │              └─tool    //静态工具类
+        │                      ApplicationContextHolder.java    //Bean获取
+        │                      FileRec.java    //文件接收
+        │                      Res.java    //返回数据包装
+        │
+        └─resources
+            │  application.properties
+            │  generatorConfig-FullExample.xml    //mybatis generator配置总示例
+            │  generatorConfig.xml    //mybatis generator配置
+            │  logback-spring.xml    //log日志输出，分为：prod日志输出为文件；非prod，日志直接打印控制台
+            │
+            ├─Independent    //测试用的文件
+            │  ├─db
+            │  │      mybatis_test_db.sql
+            │  │
+            │  ├─html
+            │  │      axios-file-download-MT.html    //测试表格导出的网页
+            │  │
+            │  └─socket
+            │          socketio-test.html    //测试socket.io的网页
+            │
+            ├─mybatis
+            │      mybatis.cfg.xml    //mybatis配置文件（被PrimaryDBConfig、SecondaryDBConfig引用）
+            │
+            ├─processes
+            │      DemoProcess.bpmn    //flowable的流程图文件
+            │
+            └─static
+                └─files    //静态资源访问测试用的文件
+                        ces
+                        ces.png
+                        ces.z
+
 ```
+## 涉及组件
++ Mybatis、通用mapper、fastJson、swagger2/ui、poi、Shiro、JavaJWT  
++ Socket.IO(默认停用)：可通过`application.properties`中设置`socket.io.enable=false`停用；删除`config`包下的`socketio`及pom中依赖即可完全移除
++ RabbitMQ(默认停用)：可通过`application.properties`中设置`custom.rabbitmq.enable=false`停用；删除`config`包下的`mq`及pom中依赖即可完全移除
++ Flowable：删除`controller`包下的`flowable`，删除`config`包下的`flowable`及pom中依赖即可完全移除
+## 使用
+1. 克隆本项目到本地
+2. 使用根目录中TestDB.sql文件可导入项目所需基础表；测试账号admin，test，test1，test2，test3，密码123
+3. 配置`application.properties`数据库链接（若不使用工作流，将Flowable相关文件删除，或先给其配置一个临时数据库）
+4. 运行com.github.missthee.WebApplication
+5. 测试controller：访问http://host:port/swagger-ui.html可查看接口文档，进行http请求测试
+6. 测试excel导出：使用src/resources/Independent/html/axios-file-download-MT.html可测试excel导出
+7. 测试socket.io：使用src/resources/Independent/socket/socketio-test.html可测试excel导出
+8. 在此项目进行开发增加新功能，几乎只需关注db,controller,service三个目录下的文件及application.properties即可。
 ## 返回值格式
 返回值格式 ：  
 返回类型Res.java
@@ -217,8 +251,8 @@ root
 ```
 返回状态码：  
 `200`：成功  
-`401`：未登录，需前端将用户跳转至登录界面  
-`403`：无权限，已登录用户无指定权限的接口时返回此状态码  
+`401`：未登录。前端需将用户跳转至登录界面  
+`403`：无权限。已登录用户，但无权访问接口时返回此状态码  
 `500`：服务器内部错误，msg附加信息会显示简要异常输出信息  
 
 ## RestFul风格接口规范介绍
@@ -234,7 +268,7 @@ root
 安全性：对该REST接口访问，不会使服务器资源的状态发生变化。  
 以上规范仅供参考。  
 
-#### 本项目使用以下方法 ,可统一参数传递与后台获取方式，有利于快速开发  
+#### 本项目使用以下方法，可统一参数传递与后台获取参数方式，所有参数均由application/json格式在body中传输，有利于统一接口风格、快速开发  
 
 | http方法 | 资源操作 | 幂等 | 安全 |  
 | :------: | :------: | :------: | :------: |   

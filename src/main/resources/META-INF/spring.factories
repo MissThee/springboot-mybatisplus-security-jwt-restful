@@ -1,3 +1,0 @@
-#jar包引用后自动配置
-#org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.jar.demo.config
-

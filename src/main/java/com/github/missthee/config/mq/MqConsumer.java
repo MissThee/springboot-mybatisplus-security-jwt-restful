@@ -23,7 +23,7 @@
 //        this.connectionFactory = connectionFactory;
 //    }
 //
-//    //    SimpleMessageListenerContainer，消费者配置
+//    //    SimpleMessageListenerContainer，消费者配置，可在此配置统一监听事件
 ////    @Bean
 ////    public SimpleMessageListenerContainer messageContainer() {
 ////        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory );

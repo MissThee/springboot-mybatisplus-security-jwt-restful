@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 @Order(1)
 @Slf4j
-public class ExceptionControllerShiro {
-    //访问无权限接口
+public class ShiroExceptionHandler {
+    //访问无权限接口，返回403（前端此时需提示无权限访问，跳转到之前的页面）
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
@@ -32,7 +32,7 @@ public class ExceptionControllerShiro {
         return jO;
     }
 
-    //需要登录
+    //需要登录，返回401（前端此时需跳转到登录页）
     @ExceptionHandler(UnauthenticatedException.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)

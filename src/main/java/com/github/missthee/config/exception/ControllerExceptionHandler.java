@@ -18,9 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 //controller异常捕捉返回
 @ApiIgnore
 @RestControllerAdvice
-@Order
 @Slf4j
-public class ExceptionController {
+public class ControllerExceptionHandler {
 
     //参数错误
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -56,7 +55,7 @@ public class ExceptionController {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-    @Order
+    @Order(99)//注意需使此方法最后进行捕捉，否则可能所有异常均被此方法拦截，无法区分
     public Object exceptionHandler(HttpServletRequest request, Exception e) {
         log.debug(LogBuilder.requestLogBuilder(request, e));
         e.printStackTrace();

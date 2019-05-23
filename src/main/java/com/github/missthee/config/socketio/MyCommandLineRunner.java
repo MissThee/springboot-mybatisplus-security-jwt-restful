@@ -1,14 +1,16 @@
-package com.github.missthee.socketio;
+package com.github.missthee.config.socketio;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 
 @Component
 @Order(value = 1)
+@ConditionalOnProperty(name = "socket.io.enable", havingValue = "true")
 public class MyCommandLineRunner implements CommandLineRunner {
     private final SocketIOServer socketIOServer;
 

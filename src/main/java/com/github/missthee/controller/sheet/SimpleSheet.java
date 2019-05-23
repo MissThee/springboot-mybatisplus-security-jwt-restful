@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.tool.excel.exports.direct.ExcelExport;
 import com.github.missthee.tool.excel.exports.direct.WorkBookVersion;
 import com.github.missthee.tool.excel.template.SimpleCell;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+@Api(tags = "简单表头报表导出")
 @RequestMapping("/sheet/simple")
 @RestController()
 public class SimpleSheet {

@@ -5,6 +5,7 @@ import com.github.missthee.tool.collectioncompute.CollectionCompute;
 import com.github.missthee.tool.collectioncompute.ComputeType;
 import com.github.missthee.tool.excel.exports.direct.DataColumn;
 import com.github.missthee.tool.excel.template.CellFomatter;
+import io.swagger.annotations.Api;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -31,7 +32,7 @@ import java.util.List;
 import static com.github.missthee.tool.excel.exports.direct.DefaultStyle.dataStyle;
 import static com.github.missthee.tool.excel.exports.direct.DefaultStyle.headerStyle;
 import static com.github.missthee.tool.excel.response.ResponseTool.responseOut;
-
+@Api(tags = "复杂表头报表导出")
 @RequestMapping("/sheet/complex")
 @RestController()
 public class ComplexSheet {

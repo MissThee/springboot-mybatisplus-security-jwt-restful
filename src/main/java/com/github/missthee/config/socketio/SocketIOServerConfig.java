@@ -1,4 +1,4 @@
-package com.github.missthee.socketio;
+package com.github.missthee.config.socketio;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
@@ -10,7 +10,6 @@ import com.github.missthee.config.security.jwt.JavaJWT;
 
 @Configuration
 public class SocketIOServerConfig {
-    private static String hostname;
     private static int port;
     private final JavaJWT javaJWT;
 
@@ -19,12 +18,7 @@ public class SocketIOServerConfig {
         this.javaJWT = javaJWT;
     }
 
-    @Value("${socketio.host}")
-    public void setHostname(String a) {
-        hostname = a;
-    }
-
-    @Value("${socketio.port}")
+    @Value("${socket.io.port}")
     public void setPort(int a) {
         port = a;
     }
@@ -32,7 +26,6 @@ public class SocketIOServerConfig {
     @Bean
     public SocketIOServer socketIOServer() {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
-        config.setHostname(hostname);
         config.setPort(port);
         config.setAuthorizationListener(data -> {//身份验证，直接使用jwt验证token
 //            String token = data.getHttpHeaders().get("Authorization");

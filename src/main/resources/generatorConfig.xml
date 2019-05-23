@@ -7,15 +7,14 @@
     <!--若驱动在maven库中无法拉取（如oracle驱动），使用的本地文件，可使用一下配置将本地jar引入。或在pom中直接配置依赖即可-->
     <!--<classPathEntry location="lib/ojdbc6.jar"/>-->
     <context id="generator1" targetRuntime="MyBatis3">
+        <!-- 若不使用通用mapper，则将以下plugin注释掉，可生成默认格式文件  -->
         <!-- 序列化接口 -->
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
-        <!-- 若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
-        <!--MapperPlugin：           生成继承CommenMapper的Mapper类-->
-        <!--LombokPlugin：           使用lombok的@Data注解，取消生成setter/getter。addStaticPropertyName增加实体类属性名String类型静态变量，addPropertyComment增加注释，addPropertySwaggerAnnotation增加swagger注解-->
+        <!--MapperPlugin：生成的XxxMapper.java 继承通用mapper类-->
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
             <property name="mappers" value="com.github.missthee.config.tkmapper.common.CommonMapper"/>
         </plugin>
-        <!--LombokPlugin：使用lombok的@Data注解，取消生成setter/getter。-->
+        <!--LombokPlugin：默认使用lombok的@Data注解，取消生成setter/getter-->
         <plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin">
             <!--实体类增加属性名String类型静态变量-->
             <property name="addStaticPropertyName" value="false"/>
@@ -27,8 +26,8 @@
             <property name="addMapperClassComponentAnnotation" value="false"/>
         </plugin>
 
+        <!-- 去除自动生成的多余注释 -->
         <commentGenerator>
-            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
             <property name="suppressAllComments" value="true"/>
         </commentGenerator>
 

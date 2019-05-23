@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 
 @Api(tags = "登录获取用户信息、token获取用户信息")
 @RestController("FunLoginController")
-@RequestMapping("/uauth")
 public class LoginController {
 
     private final LoginService loginService;
@@ -62,16 +61,6 @@ public class LoginController {
         return Res.success(new loginRes(loginDTO), "登录成功");
     }
 
-    @Data
-    @ApiModel(description = "接收登录参数")
-    private static class LoginModel {
-        @ApiModelProperty(value = "账号", required = true, example = "admin")
-        private String username;
-        @ApiModelProperty(value = "密码", required = true, example = "123")
-        private String password;
-        private Boolean isLongLogin = false;
-    }
-
 
     @ApiOperation(value = "获取用户信息", notes = "通过token获取用户信息，用于token有效期内的自动登录")
     @PostMapping("/info")
@@ -82,11 +71,23 @@ public class LoginController {
         return Res.success(new loginRes(loginDTO), "登录成功");
     }
 
+    //可建立一个vo包，将类似以下两个，仅用于前端与controller传值的类集中放置
+    //login的参数接收类
+    @Data
+    @ApiModel(description = "接收登录参数")
+    private static class LoginModel {
+        @ApiModelProperty(value = "账号", required = true, example = "admin")
+        private String username;
+        @ApiModelProperty(value = "密码", required = true, example = "123")
+        private String password;
+        private Boolean isLongLogin = false;
+    }
+
+    //login的结果返回类
     @Data
     @AllArgsConstructor
     private class loginRes {
         private LoginDTO user;
     }
-
 }
 
