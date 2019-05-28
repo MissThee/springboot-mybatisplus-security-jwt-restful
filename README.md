@@ -235,9 +235,9 @@ root
 2. 使用根目录中TestDB.sql文件可导入项目所需基础表；测试账号admin，test，test1，test2，test3，密码123
 3. 配置`application.properties`数据库链接（若不使用工作流，将Flowable相关文件删除，或先给其配置一个临时数据库）
 4. 运行com.github.missthee.WebApplication
-5. 测试controller：访问http://host:port/swagger-ui.html可查看接口文档，进行http请求测试
-6. 测试excel导出：使用src/resources/Independent/html/axios-file-download-MT.html可测试excel导出
-7. 测试socket.io：使用src/resources/Independent/socket/socketio-test.html可测试excel导出
+5. 测试controller：访问`http://host:port/swagger-ui.html`可查看接口文档，进行http请求测试
+6. 测试excel导出：使用`src/resources/Independent/html/axios-file-download-MT.html`可测试excel导出
+7. 测试socket.io：使用`src/resources/Independent/socket/socketio-test.html`可测试socket接口
 8. 在此项目进行开发增加新功能，几乎只需关注db,controller,service三个目录下的文件及application.properties即可。
 ## 返回值格式
 返回值格式 ：  
