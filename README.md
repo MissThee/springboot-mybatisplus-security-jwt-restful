@@ -233,7 +233,13 @@ root
 ## 使用
 1. 克隆本项目到本地
 2. 使用根目录中TestDB.sql文件可导入项目所需基础表；测试账号admin，test，test1，test2，test3，密码123
-3. 配置`application.properties`数据库链接（若不使用工作流，将Flowable相关文件删除，或先给其配置一个临时数据库）
+3. 配置`application.properties`，主要需配置数据库连接、服务端口号 
+    1. 若不使用工作流，将Flowable相关文件删除，或先给其配置一个临时数据库(新建的空数据库即可)
+    2. 删除Flowable需删除的内容有，删除以下内容即可完全去除本项目中工作流相关内容：
+        1. com.github.missthee.config.flowable
+        2. com.github.missthee.controller.flowable
+        3. `application.properties`中“flowable配置”部分
+        4. `pom.xml`中“flowable依赖”部分
 4. 运行com.github.missthee.WebApplication
 5. 测试controller：访问`http://host:port/swagger-ui.html`可查看接口文档，进行http请求测试
 6. 测试excel导出：使用`src/resources/Independent/html/axios-file-download-MT.html`可测试excel导出
