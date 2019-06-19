@@ -38,7 +38,7 @@ public class UserController {
             return Res.failure("用户名已存在");
         }
         Long id = userService.insertOne(insertOneReq);
-        return Res.res(id == null, new UserVO.InsertOneRes().setId(id));
+        return Res.res(id != null, new UserVO.InsertOneRes().setId(id));
     }
 
     @ApiOperation(value = "删除用户（逻辑删除）", notes = "")

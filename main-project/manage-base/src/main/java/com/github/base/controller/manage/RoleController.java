@@ -37,7 +37,7 @@ public class RoleController {
             return Res.failure("角色值已存在");
         }
         Long id = roleService.insertOne(insertOneReq);
-        return Res.res(id == null, new RoleVO.InsertOneRes().setId(id));
+        return Res.res(id != null, new RoleVO.InsertOneRes().setId(id));
     }
 
     @ApiOperation(value = "删除角色（逻辑删除）", notes = "")

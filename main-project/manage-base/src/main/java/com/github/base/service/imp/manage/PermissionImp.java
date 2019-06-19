@@ -42,9 +42,8 @@ public class PermissionImp extends ServiceImpl<PermissionMapper, Permission> imp
             return false;
         }
         QueryWrapper<Permission> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Permission.ID, id)
-                .eq(Permission.IS_DELETE, id);
-        Boolean result = permissionMapper.delete(queryWrapper) > 0;
+        queryWrapper.eq(Permission.ID, id);
+        Boolean result = permissionMapper.updateById(new Permission().setId(id).setIsDelete(true)) > 0;
         return result;
     }
 

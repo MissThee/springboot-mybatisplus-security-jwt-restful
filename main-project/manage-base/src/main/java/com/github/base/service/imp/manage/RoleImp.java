@@ -50,9 +50,8 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
             return false;
         }
         QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Role.ID, id)
-                .eq(Role.IS_DELETE, id);
-        Boolean result = roleMapper.delete(queryWrapper) > 0;
+        queryWrapper.eq(Role.ID, id);
+        Boolean result = roleMapper.updateById(new Role().setId(id).setIsDelete(true)) > 0;
         if (result) {
             updateRolePermission(null, id);
         }

@@ -47,10 +47,7 @@ public class UnitImp extends ServiceImpl<UnitMapper, Unit> implements UnitServic
         if (id == null) {
             return false;
         }
-        QueryWrapper<Unit> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Unit.ID, id)
-                .eq(Unit.IS_DELETE, id);
-        Boolean result = unitMapper.delete(queryWrapper) > 0;
+        Boolean result = unitMapper.updateById(new Unit().setId(id).setIsDelete(true)) > 0;
         return result;
     }
 

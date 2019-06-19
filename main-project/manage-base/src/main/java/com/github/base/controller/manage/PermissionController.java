@@ -40,7 +40,7 @@ public class PermissionController {
         }
         Long id = permissionService.insertOne(insertOneReq);
         PermissionVO.InsertOneRes insertOneRes = new PermissionVO.InsertOneRes().setId(id);
-        return Res.res(id == null, insertOneRes);
+        return Res.res(id != null, insertOneRes);
     }
 
     @ApiOperation(value = "删除权限（逻辑删除）", notes = "")

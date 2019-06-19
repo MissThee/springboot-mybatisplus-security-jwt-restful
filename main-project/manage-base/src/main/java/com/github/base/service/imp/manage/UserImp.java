@@ -59,10 +59,7 @@ public class UserImp extends ServiceImpl<UserMapper, User> implements UserServic
         if (id == null) {
             return false;
         }
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(User.ID, id)
-                .eq(User.IS_DELETE, id);
-        Boolean result = userMapper.delete(queryWrapper) > 0;
+        Boolean result = userMapper.updateById(new User().setId(id).setIsDelete(true)) > 0;
         if (result) {
             updateUserRole(id);
             updateUserUnit(id);

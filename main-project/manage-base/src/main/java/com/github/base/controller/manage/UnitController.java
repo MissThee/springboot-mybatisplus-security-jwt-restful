@@ -35,7 +35,7 @@ public class UnitController {
     @PutMapping()
     public Res<UnitVO.InsertOneRes> insertOne(@RequestBody UnitVO.InsertOneReq insertOneReq) {
         Long id = unitService.insertOne(insertOneReq);
-        return Res.res(id == null, new UnitVO.InsertOneRes().setId(id));
+        return Res.res(id != null, new UnitVO.InsertOneRes().setId(id));
     }
 
     @ApiOperation(value = "删除组织结构（逻辑删除）", notes = "")
