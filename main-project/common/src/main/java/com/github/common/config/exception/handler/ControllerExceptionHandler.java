@@ -1,6 +1,7 @@
 package com.github.common.config.exception.handler;
 
 import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
+import com.github.common.config.exception.custom.MyMissingDataException;
 import com.github.common.config.exception.model.ExceptionResultModel;
 import com.github.common.config.log.builder.LogBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -74,4 +75,10 @@ public class ControllerExceptionHandler {
         return new ExceptionResultModel(e.getMessage());
     }
 
+    @ExceptionHandler(MyMissingDataException.class)
+    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+    public Object myMissingDataException(HttpServletRequest request, MyMethodArgumentNotValidException e) {
+        log.debug(LogBuilder.requestLogBuilder(request, e));
+        return new ExceptionResultModel(e.getMessage());
+    }
 }

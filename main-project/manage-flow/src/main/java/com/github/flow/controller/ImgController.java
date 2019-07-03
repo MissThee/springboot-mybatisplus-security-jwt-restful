@@ -1,6 +1,7 @@
 package com.github.flow.controller;
 
 import com.github.common.config.exception.custom.MyMethodArgumentNotValidException;
+import com.github.common.config.exception.custom.MyMissingDataException;
 import com.github.common.tool.Res;
 import com.github.flow.dto.FlowLinePositionDTO;
 import com.github.flow.dto.FlowNodePositionDTO;
@@ -14,6 +15,8 @@ import org.flowable.engine.*;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.image.ProcessDiagramGenerator;
+import org.flowable.task.api.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +53,7 @@ public class ImgController {
 
     @ApiOperation(value = "图片")
     @PostMapping
-    public void img(HttpServletResponse httpServletResponse, @RequestBody ImgVO.ImgReq req) throws Exception {
+    public void img(HttpServletResponse httpServletResponse, @RequestBody ImgVO.ImgReq req) throws MyMissingDataException, MyMethodArgumentNotValidException, IOException {
         String processDefinitionId;
         if (req.getProcessDefinitionId() != null) {
             processDefinitionId = req.getProcessDefinitionId();
@@ -66,7 +69,7 @@ public class ImgController {
 
     @ApiOperation(value = "图片-包含进度")
     @PostMapping("progress")
-    public void imgWithHighLight(HttpServletResponse httpServletResponse, @RequestBody ImgVO.ImgWithHighLightReq req) throws IOException, MyMethodArgumentNotValidException {
+    public void imgWithHighLight(HttpServletResponse httpServletResponse, @RequestBody ImgVO.ImgWithHighLightReq req) throws IOException, MyMethodArgumentNotValidException, MyMissingDataException {
         List<String> highLightedActivities = new ArrayList<>();     // 构造已执行的节点ID集合
         List<String> highLightedFlows = new ArrayList<>();          // 构造已执行的路径ID集合
         String processInstanceId = processInstanceIdOrTaskIdToProcessInstanceId(req.getTaskId(), req.getProcessInstanceId());
@@ -81,7 +84,7 @@ public class ImgController {
 
     @ApiOperation(value = "图片-中高亮元素坐标")
     @PostMapping("progress/data")
-    public Res<ImgVO.ImgHighLightDataAllRes> imgHighLightDataAll(@RequestBody ImgVO.ImgHighLightDataAllReq req) throws MyMethodArgumentNotValidException {
+    public Res<ImgVO.ImgHighLightDataAllRes> imgHighLightDataAll(@RequestBody ImgVO.ImgHighLightDataAllReq req) throws MyMethodArgumentNotValidException, MyMissingDataException {
         List<String> highLightedActivities = new ArrayList<>();     // 构造已执行的节点ID集合
         List<String> highLightedFlows = new ArrayList<>();          // 构造已执行的路径ID集合
         String processInstanceId = processInstanceIdOrTaskIdToProcessInstanceId(req.getTaskId(), req.getProcessInstanceId());
@@ -117,9 +120,17 @@ public class ImgController {
         return Res.success(imgHighLightDataAllRes);
     }
 
-    private String processInstanceIdOrTaskIdToProcessInstanceId(String taskId, String processInstanceId) throws MyMethodArgumentNotValidException {
+    private String processInstanceIdOrTaskIdToProcessInstanceId(String taskId, String processInstanceId) throws MyMethodArgumentNotValidException, MyMissingDataException {
         if (taskId != null) {
-            return taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+            if (historicTaskInstance != null) {
+                return historicTaskInstance.getProcessInstanceId();
+            }
+            Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+            if (task != null) {
+                return task.getProcessInstanceId();
+            }
+            throw new MyMissingDataException("数据不全，无法找到对应记录");
         } else if (processInstanceId != null) {
             return processInstanceId;
         } else {
