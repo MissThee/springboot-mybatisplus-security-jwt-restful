@@ -31,7 +31,7 @@ public class Res<T> implements Serializable {
     }
 
     public static <T> Res<T> res(Boolean result, String msg) {
-        return new Res<>(result, null, "");
+        return new Res<>(result, null, msg);
     }
 
     public static <T> Res<T> res(Boolean result) {
