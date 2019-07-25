@@ -1,5 +1,6 @@
 package com.github.base.controller.manage;
 
+import com.github.base.dto.manage.role.RoleInTableDetailDTO;
 import com.github.base.vo.manage.RoleVO;
 import com.github.common.db.entity.primary.manage.Role;
 import com.github.base.service.interf.manage.RoleService;
@@ -68,7 +69,7 @@ public class RoleController {
     @ApiOperation(value = "查找角色（单个）", notes = "")
     @PostMapping()
     public Res<RoleVO.SelectOneRes> selectOne(@RequestBody RoleVO.SelectOneReq findOneReq) {
-        Role role = roleService.selectOne(findOneReq.getId());
+        RoleInTableDetailDTO role = roleService.selectOne(findOneReq.getId());
         return Res.success(new RoleVO.SelectOneRes().setRole(role));
     }
 

@@ -2,6 +2,7 @@ package com.github.base.vo.manage;
 
 import com.github.base.dto.manage.role.RoleInsertOneDTO;
 import com.github.base.dto.manage.role.RoleUpdateOneDTO;
+import com.github.base.dto.manage.role.RoleInTableDetailDTO;
 import com.github.common.db.entity.primary.manage.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -69,7 +70,7 @@ public class RoleVO {
     @ApiModel("RoleVO.SelectOneRes")
     public static class SelectOneRes {
         @ApiModelProperty(value = "角色对象")
-        private Role role;
+        private RoleInTableDetailDTO role;
     }
 
     @EqualsAndHashCode(callSuper = true)

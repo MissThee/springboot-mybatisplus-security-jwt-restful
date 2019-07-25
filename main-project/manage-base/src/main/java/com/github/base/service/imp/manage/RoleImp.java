@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.base.dto.manage.role.RoleInsertOneDTO;
 import com.github.base.dto.manage.role.RoleUpdateOneDTO;
+import com.github.base.dto.manage.role.RoleInTableDetailDTO;
 import com.github.common.db.mapper.primary.manage.RoleMapper;
 import com.github.common.db.mapper.primary.manage.RolePermissionMapper;
 import com.github.common.db.entity.primary.manage.Role;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,8 +73,21 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
     }
 
     @Override
-    public Role selectOne(Long id) {
-        return roleMapper.selectById(id);
+    public RoleInTableDetailDTO selectOne(Long id) {
+        Role role = roleMapper.selectById(id);
+        RoleInTableDetailDTO roleInTableDetailDTO = mapperFacade.map(role, RoleInTableDetailDTO.class);
+        List<Long> permissionIdList;
+        {//查找权限id集(角色-权限关系表)
+            permissionIdList = new ArrayList<>();
+            if (id != null) {
+                QueryWrapper<RolePermission> rolePermissionQW = new QueryWrapper<>();
+                rolePermissionQW.eq(RolePermission.ROLE_ID, id);
+                List<RolePermission> rolePermissionList = rolePermissionMapper.selectList(rolePermissionQW);
+                rolePermissionList.forEach(e -> permissionIdList.add(e.getPermissionId()));
+            }
+        }
+        roleInTableDetailDTO.setPermissionIdList(permissionIdList);
+        return roleInTableDetailDTO;
     }
 
     @Override

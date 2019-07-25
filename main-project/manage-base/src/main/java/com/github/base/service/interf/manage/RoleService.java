@@ -3,6 +3,7 @@ package com.github.base.service.interf.manage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.base.dto.manage.role.RoleInsertOneDTO;
 import com.github.base.dto.manage.role.RoleUpdateOneDTO;
+import com.github.base.dto.manage.role.RoleInTableDetailDTO;
 import com.github.common.db.entity.primary.manage.Role;
 
 import javax.management.InvalidAttributeValueException;
@@ -17,7 +18,7 @@ public interface RoleService extends IService<Role> {
 
     Boolean updateOne(RoleUpdateOneDTO roleUpdateOneDTO);
 
-    Role selectOne(Long id);
+    RoleInTableDetailDTO selectOne(Long id);
 
     List<Role> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException;
 
