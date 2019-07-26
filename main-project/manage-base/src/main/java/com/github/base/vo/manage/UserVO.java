@@ -83,7 +83,7 @@ public class UserVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("UserVO.ResetDefaultPasswordReq")
-    public class ResetDefaultPasswordReq {
+    public static class ResetDefaultPasswordReq {
         private Long id;
     }
 }

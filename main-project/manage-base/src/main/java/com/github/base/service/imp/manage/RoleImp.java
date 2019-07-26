@@ -5,13 +5,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.base.dto.manage.role.RoleInsertOneDTO;
 import com.github.base.dto.manage.role.RoleUpdateOneDTO;
 import com.github.base.dto.manage.role.RoleInTableDetailDTO;
-import com.github.common.db.mapper.primary.manage.RoleMapper;
-import com.github.common.db.mapper.primary.manage.RolePermissionMapper;
-import com.github.common.db.entity.primary.manage.Role;
-import com.github.common.db.entity.primary.manage.RolePermission;
+import com.github.base.db.mapper.primary.manage.RoleMapper;
+import com.github.base.db.mapper.primary.manage.RolePermissionMapper;
+import com.github.common.db.entity.primary.Role;
+import com.github.common.db.entity.primary.RolePermission;
 import com.github.base.service.interf.manage.RoleService;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 
 @Service
 @Transactional(rollbackFor = {Exception.class})

@@ -3,7 +3,8 @@ package com.github.base.service.interf.manage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.base.dto.manage.permission.PermissionInsertOneDTO;
 import com.github.base.dto.manage.permission.PermissionUpdateOneDTO;
-import com.github.common.db.entity.primary.manage.Permission;
+import com.github.common.db.entity.primary.Permission;
+import org.springframework.stereotype.Service;
 
 import javax.management.InvalidAttributeValueException;
 import java.lang.reflect.InvocationTargetException;

@@ -2,24 +2,24 @@ package com.github.base.service.imp.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.common.db.entity.primary.manage.*;
+import com.github.common.db.entity.primary.*;
 import com.github.common.config.security.jwt.UserInfoForJWT;
 import com.github.base.dto.manage.user.UserInTableDTO;
 import com.github.base.dto.manage.user.UserInTableDetailDTO;
 import com.github.base.dto.manage.user.UserInsertOneDTO;
 import com.github.base.dto.manage.user.UserUpdateOneDTO;
-import com.github.common.db.mapper.primary.manage.*;
+import com.github.base.db.mapper.primary.manage.*;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import com.github.base.service.interf.manage.UserService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 @Service
 @Transactional(rollbackFor = {Exception.class})

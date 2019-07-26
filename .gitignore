@@ -12,3 +12,7 @@ mybatis-plus-generator/target/
 target/
 
 
+
+*.lck
+
+*.log

@@ -1,7 +1,7 @@
 package com.github.base.service.imp.login;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.github.common.db.entity.primary.manage.*;
+import com.github.common.db.entity.primary.*;
 import com.github.common.config.security.SpecialPermission;
 import com.github.common.config.security.springsecurity.filter.UserInfoForSecurity;
 import ma.glasnost.orika.MapperFacade;
@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import com.github.common.db.mapper.primary.manage.*;
+import com.github.base.db.mapper.primary.manage.*;
 import com.github.base.dto.login.LoginDTO;
 import com.github.base.service.interf.login.LoginService;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 @Service
 public class LoginImp implements LoginService, UserInfoForSecurity {
     private final UserMapper userMapper;

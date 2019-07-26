@@ -2,8 +2,9 @@ package com.github.base.service.interf.manage;
 
 import com.github.base.dto.manage.unit.UnitInsertOneDTO;
 import com.github.base.dto.manage.unit.UnitUpdateOneDTO;
-import com.github.common.db.entity.primary.manage.Unit;
+import com.github.common.db.entity.primary.Unit;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;

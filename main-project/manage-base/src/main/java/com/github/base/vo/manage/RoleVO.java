@@ -3,7 +3,7 @@ package com.github.base.vo.manage;
 import com.github.base.dto.manage.role.RoleInsertOneDTO;
 import com.github.base.dto.manage.role.RoleUpdateOneDTO;
 import com.github.base.dto.manage.role.RoleInTableDetailDTO;
-import com.github.common.db.entity.primary.manage.Role;
+import com.github.common.db.entity.primary.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

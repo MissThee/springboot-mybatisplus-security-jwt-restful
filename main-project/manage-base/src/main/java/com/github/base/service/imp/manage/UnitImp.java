@@ -3,12 +3,13 @@ package com.github.base.service.imp.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.base.dto.manage.unit.UnitInsertOneDTO;
 import com.github.base.dto.manage.unit.UnitUpdateOneDTO;
-import com.github.common.db.entity.primary.manage.Unit;
-import com.github.common.db.mapper.primary.manage.UnitMapper;
+import com.github.common.db.entity.primary.Unit;
+import com.github.base.db.mapper.primary.manage.UnitMapper;
 import com.github.base.service.interf.manage.UnitService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;

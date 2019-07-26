@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.base.dto.manage.permission.PermissionInsertOneDTO;
 import com.github.base.dto.manage.permission.PermissionUpdateOneDTO;
-import com.github.common.db.mapper.primary.manage.PermissionMapper;
-import com.github.common.db.entity.primary.manage.Permission;
+import com.github.base.db.mapper.primary.manage.PermissionMapper;
+import com.github.common.db.entity.primary.Permission;
 import com.github.base.service.interf.manage.PermissionService;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,17 +1,17 @@
-/* 仅包含基础数据表及简单测试信息
+/*
  Navicat Premium Data Transfer
 
- Source Server         : local-user-1234
+ Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 50720
+ Source Server Version : 50726
  Source Host           : localhost:3306
  Source Schema         : mybatis_test_db
 
  Target Server Type    : MySQL
- Target Server Version : 50720
+ Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 26/04/2019 14:31:56
+ Date: 26/07/2019 16:07:49
 */
 
 SET NAMES utf8mb4;
@@ -101,6 +101,23 @@ INSERT INTO `role_permission` VALUES (3, 2);
 INSERT INTO `role_permission` VALUES (3, 3);
 INSERT INTO `role_permission` VALUES (4, 1);
 INSERT INTO `role_permission` VALUES (5, 2);
+
+-- ----------------------------
+-- Table structure for table_in_db1
+-- ----------------------------
+DROP TABLE IF EXISTS `table_in_db1`;
+CREATE TABLE `table_in_db1`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `column1` int(11) NULL DEFAULT NULL,
+  `column2` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of table_in_db1
+-- ----------------------------
+INSERT INTO `table_in_db1` VALUES (1, NULL, NULL);
+INSERT INTO `table_in_db1` VALUES (2, 1, 1);
 
 -- ----------------------------
 -- Table structure for unit

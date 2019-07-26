@@ -1,5 +1,6 @@
 package com.github.base.controller.example;
 
+import com.github.base.service.interf.transaction.OperateAllService;
 import com.github.missthee.tool.datastructure.TreeData;
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
@@ -14,8 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.common.config.security.jwt.JavaJWT;
-import com.github.common.db.entity.primary.manage.User;
-import com.github.base.service.interf.manage.UserService;
+import com.github.common.db.entity.primary.User;
 
 import com.github.common.tool.FileRec;
 import com.github.common.tool.Res;
@@ -35,6 +35,11 @@ import java.util.*;
 @RestController
 @RequestMapping("/test")
 public class ExampleController {
+    private final OperateAllService operateAllService;
+
+    public ExampleController(OperateAllService operateAllService) {
+        this.operateAllService = operateAllService;
+    }
 
     @PostMapping("excel/output")
     public void excelTest(HttpServletResponse response) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException, NoSuchFieldException, ScriptException {
@@ -130,10 +135,16 @@ public class ExampleController {
     @Data
     @Accessors(chain = true)
     private static class TestModel {
-        private String test1 ;
-        private Date test2 ;
+        private String test1;
+        private Date test2;
         private String test3 = "测试文字3";
-        private String test4= "123";
-        private String test5= null;
+        private String test4 = "123";
+        private String test5 = null;
+    }
+
+    @GetMapping("/tran/{isOK}")
+    public Res tran(@PathVariable("isOK") String isOK) throws Exception {
+        operateAllService.insertAll(isOK.equals("1"));
+        return Res.success();
     }
 }

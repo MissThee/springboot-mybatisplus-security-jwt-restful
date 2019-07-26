@@ -1,17 +1,15 @@
 package com.github.base.service.imp.manage;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.base.dto.manage.myaccount.MyAccountComparePasswordDTO;
-import com.github.base.dto.manage.myaccount.MyAccountUpdatePasswordDTO;
 import com.github.base.service.interf.manage.MyAccountService;
-import com.github.common.db.entity.primary.manage.*;
-import com.github.common.db.mapper.primary.manage.*;
+import com.github.common.db.entity.primary.User;
+import com.github.base.db.mapper.primary.manage.*;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 @Service
 @Transactional(rollbackFor = {Exception.class})
 public class MyAccountImp extends ServiceImpl<UserMapper, User> implements MyAccountService {

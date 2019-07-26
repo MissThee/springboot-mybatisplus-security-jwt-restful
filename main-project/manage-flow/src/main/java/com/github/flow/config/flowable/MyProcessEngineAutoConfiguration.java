@@ -34,7 +34,8 @@ public class MyProcessEngineAutoConfiguration extends ProcessEngineAutoConfigura
 
     @Bean
     @SuppressWarnings("all")
-    public SpringProcessEngineConfiguration springProcessEngineConfiguration(@Qualifier("actDataSource") DataSource dataSource, @Qualifier("actTransactionManager") PlatformTransactionManager platformTransactionManager, @Process ObjectProvider<IdGenerator> processIdGenerator, ObjectProvider<IdGenerator> globalIdGenerator, @ProcessAsync ObjectProvider<AsyncExecutor> asyncExecutorProvider, @ProcessAsyncHistory ObjectProvider<AsyncExecutor> asyncHistoryExecutorProvider) throws IOException {
+//    @Qualifier("actTransactionManager")此处的事务管理器统一使用jta
+    public SpringProcessEngineConfiguration springProcessEngineConfiguration(@Qualifier("actDataSource") DataSource dataSource,  PlatformTransactionManager platformTransactionManager, @Process ObjectProvider<IdGenerator> processIdGenerator, ObjectProvider<IdGenerator> globalIdGenerator, @ProcessAsync ObjectProvider<AsyncExecutor> asyncExecutorProvider, @ProcessAsyncHistory ObjectProvider<AsyncExecutor> asyncHistoryExecutorProvider) throws IOException {
         SpringProcessEngineConfiguration conf = new SpringProcessEngineConfiguration();
         List<Resource> resources = this.discoverDeploymentResources(this.flowableProperties.getProcessDefinitionLocationPrefix(), this.flowableProperties.getProcessDefinitionLocationSuffixes(), this.flowableProperties.isCheckProcessDefinitions());
         if (resources != null && !resources.isEmpty()) {

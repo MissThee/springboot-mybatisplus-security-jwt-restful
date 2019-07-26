@@ -1,4 +1,4 @@
-package com.github.common.db.entity.primary.manage;
+package com.github.common.db.entity.primary;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;

@@ -1,6 +1,6 @@
 package com.github.base.dto.login;
 
-import com.github.common.db.entity.primary.manage.User;
+import com.github.common.db.entity.primary.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
