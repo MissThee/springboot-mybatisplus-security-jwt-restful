@@ -27,7 +27,7 @@ public class MybatisPlusGen {
         final String functionName = scanner("输入生成的文件所属包名（可写多层包名，点分隔）：\n\r[附加说明：如选择的子项目为manage-base，则现在输入的包会新建在其controller、db/mapper/primary、service/imp、service/interf等下面，可观察现在项目中，以上路径均有名为manage的包]");
         updateConsole("已输入包名：" + functionName);
         String tableNameStr = getTableNameStr();
-        final List<String> tableName = Arrays.stream(tableNameStr.split(",")).filter(e -> e.equals("")).collect(Collectors.toList());
+        final List<String> tableName = Arrays.stream(tableNameStr.split(",")).filter(e -> !e.equals("")).collect(Collectors.toList());
         final String templateSelect = scanner("[最后]选择生成内容(可多选):\n\r1 entity \n\r2 mapper.java \n\r3 mapper.xml \n\r4 service \n\r5 impl \n\r6 controller");
         GenerateCodeExcludeModel(subProjectName, functionName, tableName, templateSelect, dbTagName);
     }
@@ -36,10 +36,7 @@ public class MybatisPlusGen {
         String tableNameStr = null;
         while (tableNameStr == null) {
             String input = scanner("表名，多表个英文逗号分割").replace(" ", "");
-            if (input.contains(" ")) {
-                tableNameStr = input;
-                System.out.println("有误，请重新输入");
-            }
+            tableNameStr = input;
         }
         updateConsole("已输入表名：" + tableNameStr);
         return tableNameStr;
@@ -159,6 +156,7 @@ public class MybatisPlusGen {
                 .setEntity("db.entity." + dbSelect + "." + functionName)
                 .setMapper("db.mapper." + dbSelect + "." + functionName)
                 .setService("service.interf" + "." + functionName)
+                .setController("controller" + "." + functionName)
                 .setServiceImpl("service.imp" + "." + functionName);
         mpg.setPackageInfo(pc);
 
