@@ -42,18 +42,6 @@ public class MybatisPlusGen {
         return tableNameStr;
     }
 
-    private static void updateConsole(String text) {
-        if (ShowInConsole.toString().equals("")) {
-            for (int i = 0; i < 50; i++) {
-                ShowInConsole.append("\n\r");
-            }
-            ShowInConsole.append("===================================================================\n\r");
-        }
-        ShowInConsole.append("=  ").append(text).append("\n\r");
-        System.out.print(ShowInConsole.toString());
-        System.out.println("===================================================================");
-    }
-
     private static String getDbTagName() {
         String dbTagName = null;
         while (dbTagName == null) {
@@ -73,7 +61,6 @@ public class MybatisPlusGen {
         updateConsole("已选数据源：" + dbTagName);
         return dbTagName;
     }
-
 
     private static String getSubProjectName() {
         List<String> subProjectPathNameList = new ArrayList<>();
@@ -108,6 +95,17 @@ public class MybatisPlusGen {
         return subProjectName;
     }
 
+    private static void updateConsole(String text) {
+        if (ShowInConsole.toString().equals("")) {
+            for (int i = 0; i < 50; i++) {
+                ShowInConsole.append("\n\r");
+            }
+            ShowInConsole.append("===================================================================\n\r");
+        }
+        ShowInConsole.append("=  ").append(text).append("\n\r");
+        System.out.print(ShowInConsole.toString());
+        System.out.println("===================================================================");
+    }
 
     private static void GenerateCodeExcludeModel(String subProjectName, String functionName, List<String> tableName, String templateSelect, String dbSelectTmp) throws IOException {
         final String dbSelect = dbSelectTmp;
@@ -135,7 +133,6 @@ public class MybatisPlusGen {
                 .setBaseResultMap(true) //sml生成映射baseMap
                 .setServiceName("%sService")
                 .setServiceImplName("%sImp");
-
         mpg.setGlobalConfig(gc);
 
         // 数据源配置
@@ -170,7 +167,6 @@ public class MybatisPlusGen {
                 .setEntityTableFieldAnnotationEnable(true)//属性上加字段注解
                 .setInclude(tableName.toArray(new String[0]));
         mpg.setStrategy(strategy);
-
         // 配置模板
         TemplateConfig templateConfig = new TemplateConfig();
         templateConfig.setXml(null);
@@ -206,7 +202,7 @@ public class MybatisPlusGen {
                     @Override
                     public String outputFile(TableInfo tableInfo) {
                         // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-                        return projectPath + "/manage-form/src/main/resources/mybatis/mapper/" + dbSelect + "/generate/"
+                        return projectPath + "/" + subProjectName + "/src/main/resources/mybatis/mapper/" + dbSelect + "/generate/"
                                 + functionName + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                     }
                 });
