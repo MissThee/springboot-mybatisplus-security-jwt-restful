@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 public class MybatisPlusGen {
     private static StringBuilder ShowInConsole = new StringBuilder();
+    //main-project开始的配置文件路径
+    private static String propertiesFilePath = "/common/src/main/resources/application-common.properties";
 
     public static void main(String[] args) throws IOException {
         //配置文件数据源选择
@@ -45,7 +47,7 @@ public class MybatisPlusGen {
     private static String getDbTagName() {
         String dbTagName = null;
         while (dbTagName == null) {
-            String input = scanner("请选择数据源：\n\r1 primary\n\r2 secondary");
+            String input = scanner("请选择数据源spring.datasource.XXX ：\n\r1 primary\n\r2 secondary");
             switch (input) {
                 case "1":
                     dbTagName = "primary";
@@ -114,7 +116,7 @@ public class MybatisPlusGen {
         String projectPath = System.getProperty("user.dir") + "/main-project";
         //读取main-project中的配置文件
         Properties properties = new Properties();
-        properties.load(new FileInputStream(new File(projectPath + "/common/src/main/resources/application-common.properties")));
+        properties.load(new FileInputStream(new File(projectPath + propertiesFilePath)));
         //获取本机信息
         Map<String, String> map = System.getenv();
         String userName = map.get("USERNAME");// 获取用户名
@@ -146,10 +148,11 @@ public class MybatisPlusGen {
             dsc.setUrl(properties.getProperty(propertiesKeyPrefix + "url"));
         }
         mpg.setDataSource(dsc);
-
+        File file = new File(projectPath + "/" + subProjectName + "/src/main/java/com");
+        File packageName = Objects.requireNonNull(file.listFiles())[0];
         // 包配置
         PackageConfig pc = new PackageConfig()
-                .setParent("com.github." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName))
+                .setParent("com." + packageName.getName() + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName))
                 .setEntity("db.entity." + dbSelect + "." + functionName)
                 .setMapper("db.mapper." + dbSelect + "." + functionName)
                 .setService("service.interf" + "." + functionName)
