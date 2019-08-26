@@ -39,10 +39,10 @@ public class ActDBConfig {
         return build;
     }
 
-//    @Bean(name = "actTransactionManager")
-//    public DataSourceTransactionManager transactionManager(@Qualifier("actDataSource") DataSource dataSource) {
-//        return new DataSourceTransactionManager(dataSource);
-//    }
+    @Bean(name = "actTransactionManager")
+    public DataSourceTransactionManager transactionManager(@Qualifier("actDataSource") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
 
     //不使用uuid主键生成器
     @Bean
