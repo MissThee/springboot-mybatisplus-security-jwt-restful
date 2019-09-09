@@ -1,4 +1,4 @@
-package com.dic.common.tool;
+package com.github.missthee.tool;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
