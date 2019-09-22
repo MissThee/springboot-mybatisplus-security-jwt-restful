@@ -1,0 +1,26 @@
+﻿/**
+ *
+ *  要求，尝试完成如下功能：
+ *
+ *  const currying = require('currying')
+ *
+ *  const add = function(a, b) {
+ *    return a + b
+ *  }
+ *
+ *  const curried = currying(add)
+ *  console.log(curried(1)(2)) // 3
+ *
+ **/
+function currying(func) { 
+//[].slice.call(arguments) 类似数组的对象转化为数组
+  return function getArgs(){
+    let newArr=[].slice.call(arguments) 
+    if(newArr.length>=func.length){   
+      return func.apply(this,newArr);
+    }
+    return function(){
+      return getArgs.apply(this,newArr.concat([].slice.call(arguments)));
+    };
+  };
+}

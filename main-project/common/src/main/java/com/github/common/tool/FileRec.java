@@ -1,4 +1,4 @@
-package com.dic.common.tool;
+package com.github.common.tool;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -62,9 +62,9 @@ public class FileRec {
             //文件已存在，重命名，加时间戳
             if (dest.exists()) {
                 if(fileName.indexOf(".")>0){
-                    fileName = fileName.substring(0, fileName.lastIndexOf(".")) + "["+System.currentTimeMillis() + "]" + extensionName;
+                    fileName = fileName.substring(0, fileName.lastIndexOf(".")) + "_"+System.currentTimeMillis() + "" + extensionName;
                 }else{
-                    fileName = fileName+ "["+System.currentTimeMillis() + "]" ;
+                    fileName = fileName+ "_"+System.currentTimeMillis() + "" ;
                 }
             }
             dest = new File(filePath, fileName);

@@ -1,0 +1,4 @@
+--search parent node
+select FIRST_VALUE(id) OVER (ORDER BY LEVEL DESC ROWS UNBOUNDED PRECEDING) AS firstdeptid from TEST11 start with id=8 connect by prior ID=PID;
+--search child node
+select id AS firstdeptid from TEST11 start with id=1 connect by prior ID=PID

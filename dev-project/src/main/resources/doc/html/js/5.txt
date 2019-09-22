@@ -1,0 +1,23 @@
+/**
+ *
+ *  要求，尝试完成如下功能：
+ *
+ *  const what = 'The fuck!';
+ *
+ *  value(what) === 'The fuck!'
+ *
+ *  const hello = function() {
+ *      return 'world'
+ *  }
+ *
+ * value(hello) === 'world'
+ *
+ **/
+function value(anything) {
+  //在这里实现
+  if(Object.prototype.toString.call(anything)==="[object Function]"){
+    return value(anything());
+  }else{
+    return anything;
+  } 
+}

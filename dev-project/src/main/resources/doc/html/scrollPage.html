@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+        }
+
+        body, ul, li, a, p, div {
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        #wrap {
+            overflow: hidden;
+        }
+
+        #main {
+            top: 0;
+            position: relative;
+        }
+
+        #page1 {
+            background: red;
+        }
+
+        #page2 {
+            background: orange;
+        }
+
+        #page3 {
+            background: yellow;
+        }
+
+        #page4 {
+            background: green;
+        }
+
+        #page5 {
+            background: blue;
+        }
+
+        #page6 {
+            background: cyan;
+        }
+
+        #page7 {
+            background: purple;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <div id="main">
+        <div id="page1"></div>
+        <div id="page2"></div>
+        <div id="page3"></div>
+        <div id="page4"></div>
+        <div id="page5"></div>
+        <div id="page6"></div>
+        <div id="page7"></div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    let clientHeight = 0;
+    let clientWidth = 0;
+    let wrap = document.getElementById("wrap");
+    let main = document.getElementById("main");
+    let obj = main.children;
+    window.onresize = function temp() {
+        init();
+    };
+    window.onload = function () {
+        init();
+    };
+
+    function init() {
+        clientHeight = document.documentElement.clientHeight;
+        clientWidth = document.documentElement.clientWidth;
+        wrap.style.height = clientHeight + "px";
+        for (let i = 0; i < obj.length; i++) {
+            obj[i].style.height = clientHeight + "px";
+        }
+        main.style.top = -(nowPageIndex * clientHeight) + "px"
+    }
+
+    //浏览器兼容
+    if ((navigator.userAgent.toLowerCase().indexOf("firefox") !== -1)) {
+        document.addEventListener("DOMMouseScroll", scrollFun, false);
+    }
+    else if (document.addEventListener) {
+        document.addEventListener("mousewheel", scrollFun, false);
+    }
+    else if (document.attachEvent) {
+        document.attachEvent("onmousewheel", scrollFun);
+    }
+    else {
+        document.onmousewheel = scrollFun;
+    }
+
+    let nowPageIndex = 0;
+    let maxPageIndex = main.childElementCount - 1;
+
+    //滚动事件处理函数
+    function scrollFun(event) {
+        let delta = event.detail || (-event.wheelDelta);
+        //mousewheel事件中的 “event.wheelDelta” 属性值：返回的如果是正值说明滚轮是向上滚动
+        //DOMMouseScroll事件中的 “event.detail” 属性值：返回的如果是负值说明滚轮是向上滚动
+        if (movePageInterval === undefined) {
+            if (delta > 0 && nowPageIndex < maxPageIndex) {
+                //向下滚动
+                nowPageIndex++;
+            }
+            if (delta < 0 && nowPageIndex > 0) {
+                //向上滚动
+                nowPageIndex--;
+            }
+            movePage();
+        }
+        else {
+            event.preventDefault();
+        }
+    }
+
+    let movePageInterval;
+
+    function movePage() {
+        let startTop = parseInt(main.style.top.replace("px", ""));
+        let nowTop = startTop;
+        let endTop = -(nowPageIndex * clientHeight);
+        let nowMoveTimes = 0;
+        let moveTimes = 15;
+        let moveStep = (endTop - startTop) / moveTimes;
+        if (movePageInterval !== undefined) {
+            clearInterval(movePageInterval);
+        }
+        movePageInterval = setInterval(function () {
+            intervalDo();
+        }, 17);
+
+        function intervalDo() {
+            if (startTop > endTop ? (nowTop > endTop - moveStep) : (nowTop < endTop - moveStep)) {
+                nowMoveTimes++;
+                if (nowMoveTimes >= (moveTimes - moveTimes / 3) && nowMoveTimes <= moveTimes) {
+                    moveTimes = moveTimes * 2;
+                    moveStep = (endTop - startTop) / moveTimes
+                }
+                nowTop += moveStep;
+                main.style.top = nowTop + "px";
+            } else {
+                main.style.top = endTop + "px";
+                clearInterval(movePageInterval)
+                movePageInterval = undefined;
+            }
+        }
+    }
+</script>
+</body>
+</html>

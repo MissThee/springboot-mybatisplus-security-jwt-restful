@@ -1,0 +1,26 @@
+/**
+ *
+ *  要求，尝试完成如下功能：
+ *
+ *  map([1, 2], function(i) {
+ *   return i * 2
+ *  })
+ *  要求输出： [2, 4]
+ *
+ *  map([{name: 'nanfeng', age: 25}, {name: 'beifang', age: 33}], function(i) {
+ *   return i.age
+ *  })
+ *  要求输出： [25, 33]
+ *
+ *  map([5, 7], function(i) {
+ *   return this + i
+ *  }, 2)
+ *  要求输出： [7, 9]
+ *
+ **/
+function map(arr, func, ctx) {
+  //在这里实现
+  let result=[]; 
+  arr.forEach((item,index)=> result.push(func.call(ctx,item))); 
+  return result;
+}

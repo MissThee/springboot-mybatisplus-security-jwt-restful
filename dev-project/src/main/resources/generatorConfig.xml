@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <properties resource="application.properties"/>
+    <!--若驱动在maven库中无法拉取（如oracle驱动），使用的本地文件，可使用一下配置将本地jar引入。或在pom中直接配置依赖即可-->
+    <!--<classPathEntry location="lib/ojdbc6.jar"/>-->
+    <context id="generator1" targetRuntime="MyBatis3">
+        <!-- 序列化接口 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!-- 若不使用通用mapper，则将以下三个plugin注释掉，可生成默认格式文件  -->
+        <!--MapperPlugin：           生成继承CommenMapper的Mapper类-->
+        <!--LombokPlugin：           使用lombok的@Data注解，取消生成setter/getter。addStaticPropertyName增加实体类属性名String类型静态变量，addPropertyComment增加注释，addPropertySwaggerAnnotation增加swagger注解-->
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="com.github.missthee.config.tkmapper.common.CommonMapper"/>
+        </plugin>
+        <!--LombokPlugin：使用lombok的@Data注解，取消生成setter/getter。-->
+        <plugin type="com.github.missthee.mybatis.generator.plugins.custom.LombokPlugin">
+            <!--实体类增加属性名String类型静态变量-->
+            <property name="addStaticPropertyName" value="true"/>
+            <!--实体类增加注释-->
+            <property name="addPropertyComment" value="true"/>
+            <!--实体类增加swagger注解-->
+            <property name="addPropertySwaggerAnnotation" value="false"/>
+            <!--mapper类增加@Component注解-->
+            <property name="addMapperClassComponentAnnotation" value="false"/>
+        </plugin>
+
+        <commentGenerator>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <jdbcConnection
+                driverClass="${spring.datasource.primary.driver-class-name}"
+                connectionURL="${spring.datasource.primary.jdbc-url}"
+                userId="${spring.datasource.primary.username}"
+                password="${spring.datasource.primary.password}">
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+
+        <!-- 生成实体类地址 -->
+        <javaModelGenerator targetPackage="com.github.missthee.db.entity.primary" targetProject="src/main/java"/>
+
+        <!-- 生成mapper xml文件 -->
+        <!--<sqlMapGenerator targetPackage="mybatis.mapper.primary.generate" targetProject="src/main/resources"/>-->
+
+        <!-- 生成mapper java文件 -->
+        <!--<javaClientGenerator targetPackage="com.github.missthee.db.mapper.primary" targetProject="src/main/java" type="XMLMAPPER"/>-->
+
+        <!--设置生成的表-->
+        <table schema="mybatis_test_db" tableName="user"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+        <table schema="mybatis_test_db" tableName="role"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+        <table schema="mybatis_test_db" tableName="permission"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+        <table schema="mybatis_test_db" tableName="role_permission"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+        <table schema="mybatis_test_db" tableName="user_role"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false"
+        />
+    </context>
+</generatorConfiguration>

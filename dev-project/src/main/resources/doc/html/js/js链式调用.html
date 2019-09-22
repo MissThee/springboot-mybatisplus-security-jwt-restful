@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    window.onload = function () {
+        let result1 = simpleAdd(2)(3);
+        console.log("result1", result1);
+
+        let result2 = add(1, 1)(2, 2)(3).getSum();
+        console.log("result2", result2);
+    };
+
+    function simpleAdd(a) {
+        return function (b) {
+            return a + b;
+        }
+    }
+
+    function add(...a) {
+        let sum = 0;
+        for (let i of a) {
+            sum += i;
+        }
+        let addMore = function (...a) {
+            for (let i of a) {
+                sum += i;
+            }
+            return addMore;
+        };
+        addMore.getSum = function () {
+            return sum;
+        };
+        return addMore;
+    }
+</script>
+</html>

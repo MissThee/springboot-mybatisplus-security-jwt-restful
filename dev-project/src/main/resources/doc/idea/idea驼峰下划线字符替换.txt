@@ -1,0 +1,9 @@
+(if \(\!keyWords.getString\(\")([\w]+)(\"\).equals\(\"\"\)\))
+
+if (!StringUtils.isNullOrEmpty(keyWords.getString("\l$2"))) 
+
+
+
+(if \()(\!StringUtils.isNullOrEmpty\(keyWords.getString\(\")([\w]+)(\"\)\)\) \{)
+
+\l$1paramJObj.containsKey("\l$3")&&\l$2\l$3\l$4
