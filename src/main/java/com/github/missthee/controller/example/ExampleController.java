@@ -185,7 +185,7 @@ public class ExampleController {
 
     //上传文件示例
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Res fileUpload(@RequestParam("file") MultipartFile file) throws FileNotFoundException, SizeLimitExceededException {
+    public Res fileUpload(@RequestParam("file") MultipartFile file) throws IOException, SizeLimitExceededException {
         String path = FileRec.fileUpload(file, "uploadTest");
         if (path != null) {
             return Res.success(path, "成功");
@@ -196,7 +196,7 @@ public class ExampleController {
 
     //上传文件示例
     @PostMapping(value = "/upload1")
-    public Res fileUpload1(MultipartFile file, String customPath) throws FileNotFoundException, SizeLimitExceededException {
+    public Res fileUpload1(MultipartFile file, String customPath) throws IOException, SizeLimitExceededException {
         String path = FileRec.fileUpload(file, customPath);
         if (path != null) {
             return Res.success(path, "成功");

@@ -1,10 +1,4 @@
 # 简介
-
-开发自用整理，各分支：
-- `master`：为整合各种组件空项目，未划为多个分子项目，涉及组件：fastjson、flowable、RabbitMQ、Shiro、JWT、tk-mapper、Socket.IO、poi、swagger2/ui
-- `mybatis-plus-module`：项目按功能划分为了多个子项目，基本就是将master中config包下配置及相应功能代码分开了，涉及组件与`master`相似，其中Shiro换为Security，tk-mapper换为mybatis-plus，去除RabbitMQ、graphql。无简介
-- `dev`：与`master`相似，其中Shiro换为Security(因为发现shiro用纯注解方式无法实现“拥有xx权限或xx角色可访问”这个逻辑)，com.github.missthee.tool.Independent有开发/部署常用工具的记录，许多混杂的测试demo
-
 ## 基础结构
 ```shell
 root
