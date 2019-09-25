@@ -12,6 +12,8 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.missthee.config.security.jwt.JavaJWT;
@@ -86,7 +88,8 @@ public class ExampleController {
     @PostMapping("infoByHeader")
     public Res<Map<String, Object>> getInfo(HttpServletRequest httpServletRequest) {
         String userIdByToken = javaJWT.getId(httpServletRequest);//通过token解析获得
-//        Object userIdBySubject = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();//通过Security的SecurityContextHolder获得
+//        Object principal = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
         Map<String, Object> map = new HashMap<String, Object>() {{
             put("userIdByToken", userIdByToken);
 //            put("userIdBySubject", userIdBySubject);
