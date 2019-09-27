@@ -141,7 +141,7 @@ public class ExampleController {
         private String test4 = "123";
         private String test5 = null;
     }
-
+    //多数据库事务测试（需改用jta）
     @GetMapping("/tran/{isOK}")
     public Res tran(@PathVariable("isOK") String isOK) throws Exception {
         operateAllService.insertAll(isOK.equals("1"));
