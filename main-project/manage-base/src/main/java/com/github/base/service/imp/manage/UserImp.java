@@ -165,9 +165,11 @@ public class UserImp extends ServiceImpl<SysUserMapper, SysUser> implements User
             for (SysUserRole userRole : userRoleList) {
                 if (item.getId().equals(userRole.getUserId())) {
                     Long roleId = userRole.getRoleId();
-                    SysRole role = roleMap.getOrDefault(roleId, new SysRole());
-                    SysUserInTableDTO.RoleInfo roleInfo = mapperFacade.map(role, SysUserInTableDTO.RoleInfo.class);
-                    roleInfoList.add(roleInfo);
+                    if(roleMap.containsKey(roleId)) {
+                        SysRole role = roleMap.get(roleId);
+                        SysUserInTableDTO.RoleInfo roleInfo = mapperFacade.map(role, SysUserInTableDTO.RoleInfo.class);
+                        roleInfoList.add(roleInfo);
+                    }
                 }
             }
             item.setRoleList(roleInfoList);
