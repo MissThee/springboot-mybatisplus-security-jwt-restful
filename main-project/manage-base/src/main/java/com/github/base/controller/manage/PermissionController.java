@@ -85,7 +85,6 @@ public class PermissionController {
     @ApiOperation(value = "查找权限（单个）", notes = "")
     @ApiOperationSort(2)
     @PostMapping()
-    @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'permission'))")
     public Res<PermissionVO.SelectOneRes> selectOne(@RequestBody PermissionVO.SelectOneReq findOneReq) {
         SysPermission permission = permissionService.selectOne(findOneReq.getId());
         PermissionVO.SelectOneRes selectOneRes = new PermissionVO.SelectOneRes().setPermission(permission);
@@ -95,7 +94,6 @@ public class PermissionController {
     @ApiOperation(value = "权限列表（树状）", notes = "")
     @ApiOperationSort(1)
     @PostMapping("/tree")
-    @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'permission'))")
     public Res<PermissionVO.SelectTreeRes> selectList(@RequestBody PermissionVO.SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
         List<SysPermission> permissionList = permissionService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
         List<Object> tree = TreeData.tree(permissionList, selectListReq.getRootId(), false, new HashMap<String, String>() {{
