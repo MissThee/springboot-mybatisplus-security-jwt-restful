@@ -1,32 +1,38 @@
 package com.github.base.controller.login;
 
+import com.github.base.dto.login.AuthDTO;
+import com.github.base.service.interf.login.AuthInfoService;
+import com.github.base.service.interf.manage.UserService;
 import com.github.base.vo.login.LoginVO;
-import io.swagger.annotations.*;
+import com.github.common.config.security.jwt.JavaJWT;
+import com.github.common.tool.Res;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSort;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import com.github.base.dto.login.LoginDTO;
-import com.github.common.config.security.jwt.JavaJWT;
-import com.github.base.service.interf.manage.UserService;
-import com.github.base.service.interf.login.LoginService;
-import com.github.common.tool.Res;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Api(tags = "登录")
+@ApiSort(999)
 @RestController
 public class LoginController {
 
-    private final LoginService loginService;
+    private final AuthInfoService authInfoService;
     private final JavaJWT javaJWT;
 
     @Autowired
-    public LoginController(LoginService loginService, JavaJWT javaJWT, UserService userService) {
-        this.loginService = loginService;
+    public LoginController(AuthInfoService authInfoService, JavaJWT javaJWT, UserService userService) {
+        this.authInfoService = authInfoService;
         this.javaJWT = javaJWT;
     }
 
@@ -35,6 +41,7 @@ public class LoginController {
 //            @ApiImplicitParam(name = "username", value = "账号", required = true, dataType = "string", example = "admin"),
 //            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string", example = "123")
 //    })
+    @ApiOperationSort(1)
     @PostMapping("/login")
     public Res<LoginVO.LoginRes> login(HttpServletResponse httpServletResponse, @RequestBody LoginVO.LoginReq loginModel) throws Exception {
         if (StringUtils.isEmpty(loginModel.getUsername())) {
@@ -43,31 +50,32 @@ public class LoginController {
         if (StringUtils.isEmpty(loginModel.getPassword())) {
             return Res.failure("密码不能为空");
         }
-        LoginDTO loginDTO = loginService.selectUserByUsername(loginModel.getUsername());
-        if (loginDTO == null) {
+        AuthDTO authDTO = authInfoService.selectUserByUsername(loginModel.getUsername());
+        if (authDTO == null) {
             return Res.failure("无此账号");
         }
-        if (!loginDTO.getIsEnable()) {
+        if (!authDTO.getIsEnable()) {
             return Res.failure("账号已停用");
         }
-        if (!new BCryptPasswordEncoder().matches(loginModel.getPassword(), loginDTO.getPassword())) {
+        if (!new BCryptPasswordEncoder().matches(loginModel.getPassword(), authDTO.getPassword())) {
             return Res.failure("密码错误");
         }
-        httpServletResponse.setHeader("Authorization", javaJWT.createToken(loginDTO.getId(), loginModel.getIsLongLogin() ? 7 : 2));  //添加token
-        return Res.success(new LoginVO.LoginRes().setUser(loginDTO), "登录成功");
+        httpServletResponse.setHeader("Authorization", javaJWT.createToken(authDTO.getId(), loginModel.getIsLongLogin() ? 7 : 2));  //添加token
+        return Res.success(new LoginVO.LoginRes().setUser(authDTO), "登录成功");
     }
 
 
     @ApiOperation(value = "获取用户信息", notes = "token获取用户信息")
+    @ApiOperationSort(2)
     @PostMapping("/info")
     @PreAuthorize("isAuthenticated()")
     public Res<LoginVO.LoginRes> info(HttpServletRequest httpServletRequest) {
         String id = JavaJWT.getId(httpServletRequest);
-        LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(id));
-        if (loginDTO == null) {
+        AuthDTO authDTO = authInfoService.selectUserById(id);
+        if (authDTO == null) {
             throw new BadCredentialsException("user not exist, when get user info");
         }
-        return Res.success(new LoginVO.LoginRes().setUser(loginDTO), "登录成功");
+        return Res.success(new LoginVO.LoginRes().setUser(authDTO), "登录成功");
     }
 
 }

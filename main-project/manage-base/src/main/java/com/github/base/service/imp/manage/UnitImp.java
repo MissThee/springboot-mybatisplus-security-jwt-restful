@@ -1,15 +1,14 @@
 package com.github.base.service.imp.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.github.base.dto.manage.unit.UnitInsertOneDTO;
-import com.github.base.dto.manage.unit.UnitUpdateOneDTO;
-import com.github.common.db.entity.primary.Unit;
-import com.github.base.db.mapper.primary.manage.UnitMapper;
-import com.github.base.service.interf.manage.UnitService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.base.db.mapper.primary.manage.SysUnitMapper;
+import com.github.base.dto.manage.unit.SysUnitInsertOneDTO;
+import com.github.base.dto.manage.unit.SysUnitUpdateOneDTO;
+import com.github.base.service.interf.manage.UnitService;
+import com.github.common.db.entity.primary.SysUnit;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
@@ -25,19 +24,19 @@ import java.util.Map;
  * @since 2019-04-15
  */
 @Service
-public class UnitImp extends ServiceImpl<UnitMapper, Unit> implements UnitService {
+public class UnitImp extends ServiceImpl<SysUnitMapper, SysUnit> implements UnitService {
     private final MapperFacade mapperFacade;
-    private final UnitMapper unitMapper;
+    private final SysUnitMapper unitMapper;
 
     @Autowired
-    public UnitImp(UnitMapper unitMapper, MapperFacade mapperFacade) {
+    public UnitImp(SysUnitMapper unitMapper, MapperFacade mapperFacade) {
         this.unitMapper = unitMapper;
         this.mapperFacade = mapperFacade;
     }
 
     @Override
-    public Long insertOne(UnitInsertOneDTO unitInsertOneDTO) {
-        Unit unit = mapperFacade.map(unitInsertOneDTO, Unit.class);
+    public Long insertOne(SysUnitInsertOneDTO unitInsertOneDTO) {
+        SysUnit unit = mapperFacade.map(unitInsertOneDTO, SysUnit.class);
         unitMapper.insert(unit);
         Long unitId = unit.getId();
         return unitId;
@@ -48,36 +47,44 @@ public class UnitImp extends ServiceImpl<UnitMapper, Unit> implements UnitServic
         if (id == null) {
             return false;
         }
-        Boolean result = unitMapper.updateById(new Unit().setId(id).setIsDelete(true)) > 0;
+        Boolean result = unitMapper.updateById(new SysUnit().setId(id).setIsDelete(true)) > 0;
         return result;
     }
 
     @Override
-    public Boolean updateOne(UnitUpdateOneDTO unitUpdateOneDTO) {
+    public Boolean updateOne(SysUnitUpdateOneDTO unitUpdateOneDTO) {
         //拷贝用户信息，生成Unit对象
-        Unit unit = mapperFacade.map(unitUpdateOneDTO, Unit.class);
+        SysUnit unit = mapperFacade.map(unitUpdateOneDTO, SysUnit.class);
         //更新信息
         Boolean result = unitMapper.updateById(unit) > 0;
         return result;
     }
 
     @Override
-    public Unit selectOne(Long id) {
+    public SysUnit selectOne(Long id) {
         return unitMapper.selectById(id);
     }
 
     @Override
-    public List<Unit> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
-        QueryWrapper<Unit> queryWrapper = new QueryWrapper<>();
+    public List<SysUnit> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
+        QueryWrapper<SysUnit> queryWrapper = new QueryWrapper<>();
         if (!isDelete) {//相较于user和role，unit不能仅显示已删除节点，因为仅已删除的节点不能构建完整的树结构
-            queryWrapper.eq(Unit.IS_DELETE, isDelete);
+            queryWrapper.eq(SysUnit.IS_DELETE, isDelete);
         }
+        queryWrapper.orderBy(true, true, SysUnit.INDEX_NUM);
         if (orderBy != null) {
             for (Map.Entry<String, Boolean> entry : orderBy.entrySet()) {
                 queryWrapper.orderBy(true, entry.getValue(), entry.getKey());
             }
         }
         return unitMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<SysUnit> getListByType(String type) {
+        QueryWrapper<SysUnit> qw = new QueryWrapper<>();
+        qw.eq(SysUnit.TYPE, type);
+        return unitMapper.selectList(qw);
     }
 
     @Override

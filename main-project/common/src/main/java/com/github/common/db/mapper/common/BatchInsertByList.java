@@ -19,7 +19,6 @@ import java.util.List;
  */
 public class BatchInsertByList extends AbstractMethod {
 
-
     @Override
     public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
         KeyGenerator keyGenerator = new NoKeyGenerator();

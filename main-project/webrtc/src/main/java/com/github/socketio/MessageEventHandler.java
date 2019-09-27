@@ -7,8 +7,8 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
-import com.github.base.dto.login.LoginDTO;
-import com.github.base.service.interf.login.LoginService;
+import com.github.base.dto.login.AuthDTO;
+import com.github.base.service.interf.login.AuthInfoService;
 import com.github.base.service.interf.manage.UserService;
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
@@ -29,12 +29,12 @@ public class MessageEventHandler {
     private static Map<String, List<UUID>> userIdUUIDsMap = new ConcurrentHashMap<>();  //存储已登录的<用户id,连接时产生的多个uuid>对应关系
     private static Map<UUID, String> UUIDUserIdMap = new ConcurrentHashMap<>();         //存储已登录的<uuid,用户id>。（仅为方便查询，可直接遍历userIdUUIDsMap，得到对应值）
     private static Map<String, String> userIdNicknameMap = new ConcurrentHashMap<>();   //存储已登录的<用户id,昵称>。（仅为方便查询，可直接查询数据库得到值，但直接数据库读取开销大，尽量做成缓存）
-    private final LoginService loginService;
+    private final AuthInfoService authInfoService;
 
     @Autowired
-    public MessageEventHandler(SocketIOServer server, UserService userService,  LoginService loginService) {
+    public MessageEventHandler(SocketIOServer server, UserService userService,  AuthInfoService authInfoService) {
         socketIoServer = server;
-        this.loginService = loginService;
+        this.authInfoService = authInfoService;
     }
 
     //服务端监听事件。（客户端触发服务端事件）
@@ -42,10 +42,10 @@ public class MessageEventHandler {
     public void connect(SocketIOClient client) {
         log.debug("客户端:  " + client.getSessionId() + "  已连接");
         String userId = JavaJWT.getId(client.getHandshakeData().getSingleUrlParam("token"));
-//        String userId=client.getHandshakeData().getHttpHeaders().get("Authorization");
+//        String userId=client.getHandshakeData().getHttpHeaders().get("token");
         if(userId!=null) {
-            LoginDTO loginDTO = loginService.selectUserById(Integer.parseInt(userId));
-            addUserInfo(loginDTO, client.getSessionId());
+            AuthDTO authDTO = authInfoService.selectUserById(userId);
+            addUserInfo(authDTO, client.getSessionId());
             broadcastUserList();
         }
     }
@@ -133,7 +133,7 @@ public class MessageEventHandler {
 
     //用户列表维护方法
     //在线用户信息更新
-    private void addUserInfo(LoginDTO loginDTO, UUID uuid) {
+    private void addUserInfo(AuthDTO loginDTO, UUID uuid) {
         String userId = String.valueOf(loginDTO.getId());
         String userNickname = loginDTO.getNickname();
         //更新UUIDUserIdMap

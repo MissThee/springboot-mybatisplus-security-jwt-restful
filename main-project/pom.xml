@@ -14,6 +14,7 @@
     <modules>
         <module>common</module>
         <module>manage-base</module>
+        <module>manage-form</module>
         <module>manage-flow</module>
         <module>service-start</module>
         <module>webrtc</module>

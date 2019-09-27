@@ -23,6 +23,11 @@
         </dependency>
         <dependency>
             <groupId>missthee-demo</groupId>
+            <artifactId>manage-form</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>missthee-demo</groupId>
             <artifactId>webrtc</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

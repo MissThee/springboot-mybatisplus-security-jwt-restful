@@ -23,7 +23,6 @@ public class CorsConfig {
         config.addExposedHeader("Authorization");//！！！ 此处不能为*  ！！！
         source.registerCorsConfiguration("/**", config);
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        // 这个顺序很重要，为避免麻烦请设置在最前
         bean.setOrder(0);
         return bean;
     }

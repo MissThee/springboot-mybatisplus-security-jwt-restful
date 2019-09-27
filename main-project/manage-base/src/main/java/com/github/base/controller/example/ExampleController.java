@@ -12,10 +12,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.common.config.security.jwt.JavaJWT;
-import com.github.common.db.entity.primary.User;
+import com.github.common.db.entity.primary.SysUser;
 
 import com.github.common.tool.FileRec;
 import com.github.common.tool.Res;
@@ -125,7 +126,7 @@ public class ExampleController {
     //上传excel转为POJO
     @PostMapping(value = "/upload2")
     public Res fileUpload2(MultipartFile file) throws IOException, NoSuchMethodException, InvalidFormatException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException {
-        List<Object> objects = ExcelImport.excel2POJOList(file.getInputStream(), User.class, new ArrayList<String>() {{
+        List<Object> objects = ExcelImport.excel2POJOList(file.getInputStream(), SysUser.class, new ArrayList<String>() {{
             add("nickname");
             add("username");
         }});
@@ -141,8 +142,10 @@ public class ExampleController {
         private String test4 = "123";
         private String test5 = null;
     }
-    //多数据库事务测试（需改用jta）
+
+    //多数据库事务测试（测试本方法需改用jta，否则找不到事务管理器）
     @GetMapping("/tran/{isOK}")
+    @Transactional(rollbackFor = Exception.class)
     public Res tran(@PathVariable("isOK") String isOK) throws Exception {
         operateAllService.insertAll(isOK.equals("1"));
         return Res.success();

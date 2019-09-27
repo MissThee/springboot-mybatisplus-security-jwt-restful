@@ -42,7 +42,7 @@
         ```java
         @Configuration
         @ConditionalOnProperty(name = "spring.datasource.primary.enable", havingValue = "true")
-        @MapperScan(basePackages = {"com.dic.**.db.mapper.primary"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
+        @MapperScan(basePackages = {"com.github.**.db.mapper.primary"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
         @Slf4j
         public class PrimaryDBConfigAtomikos {
         
@@ -126,7 +126,7 @@
         ```java
         @Configuration
         @ConditionalOnProperty(name = "spring.datasource.secondary.enable", havingValue = "true")
-        @MapperScan(basePackages = {"com.dic.**.db.mapper.secondary"}, sqlSessionTemplateRef = "secondarySqlSessionTemplate")
+        @MapperScan(basePackages = {"com.github.**.db.mapper.secondary"}, sqlSessionTemplateRef = "secondarySqlSessionTemplate")
         @Slf4j
         public class SecondaryDBConfigAtomikos {
         

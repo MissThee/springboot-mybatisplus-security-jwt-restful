@@ -1,10 +1,9 @@
 package com.github.base.service.interf.manage;
 
-import com.github.base.dto.manage.unit.UnitInsertOneDTO;
-import com.github.base.dto.manage.unit.UnitUpdateOneDTO;
-import com.github.common.db.entity.primary.Unit;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.stereotype.Service;
+import com.github.base.dto.manage.unit.SysUnitInsertOneDTO;
+import com.github.base.dto.manage.unit.SysUnitUpdateOneDTO;
+import com.github.common.db.entity.primary.SysUnit;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,18 +16,19 @@ import java.util.List;
  * @author WORK, MT
  * @since 2019-04-15
  */
-public interface UnitService extends IService<Unit> {
+public interface UnitService extends IService<SysUnit> {
 
-    Long insertOne(UnitInsertOneDTO insertOneReq);
+    Long insertOne(SysUnitInsertOneDTO unitInsertOneDTO);
 
     Boolean deleteOne(Long id);
 
     Boolean deleteOnePhysical(Long id);
 
-    Boolean updateOne(UnitUpdateOneDTO updateOneReq);
+    Boolean updateOne(SysUnitUpdateOneDTO unitUpdateOneDTO);
 
-    Unit selectOne(Long id);
+    SysUnit selectOne(Long id);
 
-    List<Unit> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy);
+    List<SysUnit> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy);
 
+    List<SysUnit> getListByType(String type);
 }

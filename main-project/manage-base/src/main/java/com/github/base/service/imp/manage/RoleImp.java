@@ -2,17 +2,17 @@ package com.github.base.service.imp.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.base.dto.manage.role.RoleInsertOneDTO;
-import com.github.base.dto.manage.role.RoleUpdateOneDTO;
-import com.github.base.dto.manage.role.RoleInTableDetailDTO;
-import com.github.base.db.mapper.primary.manage.RoleMapper;
-import com.github.base.db.mapper.primary.manage.RolePermissionMapper;
-import com.github.common.db.entity.primary.Role;
-import com.github.common.db.entity.primary.RolePermission;
+import com.github.base.db.mapper.primary.manage.SysPermissionMapper;
+import com.github.base.db.mapper.primary.manage.SysRoleMapper;
+import com.github.base.db.mapper.primary.manage.SysRolePermissionMapper;
+import com.github.base.dto.manage.role.SysRoleInTableDetailDTO;
+import com.github.base.dto.manage.role.SysRoleInsertOneDTO;
+import com.github.base.dto.manage.role.SysRoleUpdateOneDTO;
 import com.github.base.service.interf.manage.RoleService;
+import com.github.common.db.entity.primary.SysRole;
+import com.github.common.db.entity.primary.SysRolePermission;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,23 +21,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @Service
-@Transactional(rollbackFor = {Exception.class})
-public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleService {
+public class RoleImp extends ServiceImpl<SysRoleMapper, SysRole> implements RoleService {
     private final MapperFacade mapperFacade;
-    private final RoleMapper roleMapper;
-    private final RolePermissionMapper rolePermissionMapper;
+    private final SysRoleMapper roleMapper;
+    private final SysRolePermissionMapper rolePermissionMapper;
+  private final SysPermissionMapper sysPermissionMapper;
 
     @Autowired
-    public RoleImp(RoleMapper roleMapper, MapperFacade mapperFacade, RolePermissionMapper rolePermissionMapper) {
+    public RoleImp(SysRoleMapper roleMapper, MapperFacade mapperFacade, SysRolePermissionMapper rolePermissionMapper, SysPermissionMapper sysPermissionMapper) {
         this.roleMapper = roleMapper;
         this.mapperFacade = mapperFacade;
         this.rolePermissionMapper = rolePermissionMapper;
+        this.sysPermissionMapper = sysPermissionMapper;
     }
 
     @Override
-    public Long insertOne(RoleInsertOneDTO roleInsertOneDTO) {
-        Role role = mapperFacade.map(roleInsertOneDTO, Role.class);
+    public Long insertOne(SysRoleInsertOneDTO roleInsertOneDTO) {
+        SysRole role = mapperFacade.map(roleInsertOneDTO, SysRole.class);
         roleMapper.insert(role);
         Long roleId = role.getId();
         if (roleId != null) {
@@ -51,9 +53,9 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
         if (id == null) {
             return false;
         }
-        QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Role.ID, id);
-        Boolean result = roleMapper.updateById(new Role().setId(id).setIsDelete(true)) > 0;
+        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(SysRole.ID, id);
+        Boolean result = roleMapper.updateById(new SysRole().setId(id).setIsDelete(true)) > 0;
         if (result) {
             updateRolePermission(null, id);
         }
@@ -61,9 +63,9 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
     }
 
     @Override
-    public Boolean updateOne(RoleUpdateOneDTO roleUpdateOneDTO) {
+    public Boolean updateOne(SysRoleUpdateOneDTO roleUpdateOneDTO) {
         //拷贝用户信息，生成Role对象
-        Role role = mapperFacade.map(roleUpdateOneDTO, Role.class);
+        SysRole role = mapperFacade.map(roleUpdateOneDTO, SysRole.class);
         //更新信息
         Boolean result = roleMapper.updateById(role) > 0;
         if (result) {
@@ -73,31 +75,36 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
     }
 
     @Override
-    public RoleInTableDetailDTO selectOne(Long id) {
-        Role role = roleMapper.selectById(id);
-        RoleInTableDetailDTO roleInTableDetailDTO = mapperFacade.map(role, RoleInTableDetailDTO.class);
+    public SysRoleInTableDetailDTO selectOne(Long id) {
+        SysRole sysRole = roleMapper.selectById(id);
+        SysRoleInTableDetailDTO sysRoleInTableDetailDTO = mapperFacade.map(sysRole, SysRoleInTableDetailDTO.class);
+
         List<Long> permissionIdList;
         {//查找权限id集(角色-权限关系表)
             permissionIdList = new ArrayList<>();
             if (id != null) {
-                QueryWrapper<RolePermission> rolePermissionQW = new QueryWrapper<>();
-                rolePermissionQW.eq(RolePermission.ROLE_ID, id);
-                List<RolePermission> rolePermissionList = rolePermissionMapper.selectList(rolePermissionQW);
+                QueryWrapper<SysRolePermission> rolePermissionQW = new QueryWrapper<>();
+                rolePermissionQW.eq(SysRolePermission.ROLE_ID, id);
+                List<SysRolePermission> rolePermissionList = rolePermissionMapper.selectList(rolePermissionQW);
                 rolePermissionList.forEach(e -> permissionIdList.add(e.getPermissionId()));
             }
         }
-        roleInTableDetailDTO.setPermissionIdList(permissionIdList);
-        return roleInTableDetailDTO;
+        sysRoleInTableDetailDTO.setPermissionIdList(permissionIdList);
+        return sysRoleInTableDetailDTO;
     }
 
     @Override
-    public List<Role> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
-        QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Role.IS_DELETE, isDelete);
-        for (Map.Entry<String, Boolean> entry : orderBy.entrySet()) {
-            queryWrapper.orderBy(true, entry.getValue(), entry.getKey());
+    public List<SysRole> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
+        List<SysRole> sysRoleList;
+        {
+            QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq(SysRole.IS_DELETE, isDelete);
+            for (Map.Entry<String, Boolean> entry : orderBy.entrySet()) {
+                queryWrapper.orderBy(true, entry.getValue(), entry.getKey());
+            }
+            sysRoleList = roleMapper.selectList(queryWrapper);
         }
-        return roleMapper.selectList(queryWrapper);
+        return sysRoleList;
     }
 
     @Override
@@ -107,28 +114,28 @@ public class RoleImp extends ServiceImpl<RoleMapper, Role> implements RoleServic
 
     @Override
     public Boolean isExist(String role) {
-        QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Role.ROLE, role);
+        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(SysRole.ROLE, role);
         return roleMapper.selectList(queryWrapper).size() > 0;
     }
 
     @Override
     public Boolean isExistExceptSelf(String role, Long id) {
-        QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Role.ROLE, role)
-                .ne(Role.ID, id);
+        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(SysRole.ROLE, role)
+                .ne(SysRole.ID, id);
         return roleMapper.selectList(queryWrapper).size() > 0;
     }
 
     private void updateRolePermission(List<Long> permissionIdList, Long roleId) {
         //清理关系
-        QueryWrapper<RolePermission> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(RolePermission.ROLE_ID, roleId);
+        QueryWrapper<SysRolePermission> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(SysRolePermission.ROLE_ID, roleId);
         rolePermissionMapper.delete(queryWrapper);
         //插入关系
         if (permissionIdList != null && permissionIdList.size() > 0) {
             for (Long permissionId : permissionIdList) {
-                rolePermissionMapper.insert(new RolePermission().setRoleId(roleId).setPermissionId(permissionId));
+                rolePermissionMapper.insert(new SysRolePermission().setRoleId(roleId).setPermissionId(permissionId));
             }
         }
     }

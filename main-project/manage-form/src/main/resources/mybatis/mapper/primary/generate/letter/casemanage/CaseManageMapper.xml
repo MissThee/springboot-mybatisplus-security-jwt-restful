@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.form.db.mapper.primary.letter.casemanage.CaseManageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.github.common.db.entity.primary.CaseManage">
+        <id column="id" property="id"/>
+        <result column="let_clue_id" property="letClueId"/>
+        <result column="content" property="content"/>
+        <result column="is_need_result_form" property="isNeedResultForm"/>
+        <result column="result_form_limit_date" property="resultFormLimitDate"/>
+        <result column="send_to_sub_dept_id" property="sendToSubDept"/>
+        <result column="state_id" property="stateId"/>
+        <result column="operation_date" property="operationDate"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+    <resultMap id="CaseManageListResDTO" type="com.github.form.models.dto.letter.casemanage.CaseManageListResDTO">
+        <id column="id" property="id"/>
+        <result column="content" property="content"/>
+        <result column="is_need_result_form" property="isNeedResultForm"/>
+        <result column="result_form_limit_date" property="resultFormLimitDate"/>
+        <result column="su_name" property="sendToSubDeptName"/>
+        <result column="state_id" property="stateId"/>
+        <result column="operation_date" property="operationDate"/>
+        <association property="letClue"
+                     javaType="com.github.form.models.dto.letter.casemanage.CaseManageListResDTO$LetClueListResDTO">
+            <result column="lc_id" property="id"/>
+            <result column="lc_reception_time" property="receptionTime"/>
+            <result column="lc_content" property="content"/>
+            <collection property="letDefendantList"
+                        ofType="com.github.form.models.dto.letter.clue.LetClueListResDTO$LetDefendantListResDTO">
+                <result column="d_id" property="id"/>
+                <result column="d_name" property="name"/>
+                <result column="d_company_name" property="companyName"/>
+            </collection>
+        </association>
+    </resultMap>
+
+    <!--优化分页查询-->
+    <select id="selectSimplePage" resultMap="CaseManageListResDTO">
+        SELECT
+        case_manage.id,
+        # case_manage.let_clue_id,
+        case_manage.content,
+        case_manage.is_need_result_form,
+        case_manage.result_form_limit_date,
+        case_manage.send_to_sub_dept_id,
+        sys_unit.name as su_name,
+        case_manage.state_id,
+        case_manage.operation_date,
+        # case_manage.create_date,
+        let_clue.id AS lc_id,
+        let_clue.reception_time AS lc_reception_time,
+        let_clue.content AS lc_content,
+        # let_clue.create_date ,
+        # let_clue.is_processed,
+        let_clue.result_type_id ,
+        # dic_result_type.name AS result_type_name,
+        # let_clue.state_id,
+        # let_clue.is_delete,
+        # let_clue.is_event,
+        let_defendant.id AS d_id,
+        let_defendant.name AS d_name,
+        let_defendant.company_name AS d_company_name
+        # let_defendant.post_name as d_post_name,
+        # let_defendant.job_rank_id as d_job_rank_id
+        FROM
+        case_manage
+        LEFT JOIN let_clue ON case_manage.let_clue_id=let_clue.id
+        LEFT JOIN dic_result_type ON let_clue.result_type_id = dic_result_type.id
+        LEFT JOIN let_clue_defendant ON let_clue.id = let_clue_defendant.clue_id
+        LEFT JOIN let_defendant ON let_clue_defendant.defendant_id = let_defendant.id
+        LEFT JOIN sys_unit ON case_manage.send_to_sub_dept_id = sys_unit.id
+        WHERE
+        case_manage.id IN (SELECT id FROM (
+        # 分页及条件筛选---开始---
+        SELECT
+        distinct case_manage.id
+        FROM
+        case_manage
+        LEFT JOIN let_clue ON case_manage.let_clue_id=let_clue.id
+        LEFT JOIN let_clue_defendant ON let_clue.id = let_clue_defendant.clue_id
+        LEFT JOIN let_defendant ON let_clue_defendant.defendant_id = let_defendant.id
+        WHERE
+        <include refid="where"/>
+        LIMIT #{lineStart},#{pageSize}
+        # 分页及条件筛选---结束---
+        ) for_page)
+        ORDER BY reception_time DESC,id DESC,let_defendant.id
+    </select>
+    <!--分页查询总条数辅助查询-->
+    <select id="selectTotal" resultType="java.lang.Long">
+        SELECT
+        count(distinct case_manage.id) AS total_line
+        FROM
+        case_manage
+        LEFT JOIN let_clue ON case_manage.let_clue_id=let_clue.id
+        LEFT JOIN let_clue_defendant ON let_clue.id = let_clue_defendant.clue_id
+        LEFT JOIN let_defendant ON let_clue_defendant.defendant_id = let_defendant.id
+        WHERE
+        <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        let_clue.is_delete = FALSE
+        <if test=" letClueId != null and letClueId !='' ">
+            AND let_clue.id LIKE CONCAT('%',#{letClueId},'%')
+        </if>
+        <if test=" defendantName != null and defendantName !='' ">
+            AND let_defendant.name LIKE CONCAT('%',#{defendantName},'%')
+        </if>
+        <if test=" content != null and content !='' ">
+            AND content LIKE CONCAT('%',#{content},'%')
+        </if>
+        <if test=" startReceptionTime != null  ">
+            AND reception_time &gt;=DATE(#{startReceptionTime,jdbcType=TIMESTAMP})
+        </if>
+        <if test=" endReceptionTime != null ">
+            AND reception_time &lt;=DATE(#{endReceptionTime,jdbcType=TIMESTAMP})
+        </if>
+        <if test=" leftDayNum != null ">
+            AND now() &lt;= date_add(case_manage.result_form_limit_date, interval #{leftDayNum} day)
+        </if>
+    </sql>
+
+</mapper>

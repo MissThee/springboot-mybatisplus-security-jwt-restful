@@ -2,18 +2,23 @@ package com.github.common.config.db;
 
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.github.common.db.mapper.common.CustomerSqlInjector;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.TransactionIsolationLevel;
+import org.apache.ibatis.transaction.TransactionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.util.StringUtils;
@@ -22,7 +27,7 @@ import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 
 @Configuration
-@ConditionalOnProperty(name = "spring.datasource.primary.enable", havingValue ="true")
+@ConditionalOnProperty(name = "spring.datasource.primary.enable", havingValue = "true")
 @MapperScan(basePackages = {"com.github.**.db.mapper.primary"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
 @Slf4j
 public class PrimaryDBConfig {
@@ -57,6 +62,9 @@ public class PrimaryDBConfig {
         MybatisSqlSessionFactoryBean bean = new MybatisSqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setGlobalConfig(globalConfiguration);
+        bean.setTransactionFactory(new SpringManagedTransactionFactory() {{
+            newTransaction(dataSource, TransactionIsolationLevel.REPEATABLE_READ, true);
+        }});
         try {
             bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/primary/**/*.xml"));
         } catch (FileNotFoundException e) {
@@ -70,4 +78,5 @@ public class PrimaryDBConfig {
     public SqlSessionTemplate sqlSessionTemplate(@Qualifier("primarySqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
+
 }

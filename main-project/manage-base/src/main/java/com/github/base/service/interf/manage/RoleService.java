@@ -1,27 +1,26 @@
 package com.github.base.service.interf.manage;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.github.base.dto.manage.role.RoleInsertOneDTO;
-import com.github.base.dto.manage.role.RoleUpdateOneDTO;
-import com.github.base.dto.manage.role.RoleInTableDetailDTO;
-import com.github.common.db.entity.primary.Role;
-import org.springframework.stereotype.Service;
+import com.github.base.dto.manage.role.SysRoleInTableDetailDTO;
+import com.github.base.dto.manage.role.SysRoleInsertOneDTO;
+import com.github.base.dto.manage.role.SysRoleUpdateOneDTO;
+import com.github.common.db.entity.primary.SysRole;
 
 import javax.management.InvalidAttributeValueException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public interface RoleService extends IService<Role> {
-    Long insertOne(RoleInsertOneDTO insertOneReq);
+public interface RoleService extends IService<SysRole> {
+    Long insertOne(SysRoleInsertOneDTO roleInsertOneDTO);
 
     Boolean deleteOne(Long id);
 
-    Boolean updateOne(RoleUpdateOneDTO roleUpdateOneDTO);
+    Boolean updateOne(SysRoleUpdateOneDTO roleUpdateOneDTO);
 
-    RoleInTableDetailDTO selectOne(Long id);
+    SysRoleInTableDetailDTO selectOne(Long id);
 
-    List<Role> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException;
+    List<SysRole> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException;
 
     Boolean deleteOnePhysical(Long id);
 

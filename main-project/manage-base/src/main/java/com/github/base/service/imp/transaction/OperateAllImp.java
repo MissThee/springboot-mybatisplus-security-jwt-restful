@@ -21,7 +21,6 @@ public class OperateAllImp implements OperateAllService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void insertAll(boolean isOK) throws Exception {
         tableInDb1Mapper.insert(new TableInDb1().setColumn1(1).setColumn2(1));
         tableInDb2Mapper.insert(new TableInDb2().setColumn1(2).setColumn2(2));

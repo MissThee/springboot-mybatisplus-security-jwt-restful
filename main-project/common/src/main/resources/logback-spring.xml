@@ -121,7 +121,7 @@
     </appender>
 
     <springProfile name="dev,default">
-        <logger name="com.github.missthee" level="debug" additivity="true"/>
+        <logger name="com.github" level="debug" additivity="true"/>
         <root level="info">
             <!--控制台输出（彩色）-->
             <appender-ref ref="CONSOLE_COLOR"/>
@@ -142,10 +142,10 @@
         <logger name="com.github.common.config.log" level="${logging.level.com.github.common.config.log:-info}" additivity="true">
             <appender-ref ref="FILE_REQUEST"/>
         </logger>
-        <logger name="com.github.missthee.db.primary" level="${logging.level.com.github.missthee.db.primary:-info}" additivity="true">
+        <logger name="com.github.common.db.primary" level="${logging.level.com.github.common.db.primary:-info}" additivity="true">
             <appender-ref ref="FILE_MYBATIS1"/>
         </logger>
-        <logger name="com.github.missthee.db.secondary" level="${logging.level.com.github.missthee.db.secondary:-info}" additivity="true">
+        <logger name="com.github.common.db.secondary" level="${logging.level.com.github.common.db.secondary:-info}" additivity="true">
             <appender-ref ref="FILE_MYBATIS2"/>
         </logger>
     </springProfile>

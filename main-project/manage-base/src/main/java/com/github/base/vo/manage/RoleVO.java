@@ -1,9 +1,9 @@
 package com.github.base.vo.manage;
 
-import com.github.base.dto.manage.role.RoleInsertOneDTO;
-import com.github.base.dto.manage.role.RoleUpdateOneDTO;
-import com.github.base.dto.manage.role.RoleInTableDetailDTO;
-import com.github.common.db.entity.primary.Role;
+import com.github.base.dto.manage.role.SysRoleInTableDetailDTO;
+import com.github.base.dto.manage.role.SysRoleInsertOneDTO;
+import com.github.base.dto.manage.role.SysRoleUpdateOneDTO;
+import com.github.common.db.entity.primary.SysRole;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,7 +27,7 @@ public class RoleVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("RoleVO.RoleInsertOneDTO")
-    public static class InsertOneReq extends RoleInsertOneDTO {
+    public static class InsertOneReq extends SysRoleInsertOneDTO {
 
     }
 
@@ -54,7 +54,7 @@ public class RoleVO {
     @ApiModel("RoleVO.SelectListRes")
     public static class SelectListRes {
         @ApiModelProperty(value = "角色列表")
-        private List<Role> roleList;
+        private List<SysRole> roleList;
     }
 
     @Data
@@ -70,14 +70,14 @@ public class RoleVO {
     @ApiModel("RoleVO.SelectOneRes")
     public static class SelectOneRes {
         @ApiModelProperty(value = "角色对象")
-        private RoleInTableDetailDTO role;
+        private SysRoleInTableDetailDTO role;
     }
 
     @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
     @ApiModel("RoleVO.UpdateOneReq")
-    public static class UpdateOneReq extends RoleUpdateOneDTO {
+    public static class UpdateOneReq extends SysRoleUpdateOneDTO {
 
     }
 }

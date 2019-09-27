@@ -124,7 +124,7 @@ public class ManaController {
 
     @ApiOperation(value = "流程定义信息-删除多个(同一key)、删除单个(id)")
     @DeleteMapping("processdefinition")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class,value="actTransactionManager")
     public Res deleteProcessDefinitionByKey(@RequestBody @Validated ManaVO.DeleteProcessDefinitionByKeyReq req) throws MyMethodArgumentNotValidException {
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         if (!StringUtils.isEmpty(req.getProcessDefinitionId())) {

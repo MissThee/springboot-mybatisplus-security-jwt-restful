@@ -1,6 +1,6 @@
 package com.github.base.vo.login;
 
-import com.github.base.dto.login.LoginDTO;
+import com.github.base.dto.login.AuthDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -24,6 +24,6 @@ public class LoginVO {
     @ApiModel("LoginVO.LoginRes")
     public static class LoginRes {
         @ApiModelProperty(value = "用户对象")
-        private LoginDTO user;
+        private AuthDTO user;
     }
 }

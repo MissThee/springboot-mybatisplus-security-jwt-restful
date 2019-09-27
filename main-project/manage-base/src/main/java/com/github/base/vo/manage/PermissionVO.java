@@ -1,8 +1,8 @@
 package com.github.base.vo.manage;
 
-import com.github.base.dto.manage.permission.PermissionInsertOneDTO;
-import com.github.base.dto.manage.permission.PermissionUpdateOneDTO;
-import com.github.common.db.entity.primary.Permission;
+import com.github.base.dto.manage.permission.SysPermissionInsertOneDTO;
+import com.github.base.dto.manage.permission.SysPermissionUpdateOneDTO;
+import com.github.common.db.entity.primary.SysPermission;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+
 public class PermissionVO {
     @Data
     @Accessors(chain = true)
@@ -24,7 +25,7 @@ public class PermissionVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("PermissionVO.InsertOneReq")
-    public static class InsertOneReq extends PermissionInsertOneDTO {
+    public static class InsertOneReq extends SysPermissionInsertOneDTO {
 
     }
 
@@ -49,7 +50,7 @@ public class PermissionVO {
     @ApiModel("PermissionVO.SelectOneRes")
     public static class SelectOneRes {
         @ApiModelProperty(value = "权限对象")
-        private Permission permission;
+        private SysPermission permission;
     }
 
     @Data
@@ -76,7 +77,7 @@ public class PermissionVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("PermissionVO.UpdateOneReq")
-    public static class UpdateOneReq extends PermissionUpdateOneDTO {
+    public static class UpdateOneReq extends SysPermissionUpdateOneDTO {
         @ApiModelProperty(value = "权限id")
         private Long id;
     }

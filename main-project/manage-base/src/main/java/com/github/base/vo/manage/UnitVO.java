@@ -1,8 +1,8 @@
 package com.github.base.vo.manage;
 
-import com.github.base.dto.manage.unit.UnitInsertOneDTO;
-import com.github.base.dto.manage.unit.UnitUpdateOneDTO;
-import com.github.common.db.entity.primary.Unit;
+import com.github.base.dto.manage.unit.SysUnitInsertOneDTO;
+import com.github.base.dto.manage.unit.SysUnitUpdateOneDTO;
+import com.github.common.db.entity.primary.SysUnit;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class UnitVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("UnitVO.InsertOneReq")
-    public static class InsertOneReq extends UnitInsertOneDTO {
+    public static class InsertOneReq  extends SysUnitInsertOneDTO {
 
     }
 
@@ -50,7 +50,7 @@ public class UnitVO {
     @ApiModel("UnitVO.SelectOneRes")
     public static class SelectOneRes {
         @ApiModelProperty(value = "组织结构对象")
-        private Unit unit;
+        private SysUnit unit;
     }
 
     @Data
@@ -77,7 +77,8 @@ public class UnitVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("UnitVO.UpdateOneReq")
-    public static class UpdateOneReq extends UnitUpdateOneDTO {
-
+    public static class UpdateOneReq extends SysUnitUpdateOneDTO {
+        @ApiModelProperty(value = "组织结构id")
+        private Long id;
     }
 }

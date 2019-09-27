@@ -1,26 +1,25 @@
 package com.github.base.service.interf.manage;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.github.base.dto.manage.permission.PermissionInsertOneDTO;
-import com.github.base.dto.manage.permission.PermissionUpdateOneDTO;
-import com.github.common.db.entity.primary.Permission;
-import org.springframework.stereotype.Service;
+import com.github.base.dto.manage.permission.SysPermissionInsertOneDTO;
+import com.github.base.dto.manage.permission.SysPermissionUpdateOneDTO;
+import com.github.common.db.entity.primary.SysPermission;
 
 import javax.management.InvalidAttributeValueException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public interface PermissionService extends IService<Permission> {
-    Long insertOne(PermissionInsertOneDTO insertOneReq);
+public interface PermissionService extends IService<SysPermission> {
+    Long insertOne(SysPermissionInsertOneDTO permissionInsertOneDTO);
 
     Boolean deleteOne(Long id);
 
-    Boolean updateOne(PermissionUpdateOneDTO updateOneReq);
+    Boolean updateOne(SysPermissionUpdateOneDTO permissionUpdateOneDTO);
 
-    Permission selectOne(Long id);
+    SysPermission selectOne(Long id);
 
-    List<Permission> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException;
+    List<SysPermission> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException;
 
     Boolean deleteOnePhysical(Long id);
 

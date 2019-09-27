@@ -1,9 +1,9 @@
 package com.github.base.vo.manage;
 
-import com.github.base.dto.manage.user.UserInTableDTO;
-import com.github.base.dto.manage.user.UserInTableDetailDTO;
-import com.github.base.dto.manage.user.UserInsertOneDTO;
-import com.github.base.dto.manage.user.UserUpdateOneDTO;
+import com.github.base.dto.manage.user.SysUserInTableDTO;
+import com.github.base.dto.manage.user.SysUserInTableDetailDTO;
+import com.github.base.dto.manage.user.SysUserInsertOneDTO;
+import com.github.base.dto.manage.user.SysUserUpdateOneDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,7 +27,7 @@ public class UserVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("UserVO.InsertOneReq")
-    public static class InsertOneReq extends UserInsertOneDTO {
+    public static class InsertOneReq extends SysUserInsertOneDTO {
 
     }
 
@@ -45,7 +45,7 @@ public class UserVO {
     public static class SelectListReq {
         @ApiModelProperty(value = "排序条件<列名,是正序>")
         private LinkedHashMap<String, Boolean> orderBy;
-        @ApiModelProperty(value = "true查看已删用户，false查看未删用户")
+        @ApiModelProperty(value = "true查看已删用户，false查看未删用户",example = "false")
         private Boolean isDelete = false;
     }
 
@@ -54,7 +54,7 @@ public class UserVO {
     @ApiModel("UserVO.SelectListRes")
     public static class SelectListRes {
         @ApiModelProperty(value = "用户列表")
-        private List<UserInTableDTO> userInTableBoList;
+        private List<SysUserInTableDTO> userList;
     }
 
     @Data
@@ -67,23 +67,25 @@ public class UserVO {
 
     @Data
     @Accessors(chain = true)
-    @ApiModel("UserVO.SelectOneReq")
+    @ApiModel("UserVO.SelectOneRes")
     public static class SelectOneRes {
         @ApiModelProperty(value = "用户对象")
-        private UserInTableDetailDTO user;
+        private SysUserInTableDetailDTO user;
     }
 
     @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
     @ApiModel("UserVO.UpdateOneReq")
-    public static class UpdateOneReq extends UserUpdateOneDTO {
+    public static class UpdateOneReq extends SysUserUpdateOneDTO {
 
     }
+
     @Data
     @Accessors(chain = true)
     @ApiModel("UserVO.ResetDefaultPasswordReq")
     public static class ResetDefaultPasswordReq {
+        @ApiModelProperty(value = "用户id")
         private Long id;
     }
 }
