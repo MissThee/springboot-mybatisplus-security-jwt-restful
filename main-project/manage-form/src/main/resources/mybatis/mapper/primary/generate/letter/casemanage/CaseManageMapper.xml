@@ -103,22 +103,22 @@
 
     <sql id="where">
         let_clue.is_delete = FALSE
-        <if test=" letClueId != null and letClueId !='' ">
+        <if test=' letClueId != null and letClueId !="" '>
             AND let_clue.id LIKE CONCAT('%',#{letClueId},'%')
         </if>
-        <if test=" defendantName != null and defendantName !='' ">
+        <if test=' defendantName != null and defendantName !="" '>
             AND let_defendant.name LIKE CONCAT('%',#{defendantName},'%')
         </if>
-        <if test=" content != null and content !='' ">
+        <if test=' content != null and content !="" '>
             AND content LIKE CONCAT('%',#{content},'%')
         </if>
-        <if test=" startReceptionTime != null  ">
+        <if test=' startReceptionTime != null  '>
             AND reception_time &gt;=DATE(#{startReceptionTime,jdbcType=TIMESTAMP})
         </if>
-        <if test=" endReceptionTime != null ">
+        <if test=' endReceptionTime != null '>
             AND reception_time &lt;=DATE(#{endReceptionTime,jdbcType=TIMESTAMP})
         </if>
-        <if test=" leftDayNum != null ">
+        <if test=' leftDayNum != null '>
             AND now() &lt;= date_add(case_manage.result_form_limit_date, interval #{leftDayNum} day)
         </if>
     </sql>

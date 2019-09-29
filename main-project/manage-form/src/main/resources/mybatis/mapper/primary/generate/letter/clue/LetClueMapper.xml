@@ -82,19 +82,19 @@
 
     <sql id="where">
         let_clue.is_delete = FALSE
-        <if test=" resultTypeId != null and resultTypeId !='' ">
+        <if test=' resultTypeId != null and resultTypeId !="" '>
             AND result_type_id = #{resultTypeId}
         </if>
-        <if test=" defendantName != null and defendantName !='' ">
+        <if test=' defendantName != null and defendantName !="" '>
             AND let_defendant.name LIKE CONCAT('%',#{defendantName},'%')
         </if>
-        <if test=" content != null and content !='' ">
+        <if test=' content != null and content !="" '>
             AND content LIKE CONCAT('%',#{content},'%')
         </if>
-        <if test=" startReceptionTime != null  ">
+        <if test=' startReceptionTime != null  '>
             AND reception_time &gt;=date(#{startReceptionTime,jdbcType=TIMESTAMP})
         </if>
-        <if test=" endReceptionTime != null ">
+        <if test=' endReceptionTime != null '>
             AND reception_time &lt;=date(#{endReceptionTime,jdbcType=TIMESTAMP})
         </if>
     </sql>
