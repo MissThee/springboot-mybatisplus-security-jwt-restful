@@ -9,7 +9,7 @@
         <result column="content" property="content"/>
         <result column="is_need_result_form" property="isNeedResultForm"/>
         <result column="result_form_limit_date" property="resultFormLimitDate"/>
-        <result column="send_to_sub_dept_id" property="sendToSubDept"/>
+        <result column="send_to_sub_dept_id" property="sendToSubDeptId"/>
         <result column="state_id" property="stateId"/>
         <result column="operation_date" property="operationDate"/>
         <result column="create_date" property="createDate"/>
