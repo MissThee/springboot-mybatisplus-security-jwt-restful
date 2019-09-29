@@ -82,6 +82,8 @@
 
     <sql id="where">
         let_clue.is_delete = FALSE
+# if test=" name = 'a' "> 不正确，'a'会被解析为char类型，需改用"a"；若单引号中字符为多个则解析为string，没问题
+# mybatis是用OGNL表达式来解析的，在OGNL的表达式中，单引号里单个字符会被解析成char类型（多个字符是可以的），java是强类型的，char 和一个string 会导致不等
         <if test=' resultTypeId != null and resultTypeId !="" '>
             AND result_type_id = #{resultTypeId}
         </if>
