@@ -119,7 +119,7 @@
             AND reception_time &lt;=DATE(#{endReceptionTime,jdbcType=TIMESTAMP})
         </if>
         <if test=' leftDayNum != null '>
-            AND case_manage.result_form_limit_date &gt;= date_add(now(), interval #{leftDayNum} day)
+            AND case_manage.result_form_limit_date &lt;= date_add(now(), interval #{leftDayNum} day)
         </if>
     </sql>
 
