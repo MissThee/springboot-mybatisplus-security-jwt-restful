@@ -110,7 +110,7 @@
             AND let_defendant.name LIKE CONCAT('%',#{defendantName},'%')
         </if>
         <if test=' content != null and content !="" '>
-            AND content LIKE CONCAT('%',#{content},'%')
+            AND let_clue.content LIKE CONCAT('%',#{content},'%')
         </if>
         <if test=' startReceptionTime != null  '>
             AND reception_time &gt;=DATE(#{startReceptionTime,jdbcType=TIMESTAMP})
