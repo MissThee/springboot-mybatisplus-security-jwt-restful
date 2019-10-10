@@ -23,7 +23,6 @@ root
 
 ```shell
 root
-│
 ├─dev-project    //[无用]因与本项目无关，就不写注解了
 ├─log_application    //logback日志输出目录，仅在profile为dev时日志会输出到此目录
 │      log_all.log    //以下所有日志的集合
@@ -168,8 +167,6 @@ root
 │  │                      mybatis.cfg.xml
 │  │
 │  ├─manage-base    //系统管理模块（用户相关信息的增删改查）
-│  │  │  pom.xml
-│  │  │
 │  │  └─src
 │  │      └─main
 │  │          ├─java
@@ -286,9 +283,6 @@ root
 │  │                      test.xls
 │  │
 │  ├─manage-flow    //工作流测试模块
-│  │  │  manage-flow.iml
-│  │  │  pom.xml
-│  │  │
 │  │  └─src
 │  │      └─main
 │  │          ├─java
@@ -333,9 +327,6 @@ root
 │  │                  application-flow.properties
 │  │
 │  ├─manage-form    //表单填写模块
-│  │  │  manage-form.iml
-│  │  │  pom.xml
-│  │  │
 │  │  └─src
 │  │      └─main
 │  │          ├─java
@@ -476,9 +467,6 @@ root
 │  │                                          LetClueMapper.xml
 │  │
 │  ├─service-start    //服务启动模块
-│  │  │  pom.xml
-│  │  │  service-start.iml
-│  │  │
 │  │  └─src
 │  │      └─main
 │  │          ├─java
@@ -502,9 +490,6 @@ root
 │  │                  └─webpage    //页面文件
 │  │
 │  └─webrtc    //socketio模块
-│      │  pom.xml
-│      │  webrtc.iml
-│      │
 │      └─src
 │          └─main
 │              ├─java
@@ -522,9 +507,6 @@ root
 │                      application-socketio.properties
 │
 └─mybatis-plus-generator    //代码生成工具，运行后可选择一些生成配置
-    │  mybatis-plus-generator.iml
-    │  pom.xml
-    │
     └─src
         └─main
             └─java
