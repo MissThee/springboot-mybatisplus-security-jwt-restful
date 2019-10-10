@@ -11,39 +11,11 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 27/09/2019 11:27:05
+ Date: 10/10/2019 10:00:29
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for case_manage
--- ----------------------------
-DROP TABLE IF EXISTS `case_manage`;
-CREATE TABLE `case_manage`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `let_clue_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '线索id',
-  `content` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '意见',
-  `is_need_result_form` bit(1) NULL DEFAULT NULL COMMENT '是否要结果件',
-  `result_form_limit_date` datetime(0) NULL DEFAULT NULL COMMENT '要结果件时，限制的时间',
-  `send_to_sub_dept_id` int(11) NULL DEFAULT NULL COMMENT '分派给案管室的1-15编号',
-  `state_id` int(11) NULL DEFAULT 0 COMMENT '办理状态：0-默认未办理，1-已办理，2-已驳回',
-  `operation_date` datetime(0) NULL DEFAULT NULL COMMENT '最后处理时间（手动记录）',
-  `create_date` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间（自动记录）',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '案管列表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of case_manage
--- ----------------------------
-INSERT INTO `case_manage` VALUES (2, '20190059', NULL, NULL, NULL, NULL, 2, NULL, '2019-09-24 11:49:43');
-INSERT INTO `case_manage` VALUES (3, '20190052', '办理意见20190052', b'1', '2019-09-24 17:11:13', 1, 0, '2019-09-24 17:11:40', '2019-09-24 15:20:17');
-INSERT INTO `case_manage` VALUES (5, '20190006', '办理意见20190006', b'1', '2019-09-26 17:11:55', 2, 1, '2019-09-24 17:12:15', '2019-09-24 17:06:44');
-INSERT INTO `case_manage` VALUES (7, '20190004', '办理意见20190004', b'1', '2019-10-02 17:11:55', 4, 1, NULL, '2019-09-24 17:07:39');
-INSERT INTO `case_manage` VALUES (8, '20190061', NULL, NULL, NULL, NULL, 0, NULL, '2019-09-25 11:53:08');
-INSERT INTO `case_manage` VALUES (9, '20190062', NULL, NULL, NULL, NULL, 0, NULL, '2019-09-25 11:54:20');
-INSERT INTO `case_manage` VALUES (10, '20190059', NULL, NULL, NULL, NULL, 0, NULL, '2019-09-25 14:47:04');
 
 -- ----------------------------
 -- Table structure for compute
@@ -160,7 +132,7 @@ CREATE TABLE `dic_result_type`  (
   `index_number` int(11) NULL DEFAULT NULL,
   `is_delete` bit(1) NULL DEFAULT b'0',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '信访信访室处理结果' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '信访信访室处理结果' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dic_result_type
@@ -424,25 +396,6 @@ INSERT INTO `let_clue_area_involved` VALUES ('20190061', 3);
 INSERT INTO `let_clue_area_involved` VALUES ('20190059', 5);
 INSERT INTO `let_clue_area_involved` VALUES ('20190051', 5);
 INSERT INTO `let_clue_area_involved` VALUES ('20190051', 6);
-
--- ----------------------------
--- Table structure for let_clue_creator
--- ----------------------------
-DROP TABLE IF EXISTS `let_clue_creator`;
-CREATE TABLE `let_clue_creator`  (
-  `let_clue_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `user_id` bigint(20) NULL DEFAULT NULL,
-  PRIMARY KEY (`let_clue_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '记录线索的创建人id' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of let_clue_creator
--- ----------------------------
-INSERT INTO `let_clue_creator` VALUES ('20190051', NULL);
-INSERT INTO `let_clue_creator` VALUES ('20190059', NULL);
-INSERT INTO `let_clue_creator` VALUES ('20190060', 19);
-INSERT INTO `let_clue_creator` VALUES ('20190061', 19);
-INSERT INTO `let_clue_creator` VALUES ('20190062', 19);
 
 -- ----------------------------
 -- Table structure for let_clue_defendant
@@ -962,155 +915,6 @@ INSERT INTO `let_defendant_job_type` VALUES ('2019005101', 12);
 INSERT INTO `let_defendant_job_type` VALUES ('2019005101', 13);
 
 -- ----------------------------
--- Table structure for review_clue
--- ----------------------------
-DROP TABLE IF EXISTS `review_clue`;
-CREATE TABLE `review_clue`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `let_clue_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '线索id',
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '文件标题',
-  `bwld_content` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '本委领导批示',
-  `bwld_id` int(11) NULL DEFAULT NULL COMMENT '本委领导id',
-  `bwld_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '本委领导姓名',
-  `bwld_sign` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '本委领导签字',
-  `bwld_date` timestamp(0) NULL DEFAULT NULL COMMENT '本委领导批示时间',
-  `fgfsj_content` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '分管副书记意见',
-  `fgfsj_id` int(11) NULL DEFAULT NULL COMMENT '分管副书记d',
-  `fgfsj_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '分管副书记名字',
-  `fgfsj_sign` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '分管副书记签字',
-  `fgfsj_date` timestamp(0) NULL DEFAULT NULL COMMENT '分管副书记意见时间',
-  `zgcw_content` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '主管常委意见',
-  `zgcw_id` int(11) NULL DEFAULT NULL COMMENT '主管常委id',
-  `zgcw_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '主管常委名字',
-  `zgcw_sign` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '主管常委签字',
-  `zgcw_date` timestamp(0) NULL DEFAULT NULL COMMENT '主管常委意见时间',
-  `scs_content` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '审查室意见',
-  `scs_id` int(11) NULL DEFAULT NULL COMMENT '审查室id',
-  `scs_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '审查室名字',
-  `scs_sign` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '审查室签字',
-  `scs_date` timestamp(0) NULL DEFAULT NULL COMMENT '审查室意见时间',
-  `operator` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '经办人',
-  `operator_phone` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '联系电话',
-  `is_finished` bit(1) NULL DEFAULT b'0' COMMENT '是否已结束',
-  `create_date` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `current_step` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '当前步骤，取total_step中的permission',
-  `total_step` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '总步骤',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 85 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '问题线索处置方案呈批笺' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of review_clue
--- ----------------------------
-INSERT INTO `review_clue` VALUES (22, '20190004', '关于反映张三问题线索的处置方案', '3', 19, 'admin', NULL, '2019-09-24 17:07:38', '4', 19, 'admin', NULL, '2019-09-24 17:07:41', '6', 19, 'admin', NULL, '2019-09-24 17:07:43', '7', 19, 'admin', NULL, '2019-09-24 17:07:45', NULL, NULL, b'1', '2019-08-07 14:24:57', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (23, '20190006', '关于反映张三问题线索的处置方案', '1', 19, 'admin', NULL, '2019-09-24 17:06:41', '3', 19, 'admin', NULL, '2019-09-24 17:06:45', '4', 19, 'admin', NULL, '2019-09-24 17:06:48', '5', 19, 'admin', NULL, '2019-09-24 17:06:52', NULL, NULL, b'1', '2019-08-07 14:25:30', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (24, '20190030', '关于反映753，test问题线索的处置方案', '1', 19, 'admin', NULL, '2019-08-07 15:01:16', '2', 19, 'admin', NULL, '2019-08-07 15:01:20', '3', 19, 'admin', NULL, '2019-08-07 15:01:23', '4', 19, 'admin', NULL, '2019-08-07 15:01:27', NULL, NULL, b'1', '2019-08-07 14:51:40', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (25, '01', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:22', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (26, '02', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:34', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (27, '03', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:35', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (28, '04', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:36', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (29, '05', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:36', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (30, '06', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:37', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (31, '07', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:37', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (32, '08', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:37', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (33, '09', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:38', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (34, '10', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:38', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (35, '11', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:39', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (36, '12', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:39', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (37, '13', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:40', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (38, '14', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:40', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (39, '15', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:41', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (40, '16', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:41', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (41, '17', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:42', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (42, '18', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:42', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (43, '19', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:43', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (44, '20', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:43', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (45, '21', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:44', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (46, '22', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:45', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (47, '23', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:22', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (48, '24', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:34', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (49, '25', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:35', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (50, '26', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:36', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (51, '27', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:36', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (52, '28', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:37', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (53, '29', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:37', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (54, '30', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:37', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (55, '31', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:38', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (56, '32', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:38', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (57, '33', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:39', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (58, '34', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:39', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (59, '35', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:40', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (60, '36', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:40', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (61, '37', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:41', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (62, '38', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:41', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (63, '39', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:42', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (64, '40', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:42', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (65, '41', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:43', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (66, '42', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:43', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (67, '43', '测试数据', '1', 19, 'admin', NULL, '2019-09-24 17:00:20', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:44', 'reviewLetClue:fgfsj', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (68, '44', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:34:45', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (69, '45', '测试数据', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:39:07', 'reviewLetClue:bwld', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (70, '46', '测试数据', '123', 20, 'test1', NULL, '2019-09-19 11:13:13', '123', 20, 'test1', NULL, '2019-09-19 11:13:16', '1', 19, 'admin', NULL, '2019-09-24 17:03:18', NULL, NULL, NULL, NULL, NULL, NULL, NULL, b'0', '2019-08-08 08:39:24', 'reviewLetClue:scs', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (71, '47', '测试数据', '123', 20, 'test1', NULL, '2019-09-19 11:13:09', '1', 19, 'admin', NULL, '2019-09-24 16:17:56', '1', 19, 'admin', NULL, '2019-09-24 16:52:03', '345', 19, 'admin', NULL, '2019-09-24 16:52:28', NULL, NULL, b'1', '2019-08-08 08:39:24', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (72, '48', '测试数据', '124', 19, 'admin', NULL, '2019-09-18 14:19:15', '134', 19, 'admin', NULL, '2019-09-18 14:19:17', '1', 20, 'test1', NULL, '2019-09-19 09:00:34', '123', 20, 'test1', NULL, '2019-09-19 17:42:17', NULL, NULL, b'1', '2019-08-08 08:39:24', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (73, '49', '测试数据', '123', 19, 'admin', NULL, '2019-09-18 14:19:11', '123', 20, 'test1', NULL, '2019-09-19 08:52:48', '123', 20, 'test1', NULL, '2019-09-19 08:52:50', '123', 20, 'test1', NULL, '2019-09-19 08:52:54', NULL, NULL, b'1', '2019-08-08 08:39:24', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (74, '50', '测试数据', '31', 19, 'admin', NULL, '2019-09-18 14:10:27', '31', 19, 'admin', NULL, '2019-09-18 14:10:30', '13', 19, 'admin', NULL, '2019-09-18 14:10:51', '123', 20, 'test1', NULL, '2019-09-19 08:52:44', NULL, NULL, b'1', '2019-08-08 08:39:25', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (75, '51', '测试数据', '1', 19, 'admin', NULL, '2019-09-18 10:56:57', '1', 19, 'admin', NULL, '2019-09-18 10:57:42', '1', 19, 'admin', NULL, '2019-09-18 14:10:20', '1', 19, 'admin', NULL, '2019-09-18 14:10:23', NULL, NULL, b'1', '2019-08-08 08:39:25', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (76, '52', '测试数据', '111', 19, 'admin', NULL, '2019-08-22 16:05:23', 'test2', 19, 'admin', NULL, '2019-09-18 10:42:02', 'test3', 19, 'admin', NULL, '2019-09-18 10:42:07', 'test4', 19, 'admin', NULL, '2019-09-18 10:42:12', NULL, NULL, b'1', '2019-08-08 08:39:25', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (77, '53', '测试数据', '1', 19, 'admin', NULL, '2019-08-22 16:05:32', '123123', 19, 'admin', NULL, '2019-08-22 16:05:37', '1', 19, 'admin', NULL, '2019-09-18 09:12:01', '3', 19, 'admin', NULL, '2019-09-18 09:12:03', NULL, NULL, b'1', '2019-08-08 08:39:25', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (78, '53', '测试数据', '1', 19, 'admin', NULL, '2019-08-22 16:05:32', '123123', 19, 'admin', NULL, '2019-08-22 16:05:37', '1', 19, 'admin', NULL, '2019-09-18 09:12:01', '3', 19, 'admin', NULL, '2019-09-18 09:12:03', NULL, NULL, b'1', '2019-08-08 08:39:25', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (79, '53', '测试数据', '1', 19, 'admin', NULL, '2019-08-22 16:05:32', '123123', 19, 'admin', NULL, '2019-08-22 16:05:37', '1', 19, 'admin', NULL, '2019-09-18 09:12:01', '3', 19, 'admin', NULL, '2019-09-18 09:12:03', NULL, NULL, b'1', '2019-08-08 08:39:25', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (80, '53', '测试数据', '1', 19, 'admin', NULL, '2019-08-22 16:05:32', '123123', 19, 'admin', NULL, '2019-08-22 16:05:37', '1', 19, 'admin', NULL, '2019-09-18 09:12:01', '3', 19, 'admin', NULL, '2019-09-18 09:12:03', NULL, NULL, b'1', '2019-08-08 08:39:25', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (81, '53', '测试数据', '1', 19, 'admin', NULL, '2019-08-22 16:05:32', '123123', 19, 'admin', NULL, '2019-08-22 16:05:37', '1', 19, 'admin', NULL, '2019-09-18 09:12:01', '3', 19, 'admin', NULL, '2019-09-18 09:12:03', NULL, NULL, b'1', '2019-08-08 08:39:25', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (82, '20190059', '关于反映11问题线索的处置方案', '1', 19, 'admin', NULL, '2019-09-24 11:49:38', '1', 19, 'admin', NULL, '2019-09-24 11:49:42', '1', 19, 'admin', NULL, '2019-09-24 11:49:47', '1', 19, 'admin', NULL, '2019-09-24 11:49:49', NULL, NULL, b'1', '2019-09-24 11:49:00', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (83, '20190052', '关于反映三只松鼠4，test2问题线索的处置方案', '1', 19, 'admin', NULL, '2019-09-24 15:20:17', '2', 19, 'admin', NULL, '2019-09-24 15:20:19', '3', 19, 'admin', NULL, '2019-09-24 15:20:21', '4', 19, 'admin', NULL, '2019-09-24 15:20:23', NULL, NULL, b'1', '2019-09-24 15:18:48', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-INSERT INTO `review_clue` VALUES (84, '20190059', '关于反映22问题线索的处置方案', '1', 19, 'admin', NULL, '2019-09-25 14:47:04', '2', 19, 'admin', NULL, '2019-09-25 14:47:07', '3', 19, 'admin', NULL, '2019-09-25 14:47:10', '4', 19, 'admin', NULL, '2019-09-25 14:47:12', NULL, NULL, b'1', '2019-09-25 14:42:27', '', '[{\"param\":[\"content\"],\"name\":\"本委领导批示\",\"permission\":\"reviewLetClue:bwld\"},{\"param\":[\"content\"],\"name\":\"分管副书记意见\",\"permission\":\"reviewLetClue:fgfsj\"},{\"param\":[\"content\"],\"name\":\"主管常委意见\",\"permission\":\"reviewLetClue:zgcw\"},{\"param\":[\"content\"],\"name\":\"审查室意见\",\"permission\":\"reviewLetClue:scs\"}]');
-
--- ----------------------------
--- Table structure for review_clue_user_history
--- ----------------------------
-DROP TABLE IF EXISTS `review_clue_user_history`;
-CREATE TABLE `review_clue_user_history`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `review_id` bigint(20) NULL DEFAULT NULL,
-  `user_id` bigint(20) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '记录用户操作过的审批' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of review_clue_user_history
--- ----------------------------
-INSERT INTO `review_clue_user_history` VALUES (1, 71, 20);
-INSERT INTO `review_clue_user_history` VALUES (2, 70, 20);
-INSERT INTO `review_clue_user_history` VALUES (3, 70, 20);
-INSERT INTO `review_clue_user_history` VALUES (5, 72, 20);
-INSERT INTO `review_clue_user_history` VALUES (6, 82, 19);
-INSERT INTO `review_clue_user_history` VALUES (7, 82, 19);
-INSERT INTO `review_clue_user_history` VALUES (8, 82, 19);
-INSERT INTO `review_clue_user_history` VALUES (9, 82, 19);
-INSERT INTO `review_clue_user_history` VALUES (10, 83, 19);
-INSERT INTO `review_clue_user_history` VALUES (11, 83, 19);
-INSERT INTO `review_clue_user_history` VALUES (12, 83, 19);
-INSERT INTO `review_clue_user_history` VALUES (13, 83, 19);
-INSERT INTO `review_clue_user_history` VALUES (14, 71, 19);
-INSERT INTO `review_clue_user_history` VALUES (15, 71, 19);
-INSERT INTO `review_clue_user_history` VALUES (16, 71, 19);
-INSERT INTO `review_clue_user_history` VALUES (17, 67, 19);
-INSERT INTO `review_clue_user_history` VALUES (18, 70, 19);
-INSERT INTO `review_clue_user_history` VALUES (19, 23, 19);
-INSERT INTO `review_clue_user_history` VALUES (20, 23, 19);
-INSERT INTO `review_clue_user_history` VALUES (21, 23, 19);
-INSERT INTO `review_clue_user_history` VALUES (22, 23, 19);
-INSERT INTO `review_clue_user_history` VALUES (23, 23, 19);
-INSERT INTO `review_clue_user_history` VALUES (24, 22, 19);
-INSERT INTO `review_clue_user_history` VALUES (25, 22, 19);
-INSERT INTO `review_clue_user_history` VALUES (26, 22, 19);
-INSERT INTO `review_clue_user_history` VALUES (27, 22, 19);
-INSERT INTO `review_clue_user_history` VALUES (28, 84, 19);
-INSERT INTO `review_clue_user_history` VALUES (29, 84, 19);
-INSERT INTO `review_clue_user_history` VALUES (30, 84, 19);
-INSERT INTO `review_clue_user_history` VALUES (31, 84, 19);
-
--- ----------------------------
 -- Table structure for stuff
 -- ----------------------------
 DROP TABLE IF EXISTS `stuff`;
@@ -1219,13 +1023,13 @@ CREATE TABLE `sys_role`  (
 INSERT INTO `sys_role` VALUES (1, '角色1', 'role1', b'1', b'0');
 INSERT INTO `sys_role` VALUES (2, '角色2', 'role2', b'1', b'0');
 INSERT INTO `sys_role` VALUES (3, '角色3', 'role3', b'1', b'0');
-INSERT INTO `sys_role` VALUES (4, '角色', 'role', b'1', b'0');
+INSERT INTO `sys_role` VALUES (4, '啊', 'role', b'1', b'0');
 INSERT INTO `sys_role` VALUES (5, '角色4', 'role4', b'1', b'1');
 INSERT INTO `sys_role` VALUES (6, '角色4', '角色4', b'1', b'0');
 INSERT INTO `sys_role` VALUES (7, '角色5', '角色5', b'1', b'0');
 INSERT INTO `sys_role` VALUES (8, '角色6', '角色6', b'1', b'1');
 INSERT INTO `sys_role` VALUES (9, '修改角色测试1', 'rt1', b'1', b'1');
-INSERT INTO `sys_role` VALUES (10, '线索审批角色', 'review:letClue', b'0', b'0');
+INSERT INTO `sys_role` VALUES (10, 'test1', 'review:letClue', b'1', b'0');
 INSERT INTO `sys_role` VALUES (11, '', '', b'1', b'1');
 
 -- ----------------------------
@@ -1254,34 +1058,38 @@ INSERT INTO `sys_role_permission` VALUES (1, 19);
 INSERT INTO `sys_role_permission` VALUES (1, 18);
 INSERT INTO `sys_role_permission` VALUES (1, 20);
 INSERT INTO `sys_role_permission` VALUES (1, 17);
-INSERT INTO `sys_role_permission` VALUES (10, 2);
-INSERT INTO `sys_role_permission` VALUES (10, 7);
-INSERT INTO `sys_role_permission` VALUES (10, 3);
-INSERT INTO `sys_role_permission` VALUES (10, 19);
-INSERT INTO `sys_role_permission` VALUES (10, 18);
-INSERT INTO `sys_role_permission` VALUES (10, 20);
-INSERT INTO `sys_role_permission` VALUES (10, 17);
 INSERT INTO `sys_role_permission` VALUES (3, 1);
 INSERT INTO `sys_role_permission` VALUES (3, 28);
 INSERT INTO `sys_role_permission` VALUES (3, 2);
 INSERT INTO `sys_role_permission` VALUES (3, 7);
 INSERT INTO `sys_role_permission` VALUES (3, 6);
 INSERT INTO `sys_role_permission` VALUES (3, 3);
+INSERT INTO `sys_role_permission` VALUES (4, 60);
 INSERT INTO `sys_role_permission` VALUES (4, 1);
 INSERT INTO `sys_role_permission` VALUES (4, 28);
 INSERT INTO `sys_role_permission` VALUES (4, 2);
 INSERT INTO `sys_role_permission` VALUES (4, 7);
 INSERT INTO `sys_role_permission` VALUES (4, 6);
 INSERT INTO `sys_role_permission` VALUES (4, 3);
-INSERT INTO `sys_role_permission` VALUES (4, 60);
 INSERT INTO `sys_role_permission` VALUES (4, 27);
-INSERT INTO `sys_role_permission` VALUES (4, 11);
-INSERT INTO `sys_role_permission` VALUES (4, 61);
 INSERT INTO `sys_role_permission` VALUES (4, 16);
 INSERT INTO `sys_role_permission` VALUES (4, 19);
 INSERT INTO `sys_role_permission` VALUES (4, 18);
 INSERT INTO `sys_role_permission` VALUES (4, 20);
 INSERT INTO `sys_role_permission` VALUES (4, 17);
+INSERT INTO `sys_role_permission` VALUES (10, 60);
+INSERT INTO `sys_role_permission` VALUES (10, 1);
+INSERT INTO `sys_role_permission` VALUES (10, 28);
+INSERT INTO `sys_role_permission` VALUES (10, 2);
+INSERT INTO `sys_role_permission` VALUES (10, 7);
+INSERT INTO `sys_role_permission` VALUES (10, 6);
+INSERT INTO `sys_role_permission` VALUES (10, 3);
+INSERT INTO `sys_role_permission` VALUES (10, 11);
+INSERT INTO `sys_role_permission` VALUES (10, 16);
+INSERT INTO `sys_role_permission` VALUES (10, 19);
+INSERT INTO `sys_role_permission` VALUES (10, 18);
+INSERT INTO `sys_role_permission` VALUES (10, 20);
+INSERT INTO `sys_role_permission` VALUES (10, 17);
 
 -- ----------------------------
 -- Table structure for sys_signature

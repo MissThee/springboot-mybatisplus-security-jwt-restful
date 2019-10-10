@@ -7,7 +7,6 @@ import com.github.common.tool.SimplePageInfo;
 import com.github.form.common.Constants;
 import com.github.form.common.EnumStuffRelationType;
 import com.github.form.db.mapper.primary.letter.*;
-import com.github.form.db.mapper.primary.letter.casemanage.LetClueCreatorMapper;
 import com.github.form.db.mapper.primary.letter.clue.*;
 import com.github.form.models.dto.LetFileResDTO;
 import com.github.form.models.dto.letter.clue.*;
@@ -48,9 +47,8 @@ public class LetClueImp extends ServiceImpl<LetClueMapper, LetClue> implements L
     private final LetClueIllegalBehaviorMapper letClueIllegalBehaviorMapper;
     private final LetClueAreaInvolvedMapper letClueAreaInvolvedMapper;
     private final LetClueIdBuilder letClueIdBuilder;
-    private final LetClueCreatorMapper letClueCreatorMapper;
 
-    public LetClueImp(MapperFacade mapperFacade, LetClueMapper letClueMapper, LetClueSourceMapper letClueSourceMapper, LetDefendantMapper letDefendantMapper, LetClueDefendantMapper letClueDefendantMapper, LetDefendantJobTypeMapper letDefendantJobTypeMapper, StuffMapper stuffMapper, LetClueIllegalBehaviorMapper letClueIllegalBehaviorMapper, LetClueAreaInvolvedMapper letClueAreaInvolvedMapper, LetClueIdBuilder letClueIdBuilder, LetClueCreatorMapper letClueCreatorMapper) {
+    public LetClueImp(MapperFacade mapperFacade, LetClueMapper letClueMapper, LetClueSourceMapper letClueSourceMapper, LetDefendantMapper letDefendantMapper, LetClueDefendantMapper letClueDefendantMapper, LetDefendantJobTypeMapper letDefendantJobTypeMapper, StuffMapper stuffMapper, LetClueIllegalBehaviorMapper letClueIllegalBehaviorMapper, LetClueAreaInvolvedMapper letClueAreaInvolvedMapper, LetClueIdBuilder letClueIdBuilder) {
         this.mapperFacade = mapperFacade;
         this.letClueMapper = letClueMapper;
         this.letClueSourceMapper = letClueSourceMapper;
@@ -61,7 +59,6 @@ public class LetClueImp extends ServiceImpl<LetClueMapper, LetClue> implements L
         this.letClueIllegalBehaviorMapper = letClueIllegalBehaviorMapper;
         this.letClueAreaInvolvedMapper = letClueAreaInvolvedMapper;
         this.letClueIdBuilder = letClueIdBuilder;
-        this.letClueCreatorMapper = letClueCreatorMapper;
     }
 
     @Override
@@ -434,12 +431,7 @@ public class LetClueImp extends ServiceImpl<LetClueMapper, LetClue> implements L
                 }
             }
         }
-        //TODO 截止
-        try {
-            letClueCreatorMapper.insert(new LetClueCreator().setLetClueId(letClueId).setUserId(letClueUpdateDTO.getCreatorId()));
-        } catch (Exception e) {
-            log.error("线索添加创建人失败");
-        }
+
         return letClueId;
     }
 

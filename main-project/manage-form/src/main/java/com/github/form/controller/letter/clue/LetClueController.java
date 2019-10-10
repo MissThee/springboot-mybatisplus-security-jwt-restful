@@ -13,7 +13,6 @@ import com.github.form.models.dto.letter.clue.LetClueCreateDTO;
 import com.github.form.models.dto.letter.clue.LetClueUpdateDTO;
 import com.github.form.service.imp.letter.clue.LetClueImp;
 import com.github.form.service.interf.letter.clue.LetClueService;
-import com.github.form.service.interf.letter.review.ReviewClueService;
 import com.github.form.models.vo.letter.clue.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,13 +41,11 @@ import java.io.UnsupportedEncodingException;
 @RequestMapping("letClue")
 @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'letClue') or hasPermission(null,'letClueType'))")
 public class LetClueController {
-    private final ReviewClueService reviewClueService;
     private final LetClueService letClueService;
     private final MapperFacade mapperFacade;
 
-    public LetClueController(LetClueImp letClueService, ReviewClueService reviewClueService, MapperFacade mapperFacade) {
+    public LetClueController(LetClueImp letClueService, MapperFacade mapperFacade) {
         this.letClueService = letClueService;
-        this.reviewClueService = reviewClueService;
         this.mapperFacade = mapperFacade;
     }
 
@@ -110,7 +107,6 @@ public class LetClueController {
     public Res classify(HttpServletRequest httpServletRequest, @RequestBody LetClueUpdateResultTypeVO letClueUpdateResultTypeVO) throws Exception {
         boolean result = true;
         if (EnumLetClueResultType.AnGuan.getValue().equals(letClueUpdateResultTypeVO.getResultTypeId())) {//固定值，类型为AnGuan时创建呈批笺
-            result = reviewClueService.createOne(JavaJWT.getId(httpServletRequest), letClueUpdateResultTypeVO.getId());
         }
         if (result) {
             result = letClueService.updateLetClueResultType(letClueUpdateResultTypeVO.getId(), letClueUpdateResultTypeVO.getResultTypeId());
