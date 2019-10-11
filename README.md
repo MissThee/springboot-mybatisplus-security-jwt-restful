@@ -521,6 +521,7 @@ root
 2. 使用`\main-project\service-start\src\main\resources\static`目录中`mybatis_test_db.sql`与`mybatis_test_db_2.sql`文件可导入项目所需基础表到mysql数据库；
 3. 运行`\main-project\service-start\src\main\java\com\github\WebApplication.java`（若需修改端口号，修改`application-localtest.properties`即可，或自行寻找配置字段修改，均为springboot配置方法，各个子项目配置文件由`service-start`启动模块中`application.properties`的`spring.profiles.include`包含）
 4. 浏览器访问`http:\\localhost:8098\webpage\index.html`，账号admin，密码123
+5. api文档查看，`http://localhost:8098/doc.html`或`http://localhost:8098/swagger-ui.html`
 
 测试socket.io：
 1. socketio尚未在以上页面中进行使用，仅有独立的交互测试demo。

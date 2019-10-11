@@ -17,10 +17,10 @@ import org.flowable.variable.api.history.HistoricVariableInstanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 @Api(tags = "工作流-历史")
 @RestController

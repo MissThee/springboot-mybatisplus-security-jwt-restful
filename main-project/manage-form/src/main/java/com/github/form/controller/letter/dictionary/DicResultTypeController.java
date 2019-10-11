@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import java.util.List;
  * @author DESKTOP-3Q631SR,WLW
  * @since 2019-06-28
  */
+@ApiIgnore
 @Api(tags = "数据字典-处理类型")
 @RestController
 @RequestMapping("dic/resulttype")

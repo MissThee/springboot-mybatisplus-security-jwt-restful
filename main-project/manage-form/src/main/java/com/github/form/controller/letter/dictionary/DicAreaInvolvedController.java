@@ -15,10 +15,11 @@ import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
-
+@ApiIgnore
 @Api(tags = "数据字典-涉及领域管理")
 @ApiSort(1105)
 @RestController

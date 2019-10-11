@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,7 @@ import java.io.UnsupportedEncodingException;
  * @author DESKTOP-3Q631SR,WLW
  * @since 2019-06-05
  */
+@ApiIgnore
 @Api(tags = "信访表单")
 @RestController
 @RequestMapping("letClue")

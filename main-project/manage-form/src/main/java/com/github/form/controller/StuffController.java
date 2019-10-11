@@ -8,11 +8,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.naming.SizeLimitExceededException;
 import java.io.File;
 import java.io.IOException;
 
+@ApiIgnore
 @RequestMapping("/stuff")
 public class StuffController {
     //上传文件
