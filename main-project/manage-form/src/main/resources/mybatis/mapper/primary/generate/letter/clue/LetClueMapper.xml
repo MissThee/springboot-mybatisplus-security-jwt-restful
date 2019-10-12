@@ -63,10 +63,11 @@
         LEFT JOIN let_defendant ON let_clue_defendant.defendant_id = let_defendant.id
         WHERE
         <include refid="where"/>
+        ORDER BY id DESC,let_defendant.id
         LIMIT #{lineStart},#{pageSize}
         # 分页及条件筛选---结束---
         ) for_page)
-        ORDER BY reception_time DESC,id DESC,let_defendant.id
+        ORDER BY id DESC,let_defendant.id
     </select>
     <!--分页查询总条数辅助查询-->
     <select id="selectTotal" resultType="java.lang.Long">
