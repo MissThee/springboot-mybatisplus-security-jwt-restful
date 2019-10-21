@@ -63,7 +63,7 @@
         LEFT JOIN let_defendant ON let_clue_defendant.defendant_id = let_defendant.id
         WHERE
         <include refid="where"/>
-        ORDER BY id DESC,let_defendant.id
+        ORDER BY id DESC
         LIMIT #{lineStart},#{pageSize}
         # 分页及条件筛选---结束---
         ) for_page)

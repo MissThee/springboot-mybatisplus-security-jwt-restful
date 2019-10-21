@@ -267,7 +267,7 @@ root
 │  │          │              │      └─transaction
 │  │          │              │              OperateAllService.java
 │  │          │              │
-│  │          │              └─vo    //项目中使用这些实体类，在controller、前端间传输数据
+│  │          │              └─vo    //项目中使用这些实体类，在controller、前端间传输数据。使用VO也是为了能让swagger2生成的接口文档中，接收值与返回值结构能更详细，但缺点就是需要写大量的VO，并且VO不能重名。
 │  │          │                  ├─login
 │  │          │                  │      LoginVO.java
 │  │          │                  │
@@ -515,7 +515,7 @@ root
 
 ```
 
-## 使用
+## 快速部署运行
 主要管理功能测试：
 1. 克隆本项目到本地
 2. 使用`\main-project\service-start\src\main\resources\static`目录中`mybatis_test_db.sql`与`mybatis_test_db_2.sql`文件可导入项目所需基础表到mysql数据库；
