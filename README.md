@@ -1,9 +1,9 @@
 # 简介
-> 基于RBAC管理系统，基础功能demo，集成了前端页面  
-> `后端`springboot提供restful接口  
-> `前端`vue、elementui、axios构建交互页面  
-> `身份验证/访问权限`使用jwt与spring-security结合实现（旧版为使用shiro但shiro的注解不够灵活，改用security）   
->
+> 基于RBAC管理系统，基础功能demo，集成了前端页面。  
+> `后端`springboot提供restful接口。其中`身份验证/访问权限`使用jwt与spring-security结合实现（旧版使用shiro，但其注解不够灵活，改用security）  
+> `前端`vue、elementui、axios构建交互页面。[图片预览](https://github.com/MissThee/springboot-mybatisplus-security-jwt-restful/tree/dev-all/pic)  
+>    
+
 (原`springboot-mybatis-shiro-jwt-restful`改为分支`shiro-demo`)
 ## 项目结构总览
 ```shell
