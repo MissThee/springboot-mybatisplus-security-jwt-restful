@@ -38,6 +38,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.function.Supplier;
 
 
 @ApiIgnore
@@ -173,32 +174,15 @@ public class ExampleController {
     @GetMapping("a/{v}")
     public Mono<Integer> a(@PathVariable(value = "v") String v) {
         log.info("开始");
-        Mono<Integer> mono = Mono.fromSupplier(() -> doSomeThing(v));
+        Mono<Integer> mono = Mono.fromSupplier(new Supplier<Integer>() {
+            @Override
+            public Integer get() {
+                return doSomeThing(v);
+            }
+        });
+        Mono<Integer> mono1 = Mono.just(doSomeThing(v));
         log.info("结束");
         return mono;
-    }
-
-    @GetMapping("a1/{v}")
-    public Integer a1(@PathVariable(value = "v") String v) {
-        log.info("开始");
-        Integer someThing = doSomeThing(v);
-        log.info("结束");
-        return someThing;
-    }
-
-    @GetMapping("a2/{v}")
-    public Integer a2(@PathVariable(value = "v") String v) {
-        log.info("开始");
-        Callable<Integer> callable = () -> doSomeThing(v);
-        FutureTask<Integer> futureTask = new FutureTask<>(callable);
-        new Thread(futureTask).start();
-        log.info("结束");
-        try {
-            return futureTask.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private Integer doSomeThing(String v) {
