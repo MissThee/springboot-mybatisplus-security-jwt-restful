@@ -148,11 +148,17 @@ public class MybatisPlusGen {
             dsc.setUrl(properties.getProperty(propertiesKeyPrefix + "url"));
         }
         mpg.setDataSource(dsc);
-        File file = new File(projectPath + "/" + subProjectName + "/src/main/java/com");
+        if (!new File(projectPath + "/" + subProjectName + "/src/main/java/com").exists()) {
+            if (!new File(projectPath + "/" + subProjectName + "/src/main/java/com").mkdirs()) {
+                System.out.println("创建目录失败，无法在指定子项目中，创建com文件夹");
+                return;
+            }
+        }
+        File file = new File(projectPath + "/" + subProjectName + "/src/main/java");
         File packageName = Objects.requireNonNull(file.listFiles())[0];
         // 包配置
         PackageConfig pc = new PackageConfig()
-                .setParent("com." + packageName.getName() + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName))
+                .setParent(packageName.getName() + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName))
                 .setEntity("db.entity." + dbSelect + "." + functionName)
                 .setMapper("db.mapper." + dbSelect + "." + functionName)
                 .setService("service.interf" + "." + functionName)
