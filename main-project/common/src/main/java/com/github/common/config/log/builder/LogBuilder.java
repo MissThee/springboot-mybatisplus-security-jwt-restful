@@ -1,12 +1,12 @@
 package com.github.common.config.log.builder;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import springfox.documentation.spring.web.json.Json;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +18,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LogBuilder {
-
+    private static ObjectMapper mapper=new ObjectMapper(){{
+        configure(SerializationFeature.INDENT_OUTPUT, false); //格式化输出，true就是json格式化，false就是输出一行
+        configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true); //键按自然顺序输出
+        setSerializationInclusion(JsonInclude.Include.ALWAYS);    //忽略POJO中属性为空的字段
+    }};
     public static String requestLogBuilder(HttpServletRequest request, ProceedingJoinPoint joinPoint, Exception exception, Map<String, Object> extractParamMap) {
         String headLabel = "REQ";
         StringBuilder stringBuilder = new StringBuilder();
@@ -33,7 +37,7 @@ public class LogBuilder {
             Object[] argsObj = joinPoint.getArgs();
             List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse || e instanceof HttpHeaders)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
             try {
-                stringBuilder.append(paramFormatter("ARGS[J]",  JSONArray.toJSONString(argsObjList)));
+                stringBuilder.append(paramFormatter("ARGS[J]", mapper.writeValueAsString(argsObjList)));
             } catch (Exception e) {
                 stringBuilder.append(paramFormatter("ARGS", argsObjList));
             }
@@ -105,7 +109,7 @@ public class LogBuilder {
                 Object value = GetterAndSetter.invokeGetMethod(returnObj, field.getName());
                 String valueStr;
                 try {
-                    valueStr = JSON.toJSONString(value);
+                    valueStr = mapper.writeValueAsString(value);
                 } catch (Exception ignord) {
                     valueStr = String.valueOf(value);
                 }

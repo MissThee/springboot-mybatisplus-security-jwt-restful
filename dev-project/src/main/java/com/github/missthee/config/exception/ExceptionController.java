@@ -1,6 +1,5 @@
 package com.github.missthee.config.exception;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.missthee.config.log.builder.LogBuilder;
 import com.github.missthee.tool.Res;
 import lombok.extern.slf4j.Slf4j;
