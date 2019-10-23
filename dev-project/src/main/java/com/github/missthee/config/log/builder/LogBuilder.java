@@ -3,14 +3,26 @@ package com.github.missthee.config.log.builder;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -18,11 +30,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LogBuilder {
-    private static ObjectMapper mapper=new ObjectMapper(){{
-        configure(SerializationFeature.INDENT_OUTPUT, false); //格式化输出，true就是json格式化，false就是输出一行
-        configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true); //键按自然顺序输出
-        setSerializationInclusion(JsonInclude.Include.ALWAYS);    //忽略POJO中属性为空的字段
-    }};
+    private static ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
+            .findModulesViaServiceLoader(true)
+            .serializerByType(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .deserializerByType(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .serializerByType(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+            .deserializerByType(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+            .serializerByType(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern("HH:mm:ss")))
+            .deserializerByType(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern("HH:mm:ss"))) .build()
+            .configure(SerializationFeature.INDENT_OUTPUT, false) //格式化输出，true就是json格式化，false就是输出一行
+            .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true) //键按自然顺序输出
+            .setSerializationInclusion(JsonInclude.Include.ALWAYS)    //包含POJO中属性为空的字段
+            .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     public static String requestLogBuilder(HttpServletRequest request, ProceedingJoinPoint joinPoint, Exception exception, Map<String, Object> extractParamMap) {
         String headLabel = "REQ";
         StringBuilder stringBuilder = new StringBuilder();
@@ -37,7 +56,7 @@ public class LogBuilder {
             Object[] argsObj = joinPoint.getArgs();
             List<Object> argsObjList = Arrays.stream(argsObj).filter(e -> !(e instanceof HttpServletRequest || e instanceof HttpServletResponse || e instanceof HttpHeaders)).collect(Collectors.toList());//筛选掉HttpServlet相关参数
             try {
-                stringBuilder.append(paramFormatter("ARGS[J]", mapper.writeValueAsString(argsObjList)));
+                stringBuilder.append(paramFormatter("ARGS[J]", objectMapper.writeValueAsString(argsObjList)));
             } catch (Exception e) {
                 stringBuilder.append(paramFormatter("ARGS", argsObjList));
             }
@@ -109,7 +128,7 @@ public class LogBuilder {
                 Object value = GetterAndSetter.invokeGetMethod(returnObj, field.getName());
                 String valueStr;
                 try {
-                    valueStr = mapper.writeValueAsString(value);
+                    valueStr = objectMapper.writeValueAsString(value);
                 } catch (Exception ignord) {
                     valueStr = String.valueOf(value);
                 }
