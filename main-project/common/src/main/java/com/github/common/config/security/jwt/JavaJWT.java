@@ -31,6 +31,10 @@ public class JavaJWT {
         JWT_TOKEN_KEY = a;
     }
 
+    public static String JWT_TOKEN_KEY() {
+        return JWT_TOKEN_KEY;
+    }
+
     @Autowired
     public JavaJWT(UserInfoForJWT userSecretForJWT) {
         this.userInfoForJWT = userSecretForJWT;

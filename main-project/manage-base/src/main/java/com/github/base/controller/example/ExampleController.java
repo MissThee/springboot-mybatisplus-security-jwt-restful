@@ -1,6 +1,7 @@
 package com.github.base.controller.example;
 
 import com.github.base.service.interf.transaction.OperateAllService;
+import com.github.common.config.limiter.annotation.RLimit;
 import com.github.missthee.tool.datastructure.TreeData;
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
@@ -52,6 +53,12 @@ public class ExampleController {
         ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel, true);//使用${属性名}替换
         //流输出
         ExcelExportByTemplate.exportToResponse(response, wb, "文件名");
+    }
+
+    @RLimit(minTime = 10000)
+    @RequestMapping("limit")
+    public Res limit() {
+        return Res.success("limit test");
     }
 
     @PostMapping("error")

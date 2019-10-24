@@ -1,6 +1,7 @@
 package com.github.missthee.controller.example;
 
 import com.alibaba.fastjson.JSONArray;
+import com.github.missthee.config.limiter.annotation.RLimit;
 import com.github.missthee.tool.datastructure.TreeData;
 import com.github.missthee.tool.excel.exports.bytemplate.ExcelExportByTemplate;
 import com.github.missthee.tool.excel.imports.ExcelImport;
@@ -57,6 +58,7 @@ public class ExampleController {
         this.computeService = computeService;
     }
 
+    @RLimit(minTime = 10000)
     @RequestMapping("/test")
     public String test() {
         return "test-OK";
