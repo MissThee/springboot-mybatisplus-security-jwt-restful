@@ -67,6 +67,11 @@ root
 │  │          │              │  │  └─model
 │  │          │              │  │          ExceptionResultModel.java    //异常处理
 │  │          │              │  │
+│  │          │              │  ├─limiter    //自定义接口限流注解
+│  │          │              │  │  ├─annotation    //注解定义，定义了两个注解，用来：启用限流注解、标记限流接口
+│  │          │              │  │  ├─impl    //注解功能实现
+│  │          │              │  │  └─store    //存储用户访问信息，默认用了一个ConcurrentMap存了，如果改分布式需要改此处
+│  │          │              │  │
 │  │          │              │  ├─json    //json序列化配置
 │  │          │              │  │      LocalDateTimeSerializerConfig.java    //LocalDateTime格式化
 │  │          │              │  │      //SpringFastJsonConfig.java    //fastjson序列化自定义配置（未使用，直接用默认配置）
@@ -92,7 +97,7 @@ root
 │  │          │              │  ├─orika    //bean拷贝工具配置
 │  │          │              │  │      OrikaConfig.java
 │  │          │              │  │
-│  │          │              │  ├─security    //安全框架配置
+│  │          │              │  ├─security    //安全框架配置。主要为改造security不再使用session，而是从httpHeader的token中识别用户
 │  │          │              │  │  │  SpecialPermission.java    //自定义特殊权限值，用来标记基础账户、管理员账户（仅为两个字符串，定义为java对象易于寻找引用位置）
 │  │          │              │  │  │
 │  │          │              │  │  ├─jwt    //jwt配置
