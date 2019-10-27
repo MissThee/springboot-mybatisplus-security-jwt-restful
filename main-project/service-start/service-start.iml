@@ -99,6 +99,8 @@
     <orderEntry type="library" name="Maven: com.carrotsearch:java-sizeof:0.0.5" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.janino:janino:3.0.12" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.janino:commons-compiler:3.0.12" level="project" />
+    <orderEntry type="library" name="Maven: com.github.MissThee:collection-compute:2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.26" level="project" />
     <orderEntry type="library" name="Maven: com.github.MissThee:excel-tool:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi:3.17" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.1" level="project" />
@@ -193,7 +195,6 @@
     <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.36.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-transport-native-epoll:4.1.36.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-transport-native-unix-common:4.1.36.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.26" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.9.9" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.9.9" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.9.0" level="project" />

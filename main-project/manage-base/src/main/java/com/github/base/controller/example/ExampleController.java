@@ -43,17 +43,7 @@ public class ExampleController {
         this.operateAllService = operateAllService;
     }
 
-    @PostMapping("excel/output")
-    public void excelTest(HttpServletResponse response) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException, NoSuchFieldException, ScriptException {
-        //读取模板支持.xls（97-2003）或.xlsx（2007+）
-        Workbook wb = ExcelExportByTemplate.readExcel("exceltemplate/test.xls");
-        //实体类
-        TestModel testModel = new TestModel().setTest1("测试长文本长文本长文本长文本长文本长文本长文本长文本长文本");
-        //参数：Workbook，工作簿编号（0开始），实体类，单元格自适应宽度
-        ExcelExportByTemplate.simplePartialReplaceByPOJO(wb, 0, testModel, true);//使用${属性名}替换
-        //流输出
-        ExcelExportByTemplate.exportToResponse(response, wb, "文件名");
-    }
+
 
     @RLimit(minTime = 10000)
     @RequestMapping("limit")
@@ -102,7 +92,7 @@ public class ExampleController {
     @Data
     @Accessors(chain = true)
     @AllArgsConstructor
-    private class TreeItem {
+    private static class TreeItem {
         private Integer id;
         private String name;
         private Integer parentId;
@@ -138,16 +128,6 @@ public class ExampleController {
             add("username");
         }});
         return Res.success(objects);
-    }
-
-    @Data
-    @Accessors(chain = true)
-    private static class TestModel {
-        private String test1;
-        private Date test2;
-        private String test3 = "测试文字3";
-        private String test4 = "123";
-        private String test5 = null;
     }
 
     //多数据库事务测试（测试本方法需改用jta，否则找不到事务管理器）

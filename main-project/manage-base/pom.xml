@@ -17,6 +17,11 @@
             <artifactId>common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!--自定义集合类计算工具,List<POJO>合计、平均-->
+        <dependency>
+            <groupId>com.github.MissThee</groupId>
+            <artifactId>collection-compute</artifactId>
+        </dependency>
         <!--自定义excel工具，导出成excel，导入成List<POJO>-->
         <dependency>
             <groupId>com.github.MissThee</groupId>

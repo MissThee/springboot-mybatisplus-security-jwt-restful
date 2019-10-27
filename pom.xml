@@ -9,7 +9,6 @@
     <modules>
         <module>mybatis-plus-generator</module>
         <module>main-project</module>
-        <module>dev-project</module>
     </modules>
 
     <packaging>pom</packaging>

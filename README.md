@@ -8,7 +8,6 @@
 ## 项目结构总览
 ```shell
 root
-├─dev-project    //[无用]另一个独立运行的项目，与本项目无关，但没删除，里边有一些工具的学习使用方法记录文档等
 ├─main-project    //项目主目录
 │  ├─common    //通用模块：包含各种配置、工具类、其他模块共用的Model类等
 │  ├─manage-base    //系统管理：主要为用户、角色、权限、单位 管理
@@ -23,7 +22,6 @@ root
 
 ```shell
 root
-├─dev-project    //[无用]因与本项目无关，就不写注解了
 ├─log_application    //logback日志输出目录，仅在profile为dev时日志会输出到此目录
 │      log_all.log    //以下所有日志的集合
 │      log_debug_mybatis1.log    //第一数据源的sql日志
