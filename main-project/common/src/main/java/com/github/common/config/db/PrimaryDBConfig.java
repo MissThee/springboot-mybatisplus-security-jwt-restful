@@ -2,6 +2,7 @@ package com.github.common.config.db;
 
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.github.common.config.mybatis.resultinmap.MapWrapperFactory;
 import com.github.common.db.mapper.common.CustomerSqlInjector;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -31,6 +32,13 @@ import java.io.FileNotFoundException;
 @MapperScan(basePackages = {"com.github.**.db.mapper.primary"}, sqlSessionTemplateRef = "primarySqlSessionTemplate")
 @Slf4j
 public class PrimaryDBConfig {
+    @Bean
+    public GlobalConfig globalConfig() {
+        GlobalConfig globalConfig = new GlobalConfig();
+        GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
+        globalConfig.setDbConfig(dbConfig);
+        return globalConfig;
+    }
 
     @Bean(name = "primaryDataSourceHikari")
     @ConfigurationProperties(prefix = "spring.datasource.primary.hikari")
@@ -58,8 +66,12 @@ public class PrimaryDBConfig {
     @Bean(name = "primarySqlSessionFactory")
     public MybatisSqlSessionFactoryBean sqlSessionFactory(
             @Qualifier("primaryDataSource") DataSource dataSource,
-            @Qualifier("globalConfiguration") GlobalConfig globalConfiguration) throws Exception {
+            @Qualifier("globalConfiguration") GlobalConfig globalConfiguration,
+            GlobalConfig globalConfig,
+            MapWrapperFactory mapWrapperFactory) throws Exception {
         MybatisSqlSessionFactoryBean bean = new MybatisSqlSessionFactoryBean();
+        bean.setGlobalConfig(globalConfig);
+        bean.setObjectWrapperFactory(mapWrapperFactory);
         bean.setDataSource(dataSource);
         bean.setGlobalConfig(globalConfiguration);
         bean.setTransactionFactory(new SpringManagedTransactionFactory() {{
