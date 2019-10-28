@@ -23,16 +23,14 @@ import java.text.DecimalFormat;
 public class LimitPointCut {
     private final UserUniquelyIdMaker userUniquelyIdMaker;
     private final LimitInfoStore limitInfoStore;
-    private final ObjectMapper objectMapper;
 
-    public LimitPointCut(LimitInfoStore limitInfoStore, UserUniquelyIdMaker userUniquelyIdMaker, ObjectMapper objectMapper) {
+    public LimitPointCut(LimitInfoStore limitInfoStore, UserUniquelyIdMaker userUniquelyIdMaker) {
         this.limitInfoStore = limitInfoStore;
         this.userUniquelyIdMaker = userUniquelyIdMaker;
-        this.objectMapper = objectMapper;
     }
 
     //切入点为使用了Limit注解的任何地方
-    @Pointcut("@annotation(com.wlw.common.config.limiter.annotation.RLimit)")
+    @Pointcut("@annotation(com.github.common.config.limiter.annotation.RLimit)")
     public void LimitPointCut() {
     }
 
