@@ -197,25 +197,5 @@
             <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
-    <!--    打包成可执行jar包配置，maven的lifecycle中，点击package即可。不配置则达成普通包-->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <!--区分普通jar包与可执行jar包的别名配置-->
-                    <classifier>exec</classifier>
-                    <mainClass>com.github.WebApplication</mainClass>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+
 </project>
