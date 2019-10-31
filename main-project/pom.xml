@@ -71,9 +71,9 @@
             </dependency>
             <!--对象拷贝工具  三方springboot配置版-->
             <!--<dependency>-->
-                <!--<groupId>net.rakugakibox.spring.boot</groupId>-->
-                <!--<artifactId>orika-spring-boot-starter</artifactId>-->
-                <!--<version>1.8.0</version>-->
+            <!--<groupId>net.rakugakibox.spring.boot</groupId>-->
+            <!--<artifactId>orika-spring-boot-starter</artifactId>-->
+            <!--<version>1.8.0</version>-->
             <!--</dependency>-->
             <!--flowable依赖-->
             <dependency>
@@ -197,13 +197,15 @@
             <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
-<!--    打包成可执行jar包配置，maven的lifecycle中，点击package即可。不配置则达成普通包-->
+    <!--    打包成可执行jar包配置，maven的lifecycle中，点击package即可。不配置则达成普通包-->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!--区分普通jar包与可执行jar包的别名配置-->
+                    <classifier>exec</classifier>
                     <mainClass>com.github.WebApplication</mainClass>
                 </configuration>
                 <executions>
