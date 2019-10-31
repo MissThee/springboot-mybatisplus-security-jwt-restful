@@ -38,7 +38,6 @@ public class DicSourceController {
     }
 
     @ApiOperation(value = "增加线索来源")
-    @ApiOperationSort(2)
     @PutMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicSource'))")
     public Res<DicCreateOneResVO> insertOne(@RequestBody DicCreateOneReqVO dicCreateOneReqVO) {
@@ -47,7 +46,6 @@ public class DicSourceController {
     }
 
     @ApiOperation(value = "删除线索来源（逻辑删除）")
-    @ApiOperationSort(4)
     @DeleteMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicSource'))")
     public Res deleteOne(@RequestBody DicDeleteOneReqVO dicDeleteOneReqVO) {
@@ -56,7 +54,6 @@ public class DicSourceController {
     }
 
     @ApiOperation(value = "修改线索来源")
-    @ApiOperationSort(3)
     @PatchMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicSource'))")
     public Res updateOne(@RequestBody DicUpdateOneReqVO dicUpdateOneReqVO) {
@@ -65,7 +62,6 @@ public class DicSourceController {
     }
 
     @ApiOperation(value = "线索来源列表")
-    @ApiOperationSort(1)
     @PostMapping("all")
     public Res<DicGetListResVO> selectList(@RequestBody DicGetListReqVO dicGetListReqVO) {
         List<DicSource> dicSourceList = dicSourceService.selectList(dicGetListReqVO.getIsDelete());

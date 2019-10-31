@@ -38,7 +38,6 @@ public class DicJobTypeController {
     }
 
     @ApiOperation(value = "增加干部类型")
-    @ApiOperationSort(2)
     @PutMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicJobType'))")
     public Res<DicCreateOneResVO> insertOne(@RequestBody DicCreateOneReqVO dicCreateOneReqVO) {
@@ -47,7 +46,6 @@ public class DicJobTypeController {
     }
 
     @ApiOperation(value = "删除干部类型（逻辑删除）")
-    @ApiOperationSort(4)
     @DeleteMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicJobType'))")
     public Res deleteOne(@RequestBody DicDeleteOneReqVO dicDeleteOneReqVO) {
@@ -56,7 +54,6 @@ public class DicJobTypeController {
     }
 
     @ApiOperation(value = "修改干部类型")
-    @ApiOperationSort(3)
     @PatchMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicJobType'))")
     public Res updateOne(@RequestBody DicUpdateOneReqVO dicUpdateOneReqVO) {
@@ -65,7 +62,6 @@ public class DicJobTypeController {
     }
 
     @ApiOperation(value = "干部类型列表")
-    @ApiOperationSort(1)
     @PostMapping("all")
     public Res<DicGetListResVO> selectList(@RequestBody DicGetListReqVO dicGetListReqVO) {
         List<DicJobType> dicJobTypeList = dicJobTypeService.selectList(dicGetListReqVO.getIsDelete());

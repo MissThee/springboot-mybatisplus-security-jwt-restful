@@ -83,7 +83,8 @@
     <orderEntry type="library" name="Maven: org.springframework.plugin:spring-plugin-metadata:1.2.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.mapstruct:mapstruct:1.2.0.Final" level="project" />
     <orderEntry type="library" name="Maven: io.springfox:springfox-swagger-ui:2.9.2" level="project" />
-    <orderEntry type="library" name="Maven: com.github.xiaoymin:swagger-bootstrap-ui:1.9.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.xiaoymin:swagger-bootstrap-ui:1.9.6" level="project" />
+    <orderEntry type="library" name="Maven: org.javassist:javassist:3.25.0-GA" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.44" level="project" />
     <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus-boot-starter:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.baomidou:mybatis-plus:3.1.0" level="project" />
@@ -95,7 +96,6 @@
     <orderEntry type="library" name="Maven: com.auth0:java-jwt:3.3.0" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.13" level="project" />
     <orderEntry type="library" name="Maven: ma.glasnost.orika:orika-core:1.5.4" level="project" />
-    <orderEntry type="library" name="Maven: org.javassist:javassist:3.24.0-GA" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.paranamer:paranamer:2.8" level="project" />
     <orderEntry type="library" name="Maven: com.carrotsearch:java-sizeof:0.0.5" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.janino:janino:3.1.0" level="project" />

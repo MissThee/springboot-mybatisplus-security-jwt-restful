@@ -37,7 +37,6 @@ public class DicAreaInvolvedController {
     }
 
     @ApiOperation(value = "增加涉及领域")
-    @ApiOperationSort(2)
     @PutMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicAreaInvolved'))")
     public Res<DicCreateOneResVO> insertOne(@RequestBody DicCreateOneReqVO dicCreateOneReqVO) {
@@ -46,7 +45,6 @@ public class DicAreaInvolvedController {
     }
 
     @ApiOperation(value = "删除涉及领域（逻辑删除）")
-    @ApiOperationSort(4)
     @DeleteMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicAreaInvolved'))")
     public Res deleteOne(@RequestBody DicDeleteOneReqVO dicDeleteOneReqVO) {
@@ -55,7 +53,6 @@ public class DicAreaInvolvedController {
     }
 
     @ApiOperation(value = "修改涉及领域")
-    @ApiOperationSort(3)
     @PatchMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicAreaInvolved'))")
     public Res updateOne(@RequestBody DicUpdateOneReqVO dicUpdateOneReqVO) {
@@ -64,7 +61,6 @@ public class DicAreaInvolvedController {
     }
 
     @ApiOperation(value = "涉及领域列表")
-    @ApiOperationSort(1)
     @PostMapping("all")
     public Res<DicGetListResVO> selectList(@RequestBody DicGetListReqVO dicGetListReqVO) {
         List<DicAreaInvolved> dicAreaInvolvedList = dicAreaInvolvedService.selectList(dicGetListReqVO.getIsDelete());

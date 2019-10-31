@@ -37,7 +37,6 @@ public class DicIllegalBehaviorController {
     }
 
     @ApiOperation(value = "增加违法行为")
-    @ApiOperationSort(2)
     @PutMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicIllegalBehavior'))")
     public Res<DicCreateOneResVO> insertOne(@RequestBody DicCreateOneReqVO dicCreateOneReqVO) {
@@ -46,7 +45,6 @@ public class DicIllegalBehaviorController {
     }
 
     @ApiOperation(value = "删除违法行为（逻辑删除）")
-    @ApiOperationSort(4)
     @DeleteMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicIllegalBehavior'))")
     public Res deleteOne(@RequestBody DicDeleteOneReqVO dicDeleteOneReqVO) {
@@ -55,7 +53,6 @@ public class DicIllegalBehaviorController {
     }
 
     @ApiOperation(value = "修改违法行为")
-    @ApiOperationSort(3)
     @PatchMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicIllegalBehavior'))")
     public Res updateOne(@RequestBody DicUpdateOneReqVO dicUpdateOneReqVO) {
@@ -64,7 +61,6 @@ public class DicIllegalBehaviorController {
     }
 
     @ApiOperation(value = "违法行为列表")
-    @ApiOperationSort(1)
     @PostMapping("all")
     public Res<DicGetListResVO> selectList(@RequestBody DicGetListReqVO dicGetListReqVO) {
         List<DicIllegalBehavior> dicIllegalBehaviorList = dicIllegalBehaviorService.selectList(dicGetListReqVO.getIsDelete());

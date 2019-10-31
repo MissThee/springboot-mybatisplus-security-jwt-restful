@@ -32,7 +32,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "增加用户", notes = "")
-    @ApiOperationSort(3)
     @PutMapping()
     public Res<UserVO.InsertOneRes> insertOne(@RequestBody UserVO.InsertOneReq insertOneReq) {
         Boolean isDuplicate = userService.isExist(insertOneReq.getUsername());
@@ -44,7 +43,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "删除用户（逻辑删除）", notes = "")
-    @ApiOperationSort(5)
     @DeleteMapping()
     public Res deleteOne(@RequestBody UserVO.DeleteOneReq deleteOneReq) {
         Boolean result = userService.deleteOne(deleteOneReq.getId());
@@ -52,7 +50,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "删除用户（物理删除）[不用]", notes = "")
-    @ApiOperationSort(6)
     @DeleteMapping("/physical")
     public Res deleteOnePhysical(@RequestBody UserVO.DeleteOneReq deleteOneReq) {
         Boolean result = userService.deleteOnePhysical(deleteOneReq.getId());
@@ -60,7 +57,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "修改用户", notes = "")
-    @ApiOperationSort(4)
     @PatchMapping()
     public Res updateOne(@RequestBody UserVO.UpdateOneReq updateOneReq) {
         Boolean result = userService.updateOne(updateOneReq);
@@ -68,7 +64,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "重置密码", notes = "")
-    @ApiOperationSort(7)
     @PatchMapping("/password/default")
     public Res resetDefaultPassword(@RequestBody UserVO.ResetDefaultPasswordReq resetDefaultPasswordReq) {
         Boolean result = userService.resetDefaultPassword(resetDefaultPasswordReq.getId());
@@ -76,7 +71,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "查找用户（单个） ", notes = "")
-    @ApiOperationSort(2)
     @PostMapping()
     public Res<UserVO.SelectOneRes> selectOne(@RequestBody UserVO.SelectOneReq findOneReq) {
         SysUserInTableDetailDTO userInTableDetailBo = userService.selectOne(findOneReq.getId());
@@ -84,7 +78,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "查找用户（多个） ", notes = "")
-    @ApiOperationSort(1)
     @PostMapping("/all")
     public Res<UserVO.SelectListRes> selectList(@RequestBody UserVO.SelectListReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
         List<SysUserInTableDTO> userInTableDTOList = userService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());

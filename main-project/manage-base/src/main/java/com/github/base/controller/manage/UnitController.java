@@ -35,7 +35,6 @@ public class UnitController {
     }
 
     @ApiOperation(value = "增加组织结构", notes = "")
-    @ApiOperationSort(3)
     @PutMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'unit'))")
     public Res<UnitVO.InsertOneRes> insertOne(@RequestBody UnitVO.InsertOneReq insertOneReq) {
@@ -44,7 +43,6 @@ public class UnitController {
     }
 
     @ApiOperation(value = "删除组织结构（逻辑删除）", notes = "")
-    @ApiOperationSort(5)
     @DeleteMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'unit'))")
     public Res deleteOne(@RequestBody UnitVO.DeleteOneReq deleteOneReq) {
@@ -53,7 +51,6 @@ public class UnitController {
     }
 
     @ApiOperation(value = "删除组织结构（物理删除）[不用]", notes = "")
-    @ApiOperationSort(6)
     @DeleteMapping("/physical")
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'unit'))")
     public Res deleteOnePhysical(@RequestBody UnitVO.DeleteOneReq deleteOneReq) {
@@ -62,7 +59,6 @@ public class UnitController {
     }
 
     @ApiOperation(value = "修改组织结构", notes = "")
-    @ApiOperationSort(4)
     @PatchMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'unit'))")
     public Res updateOne(@RequestBody UnitVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -76,7 +72,6 @@ public class UnitController {
     }
 
     @ApiOperation(value = "查找组织结构（单个）", notes = "")
-    @ApiOperationSort(2)
     @PostMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'unit'))")
     public Res<UnitVO.SelectOneRes> selectOne(@RequestBody UnitVO.SelectOneReq findOneReq) {
@@ -85,7 +80,6 @@ public class UnitController {
     }
 
     @ApiOperation(value = "组织结构列表（树状）", notes = "")
-    @ApiOperationSort(1)
     @PostMapping("/tree")
     public Res<UnitVO.SelectTreeRes> selectList(@RequestBody UnitVO.SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
         List<SysUnit> unitList = unitService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());

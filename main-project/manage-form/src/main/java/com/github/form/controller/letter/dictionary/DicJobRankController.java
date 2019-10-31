@@ -38,7 +38,6 @@ public class DicJobRankController {
     }
 
     @ApiOperation(value = "增加职级")
-    @ApiOperationSort(2)
     @PutMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicJobRank'))")
     public Res<DicCreateOneResVO> insertOne(@RequestBody DicCreateOneReqVO dicCreateOneReqVO) {
@@ -47,7 +46,6 @@ public class DicJobRankController {
     }
 
     @ApiOperation(value = "删除职级（逻辑删除）")
-    @ApiOperationSort(4)
     @DeleteMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicJobRank'))")
     public Res deleteOne(@RequestBody DicDeleteOneReqVO dicDeleteOneReqVO) {
@@ -56,7 +54,6 @@ public class DicJobRankController {
     }
 
     @ApiOperation(value = "修改职级")
-    @ApiOperationSort(3)
     @PatchMapping
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'dicJobRank'))")
     public Res updateOne(@RequestBody DicUpdateOneReqVO dicUpdateOneReqVO) {
@@ -65,7 +62,6 @@ public class DicJobRankController {
     }
 
     @ApiOperation(value = "职级列表")
-    @ApiOperationSort(1)
     @PostMapping("all")
     public Res<DicGetListResVO> selectList(@RequestBody DicGetListReqVO dicGetListReqVO) {
         List<DicJobRank> dicJobRankList = dicJobRankService.selectList(dicGetListReqVO.getIsDelete());

@@ -48,7 +48,7 @@
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>swagger-bootstrap-ui</artifactId>
-                <version>1.9.1</version>
+                <version>1.9.6</version>
             </dependency>
 
             <!--mysql驱动依赖-->
@@ -197,4 +197,23 @@
             <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
+<!--    打包成可执行jar包配置，maven的lifecycle中，点击package即可。不配置则达成普通包-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.github.WebApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

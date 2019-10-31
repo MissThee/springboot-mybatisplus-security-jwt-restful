@@ -41,7 +41,6 @@ public class LoginController {
 //            @ApiImplicitParam(name = "username", value = "账号", required = true, dataType = "string", example = "admin"),
 //            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string", example = "123")
 //    })
-    @ApiOperationSort(1)
     @PostMapping("/login")
     public Res<LoginVO.LoginRes> login(HttpServletResponse httpServletResponse, @RequestBody LoginVO.LoginReq loginModel) throws Exception {
         if (StringUtils.isEmpty(loginModel.getUsername())) {
@@ -66,7 +65,6 @@ public class LoginController {
 
 
     @ApiOperation(value = "获取用户信息", notes = "token获取用户信息")
-    @ApiOperationSort(2)
     @PostMapping("/info")
     @PreAuthorize("isAuthenticated()")
     public Res<LoginVO.LoginRes> info(HttpServletRequest httpServletRequest) {

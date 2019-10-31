@@ -32,7 +32,6 @@ public class RoleController {
     }
 
     @ApiOperation(value = "增加角色", notes = "其中权限列表使用【基础管理-权限管理】 → 【权限列表（树状）】")
-    @ApiOperationSort(3)
     @PutMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'role'))")
     public Res<RoleVO.InsertOneRes> insertOne(@RequestBody RoleVO.InsertOneReq insertOneReq) {
@@ -45,7 +44,6 @@ public class RoleController {
     }
 
     @ApiOperation(value = "删除角色（逻辑删除）", notes = "")
-    @ApiOperationSort(5)
     @DeleteMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'role'))")
     public Res deleteOne(@RequestBody RoleVO.DeleteOneReq deleteOneReq) {
@@ -54,7 +52,6 @@ public class RoleController {
     }
 
     @ApiOperation(value = "删除角色（物理删除）[不用]", notes = "")
-    @ApiOperationSort(6)
     @DeleteMapping("/physical")
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'role'))")
     public Res deleteOnePhysical(@RequestBody RoleVO.DeleteOneReq deleteOneReq) {
@@ -63,7 +60,6 @@ public class RoleController {
     }
 
     @ApiOperation(value = "修改角色", notes = "其中权限列表使用【基础管理-权限管理】 → 【权限列表（树状）】")
-    @ApiOperationSort(4)
     @PatchMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'role'))")
     public Res updateOne(@RequestBody RoleVO.UpdateOneReq updateOneReq) {
@@ -76,7 +72,6 @@ public class RoleController {
     }
 
     @ApiOperation(value = "查找角色（单个）", notes = "其中权限列表使用【基础管理-权限管理】 → 【权限列表（树状）】")
-    @ApiOperationSort(2)
     @PostMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'role'))")
     public Res<RoleVO.SelectOneRes> selectOne(@RequestBody RoleVO.SelectOneReq findOneReq) {
@@ -85,7 +80,6 @@ public class RoleController {
     }
 
     @ApiOperation(value = "角色列表", notes = "")
-    @ApiOperationSort(1)
     @PostMapping("/all")
     public Res<RoleVO.SelectListRes> selectList(@RequestBody RoleVO.SelectListReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
         List<SysRole> roleList = roleService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());

@@ -33,7 +33,6 @@ public class PermissionController {
     }
 
     @ApiOperation(value = "增加权限", notes = "")
-    @ApiOperationSort(3)
     @PutMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'permission'))")
     public Res<PermissionVO.InsertOneRes> insertOne(@RequestBody PermissionVO.InsertOneReq insertOneReq) {
@@ -47,7 +46,6 @@ public class PermissionController {
     }
 
     @ApiOperation(value = "删除权限（逻辑删除）", notes = "")
-    @ApiOperationSort(5)
     @DeleteMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'permission'))")
     public Res deleteOne(@RequestBody PermissionVO.DeleteOneReq deleteOneReq) {
@@ -56,7 +54,6 @@ public class PermissionController {
     }
 
     @ApiOperation(value = "删除权限（物理删除）[不用]", notes = "")
-    @ApiOperationSort(6)
     @DeleteMapping("/physical")
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'permission'))")
     public Res deleteOnePhysical(@RequestBody PermissionVO.DeleteOneReq deleteOneReq) {
@@ -65,7 +62,6 @@ public class PermissionController {
     }
 
     @ApiOperation(value = "修改权限", notes = "")
-    @ApiOperationSort(4)
     @PatchMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'permission'))")
     public Res updateOne(@RequestBody PermissionVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, NoSuchFieldException, InvalidAttributeValueException, IllegalAccessException, InvocationTargetException {
@@ -83,7 +79,6 @@ public class PermissionController {
     }
 
     @ApiOperation(value = "查找权限（单个）", notes = "")
-    @ApiOperationSort(2)
     @PostMapping()
     public Res<PermissionVO.SelectOneRes> selectOne(@RequestBody PermissionVO.SelectOneReq findOneReq) {
         SysPermission permission = permissionService.selectOne(findOneReq.getId());
@@ -92,7 +87,6 @@ public class PermissionController {
     }
 
     @ApiOperation(value = "权限列表（树状）", notes = "")
-    @ApiOperationSort(1)
     @PostMapping("/tree")
     public Res<PermissionVO.SelectTreeRes> selectList(@RequestBody PermissionVO.SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
         List<SysPermission> permissionList = permissionService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
