@@ -1,0 +1,6 @@
+--查看表结构修改时间
+select uat.table_name, ( select max(last_ddl_time) from user_objects where object_name = uat.table_name group by object_name) as lastddltime from user_all_tables uat order by lastddltime
+--查看表结构修改时间
+select * from user_objects where OBJECT_NAME='AREA_INFO'
+--查看表历史时刻数据
+select * from user_objects   AS OF TIMESTAMP to_timestamp('20190923 10:50:00','yyyymmdd hh24:mi:ss') ;

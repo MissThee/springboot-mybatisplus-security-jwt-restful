@@ -1,9 +1,11 @@
 ﻿<configuration>
     <!-- id不要使用中文，否则某些系统可能出现7034错误，意外终止 -->
     <id>ZZTestService</id>
-    <name>测试服务，这里是任务管理器描述</name>
+    <!-- 在服务列表中出现的第一列名字-->
+    <name>ZZTestService</name>
     <!-- 执行executable前的下载方法，即使下载失败也会继续运行，除非自行配置onfailure控制失败触发的事件 -->
     <!--<download from="http://localhost:7070/demo-0.0.1-SNAPSHOT.jar" to="%BASE%\demo-0.0.1-SNAPSHOT.jar" />-->
+    <!-- 在服务列表中出现的第二列描述-->
     <description>测试服务，这里是服务中的描述</description>
     <executable>java</executable>
     <argument>-Djava.rmi.server.hostname=localhost</argument>
