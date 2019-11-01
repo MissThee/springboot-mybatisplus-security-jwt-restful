@@ -29,7 +29,7 @@ java ^
 ../../../../../../../../../target/demo-0.0.1-SNAPSHOT.jar ^
 --server.port=%port% ^
 --spring.datasource.primary.driver-class-name=com.mysql.jdbc.Driver ^
---spring.datasource.primary.jdbc-url=jdbc:mysql://localhost:3306/mybatis_test_db?useUnicode=true^&useJDBCCompliantTimezoneShift=true^&useLegacyDatetimeCode=false^&serverTimezone=Asia/Shanghai^&nullNamePatternMatchesAll=true^&useSSL=false ^
+--spring.datasource.primary.jdbc-url=jdbc:mysql://localhost:3306/mybatis_test_db?useUnicode=true^&useJDBCCompliantTimezoneShift=true^&useLegacyDatetimeCode=false^&serverTimezone=Asia/Shanghai^&nullNamePatternMatchesAll=true^&useSSL=false^&characterEncoding=utf-8 ^
 --spring.datasource.primary.username=user ^
 --spring.datasource.primary.password=1234 ^
 --spring.profiles.active=prod
