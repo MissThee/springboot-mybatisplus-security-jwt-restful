@@ -119,11 +119,27 @@
             </layout>
         </encoder>
     </appender>
-<!--    logger没有设置appender，则本身不打印任何信息，additivity="true"将日志向上级传递，给root进行实际的输出-->
+    <!--    logger没有设置appender，则本身不打印任何信息，additivity="true"将日志向上级传递，给root进行实际的输出-->
     <logger name="com.github" level="debug" additivity="true"/>
     <root level="info">
-        <!--控制台输出（彩色）-->
-        <appender-ref ref="CONSOLE_COLOR"/>
+        <!--文件输出-->
+        <appender-ref ref="FILE_ERROR"/>
+        <appender-ref ref="FILE_ALL"/>
+        <!--控制台输出（原色），若使用docker，可查看实时输出使用-->
+        <!--<appender-ref ref="CONSOLE"/>-->
     </root>
+    <!--文件输出-->
+    <!--additivity是否将日志传递给上级（false：只使用内部appender-ref的方法输出；true：使用内部方法，且将日志内容交至更上级再次输出）-->
+    <!--三个logger为分类输出日志，REQUEST请求，MYBATIS1第一数据库，MYBATIS2第二数据库 -->
+    <!--若使用下面三个分类输出，level改为debug，name为要输出日志的包。（生产环境不推荐输出大量debug日志） -->
+    <logger name="com.github.common.config.log" level="${logging.level.com.github.common.config.log:-info}" additivity="true">
+        <appender-ref ref="FILE_REQUEST"/>
+    </logger>
+    <logger name="com.github.common.db.primary" level="${logging.level.com.github.common.db.primary:-info}" additivity="true">
+        <appender-ref ref="FILE_MYBATIS1"/>
+    </logger>
+    <logger name="com.github.common.db.secondary" level="${logging.level.com.github.common.db.secondary:-info}" additivity="true">
+        <appender-ref ref="FILE_MYBATIS2"/>
+    </logger>
 </configuration>
 
