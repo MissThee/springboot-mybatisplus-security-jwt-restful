@@ -5,6 +5,7 @@ import com.github.base.dto.manage.role.SysRoleInTableDetailDTO;
 import com.github.base.dto.manage.role.SysRoleInsertOneDTO;
 import com.github.base.dto.manage.role.SysRoleUpdateOneDTO;
 import com.github.common.db.entity.primary.SysRole;
+import com.github.common.tool.SimplePageInfo;
 
 import javax.management.InvalidAttributeValueException;
 import java.lang.reflect.InvocationTargetException;
@@ -20,7 +21,7 @@ public interface RoleService extends IService<SysRole> {
 
     SysRoleInTableDetailDTO selectOne(Long id);
 
-    List<SysRole> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException;
+    SimplePageInfo<SysRole> selectList(Integer pageNum, Integer pageSize, Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException;
 
     Boolean deleteOnePhysical(Long id);
 

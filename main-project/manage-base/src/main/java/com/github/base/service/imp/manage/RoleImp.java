@@ -11,6 +11,10 @@ import com.github.base.dto.manage.role.SysRoleUpdateOneDTO;
 import com.github.base.service.interf.manage.RoleService;
 import com.github.common.db.entity.primary.SysRole;
 import com.github.common.db.entity.primary.SysRolePermission;
+import com.github.common.db.entity.primary.SysUser;
+import com.github.common.tool.SimplePageInfo;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,17 +98,25 @@ public class RoleImp extends ServiceImpl<SysRoleMapper, SysRole> implements Role
     }
 
     @Override
-    public List<SysRole> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
+    public SimplePageInfo<SysRole> selectList(Integer pageNum,Integer pageSize,Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
         List<SysRole> sysRoleList;
+        Long total;
         {
             QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq(SysRole.IS_DELETE, isDelete);
             for (Map.Entry<String, Boolean> entry : orderBy.entrySet()) {
                 queryWrapper.orderBy(true, entry.getValue(), entry.getKey());
             }
-            sysRoleList = roleMapper.selectList(queryWrapper);
+            if (pageNum != null && pageSize != null) {
+                PageHelper.startPage(pageNum, pageSize);
+            } else {
+                PageHelper.startPage(1, 0, true, null, true);
+            }
+            PageInfo<SysRole> pageInfo = new PageInfo<>(roleMapper.selectList(queryWrapper));
+            sysRoleList = pageInfo.getList();
+            total = pageInfo.getTotal();
         }
-        return sysRoleList;
+        return new SimplePageInfo<>(sysRoleList,total);
     }
 
     @Override

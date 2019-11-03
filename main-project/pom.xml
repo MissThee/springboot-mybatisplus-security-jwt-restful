@@ -63,6 +63,13 @@
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>3.1.0</version>
             </dependency>
+            <!--分页插件-->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>1.2.12</version>
+            </dependency>
+
             <!--对象拷贝工具-->
             <dependency>
                 <groupId>ma.glasnost.orika</groupId>

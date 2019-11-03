@@ -5,6 +5,7 @@ import com.github.base.dto.manage.user.SysUserInTableDetailDTO;
 import com.github.base.service.interf.manage.UserService;
 import com.github.base.vo.manage.UserVO;
 import com.github.common.tool.Res;
+import com.github.common.tool.SimplePageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSort;
@@ -80,8 +81,11 @@ public class UserController {
     @ApiOperation(value = "查找用户（多个） ", notes = "")
     @PostMapping("/all")
     public Res<UserVO.SelectListRes> selectList(@RequestBody UserVO.SelectListReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
-        List<SysUserInTableDTO> userInTableDTOList = userService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
-        return Res.success(new UserVO.SelectListRes().setUserList(userInTableDTOList));
+        SimplePageInfo<SysUserInTableDTO> sysUserInTableDTOSimpolePageInfo = userService.selectList(selectListReq.getPageNum(), selectListReq.getPageSize(), selectListReq.getIsDelete(), selectListReq.getOrderBy());
+        return Res.success(new UserVO.SelectListRes()
+                .setUserList(sysUserInTableDTOSimpolePageInfo.getList())
+                .setTotal(sysUserInTableDTOSimpolePageInfo.getTotal())
+        );
     }
 }
 

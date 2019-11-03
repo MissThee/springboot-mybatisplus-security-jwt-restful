@@ -10,6 +10,9 @@ import com.github.base.dto.manage.user.SysUserUpdateOneDTO;
 import com.github.base.service.interf.manage.UserService;
 import com.github.common.config.security.jwt.UserInfoForJWT;
 import com.github.common.db.entity.primary.*;
+import com.github.common.tool.SimplePageInfo;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,7 +44,7 @@ public class UserImp extends ServiceImpl<SysUserMapper, SysUser> implements User
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class,value="primaryTransactionManager")
+    @Transactional(rollbackFor = Exception.class, value = "primaryTransactionManager")
     public Long insertOne(SysUserInsertOneDTO userInsertOneDTO) {
         SysUser user = mapperFacade.map(userInsertOneDTO, SysUser.class);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
@@ -68,7 +71,7 @@ public class UserImp extends ServiceImpl<SysUserMapper, SysUser> implements User
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class,value="primaryTransactionManager")
+    @Transactional(rollbackFor = Exception.class, value = "primaryTransactionManager")
     public Boolean updateOne(SysUserUpdateOneDTO updateOneReq) {
         //拷贝用户信息，生成User对象
         SysUser user = mapperFacade.map(updateOneReq, SysUser.class);
@@ -85,7 +88,7 @@ public class UserImp extends ServiceImpl<SysUserMapper, SysUser> implements User
     public SysUserInTableDetailDTO selectOne(Long id) {
         //查询user
         SysUser user = userMapper.selectById(id);
-        SysUserInTableDetailDTO userInTableDetailBo=null;
+        SysUserInTableDetailDTO userInTableDetailBo = null;
         if (user != null) {
             //查询role id集合
             List<Long> roleIdList;
@@ -115,15 +118,23 @@ public class UserImp extends ServiceImpl<SysUserMapper, SysUser> implements User
     }
 
     @Override
-    public List<SysUserInTableDTO> selectList(Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
+    public SimplePageInfo<SysUserInTableDTO> selectList(Integer pageNum, Integer pageSize, Boolean isDelete, LinkedHashMap<String, Boolean> orderBy) {
         List<SysUser> userList;
+        Long total;
         {
             QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq(SysUser.IS_DELETE, isDelete);
             for (Map.Entry<String, Boolean> entry : orderBy.entrySet()) {
                 queryWrapper.orderBy(true, entry.getValue(), entry.getKey());
             }
-            userList = userMapper.selectList(queryWrapper);
+            if (pageNum != null && pageSize != null) {
+                PageHelper.startPage(pageNum, pageSize);
+            } else {
+                PageHelper.startPage(1, 0, true, null, true);
+            }
+            PageInfo<SysUser> pageInfo = new PageInfo<>(userMapper.selectList(queryWrapper));
+            userList = pageInfo.getList();
+            total = pageInfo.getTotal();
         }
         List<Long> userIdList = userList.stream().map(SysUser::getId).collect(Collectors.toList());
         //查询涉及到的user_role关系集合
@@ -165,7 +176,7 @@ public class UserImp extends ServiceImpl<SysUserMapper, SysUser> implements User
             for (SysUserRole userRole : userRoleList) {
                 if (item.getId().equals(userRole.getUserId())) {
                     Long roleId = userRole.getRoleId();
-                    if(roleMap.containsKey(roleId)) {
+                    if (roleMap.containsKey(roleId)) {
                         SysRole role = roleMap.get(roleId);
                         SysUserInTableDTO.RoleInfo roleInfo = mapperFacade.map(role, SysUserInTableDTO.RoleInfo.class);
                         roleInfoList.add(roleInfo);
@@ -181,7 +192,7 @@ public class UserImp extends ServiceImpl<SysUserMapper, SysUser> implements User
                 }
             }
         }
-        return userInTableBoList;
+        return new SimplePageInfo<>(userInTableBoList, total);
     }
 
     @Override

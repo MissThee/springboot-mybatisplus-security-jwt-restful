@@ -43,6 +43,10 @@ public class UserVO {
     @Accessors(chain = true)
     @ApiModel("UserVO.SelectListReq")
     public static class SelectListReq {
+        @ApiModelProperty(value = "页号")
+        private Integer pageNum;
+        @ApiModelProperty(value = "每页条数")
+        private Integer pageSize;
         @ApiModelProperty(value = "排序条件<列名,是正序>")
         private LinkedHashMap<String, Boolean> orderBy;
         @ApiModelProperty(value = "true查看已删用户，false查看未删用户",example = "false")
@@ -55,6 +59,8 @@ public class UserVO {
     public static class SelectListRes {
         @ApiModelProperty(value = "用户列表")
         private List<SysUserInTableDTO> userList;
+        @ApiModelProperty(value = "总条数")
+        private Long total;
     }
 
     @Data

@@ -43,6 +43,10 @@ public class RoleVO {
     @Accessors(chain = true)
     @ApiModel("RoleVO.SelectListReq")
     public static class SelectListReq {
+        @ApiModelProperty(value = "页号")
+        private Integer pageNum;
+        @ApiModelProperty(value = "每页条数")
+        private Integer pageSize;
         @ApiModelProperty(value = "排序<字段名,是正序>", example = "{'name':true}")
         private LinkedHashMap<String, Boolean> orderBy;
         @ApiModelProperty(value = "true查看已删角色，false查看未删角色", example = "false")
@@ -55,6 +59,8 @@ public class RoleVO {
     public static class SelectListRes {
         @ApiModelProperty(value = "角色列表")
         private List<SysRole> roleList;
+        @ApiModelProperty(value = "总条数")
+        private Long total;
     }
 
     @Data

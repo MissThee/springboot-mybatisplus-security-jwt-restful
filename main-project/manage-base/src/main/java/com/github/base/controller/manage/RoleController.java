@@ -5,6 +5,7 @@ import com.github.base.service.interf.manage.RoleService;
 import com.github.base.vo.manage.RoleVO;
 import com.github.common.db.entity.primary.SysRole;
 import com.github.common.tool.Res;
+import com.github.common.tool.SimplePageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSort;
@@ -82,8 +83,15 @@ public class RoleController {
     @ApiOperation(value = "角色列表", notes = "")
     @PostMapping("/all")
     public Res<RoleVO.SelectListRes> selectList(@RequestBody RoleVO.SelectListReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
-        List<SysRole> roleList = roleService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
-        return Res.success(new RoleVO.SelectListRes().setRoleList(roleList));
+        SimplePageInfo<SysRole> roleSimplePageInfo = roleService.selectList(
+                selectListReq.getPageNum(),
+                selectListReq.getPageSize(),
+                selectListReq.getIsDelete(),
+                selectListReq.getOrderBy());
+        return Res.success(new RoleVO.SelectListRes()
+                .setRoleList(roleSimplePageInfo.getList())
+                .setTotal(roleSimplePageInfo.getTotal())
+        );
     }
 }
 
