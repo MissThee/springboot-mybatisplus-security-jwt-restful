@@ -21,6 +21,9 @@ public class SysUserInTableDTO {
     @ApiModelProperty(value = "可用")
     private Boolean isEnable;
 
+    @ApiModelProperty(value = "管理员")
+    private Boolean isAdmin;
+
     @ApiModelProperty(value = "拥有的角色名集合")
     private List<RoleInfo> roleList;
 

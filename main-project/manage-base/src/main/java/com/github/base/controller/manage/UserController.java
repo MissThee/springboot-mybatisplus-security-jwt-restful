@@ -83,8 +83,8 @@ public class UserController {
     @ApiOperation(value = "查找用户（单个） ", notes = "")
     @PostMapping
     public Res<UserVO.SelectOneRes> selectOne(@RequestBody UserVO.SelectOneReq findOneReq) {
-        SysUserInTableDetailDTO userInTableDetailBo = userService.selectOne(findOneReq.getId());
-        return Res.res(userInTableDetailBo != null, new UserVO.SelectOneRes().setUser(userInTableDetailBo), userInTableDetailBo != null ? "" : "无此用户");
+        SysUserInTableDetailDTO sysUserInTableDetailDTO = userService.selectOne(findOneReq.getId());
+        return Res.res(sysUserInTableDetailDTO != null, new UserVO.SelectOneRes().setUser(sysUserInTableDetailDTO), sysUserInTableDetailDTO != null ? "" : "无此用户");
     }
 
     @ApiOperation(value = "查找用户（多个） ", notes = "")
