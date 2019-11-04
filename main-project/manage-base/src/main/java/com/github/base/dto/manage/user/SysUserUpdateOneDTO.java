@@ -17,6 +17,8 @@ public class SysUserUpdateOneDTO {
     private String username;
     @ApiModelProperty(value = "账户状态", example = "true")
     private Boolean isEnable;
+    @ApiModelProperty(value = "是否为管理员", example = "false")
+    private Boolean isAdmin;
     @ApiModelProperty(value = "角色id号集合")
     private List<Long> roleIdList;
     @ApiModelProperty(value = "组织结构id号")

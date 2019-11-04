@@ -4,6 +4,7 @@ import com.github.base.dto.manage.user.SysUserInTableDTO;
 import com.github.base.dto.manage.user.SysUserInTableDetailDTO;
 import com.github.base.service.interf.manage.UserService;
 import com.github.base.vo.manage.UserVO;
+import com.github.common.db.entity.primary.SysUser;
 import com.github.common.tool.Res;
 import com.github.common.tool.SimplePageInfo;
 import io.swagger.annotations.Api;
@@ -44,8 +45,12 @@ public class UserController {
     }
 
     @ApiOperation(value = "删除用户（逻辑删除）", notes = "")
-    @DeleteMapping()
+    @DeleteMapping
     public Res deleteOne(@RequestBody UserVO.DeleteOneReq deleteOneReq) {
+        SysUser sysUser=userService.getById(deleteOneReq.getId());
+        if(sysUser.getIsBasic()){
+            return Res.failure("删除失败，无法删除系统基础账号");
+        }
         Boolean result = userService.deleteOne(deleteOneReq.getId());
         return Res.res(result, "删除" + (result ? "成功" : "失败"));
     }
@@ -53,12 +58,16 @@ public class UserController {
     @ApiOperation(value = "删除用户（物理删除）[不用]", notes = "")
     @DeleteMapping("/physical")
     public Res deleteOnePhysical(@RequestBody UserVO.DeleteOneReq deleteOneReq) {
+        SysUser sysUser=userService.getById(deleteOneReq.getId());
+        if(sysUser.getIsBasic()){
+            return Res.failure("删除失败，无法删除系统基础账号");
+        }
         Boolean result = userService.deleteOnePhysical(deleteOneReq.getId());
         return Res.res(result, "删除" + (result ? "成功" : "失败"));
     }
 
     @ApiOperation(value = "修改用户", notes = "")
-    @PatchMapping()
+    @PatchMapping
     public Res updateOne(@RequestBody UserVO.UpdateOneReq updateOneReq) {
         Boolean result = userService.updateOne(updateOneReq);
         return Res.res(result, "修改" + (result ? "成功" : "失败"));
@@ -72,7 +81,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "查找用户（单个） ", notes = "")
-    @PostMapping()
+    @PostMapping
     public Res<UserVO.SelectOneRes> selectOne(@RequestBody UserVO.SelectOneReq findOneReq) {
         SysUserInTableDetailDTO userInTableDetailBo = userService.selectOne(findOneReq.getId());
         return Res.res(userInTableDetailBo != null, new UserVO.SelectOneRes().setUser(userInTableDetailBo), userInTableDetailBo != null ? "" : "无此用户");
