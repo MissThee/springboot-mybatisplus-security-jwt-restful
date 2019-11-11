@@ -7,16 +7,14 @@ public class sample {
     private static final int THREAD_NUMBER = 2;
 
     public static void main(String[] args) {
-        List<ThreadLocal<Integer>> threadLocalList = new ArrayList<>();
-//        MyRunnable mr = new MyRunnable(threadLocalList);//俩个线程使用同一MyRunnable对象时，两个线程共享MyRunnable对象中的ThreadLocal对象
+        List<ThreadLocal<Integer>> list = new ArrayList<>();
+//        MyRunnable mr = new MyRunnable(threadLocalList);//两个线程使用同一MyRunnable对象时，两个线程共享MyRunnable对象中的ThreadLocal对象tl
         Thread[] threads = new Thread[THREAD_NUMBER];
         for (int i = 0; i < THREAD_NUMBER; i++) {
-            MyRunnable mr = new MyRunnable(threadLocalList);
+            MyRunnable mr = new MyRunnable(list);
             threads[i] = new Thread(mr);
             threads[i].start();
-            if (i == 0) {
-                mr.tl = null;//若ThreadLocal为static类型，则此处设置后，两个线程中的ThreadLocal均会变为null
-            }
+            mr.tl.set(i);
         }
         for (int i = 0; i < THREAD_NUMBER; i++) {
             try {
@@ -25,9 +23,9 @@ public class sample {
                 e.printStackTrace();
             }
         }
-        System.out.println(threadLocalList.get(0));
-        System.out.println(threadLocalList.get(1));
-        System.out.println(threadLocalList.get(0) == threadLocalList.get(1));
+        System.out.println("0. " + list.size());
+        System.out.println("1. " + (list.get(0) == null ? "null TL" : list.get(0).get()));
+        System.out.println("2. " + (list.get(1) == null ? "null TL" : list.get(1).get()));
         System.out.println("EXECUTE THERE!!!");
     }
 }

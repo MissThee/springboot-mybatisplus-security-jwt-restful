@@ -71,9 +71,9 @@ public class LetClueController {
 
     @ApiOperation(value = "添加信访表单")
     @PutMapping
-    public Res createLetClue(HttpServletRequest httpServletRequest, @RequestBody @Validated LetClueCreateVO letClueCreateVO) throws Exception {
+    public Res createLetClue(@RequestBody @Validated LetClueCreateVO letClueCreateVO) throws Exception {
         LetClueCreateDTO letClueCreateDTO = mapperFacade.map(letClueCreateVO, LetClueCreateDTO.class);
-        String userId = JavaJWT.getId(httpServletRequest);
+        String userId = JavaJWT.getId();
         if (userId != null) {
             letClueCreateDTO.setCreatorId(Long.parseLong(userId));
         }

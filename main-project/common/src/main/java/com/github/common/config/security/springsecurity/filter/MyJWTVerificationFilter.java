@@ -30,12 +30,13 @@ public class MyJWTVerificationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        String token = httpServletRequest.getHeader("Authorization");
+        String token = httpServletRequest.getHeader(JavaJWT.JWT_TOKEN_KEY);
         Authentication authentication;
         if (javaJWT.verifyToken(token)) {
-            String userId = JavaJWT.getId(httpServletRequest);
+            String userId = JavaJWT.getId();
             UserDetails userDetails = userInfoForSecurity.loadUserById(userId);
             authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+            javaJWT.updateTokenAndSetHeaderRemainDays(token, 4 * 24 * 60);
         } else {
             authentication = new UsernamePasswordAuthenticationToken(null, null);
         }

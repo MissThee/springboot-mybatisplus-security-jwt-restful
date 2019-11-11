@@ -59,7 +59,7 @@ public class LoginController {
         if (!new BCryptPasswordEncoder().matches(loginModel.getPassword(), authDTO.getPassword())) {
             return Res.failure("密码错误");
         }
-        httpServletResponse.setHeader("Authorization", javaJWT.createToken(authDTO.getId(), loginModel.getIsLongLogin() ? 7 : 2));  //添加token
+        httpServletResponse.setHeader(JavaJWT.JWT_TOKEN_KEY, javaJWT.createToken(authDTO.getId(), loginModel.getIsLongLogin() ? 7 : 2));  //添加token
         return Res.success(new LoginVO.LoginRes().setUser(authDTO), "登录成功");
     }
 
@@ -68,7 +68,7 @@ public class LoginController {
     @PostMapping("/info")
     @PreAuthorize("isAuthenticated()")
     public Res<LoginVO.LoginRes> info(HttpServletRequest httpServletRequest) {
-        String id = JavaJWT.getId(httpServletRequest);
+        String id = JavaJWT.getId();
         AuthDTO authDTO = authInfoService.selectUserById(id);
         if (authDTO == null) {
             throw new BadCredentialsException("user not exist, when get user info");

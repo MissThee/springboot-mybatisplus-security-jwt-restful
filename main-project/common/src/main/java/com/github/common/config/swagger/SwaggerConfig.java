@@ -1,5 +1,6 @@
 package com.github.common.config.swagger;
 
+import com.github.common.config.security.jwt.JavaJWT;
 import com.google.common.collect.Lists;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,7 @@ public class SwaggerConfig {
     }
 
     private ApiKey apiKey() {
-        return new ApiKey("jwt的token值", "Authorization", "header");
+        return new ApiKey("jwt的token值", JavaJWT.JWT_TOKEN_KEY, "header");
     }
 
     private SecurityContext securityContext() {

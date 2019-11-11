@@ -65,7 +65,7 @@ public class ExampleController {
     //获取当前用户相关信息。
     @PostMapping("infoByHeader")
     public Res<Map<String, Object>> getInfo(HttpServletRequest httpServletRequest) {
-        String userIdByToken = JavaJWT.getId(httpServletRequest);//通过token解析获得
+        String userIdByToken = JavaJWT.getId();//通过token解析获得
 //        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();//通过Security的SecurityContextHolder获得
 //        Object principal = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
         Map<String, Object> map = new HashMap<String, Object>() {{

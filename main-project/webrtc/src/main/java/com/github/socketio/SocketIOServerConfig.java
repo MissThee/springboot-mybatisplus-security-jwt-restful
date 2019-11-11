@@ -35,7 +35,7 @@ public class SocketIOServerConfig {
         config.setHostname(hostname);
         config.setPort(port);
         config.setAuthorizationListener(data -> {//身份验证，直接使用jwt验证token
-//            String token = data.getHttpHeaders().get("Authorization");
+//            String token = data.getHttpHeaders().get(JavaJWT.JWT_TOKEN_KEY);
             String token = data.getSingleUrlParam("token");
             boolean result = false;
             try {

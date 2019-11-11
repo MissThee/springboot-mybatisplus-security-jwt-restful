@@ -1,6 +1,7 @@
 package com.github.common.config.cors;
 
 
+import com.github.common.config.security.jwt.JavaJWT;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ public class CorsConfig {
         // 如果要限制 HEADER 或 METHOD 请自行更改
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.addExposedHeader("Authorization");//！！！ 此处不能为*  ！！！
+        config.addExposedHeader(JavaJWT.JWT_TOKEN_KEY);//！！！ 此处不能为*  ！！！
         source.registerCorsConfiguration("/**", config);
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(0);

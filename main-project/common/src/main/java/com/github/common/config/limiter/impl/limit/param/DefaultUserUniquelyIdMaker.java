@@ -15,7 +15,7 @@ public class DefaultUserUniquelyIdMaker implements UserUniquelyIdMaker {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
             HttpServletRequest request = attributes.getRequest();
-            stringBuilder.append(request.getHeader(JavaJWT.JWT_TOKEN_KEY()));//用户令牌
+            stringBuilder.append(request.getHeader(JavaJWT.JWT_TOKEN_KEY));//用户令牌
             stringBuilder.append(request.getRemoteAddr());//IP
             stringBuilder.append(request.getRequestURI());//URI
             stringBuilder.append(request.getMethod());//METHOD

@@ -9,7 +9,7 @@ public class MyRunnable implements Runnable {
         this.list = list;
     }
 
-    public  ThreadLocal<Integer> tl = new ThreadLocal<Integer>() {
+    public ThreadLocal<Integer> tl = new ThreadLocal<Integer>() {
         @Override
         public Integer initialValue() {
             return 10;

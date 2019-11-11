@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,19 +23,10 @@ import java.util.*;
 @Component
 public class JavaJWT {
 
-    private static String JWT_TOKEN_KEY;
+    public static final String JWT_TOKEN_KEY = "Authorization";
     private static final String SECRET = "^@GSF%@#AN";
     private final String issuer = "spring-project";
     private final UserInfoForJWT userInfoForJWT;
-
-    @Value("${jwt.token.key:Authorization}")
-    public void setJWT_TOKEN_KEY(String a) {
-        JWT_TOKEN_KEY = a;
-    }
-
-    public static String JWT_TOKEN_KEY() {
-        return JWT_TOKEN_KEY;
-    }
 
     @Autowired
     public JavaJWT(UserInfoForJWT userSecretForJWT) {
@@ -50,7 +43,7 @@ public class JavaJWT {
         JWTCreator.Builder builder = JWT.create();
         //添加发布人信息【可直接解析】
         builder.withIssuer(issuer);
-        builder.withExpiresAt(toDate(LocalDateTime.now().plusDays(expiresDayFromNow)));
+        builder.withExpiresAt(getExpireDate(expiresDayFromNow));
         //添加claim附加信息【可直接解析】
         builder.withClaim("id", String.valueOf(userId));
         builder.withClaim("duration", expiresDayFromNow);
@@ -72,7 +65,7 @@ public class JavaJWT {
             }
             JWTCreator.Builder builder = JWT.create();
             builder.withIssuer(issuer);
-            builder.withExpiresAt(toDate(LocalDateTime.now().plusDays(decodedJWT.getClaim("duration").asInt())));
+            builder.withExpiresAt(getExpireDate(decodedJWT.getClaim("duration").asInt()));
             builder.withClaim("id", decodedJWT.getClaim("id").asString());
             builder.withClaim("duration", decodedJWT.getClaim("duration").asInt());
 //          builder.withArrayClaim("roleList", decodedJWT.getClaim("roleList").asList(String.class).toArray(new String[]{}));
@@ -86,10 +79,20 @@ public class JavaJWT {
         }
     }
 
-    public void updateTokenAndSetHeader(String token, HttpServletResponse httpServletResponse) {
-        token = updateToken(token);
-        if (token != null) {
-            httpServletResponse.setHeader(JWT_TOKEN_KEY, token);
+    public void updateTokenAndSetHeader(String token) {
+        updateTokenAndSetHeaderRemainDays(token, Integer.MAX_VALUE);
+    }
+
+    public void updateTokenAndSetHeaderRemainDays(String token, int minute) {
+        long tokenRemainingTime = getTokenRemainingTime(token);
+        if (tokenRemainingTime < minute && tokenRemainingTime >= 0) {
+            token = updateToken(token);
+            if (token != null) {
+                HttpServletResponse httpServletResponse = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
+                if (httpServletResponse != null) {
+                    httpServletResponse.setHeader(JWT_TOKEN_KEY, token);
+                }
+            }
         }
     }
 
@@ -122,9 +125,7 @@ public class JavaJWT {
         if (expiresDate == null) {
             return -1;
         } else {
-            LocalDateTime expiresLocalDateTime = expiresDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-            Duration duration = Duration.between(LocalDateTime.now(), expiresLocalDateTime);
-            return duration.toDays();
+            return (int) (expiresDate.getTime() - new Date().getTime()) / (1000 * 60);
         }
     }
 
@@ -146,6 +147,15 @@ public class JavaJWT {
         }
     }
 
+    public static String getId() {
+        try {
+            HttpServletRequest httpServletRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+            return getId(httpServletRequest);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     //    public static List<String> getRoleList(String token) {
 //        DecodedJWT jwt = JWT.decode(token);
 //        return jwt.getClaim("roleList").asList(String.class);
@@ -155,7 +165,11 @@ public class JavaJWT {
 //        DecodedJWT jwt = JWT.decode(token);
 //        return jwt.getClaim("permissionList").asList(String.class);
 //    }
-    private static Date toDate(LocalDateTime localDateTime) {
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+    private static Date getExpireDate(int expireDayFromNow) {
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(new Date());
+        instance.add(Calendar.DATE, expireDayFromNow);
+        return instance.getTime();
     }
 }

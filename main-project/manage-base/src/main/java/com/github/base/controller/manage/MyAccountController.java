@@ -36,7 +36,7 @@ public class MyAccountController {
     @ApiOperation(value = "修改个人密码", notes = "")
     @PatchMapping()
     public Res updateOne(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @RequestBody MyAccountVO.UpdatePasswordReq updatePasswordReq) {
-        String id = JavaJWT.getId(httpServletRequest);
+        String id = JavaJWT.getId();
         if (StringUtils.isEmpty(id)) {
             return Res.failure("无法获取当前用户信息，修改失败");
         }
@@ -47,7 +47,7 @@ public class MyAccountController {
         //更新密码
         Boolean result = myAccountService.updatePassword(Long.parseLong(id), updatePasswordReq.getNewPassword());
         try {
-            httpServletResponse.setHeader("Authorization", javaJWT.createToken(Long.parseLong(id), 7));  //添加token
+            httpServletResponse.setHeader(JavaJWT.JWT_TOKEN_KEY, javaJWT.createToken(Long.parseLong(id), 7));  //添加token
         } catch (Exception e) {
             e.printStackTrace();
         }

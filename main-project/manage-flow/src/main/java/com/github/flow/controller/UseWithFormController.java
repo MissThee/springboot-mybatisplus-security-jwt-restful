@@ -207,10 +207,10 @@ public class UseWithFormController {
     @ApiOperation(value = "表单-任务-保存属性并完成任务")
     @PutMapping("form/task")
     @Transactional(rollbackFor = Exception.class,value="actTransactionManager")
-    public Res submitTaskFormData(HttpServletRequest httpServletRequest, @RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) throws MyMethodArgumentNotValidException {
-        taskService.setAssignee(req.getTaskId(), JavaJWT.getId(httpServletRequest));
+    public Res submitTaskFormData( @RequestBody @Validated UseWithFormVO.SubmitTaskFormDataReq req) throws MyMethodArgumentNotValidException {
+        taskService.setAssignee(req.getTaskId(), JavaJWT.getId());
         if (!StringUtils.isEmpty(req.getComment())) {
-            Authentication.setAuthenticatedUserId(JavaJWT.getId(httpServletRequest));//批注人为线程绑定变量，需在同一线程内设置批注人信息。setAuthenticatedUserId的实际实现类中，使用的ThreadLocal保存变量
+            Authentication.setAuthenticatedUserId(JavaJWT.getId());//批注人为线程绑定变量，需在同一线程内设置批注人信息。setAuthenticatedUserId的实际实现类中，使用的ThreadLocal保存变量
             String processInstanceId = taskService.createTaskQuery()
                     .taskId(req.getTaskId())
                     .singleResult()
