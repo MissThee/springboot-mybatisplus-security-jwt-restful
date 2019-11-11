@@ -15,6 +15,7 @@ public class Thread1 { // 主类
         System.out.println("EXECUTE THERE!!!");
     }
 
+    //1
     private static void testMyRunnable() {
         for (int i = 0; i < THREAD_NUMBER; i++) {
             System.out.println("NEW ONE!!!");
@@ -56,6 +57,7 @@ public class Thread1 { // 主类
         }
     }
 
+    //2
     private static void testMyThread() {
         MyThread thread1 = new MyThread();
         MyThread thread2 = new MyThread();
@@ -93,6 +95,7 @@ public class Thread1 { // 主类
         }
     }
 
+    //3
     private static void testMyCallable() {
         {
             for (int i = 0; i < THREAD_NUMBER; i++) {
@@ -174,7 +177,7 @@ public class Thread1 { // 主类
         }
     }
 
-    //thread中断示例
+    //4    thread中断示例
     private static void testRunnableAndInterrupt() {
         Runnable runnable = new Runnable() {
             @Override

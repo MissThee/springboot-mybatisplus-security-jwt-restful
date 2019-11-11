@@ -23,14 +23,8 @@ public class Thread1WithLock {
         //private static ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();//读写锁特点：多个读可以同时进行读，写与其他读写互斥，写优先于读；rwl.readLock().lock(); rwl.readLock().unlock(); rwl.writeLock().lock(); rwl.writeLock().unlock();
         private Condition condition = lock.newCondition();
         private ThreadLocal<Boolean> isAwaitTL = new ThreadLocal<>();
-        private InheritableThreadLocal<Boolean> isAwaitThreadITL = new InheritableThreadLocal<>();
-        //InheritableThreadLocal可让父线程为子线程变量赋值。源码简要理解：
-        //1、调用InheritableThreadLocal的set()方法会获取当前线程(父)Thead对象，此对象中有两成员变量inheritableThreadLocals和threadLocals。InheritableThreadLocal继承于ThreadLocal，重写了部分方法，将值存储到inheritableThreadLocals中
-        //2、主线程中创建子线程Thread对象时，Thread的init()方法会判断主线程中的inheritableThreadLocals是否为null，若不为null，将数据深拷贝到新建的子线程Thread对象的inheritableThreadLocals。实现父子线程传递值
-        //（实现具体分析可见 https://blog.csdn.net/hewenbo111/article/details/80487252）
-        //注：若InheritableThreadLocal与线程池搭配使用，因线程池中线程可能被缓存起来，重复使用同一线程时，不会再对此线程绑定变量进行初始化操作。解决方案可使用第三方类库 https://github.com/alibaba/transmittable-thread-local
+
         public void setIsAwait(Boolean isAwait) {
-            this.isAwaitThreadITL.set(isAwait);//若使用ThreadLocal则此处赋值绑定在主线程，子线程获取时报空指针异常，读取不到值。
             this.isAwaitTL.set(isAwait);
         }
 
