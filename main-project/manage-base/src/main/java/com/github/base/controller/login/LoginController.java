@@ -2,13 +2,12 @@ package com.github.base.controller.login;
 
 import com.github.base.dto.login.AuthDTO;
 import com.github.base.service.interf.login.AuthInfoService;
-import com.github.base.service.interf.manage.UserService;
+import com.github.base.service.interf.manage.SysUserService;
 import com.github.base.vo.login.LoginVO;
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiOperationSort;
 import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +30,7 @@ public class LoginController {
     private final JavaJWT javaJWT;
 
     @Autowired
-    public LoginController(AuthInfoService authInfoService, JavaJWT javaJWT, UserService userService) {
+    public LoginController(AuthInfoService authInfoService, JavaJWT javaJWT, SysUserService sysUserService) {
         this.authInfoService = authInfoService;
         this.javaJWT = javaJWT;
     }

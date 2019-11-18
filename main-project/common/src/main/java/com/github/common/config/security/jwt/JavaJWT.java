@@ -4,11 +4,15 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -96,19 +100,32 @@ public class JavaJWT {
         }
     }
 
-    public boolean verifyToken(String token) {
+    //通过与未通过之外的异常直接抛出
+    public Boolean verifyToken(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return false; //验证未通过
+        }
         try {
-            DecodedJWT decodedJWT = JWT.decode(token);
-            String id = decodedJWT.getClaim("id").asString();
+            DecodedJWT decodedJWT;
+            try {
+                decodedJWT = JWT.decode(token);
+            } catch (Exception e) {
+                return false; //验证未通过
+            }
+            Map<String, Claim> claims = decodedJWT.getClaims();
+            if (!claims.containsKey("id")) {
+                return false; //验证未通过
+            }
+            String id = claims.get("id").asString();
             Algorithm algorithm = Algorithm.HMAC256(secretBuilder(id));
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(issuer)
                     .build();
             verifier.verify(token);
-        } catch (Exception ignored) {
-            return false;
+        } catch (JWTVerificationException ignored) {
+            return false; //验证未通过
         }
-        return true;
+        return true; //验证通过
     }
 
     private byte[] secretBuilder(Object userId) {

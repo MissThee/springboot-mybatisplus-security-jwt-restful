@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
+
+    <bean id="student" class="com.example.demo6aop.Student">
+        <property name="name" value="学生"/>
+        <property name="age" value="11"/>
+    </bean>
+    <bean id="teacher" class="com.example.demo6aop.Teacher">
+        <property name="name" value="老师"/>
+        <property name="age" value="21"/>
+    </bean>
+    <!--使用xml配置切面 -->
+    <bean id="aspectAdvice" class="com.example.demo6aop.AspectAdvice"/>
+    <aop:config>
+        <!--ref为包含要执行的切面方法的bean-->
+        <aop:aspect id="log" ref="aspectAdvice">
+            <aop:pointcut id="myPointCut"
+                          expression="execution(* com.example.demo6aop.Student.*(..))"/>
+            <aop:before pointcut-ref="myPointCut"
+                        method="beforeAdvice"/>
+            <aop:after pointcut-ref="myPointCut"
+                       method="afterAdvice"/>
+            <!--returning必须有，接收被切方法的返回值-->
+            <aop:after-returning pointcut-ref="myPointCut"
+                                 returning="returnValue"
+                                 method="afterReturningAdvice"/>
+            <!--throwing必须有，Throwable类型或其子类型参数-->
+            <aop:after-throwing pointcut-ref="myPointCut"
+                                throwing="e"
+                                method="afterThrowingAdvice"/>
+            <aop:around pointcut-ref="myPointCut"
+                        method="aroundAdvice"/>
+        </aop:aspect>
+    </aop:config>
+    <!--使用注解配置切面 -->
+    <aop:aspectj-autoproxy/>
+    <bean id="aspectAdviceAnnotation" class="com.example.demo6aop.AspectAdviceAnnotation"/>
+</beans>

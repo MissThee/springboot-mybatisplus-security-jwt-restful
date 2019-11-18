@@ -9,7 +9,7 @@ import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
 import com.github.base.dto.login.AuthDTO;
 import com.github.base.service.interf.login.AuthInfoService;
-import com.github.base.service.interf.manage.UserService;
+import com.github.base.service.interf.manage.SysUserService;
 import com.github.common.config.security.jwt.JavaJWT;
 import com.github.common.tool.Res;
 import com.github.socketio.model.MessageModel;
@@ -32,7 +32,7 @@ public class MessageEventHandler {
     private final AuthInfoService authInfoService;
 
     @Autowired
-    public MessageEventHandler(SocketIOServer server, UserService userService,  AuthInfoService authInfoService) {
+    public MessageEventHandler(SocketIOServer server, SysUserService sysUserService, AuthInfoService authInfoService) {
         socketIoServer = server;
         this.authInfoService = authInfoService;
     }

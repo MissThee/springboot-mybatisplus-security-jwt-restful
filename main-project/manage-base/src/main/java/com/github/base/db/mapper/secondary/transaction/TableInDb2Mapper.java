@@ -6,11 +6,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * <p>
- *  Mapper 接口
+ *  Mapper 接口 仅为做多数据源事务测试用
  * </p>
  *
  * @author WORK-PC,MT
  * @since 2019-07-26
+ *
  */
 @Component
 public interface TableInDb2Mapper extends BaseMapper<TableInDb2> {

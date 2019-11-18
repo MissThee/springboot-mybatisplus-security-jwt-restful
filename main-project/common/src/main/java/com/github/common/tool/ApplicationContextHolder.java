@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Component
+@Component//必须被扫描到
 public class ApplicationContextHolder implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
 
@@ -18,6 +18,10 @@ public class ApplicationContextHolder implements ApplicationContextAware {
 
     public static Object getBean(String beanName) {
         return applicationContext.getBean(beanName);
+    }
+
+    public static <T> T getBean(String beanName, Class<T> clazz) {
+        return applicationContext.getBean(beanName, clazz);
     }
 
     public static <T> T getBean(Class<T> clazz) {

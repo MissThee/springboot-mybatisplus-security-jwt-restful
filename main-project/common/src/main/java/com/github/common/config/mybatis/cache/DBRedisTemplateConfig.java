@@ -15,9 +15,10 @@ public class DBRedisTemplateConfig {
     RedisTemplate<Object, Object> DBRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        ObjectMapper mapper = new ObjectMapper() {{
+            setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+            activateDefaultTyping(this.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
+        }};
         Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer<>(Object.class);
         serializer.setObjectMapper(mapper);
 

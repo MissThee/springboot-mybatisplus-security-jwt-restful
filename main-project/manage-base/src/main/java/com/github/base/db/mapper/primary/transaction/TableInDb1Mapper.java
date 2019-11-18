@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * <p>
- *  Mapper 接口
+ *  Mapper 接口 仅为做多数据源事务测试用
  * </p>
  *
  * @author WORK-PC,MT
