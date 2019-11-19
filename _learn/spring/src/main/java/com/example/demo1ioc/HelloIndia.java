@@ -1,6 +1,10 @@
 package com.example.demo1ioc;
 
 public class HelloIndia {
+    HelloIndia() {
+        System.out.println("HelloIndia构造函数执行");
+    }
+
     private String message;
 
     private String message1;
