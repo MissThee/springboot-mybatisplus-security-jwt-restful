@@ -20,18 +20,26 @@ import java.util.stream.Collectors;
 public class MybatisPlusGen {
     private static StringBuilder ShowInConsole = new StringBuilder();
     //main-project开始的配置文件路径
-    private static String propertiesFilePath = "/common/src/main/resources/application-common.properties";
+    private static final String propertiesFilePath = "/common/src/main/resources/application-common.properties";
+    private static final String packageNameAfterCom = "github";
 
     public static void main(String[] args) throws IOException {
         //配置文件数据源选择
         final String dbTagName = getDbTagName();
         final String subProjectName = getSubProjectName();
-        final String functionName = scanner("输入生成的文件所属包名（可写多层包名，点分隔）：\n\r[附加说明：如选择的子项目为manage-base，则现在输入的包会新建在其controller、db/mapper/primary、service/imp、service/interf等下面，可观察现在项目中，以上路径均有名为manage的包]");
-        updateConsole("已输入包名：" + functionName);
+        final String functionPackageName = scanner(
+                "输入生成的文件所属包名（可写多层包名，点分隔）：" +
+                        "\n\r附加说明：" +
+                        "\n\r如选择的子项目为manage-base，则文件会生成在com.github.base中。其中com.github为固定值，最后的值为子项目名最后一个“-”之后的字符串，若没有“-”，则直接使用子项目名" +
+                        "\n\r文件会输出到目录下的 controller、db/mapper/primary、service/imp、service/interf等下面" +
+                        "\n\r可观察现在子项目manage-base中，以上路径均有名为manage的包，“manage”为生成时此步骤输入的字符串");
+        updateConsole("已输入包名：" + functionPackageName);
+        updateConsole("    ┕━预期输出目录(entity举例)：" + System.getProperty("user.dir") + "/main-project/" + subProjectName + "/src/main/java  com." + packageNameAfterCom + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName) + ".db.entity." + functionPackageName);
+
         String tableNameStr = getTableNameStr();
         final List<String> tableName = Arrays.stream(tableNameStr.split(",")).filter(e -> !e.equals("")).collect(Collectors.toList());
-        final String templateSelect = scanner("[最后]选择生成内容(可多选):\n\r1 entity \n\r2 mapper.java \n\r3 mapper.xml \n\r4 service \n\r5 impl \n\r6 controller");
-        GenerateCodeExcludeModel(subProjectName, functionName, tableName, templateSelect, dbTagName);
+        final String templateSelect = scanner("[最后]选择生成内容(输入序号，可多选如：1345):\n\r[1] entity \n\r[2] mapper.java \n\r[3] mapper.xml \n\r[4] service \n\r[5] impl \n\r[6] controller");
+        GenerateCodeExcludeModel(subProjectName, functionPackageName, tableName, templateSelect, dbTagName);
     }
 
     private static String getTableNameStr() {
@@ -47,7 +55,7 @@ public class MybatisPlusGen {
     private static String getDbTagName() {
         String dbTagName = null;
         while (dbTagName == null) {
-            String input = scanner("请选择数据源spring.datasource.XXX ：\n\r1 primary\n\r2 secondary");
+            String input = scanner("请选择数据源spring.datasource.XXX，输入序号 ：\n\r[1] primary\n\r[2] secondary");
             switch (input) {
                 case "1":
                     dbTagName = "primary";
@@ -78,15 +86,12 @@ public class MybatisPlusGen {
         }
         StringBuilder subProjectPathNameStr = new StringBuilder();
         for (int i = 0; i < subProjectPathNameList.size(); i++) {
-            subProjectPathNameStr.append("\n\r");
-            subProjectPathNameStr.append(i + 1);
-            subProjectPathNameStr.append(" ");
+            subProjectPathNameStr.append("\n\r").append("[").append(i + 1).append("] ");
             subProjectPathNameStr.append(subProjectPathNameList.get(i));
-
         }
         String subProjectName = null;
         while (subProjectName == null) {
-            String input = scanner("选择生成代码存放的子项目：" + subProjectPathNameStr.toString());
+            String input = scanner("选择生成代码存放的子项目，输入序号：" + subProjectPathNameStr.toString());
             try {
                 subProjectName = subProjectPathNameList.get(Integer.parseInt(input) - 1);
             } catch (Exception ignored) {
@@ -109,7 +114,7 @@ public class MybatisPlusGen {
         System.out.println("===================================================================");
     }
 
-    private static void GenerateCodeExcludeModel(String subProjectName, String functionName, List<String> tableName, String templateSelect, String dbSelectTmp) throws IOException {
+    private static void GenerateCodeExcludeModel(String subProjectName, String functionPackageName, List<String> tableName, String templateSelect, String dbSelectTmp) throws IOException {
         final String dbSelect = dbSelectTmp;
 
         //获取main-project路径
@@ -156,14 +161,15 @@ public class MybatisPlusGen {
         }
         File file = new File(projectPath + "/" + subProjectName + "/src/main/java");
         File packageName = Objects.requireNonNull(file.listFiles())[0];
+        String aa = packageName.getName();
         // 包配置
         PackageConfig pc = new PackageConfig()
-                .setParent(packageName.getName() + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName))
-                .setEntity("db.entity." + dbSelect + "." + functionName)
-                .setMapper("db.mapper." + dbSelect + "." + functionName)
-                .setService("service.interf" + "." + functionName)
-                .setController("controller" + "." + functionName)
-                .setServiceImpl("service.imp" + "." + functionName);
+                .setParent(packageName.getName() + "." + packageNameAfterCom + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName))
+                .setEntity("db.entity." + dbSelect + "." + functionPackageName)
+                .setMapper("db.mapper." + dbSelect + "." + functionPackageName)
+                .setService("service.interf" + "." + functionPackageName)
+                .setController("controller" + "." + functionPackageName)
+                .setServiceImpl("service.imp" + "." + functionPackageName);
         mpg.setPackageInfo(pc);
 
         // 策略配置
@@ -212,7 +218,7 @@ public class MybatisPlusGen {
                     public String outputFile(TableInfo tableInfo) {
                         // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
                         return projectPath + "/" + subProjectName + "/src/main/resources/mybatis/mapper/" + dbSelect + "/generate/"
-                                + functionName + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
+                                + functionPackageName + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                     }
                 });
 
@@ -232,7 +238,7 @@ public class MybatisPlusGen {
      */
     private static String scanner(String tip) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println(tip + "\n\r请输入：");
+        System.out.println(tip + "\n\r请输入，回车确定：");
         if (scanner.hasNext()) {
             String ipt = scanner.next();
             if (StringUtils.isNotEmpty(ipt)) {
