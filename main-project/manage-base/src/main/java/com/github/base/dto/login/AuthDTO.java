@@ -13,5 +13,6 @@ import java.util.Collection;
 public class AuthDTO extends SysUser {
     private Collection<String> roleValueList;
     private Collection<String> permissionValueList;
+    private Long unitId;
     private String unitName;
 }

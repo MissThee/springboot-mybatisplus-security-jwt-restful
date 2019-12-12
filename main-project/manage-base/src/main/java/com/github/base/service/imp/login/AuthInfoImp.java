@@ -148,6 +148,7 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
         authDTO.setRoleValueList(roleValueList);
         addSpecialPermission(permissionValueList, user);
         authDTO.setPermissionValueList(permissionValueList);
+        authDTO.setUnitId(unit.getId());
         authDTO.setUnitName(unit.getName());
         return authDTO;
     }
