@@ -25,7 +25,7 @@ public class SysUnitVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("UnitVO.InsertOneReq")
-    public static class InsertOneReq  extends SysUnitInsertOneDTO {
+    public static class InsertOneReq extends SysUnitInsertOneDTO {
 
     }
 
@@ -71,6 +71,26 @@ public class SysUnitVO {
     public static class SelectTreeRes {
         @ApiModelProperty(value = "组织结构树")
         private List<Object> unitTree;
+    }
+
+    @Data
+    @Accessors(chain = true)
+    @ApiModel("UnitVO.SelectListReq")
+    public static class SelectListReq {
+        @ApiModelProperty(value = "排序<字段名,是正序>", example = "{'name':true}")
+        private LinkedHashMap<String, Boolean> orderBy;
+        @ApiModelProperty(value = "根节点id。不传此值或为null时，返回所有节点", example = "null")
+        private Long rootId;
+        @ApiModelProperty(value = "是否包含已删除节点", example = "false")
+        private Boolean isDelete = false;
+    }
+
+    @Data
+    @Accessors(chain = true)
+    @ApiModel("UnitVO.SelectListRes")
+    public static class SelectListRes {
+        @ApiModelProperty(value = "组织结构表")
+        private List<SysUnit> unitList;
     }
 
     @EqualsAndHashCode(callSuper = true)

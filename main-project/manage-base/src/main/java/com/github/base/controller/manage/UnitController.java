@@ -80,7 +80,7 @@ public class UnitController {
 
     @ApiOperation(value = "组织结构列表（树状）", notes = "")
     @PostMapping("/tree")
-    public Res<SysUnitVO.SelectTreeRes> selectList(@RequestBody SysUnitVO.SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
+    public Res<SysUnitVO.SelectTreeRes> selectTree(@RequestBody SysUnitVO.SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
         List<SysUnit> unitList = sysUnitService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
         List<Object> tree = TreeData.tree(unitList, selectListReq.getRootId(), false, new HashMap<String, String>() {{
             put("type", "type");
@@ -89,5 +89,12 @@ public class UnitController {
             put("indexNum", "indexNum");
         }});
         return Res.success(new SysUnitVO.SelectTreeRes().setUnitTree(tree));
+    }
+
+    @ApiOperation(value = "组织结构列表", notes = "")
+    @PostMapping("/list")
+    public Res<SysUnitVO.SelectListRes> selectList(@RequestBody SysUnitVO.SelectListReq selectListReq) {
+        List<SysUnit> unitList = sysUnitService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
+        return Res.success(new SysUnitVO.SelectListRes().setUnitList(unitList));
     }
 }
