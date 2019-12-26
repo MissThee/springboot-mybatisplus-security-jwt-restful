@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script>
+    "use strict";
+    //定义get set 的三种方式
+    //1、直接在对象内设置
+    var obj1 = {
+        _name: '原始值1',
+        get name() {
+            console.log('obj1 的 get 调用');
+            return this._name;
+        },
+        set name(name) {
+            console.log('obj1 的 set 调用');
+            this._name = name;
+        }
+    };
+
+    console.info(obj1.name);  //shaanxia
+    obj1.name = 'set by set keywords';
+    console.info(obj1.name);  //set by set keywordsa
+    console.info("obj1 all", Object.getOwnPropertyDescriptors(obj1));
+
+    //2、使用原型方法
+    var obj2 = {
+        _name: '原始值2'
+    };
+    obj2.__defineGetter__('name', function () {
+        console.log('obj2 的 get 调用');
+        return this._name;
+    });
+    obj2.__defineSetter__('name', function (name) {
+        console.log('obj2 的 set 调用');
+        this._name = name;
+    });
+    console.info(obj2.name);  //shaanxi
+    obj2.name = 'set by __defineSetter__';
+    console.info(obj2.name);  //set by __defineSetter__
+    console.info("obj2 all", Object.getOwnPropertyDescriptors(obj2));
+
+    //3、使用 Object.defineProperty() 和 Object.defineProperties()进行设置
+    var obj3 = {
+        _name: "原始值3"
+    };
+    Object.defineProperties(obj3, {
+        name: {
+            get: function () {
+                console.log('obj3 的 get 调用');
+                return this._name;
+            },
+            set: function (value) {
+                console.log('obj3 的 set 调用');
+                this._name = value;
+            }
+        },
+    });
+
+    console.info(obj3.name);  //shaanxi
+    obj3.name = 'set by Object.defineProperty';
+    console.info(obj3.name);  //set by Object.defineProperty
+    console.info("obj3 all", Object.getOwnPropertyDescriptors(obj3));
+    //如果没有设置get则这个属性不可读，如果没有设置set，这个属性不可修改;
+
+    //为数据属性，属性描述:    configurable，enumerable，writable，value。（就是普通用的对象内的变量）
+    //为访问器属性，属性描述:  configurable，enumerable，get，set。（就是用了get\set的方法,如果set和set都没定义那这个属性就是数据属性）
+
+
+    //Object.defineProperties(对象,{ 属性名:function(){ 属性描述 }})         定义多个属性(数据属性或者访问器属性),通过这个方式新增的属性 属性特性都为false
+    //Object.defineProperty(对象,属性名,{属性描述})                          定义多个属性(数据属性或者访问器属性),通过这个方式新增的属性 属性特性都为false
+    //如果不指定
+    // configurable 默认false
+    // writable 默认false
+    // enumerable 默认false
+    // value 默认undefined
+    // get 默认undefined
+    // set 默认undefined
+
+    //Object.getOwnPropertyDescriptors(对象)          查看对象所有属性的信息
+    //Object.getOwnPropertyDescriptor(对象, 属性名)    查看对象指定属性信息
+</script>
+</body>
+</html>
