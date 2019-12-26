@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InvalidAttributeValueException;
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,7 @@ public class UnitController {
     @ApiOperation(value = "增加组织结构", notes = "")
     @PutMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'unit'))")
-    public Res<SysUnitVO.InsertOneRes> insertOne(@RequestBody SysUnitVO.InsertOneReq insertOneReq) {
+    public Res<SysUnitVO.InsertOneRes> insertOne(@RequestBody @Valid SysUnitVO.InsertOneReq insertOneReq) {
         Long id = sysUnitService.insertOne(insertOneReq);
         return Res.res(id != null, new SysUnitVO.InsertOneRes().setId(id), "添加" + (id != null ? "成功" : "失败"));
     }
@@ -60,7 +61,7 @@ public class UnitController {
     @ApiOperation(value = "修改组织结构", notes = "")
     @PatchMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'unit'))")
-    public Res updateOne(@RequestBody SysUnitVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public Res updateOne(@RequestBody @Valid SysUnitVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         List<SysUnit> unitList = sysUnitService.selectList(true, null);
         List<Object> childIdList = TreeData.getChildIdList(unitList, updateOneReq.getId());
         if (childIdList.contains(updateOneReq.getParentId())) {

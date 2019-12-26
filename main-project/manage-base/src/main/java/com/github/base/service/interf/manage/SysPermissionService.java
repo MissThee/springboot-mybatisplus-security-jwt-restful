@@ -1,8 +1,7 @@
 package com.github.base.service.interf.manage;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.github.base.dto.manage.permission.SysPermissionInsertOneDTO;
-import com.github.base.dto.manage.permission.SysPermissionUpdateOneDTO;
+import com.github.base.vo.manage.SysPermissionVO;
 import com.github.common.db.entity.primary.SysPermission;
 
 import javax.management.InvalidAttributeValueException;
@@ -11,11 +10,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface SysPermissionService extends IService<SysPermission> {
-    Long insertOne(SysPermissionInsertOneDTO permissionInsertOneDTO);
+    Long insertOne(SysPermissionVO.InsertOneReq insertOneReq);
 
     Boolean deleteOne(Long id);
 
-    Boolean updateOne(SysPermissionUpdateOneDTO permissionUpdateOneDTO);
+    Boolean updateOne(SysPermissionVO.UpdateOneReq  updateOneReq);
 
     SysPermission selectOne(Long id);
 

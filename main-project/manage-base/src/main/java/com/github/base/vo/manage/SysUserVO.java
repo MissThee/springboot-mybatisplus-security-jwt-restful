@@ -2,14 +2,13 @@ package com.github.base.vo.manage;
 
 import com.github.base.dto.manage.user.SysUserInTableDTO;
 import com.github.base.dto.manage.user.SysUserInTableDetailDTO;
-import com.github.base.dto.manage.user.SysUserInsertOneDTO;
-import com.github.base.dto.manage.user.SysUserUpdateOneDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -23,12 +22,30 @@ public class SysUserVO {
         private Long id;
     }
 
-    @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
     @ApiModel("UserVO.InsertOneReq")
-    public static class InsertOneReq extends SysUserInsertOneDTO {
-
+    public static class InsertOneReq  {
+        @ApiModelProperty(value = "昵称", example = "用户1")
+        @NotEmpty(message = "昵称不能为空")
+        private String nickname;
+        @ApiModelProperty(value = "用户名/账号", example = "user1")
+        @NotEmpty(message = "用户名/账号不能为空")
+        private String username;
+        @ApiModelProperty(value = "初始密码", example = "123456")
+        @NotEmpty(message = "初始密码不能为空")
+        private String password;
+        @ApiModelProperty(value = "账户状态true可用，false停用", example = "true")
+        @NotNull(message = "账户状态不能为空")
+        private Boolean isEnable;
+        @ApiModelProperty(value = "是否为管理员", example = "false")
+        @NotNull(message = "是否为管理员状态不能为空")
+        private Boolean isAdmin;
+        @ApiModelProperty(value = "角色id号集合")
+        private List<Long> roleIdList;
+        @ApiModelProperty(value = "所属组织机构id号")
+        @NotNull(message = "所属组织机构不能为空")
+        private Long unitId;
     }
 
     @Data
@@ -79,12 +96,29 @@ public class SysUserVO {
         private SysUserInTableDetailDTO user;
     }
 
-    @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
     @ApiModel("UserVO.UpdateOneReq")
-    public static class UpdateOneReq extends SysUserUpdateOneDTO {
-
+    public static class UpdateOneReq {
+        @ApiModelProperty(value = "用户id")
+        private Long id;
+        @ApiModelProperty(value = "昵称", example = "用户1")
+        @NotEmpty(message = "昵称不能为空")
+        private String nickname;
+        @ApiModelProperty(value = "用户名/账号", example = "user1")
+        @NotEmpty(message = "用户名/账号不能为空")
+        private String username;
+        @ApiModelProperty(value = "账户状态", example = "true")
+        @NotNull(message = "账户状态不能为空")
+        private Boolean isEnable;
+        @ApiModelProperty(value = "是否为管理员", example = "false")
+        @NotNull(message = "是否为管理员状态不能为空")
+        private Boolean isAdmin;
+        @ApiModelProperty(value = "角色id号集合")
+        private List<Long> roleIdList;
+        @ApiModelProperty(value = "所属组织机构id号")
+        @NotNull(message = "所属组织机构不能为空")
+        private Long unitId;
     }
 
     @Data

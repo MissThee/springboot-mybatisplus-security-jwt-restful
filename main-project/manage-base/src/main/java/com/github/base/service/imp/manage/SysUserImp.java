@@ -5,9 +5,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.base.db.mapper.primary.manage.*;
 import com.github.base.dto.manage.user.SysUserInTableDTO;
 import com.github.base.dto.manage.user.SysUserInTableDetailDTO;
-import com.github.base.dto.manage.user.SysUserInsertOneDTO;
-import com.github.base.dto.manage.user.SysUserUpdateOneDTO;
 import com.github.base.service.interf.manage.SysUserService;
+import com.github.base.vo.manage.SysUserVO;
 import com.github.common.config.security.jwt.UserInfoForJWT;
 import com.github.common.db.entity.primary.*;
 import com.github.common.tool.SimplePageInfo;
@@ -45,14 +44,14 @@ public class SysUserImp extends ServiceImpl<SysUserMapper, SysUser> implements S
 
     @Override
     @Transactional(rollbackFor = Exception.class, value = "primaryTransactionManager")
-    public Long insertOne(SysUserInsertOneDTO userInsertOneDTO) {
-        SysUser user = mapperFacade.map(userInsertOneDTO, SysUser.class);
+    public Long insertOne(SysUserVO.InsertOneReq insertOneReq) {
+        SysUser user = mapperFacade.map(insertOneReq, SysUser.class);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userMapper.insert(user);
         Long userId = user.getId();
         if (userId != null) {
-            updateUserRole(user.getId(), userInsertOneDTO.getRoleIdList().toArray(new Long[0]));
-            updateUserUnit(user.getId(), userInsertOneDTO.getUnitId());
+            updateUserRole(user.getId(), insertOneReq.getRoleIdList().toArray(new Long[0]));
+            updateUserUnit(user.getId(), insertOneReq.getUnitId());
         }
         return userId;
     }
@@ -72,7 +71,7 @@ public class SysUserImp extends ServiceImpl<SysUserMapper, SysUser> implements S
 
     @Override
     @Transactional(rollbackFor = Exception.class, value = "primaryTransactionManager")
-    public Boolean updateOne(SysUserUpdateOneDTO updateOneReq) {
+    public Boolean updateOne(SysUserVO.UpdateOneReq updateOneReq) {
         //拷贝用户信息，生成User对象
         SysUser user = mapperFacade.map(updateOneReq, SysUser.class);
         //更新信息
@@ -200,12 +199,6 @@ public class SysUserImp extends ServiceImpl<SysUserMapper, SysUser> implements S
         return userMapper.deleteById(id) > 0;
     }
 
-    @Override
-    public Boolean isExist(String username) {
-        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(SysUser.USERNAME, username);
-        return userMapper.selectList(queryWrapper).size() > 0;
-    }
 
     @Override
     public Boolean resetDefaultPassword(Long id) {

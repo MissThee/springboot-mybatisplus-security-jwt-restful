@@ -1,5 +1,6 @@
 package com.github.base.controller.manage;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.base.dto.manage.user.SysUserInTableDTO;
 import com.github.base.dto.manage.user.SysUserInTableDetailDTO;
 import com.github.base.service.interf.manage.SysUserService;
@@ -12,9 +13,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InvalidAttributeValueException;
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 
 @Api(tags = "基础管理-用户管理")
@@ -33,10 +36,15 @@ public class UserController {
 
     @ApiOperation(value = "增加用户", notes = "")
     @PutMapping()
-    public Res<SysUserVO.InsertOneRes> insertOne(@RequestBody SysUserVO.InsertOneReq insertOneReq) {
-        Boolean isDuplicate = sysUserService.isExist(insertOneReq.getUsername());
-        if (isDuplicate) {
-            return Res.failure("用户名已存在");
+    @Transactional(rollbackFor = Exception.class, value = "primaryTransactionManager")
+    public Res<SysUserVO.InsertOneRes> insertOne(@RequestBody @Valid SysUserVO.InsertOneReq insertOneReq) {
+        {
+            QueryWrapper<SysUser> qw = new QueryWrapper<>();
+            qw.eq(SysUser.USERNAME, insertOneReq.getUsername());
+            boolean isDuplicate = sysUserService.count(qw) >0;
+            if (isDuplicate) {
+                return Res.failure("用户名已存在");
+            }
         }
         Long id = sysUserService.insertOne(insertOneReq);
         return Res.res(id != null, new SysUserVO.InsertOneRes().setId(id), "添加" + (id != null ? "成功" : "失败"));
@@ -66,7 +74,17 @@ public class UserController {
 
     @ApiOperation(value = "修改用户", notes = "")
     @PatchMapping
-    public Res updateOne(@RequestBody SysUserVO.UpdateOneReq updateOneReq) {
+    @Transactional(rollbackFor = Exception.class, value = "primaryTransactionManager")
+    public Res updateOne(@RequestBody @Valid SysUserVO.UpdateOneReq updateOneReq) {
+        {
+            QueryWrapper<SysUser> qw = new QueryWrapper<>();
+            qw.ne(SysUser.ID,updateOneReq.getId());
+            qw.eq(SysUser.USERNAME, updateOneReq.getUsername());
+            boolean isDuplicate = sysUserService.count(qw) > 0;
+            if (isDuplicate) {
+                return Res.failure("用户名已存在");
+            }
+        }
         Boolean result = sysUserService.updateOne(updateOneReq);
         return Res.res(result, "修改" + (result ? "成功" : "失败"));
     }

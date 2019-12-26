@@ -2,8 +2,7 @@ package com.github.base.service.interf.manage;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.base.dto.manage.role.SysRoleInTableDetailDTO;
-import com.github.base.dto.manage.role.SysRoleInsertOneDTO;
-import com.github.base.dto.manage.role.SysRoleUpdateOneDTO;
+import com.github.base.vo.manage.SysRoleVO;
 import com.github.common.db.entity.primary.SysRole;
 import com.github.common.tool.SimplePageInfo;
 
@@ -13,11 +12,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface SysRoleService extends IService<SysRole> {
-    Long insertOne(SysRoleInsertOneDTO roleInsertOneDTO);
+    Long insertOne(SysRoleVO.InsertOneReq insertOneReq);
 
     Boolean deleteOne(Long id);
 
-    Boolean updateOne(SysRoleUpdateOneDTO roleUpdateOneDTO);
+    Boolean updateOne(SysRoleVO.UpdateOneReq roleUpdateOneDTO);
 
     SysRoleInTableDetailDTO selectOne(Long id);
 

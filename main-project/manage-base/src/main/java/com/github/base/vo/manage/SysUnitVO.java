@@ -1,7 +1,5 @@
 package com.github.base.vo.manage;
 
-import com.github.base.dto.manage.unit.SysUnitInsertOneDTO;
-import com.github.base.dto.manage.unit.SysUnitUpdateOneDTO;
 import com.github.common.db.entity.primary.SysUnit;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -21,12 +20,19 @@ public class SysUnitVO {
         private Long id;
     }
 
-    @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
     @ApiModel("UnitVO.InsertOneReq")
-    public static class InsertOneReq extends SysUnitInsertOneDTO {
-
+    public static class InsertOneReq  {
+        @ApiModelProperty(value = "父id")
+        private Long parentId;
+        @ApiModelProperty(value = "名称")
+        @NotEmpty(message = "名称不能为空")
+        private String name;
+        @ApiModelProperty(value = "类型")
+        private String type;
+        @ApiModelProperty(value = "排序")
+        private Long indexNum;
     }
 
     @Data
@@ -97,7 +103,7 @@ public class SysUnitVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("UnitVO.UpdateOneReq")
-    public static class UpdateOneReq extends SysUnitUpdateOneDTO {
+    public static class UpdateOneReq extends InsertOneReq {
         @ApiModelProperty(value = "组织结构id")
         private Long id;
     }

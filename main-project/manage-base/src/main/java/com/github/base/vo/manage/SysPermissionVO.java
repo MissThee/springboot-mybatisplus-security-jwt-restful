@@ -1,7 +1,5 @@
 package com.github.base.vo.manage;
 
-import com.github.base.dto.manage.permission.SysPermissionInsertOneDTO;
-import com.github.base.dto.manage.permission.SysPermissionUpdateOneDTO;
 import com.github.common.db.entity.primary.SysPermission;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -21,12 +21,24 @@ public class SysPermissionVO {
         private Long id;
     }
 
-    @EqualsAndHashCode(callSuper = true)
     @Data
     @Accessors(chain = true)
     @ApiModel("PermissionVO.InsertOneReq")
-    public static class InsertOneReq extends SysPermissionInsertOneDTO {
-
+    public static class InsertOneReq   {
+        @ApiModelProperty(value = "父级id")
+        private Long parentId;
+        @ApiModelProperty(value = "名称")
+        @NotEmpty(message = "名称不能为空")
+        private String name;
+        @ApiModelProperty(value = "权限值（唯一），应取自后台编码设定的权限值")
+        @NotEmpty(message = "权限值不能为空")
+        private String permission;
+        @ApiModelProperty(value = "类型")
+        private String Type;
+        @ApiModelProperty(value = "可用状态")
+        private String isEnable;
+        @ApiModelProperty(value = "排序序号")
+        private Integer indexNum;
     }
 
     @Data
@@ -77,7 +89,7 @@ public class SysPermissionVO {
     @Data
     @Accessors(chain = true)
     @ApiModel("PermissionVO.UpdateOneReq")
-    public static class UpdateOneReq extends SysPermissionUpdateOneDTO {
+    public static class UpdateOneReq extends InsertOneReq {
         @ApiModelProperty(value = "权限id")
         private Long id;
     }

@@ -2,13 +2,11 @@ package com.github.base.service.imp.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.base.db.mapper.primary.manage.SysPermissionMapper;
 import com.github.base.db.mapper.primary.manage.SysRoleMapper;
 import com.github.base.db.mapper.primary.manage.SysRolePermissionMapper;
 import com.github.base.dto.manage.role.SysRoleInTableDetailDTO;
-import com.github.base.dto.manage.role.SysRoleInsertOneDTO;
-import com.github.base.dto.manage.role.SysRoleUpdateOneDTO;
 import com.github.base.service.interf.manage.SysRoleService;
+import com.github.base.vo.manage.SysRoleVO;
 import com.github.common.db.entity.primary.SysRole;
 import com.github.common.db.entity.primary.SysRolePermission;
 import com.github.common.tool.SimplePageInfo;
@@ -29,23 +27,21 @@ public class SysRoleImp extends ServiceImpl<SysRoleMapper, SysRole> implements S
     private final MapperFacade mapperFacade;
     private final SysRoleMapper roleMapper;
     private final SysRolePermissionMapper rolePermissionMapper;
-  private final SysPermissionMapper sysPermissionMapper;
 
     @Autowired
-    public SysRoleImp(SysRoleMapper roleMapper, MapperFacade mapperFacade, SysRolePermissionMapper rolePermissionMapper, SysPermissionMapper sysPermissionMapper) {
+    public SysRoleImp(SysRoleMapper roleMapper, MapperFacade mapperFacade, SysRolePermissionMapper rolePermissionMapper) {
         this.roleMapper = roleMapper;
         this.mapperFacade = mapperFacade;
         this.rolePermissionMapper = rolePermissionMapper;
-        this.sysPermissionMapper = sysPermissionMapper;
     }
 
     @Override
-    public Long insertOne(SysRoleInsertOneDTO roleInsertOneDTO) {
-        SysRole role = mapperFacade.map(roleInsertOneDTO, SysRole.class);
+    public Long insertOne(SysRoleVO.InsertOneReq insertOneReq) {
+        SysRole role = mapperFacade.map(insertOneReq, SysRole.class);
         roleMapper.insert(role);
         Long roleId = role.getId();
         if (roleId != null) {
-            updateRolePermission(roleInsertOneDTO.getPermissionIdList(), role.getId());
+            updateRolePermission(insertOneReq.getPermissionIdList(), role.getId());
         }
         return roleId;
     }
@@ -65,13 +61,13 @@ public class SysRoleImp extends ServiceImpl<SysRoleMapper, SysRole> implements S
     }
 
     @Override
-    public Boolean updateOne(SysRoleUpdateOneDTO roleUpdateOneDTO) {
+    public Boolean updateOne(SysRoleVO.UpdateOneReq updateOneReq) {
         //拷贝用户信息，生成Role对象
-        SysRole role = mapperFacade.map(roleUpdateOneDTO, SysRole.class);
+        SysRole role = mapperFacade.map(updateOneReq, SysRole.class);
         //更新信息
         Boolean result = roleMapper.updateById(role) > 0;
         if (result) {
-            updateRolePermission(roleUpdateOneDTO.getPermissionIdList(), role.getId());
+            updateRolePermission(updateOneReq.getPermissionIdList(), role.getId());
         }
         return result;
     }

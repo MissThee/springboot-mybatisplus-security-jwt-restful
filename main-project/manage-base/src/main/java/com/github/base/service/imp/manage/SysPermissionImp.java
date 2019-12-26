@@ -3,9 +3,8 @@ package com.github.base.service.imp.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.base.db.mapper.primary.manage.SysPermissionMapper;
-import com.github.base.dto.manage.permission.SysPermissionInsertOneDTO;
-import com.github.base.dto.manage.permission.SysPermissionUpdateOneDTO;
 import com.github.base.service.interf.manage.SysPermissionService;
+import com.github.base.vo.manage.SysPermissionVO;
 import com.github.common.db.entity.primary.SysPermission;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,8 @@ public class SysPermissionImp extends ServiceImpl<SysPermissionMapper, SysPermis
     }
 
     @Override
-    public Long insertOne(SysPermissionInsertOneDTO permissionInsertOneDTO) {
-        SysPermission permission = mapperFacade.map(permissionInsertOneDTO, SysPermission.class);
+    public Long insertOne(SysPermissionVO.InsertOneReq insertOneReq) {
+        SysPermission permission = mapperFacade.map(insertOneReq, SysPermission.class);
         permissionMapper.insert(permission);
         Long permissionId = permission.getId();
         return permissionId;
@@ -46,9 +45,9 @@ public class SysPermissionImp extends ServiceImpl<SysPermissionMapper, SysPermis
     }
 
     @Override
-    public Boolean updateOne(SysPermissionUpdateOneDTO permissionUpdateOneDTO) {
+    public Boolean updateOne(SysPermissionVO.UpdateOneReq updateOneReq) {
         //拷贝用户信息，生成Permission对象
-        SysPermission permission = mapperFacade.map(permissionUpdateOneDTO, SysPermission.class);
+        SysPermission permission = mapperFacade.map(updateOneReq, SysPermission.class);
         //更新信息
         Boolean result = permissionMapper.updateById(permission) > 0;
         return result;

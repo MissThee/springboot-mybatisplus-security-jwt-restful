@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InvalidAttributeValueException;
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,7 @@ public class PermissionController {
     @ApiOperation(value = "增加权限", notes = "")
     @PutMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'permission'))")
-    public Res<SysPermissionVO.InsertOneRes> insertOne(@RequestBody SysPermissionVO.InsertOneReq insertOneReq) {
+    public Res<SysPermissionVO.InsertOneRes> insertOne(@RequestBody @Valid SysPermissionVO.InsertOneReq insertOneReq) {
         Boolean isDuplicate = sysPermissionService.isExist(insertOneReq.getPermission());
         if (isDuplicate) {
             return Res.failure("权限值已存在");
@@ -63,7 +64,7 @@ public class PermissionController {
     @ApiOperation(value = "修改权限", notes = "")
     @PatchMapping()
     @PreAuthorize("isAuthenticated() and (hasPermission(null,'[ADMIN]') or hasPermission(null,'permission'))")
-    public Res updateOne(@RequestBody SysPermissionVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, NoSuchFieldException, InvalidAttributeValueException, IllegalAccessException, InvocationTargetException {
+    public Res updateOne(@RequestBody @Valid SysPermissionVO.UpdateOneReq updateOneReq) throws NoSuchMethodException, NoSuchFieldException, InvalidAttributeValueException, IllegalAccessException, InvocationTargetException {
         Boolean isDuplicateExceptSelf = sysPermissionService.isExistExceptSelf(updateOneReq.getPermission(), updateOneReq.getId());
         if (isDuplicateExceptSelf) {
             return Res.failure("权限值已存在");

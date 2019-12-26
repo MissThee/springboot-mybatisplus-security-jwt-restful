@@ -3,9 +3,8 @@ package com.github.base.service.imp.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.base.db.mapper.primary.manage.SysUnitMapper;
-import com.github.base.dto.manage.unit.SysUnitInsertOneDTO;
-import com.github.base.dto.manage.unit.SysUnitUpdateOneDTO;
 import com.github.base.service.interf.manage.SysUnitService;
+import com.github.base.vo.manage.SysUnitVO;
 import com.github.common.db.entity.primary.SysUnit;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +34,8 @@ public class SysUnitImp extends ServiceImpl<SysUnitMapper, SysUnit> implements S
     }
 
     @Override
-    public Long insertOne(SysUnitInsertOneDTO unitInsertOneDTO) {
-        SysUnit unit = mapperFacade.map(unitInsertOneDTO, SysUnit.class);
+    public Long insertOne(SysUnitVO.InsertOneReq insertOneReq) {
+        SysUnit unit = mapperFacade.map(insertOneReq, SysUnit.class);
         unitMapper.insert(unit);
         Long unitId = unit.getId();
         return unitId;
@@ -52,9 +51,9 @@ public class SysUnitImp extends ServiceImpl<SysUnitMapper, SysUnit> implements S
     }
 
     @Override
-    public Boolean updateOne(SysUnitUpdateOneDTO unitUpdateOneDTO) {
+    public Boolean updateOne(SysUnitVO.UpdateOneReq updateOneReq) {
         //拷贝用户信息，生成Unit对象
-        SysUnit unit = mapperFacade.map(unitUpdateOneDTO, SysUnit.class);
+        SysUnit unit = mapperFacade.map(updateOneReq, SysUnit.class);
         //更新信息
         Boolean result = unitMapper.updateById(unit) > 0;
         return result;

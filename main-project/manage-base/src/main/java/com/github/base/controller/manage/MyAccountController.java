@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @Api(tags = "基础管理-个人账号管理")
 @ApiSort(1004)
@@ -35,7 +36,7 @@ public class MyAccountController {
 
     @ApiOperation(value = "修改个人密码", notes = "")
     @PatchMapping()
-    public Res updateOne(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @RequestBody MyAccountVO.UpdatePasswordReq updatePasswordReq) {
+    public Res updateOne(  HttpServletResponse httpServletResponse, @RequestBody @Valid MyAccountVO.UpdatePasswordReq updatePasswordReq) {
         String id = JavaJWT.getId();
         if (StringUtils.isEmpty(id)) {
             return Res.failure("无法获取当前用户信息，修改失败");
