@@ -35,7 +35,7 @@
 
     <build>
         <plugins>
-            <!--    打包成可执行jar包配置，maven的lifecycle中，点击package即可。不配置则达成普通包-->
+            <!--打包成可执行jar包配置。使用idea时，执行Maven菜单中，main-project项目的package生命周期即可打包出可执行jar包。不配置则仅打包成普通包-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
