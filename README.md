@@ -530,26 +530,29 @@ root
 ```
 
 ## 快速部署运行
-主要管理功能测试：
+**服务端运行**：
 1. 克隆本项目到本地
 2. 使用`\main-project\service-start\src\main\resources\static`目录中`mybatis_test_db.sql`与`mybatis_test_db_2.sql`文件可导入项目所需基础表到mysql数据库；
-3. 运行`\main-project\service-start\src\main\java\com\github\WebApplication.java`（若需修改端口号，修改`application-localtest.properties`即可，或自行寻找配置字段修改，均为springboot配置方法，各个子项目配置文件由`service-start`启动模块中`application.properties`的`spring.profiles.include`包含）
-4. 浏览器访问`http:\\localhost:8098\webpage\index.html`，账号admin，密码123
-5. api文档查看，`http://localhost:8098/doc.html`或`http://localhost:8098/swagger-ui.html`
+3. 修改`\main-project\common\src\main\resources\application-common.properties`中数据库连接参数: 地址，用户名，密码
+4. 运行`\main-project\service-start\src\main\java\com\github\WebApplication.java`（若需修改端口号，修改`application-localtest.properties`即可，或自行寻找配置字段修改，均为springboot配置方法，各个子项目配置文件由`service-start`启动模块中`application.properties`的`spring.profiles.include`包含）
 
-测试socket.io：
+**页面访问（成功启动以上服务后）**
+1. 浏览器访问`http://localhost:8098/webpage/index.html`，账号admin，密码123
+2. api文档查看，`http://localhost:8098/doc.html`或`http://localhost:8098/swagger-ui.html`
+
+**测试socket.io**：
 1. socketio尚未在以上页面中进行使用，仅有独立的交互测试demo。
 2. 测试socketio需先配置`webrtc`模块中`application-socketio.properties`，设置`socket.io.enable=true`
 3. 直接使用浏览器打开`\main-project\webrtc\src\main\resources\static\socketio-test.html`，依次点击`登录`，`连接`即可测试实时聊天demo
 
-##剔除不想用的模块举例
-1. 我只有一个数据源就够了
+## 剔除不想用的模块
+**我只有一个数据源就够了**
    + main-project中common的src/main/resources/application-common.properties中修改设置
      ```properties
      spring.datasource.secondary.enable=false
      ```
      
-2. 我用不到flowable工作流
+**我用不到flowable工作流**
    + 删除main-project中manage-flow子项目。  
      + idea操作为选中子项目，点Delete键选Remove（删除子模块），再点Delete键选Remove（彻底删除文件）
    + 修改main-project根目录中的pom.xml
@@ -572,7 +575,7 @@ root
       </dependency>
       ```
      
-3. 我用不到socket.io
+**我用不到socket.io**
    1. 仅停用
       + main-project中webrtc的src/main/resources/application-socketio.properties中修改设置
         ```properties
