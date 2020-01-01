@@ -4,13 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -18,17 +16,14 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 @Slf4j
 @Component
 public class JavaJWT {
 
-    public static final String JWT_TOKEN_KEY = "Authorization";
     private static final String SECRET = "^@GSF%@#AN";
+    public static final String JWT_TOKEN_KEY = "Authorization";
     private final String issuer = "spring-project";
     private final UserInfoForJWT userInfoForJWT;
 
@@ -51,13 +46,13 @@ public class JavaJWT {
         //添加claim附加信息【可直接解析】
         builder.withClaim("id", String.valueOf(userId));
         builder.withClaim("duration", expiresDayFromNow);
-//      builder.withArrayClaim("roleList", roleList.toArray(new String[]{}));
-//      builder.withArrayClaim("permissionList", permissionList.toArray(new String[]{}));
         String token = builder.sign(Algorithm.HMAC256(secretBuilder(userId)));
         log.debug("CREATE TOKEN：" + token);
         return token;
     }
-
+    /**
+     * 传入一个token，返回一个新的未过期token，并保持原token中所有参数
+     */
     public String updateToken(String token) {
         try {
             DecodedJWT decodedJWT = JWT.decode(token);
@@ -72,8 +67,6 @@ public class JavaJWT {
             builder.withExpiresAt(getExpireDate(decodedJWT.getClaim("duration").asInt()));
             builder.withClaim("id", decodedJWT.getClaim("id").asString());
             builder.withClaim("duration", decodedJWT.getClaim("duration").asInt());
-//          builder.withArrayClaim("roleList", decodedJWT.getClaim("roleList").asList(String.class).toArray(new String[]{}));
-//          builder.withArrayClaim("permissionList", decodedJWT.getClaim("permissionList").asList(String.class).toArray(new String[]{}));
             String newToken = builder.sign(Algorithm.HMAC256(secretBuilder(decodedJWT.getClaim("id").asString())));
             log.debug("UPDATE TOKEN：" + newToken);
             return newToken;
@@ -83,11 +76,13 @@ public class JavaJWT {
         }
     }
 
+    //更新一个token，并将其设置到返回值的header中，有效期为Integer.MAX_VALUE分钟。基本等于永不过期了
     public void updateTokenAndSetHeader(String token) {
-        updateTokenAndSetHeaderRemainDays(token, Integer.MAX_VALUE);
+        updateTokenAndSetHeaderWithAvailableMinute(token, Integer.MAX_VALUE);
     }
 
-    public void updateTokenAndSetHeaderRemainDays(String token, int minute) {
+    //更新一个token，并将其设置到返回值的header中，有效期为minute分钟
+    public void updateTokenAndSetHeaderWithAvailableMinute(String token, int minute) {
         long tokenRemainingTime = getTokenRemainingTime(token);
         if (tokenRemainingTime < minute && tokenRemainingTime >= 0) {
             token = updateToken(token);
@@ -100,7 +95,8 @@ public class JavaJWT {
         }
     }
 
-    //通过与未通过之外的异常直接抛出
+    //验证token。异常为 JWTVerificationException 时 token 验证未通过。
+    //若出现JWTVerificationException之外的异常则表示验证方法本身出现了错误，此时直接抛出异常，前端会接收到状态为500返回值，应该需要调整后台。
     public Boolean verifyToken(String token) {
         if (StringUtils.isEmpty(token)) {
             return false; //验证未通过

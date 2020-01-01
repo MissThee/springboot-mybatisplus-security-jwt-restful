@@ -20,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
 
 //controller异常捕捉返回
+//此处出现的异常是已经预期到的异常情况。UnknownExceptionHandler中捕获预期之外的exception。使用@Order控制两者顺序
 @ApiIgnore
 @RestControllerAdvice
 @Order(100)

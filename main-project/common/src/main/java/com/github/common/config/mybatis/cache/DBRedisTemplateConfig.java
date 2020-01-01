@@ -15,13 +15,12 @@ public class DBRedisTemplateConfig {
     RedisTemplate<Object, Object> DBRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
-        ObjectMapper mapper = new ObjectMapper() {{
+        //设置自定义key序列化方法
+        Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        serializer.setObjectMapper(new ObjectMapper() {{
             setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
             activateDefaultTyping(this.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
-        }};
-        Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        serializer.setObjectMapper(mapper);
-
+        }});
         redisTemplate.setKeySerializer(serializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;

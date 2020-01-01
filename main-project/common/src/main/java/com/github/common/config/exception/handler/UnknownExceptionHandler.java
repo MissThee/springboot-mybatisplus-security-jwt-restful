@@ -12,7 +12,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 
-//controller异常捕捉返回
+//controller异常捕捉返回。捕获预期之外的异常
 @ApiIgnore
 @RestControllerAdvice
 @Order(1000)

@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 //springboot默认使用jackson序列化，配置接收参数时使用的LocalXxx时间格式
+//明显的效果如：使用此配置后，controller中接收参数使用的对象中，LocalDateTime类型的字段可以直接接收yyyy-MM-dd HH:mm:ss格式字符串的参数了，不用单独加注解配置单个字段的时间序列化格式
 @Configuration
 public class LocalDateTimeSerializerConfig {
     @Value("${spring.jackson.date-format:yyyy-MM-dd HH:mm:ss}")

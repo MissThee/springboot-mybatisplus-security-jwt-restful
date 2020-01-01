@@ -6,7 +6,7 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-
+//mybatis使用Map接收查询结果时，将查询结果中字段，由下划线转为小驼峰格式的配置。需在数据库配置中引用此配置
 @Component
 public class MapWrapperFactory implements ObjectWrapperFactory {
 

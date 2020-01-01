@@ -9,6 +9,7 @@
     <!--设置系统日志目录  -->
     <springProperty scope="context" name="logging.file" source="logging.file"/>
 
+    <!--  以下appender，FILE开头的是将日志输出到文件，不打印到控制台；CONSOLE开头的，仅打印到控制台  -->
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 正在记录的日志文件的路径及文件名 -->
         <file>${logging.file}/log_error.log</file>
@@ -105,6 +106,7 @@
             </layout>
         </encoder>
     </appender>
+
     <appender name="CONSOLE_COLOR" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="com.github.common.config.log.format.EasyPatternLayout">
@@ -125,7 +127,9 @@
         <!--文件输出-->
         <appender-ref ref="FILE_ERROR"/>
         <appender-ref ref="FILE_ALL"/>
-        <!--控制台输出（原色），若使用docker，可查看实时输出使用-->
+        <!--控制台输出（原色），生产环境用的shell可能不支持颜色代码，颜色代码不生效，会直接显示代码，造成日志难以阅读-->
+        <!--<appender-ref ref="CONSOLE"/>-->
+        <!--控制台输出（带颜色）-->
         <!--<appender-ref ref="CONSOLE"/>-->
     </root>
     <!--文件输出-->

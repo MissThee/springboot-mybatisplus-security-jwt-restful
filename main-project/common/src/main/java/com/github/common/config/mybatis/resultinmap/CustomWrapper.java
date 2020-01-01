@@ -10,8 +10,6 @@ public class CustomWrapper extends MapWrapper {
     public CustomWrapper(MetaObject metaObject, Map<String, Object> map) {
         super(metaObject, map);
     }
-
-
     @Override
     public String findProperty(String name, boolean useCamelCaseMapping) {
         if(useCamelCaseMapping){

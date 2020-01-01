@@ -1,6 +1,5 @@
 package com.github.common.config.limiter.impl.limit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.common.config.limiter.annotation.RLimit;
 import com.github.common.config.limiter.impl.limit.param.UserUniquelyIdMaker;
 import com.github.common.config.limiter.store.LimitInfoStore;
@@ -37,11 +36,10 @@ public class LimitPointCut {
     @Around(value = "LimitPointCut() && @annotation(rLimit)")
     public Object around(ProceedingJoinPoint joinPoint, RLimit rLimit) throws Throwable {
         if (joinPoint.getSignature().getDeclaringTypeName().endsWith("Controller")) {
-
             String userUniquelyIdStr = userUniquelyIdMaker.getUserUniquelyId();
             Object limitInfo = limitInfoStore.getLimitInfo(userUniquelyIdStr);
             long millis = System.currentTimeMillis() - ((Long) limitInfo);
-            if (millis < rLimit.minTime()) {
+            if (millis < rLimit.minTime()) {//判断访问间隔是否小于最小间隔
                 Res<String> res;
                 {//构建返回对象
                     String failureMsg;
@@ -60,7 +58,7 @@ public class LimitPointCut {
                         if (response != null) {
                             response.setStatus(500);
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//                            直接使用流返回，再此返回可是@RLimit注解用在任何Controller以外的方法，且保证返回值的正确性。但日志无法捕获此返回值
+//                            直接使用流返回，在此返回可使@RLimit注解用在任何Controller以外的方法，且保证返回值的正确性。但日志无法捕获此返回值
 //                            ServletOutputStream outputStream = response.getOutputStream();
 //                            outputStream.write(objectMapper.writeValueAsString(res).getBytes());
 //                            outputStream.flush();

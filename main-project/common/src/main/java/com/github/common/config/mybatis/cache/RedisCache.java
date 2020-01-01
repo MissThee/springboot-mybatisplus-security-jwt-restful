@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-//若同时与devtool使用需做额外配置，否则反序列化会因classloader不同导致异常
+//若同时与devtool使用需做额外配置，否则反序列化会因classloader不同导致异常。所以没使用devtool进行热加载
 public class RedisCache implements Cache {
     private final Integer EXPIRE_MINUTES = 6 * 60;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();

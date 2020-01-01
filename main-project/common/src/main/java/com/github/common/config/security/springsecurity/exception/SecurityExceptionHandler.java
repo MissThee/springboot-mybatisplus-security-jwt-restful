@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 @Order(1)
 @Slf4j
 public class SecurityExceptionHandler {
-    //访问无权限接口
+    //访问无权限接口。返回状态403
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
     public Object unauthorizedException(HttpServletRequest request, AccessDeniedException e) {
@@ -28,7 +28,7 @@ public class SecurityExceptionHandler {
         return new ExceptionResultModel(e.getClass().getSimpleName() + ":" + e.getMessage());
     }
 
-    //需要登录
+    //需要登录。返回状态401。约定前端任何时候接收403状态码时需给用户提供登录页面
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public Object unauthenticatedException(HttpServletRequest request, BadCredentialsException e) {

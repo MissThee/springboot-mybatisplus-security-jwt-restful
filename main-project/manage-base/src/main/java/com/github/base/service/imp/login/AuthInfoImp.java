@@ -146,7 +146,7 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
         //整合信息
         AuthDTO authDTO = mapperFacade.map(user, AuthDTO.class);
         authDTO.setRoleValueList(roleValueList);
-        addSpecialPermission(permissionValueList, user);
+        addSpecialPermission(permissionValueList, user.getIsAdmin(), user.getIsBasic());
         authDTO.setPermissionValueList(permissionValueList);
         authDTO.setUnitId(unit.getId());
         authDTO.setUnitName(unit.getName());
@@ -172,18 +172,17 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
             addAll(authDTO.getRoleValueList().stream().map(e -> "ROLE_" + e).collect(Collectors.toSet()));
             addAll(authDTO.getPermissionValueList());
         }};
-        addSpecialPermission(authList, authDTO);
+        addSpecialPermission(authList, authDTO.getIsAdmin(), authDTO.getIsBasic());
         //权限如果前缀是ROLE_，security就会认为这是个角色信息，而不是权限，例如ROLE_MENBER就是MENBER角色，CAN_SEND就是CAN_SEND权限
         Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet = authList.stream().filter(e -> !StringUtils.isEmpty(e)).map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
-        return new org.springframework.security.core.userdetails.User(String.valueOf(authDTO.getId()), "", simpleGrantedAuthoritySet);//返回包括权限角色的User(此User为security提供的实体类)给security;
+        return new org.springframework.security.core.userdetails.User(String.valueOf(authDTO.getId()), "", simpleGrantedAuthoritySet);//返回包括权限角色的User(此User为security提供的类)给security;
     }
 
-    private void addSpecialPermission(Collection<String> authList, SysUser user) {
-        if (user.getIsAdmin()) {
+    private void addSpecialPermission(Collection<String> authList, boolean isAdmin, boolean isBasic) {
+        if (isAdmin || isBasic) {
             authList.add(SpecialPermission.ADMIN);
         }
-        if (user.getIsBasic()) {
-            authList.add(SpecialPermission.ADMIN);
+        if (isBasic) {
             authList.add(SpecialPermission.BASIC);
         }
     }

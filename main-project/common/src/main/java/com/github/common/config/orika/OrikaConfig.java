@@ -18,12 +18,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
-
+//对象拷贝工具配置
 @Configuration
 public class OrikaConfig {
     private DefaultMapperFactory.Builder builder=new DefaultMapperFactory.Builder();
     @Bean
-    @Scope("prototype")
+//    @Scope("prototype")
     public MapperFacade mapperFacade() {
         ConverterFactory converterFactory = new DefaultConverterFactory() ;
         converterFactory.registerConverter(new LocalDateTimeDateConverter());//添加LocalDateTime与Date转换器

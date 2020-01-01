@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
-//自定义错误返回（主要用于修改404错误的返回格式）
+//自定义错误返回
+//这个配置就是在请求了错误的url时，将原有的404返回内容进行自定义改写。目的是让所有返回值内容与格式都统一，其实没有配置的必要。
 @ApiIgnore
 @Controller
 @Slf4j

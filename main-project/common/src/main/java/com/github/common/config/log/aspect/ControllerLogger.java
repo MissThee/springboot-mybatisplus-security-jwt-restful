@@ -10,7 +10,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-
+//自定义日志输出。仅输出controller包下相关controller的请求和返回内容日志，方便调试。
 @Component
 @Aspect
 @Slf4j
@@ -28,6 +28,7 @@ public class ControllerLogger {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes != null) {
                 HttpServletRequest request = attributes.getRequest();
+                //LogBuilder.requestLogBuilder主要负责将请求中的参数、url、等信息整理输出
                 stringBuilder.append(LogBuilder.requestLogBuilder(request,joinPoint));
             }
         } catch (Exception e) {
@@ -36,6 +37,7 @@ public class ControllerLogger {
         returnObj = joinPoint.proceed();//执行方法
         try {
             if (returnObj != null) {
+                //LogBuilder.requestLogBuilder主要负责将返回中的结果、url、等信息整理输出
                 stringBuilder.append(LogBuilder.responseLogAspect(returnObj));
             }
         } catch (Exception e) {

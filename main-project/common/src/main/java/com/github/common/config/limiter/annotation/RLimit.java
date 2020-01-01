@@ -5,10 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * 默认以 [用户token][用户ip][请求的uri][请求类型]为识别，限制controller请求的间隔
- * 仅可用在方法名称以Controller结尾方法上生效
- */
+// 默认以[用户token]+[用户ip]+[请求的uri]+[请求类型]为识别，限制controller请求的间隔。
+// 现仅可用在方法名称以Controller结尾方法上生效（此规则配置在LimitPointCut中，可任意修改）
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RLimit {
