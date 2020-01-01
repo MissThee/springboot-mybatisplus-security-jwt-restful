@@ -1,8 +1,19 @@
 # 简介
-> 基于RBAC管理系统，基础功能demo，集成了前端页面。  
-> `后端`springboot提供restful接口。其中`身份验证/访问权限`使用jwt与spring-security结合实现（旧版使用shiro，但其注解不够灵活，改用security）  
-> `前端`vue、elementui、axios构建交互页面。[图片预览](https://github.com/MissThee/springboot-mybatisplus-security-jwt-restful/tree/dev-all/pic)  
->    
+基于RBAC管理系统，基础功能demo，集成了前端页面。
+
+### `后端`
++ `服务方式`springboot提供restful接口
++ `身份验证/访问权限`使用jwt与spring-security结合实现（旧版使用shiro，但其注解不够灵活，改用security）
++ `多数据源`mybatis静态多数据源，每个数据源独立配置方便增减，每个数据源独立事务管理器，每个数据源对应指定包下的mapper，文件对应关系清晰
++ `接口文档`swagger-ui生成接口文档
++ `子项目拆分`各个功能块进行子项目拆分，代码分类清晰
+
+### `前端`
++ `vue-cli`构建spa应用
++ `element-ui`组件
++ `axios`对后端http请求，纯json数据交互。
++ [前端图片预览](https://github.com/MissThee/springboot-mybatisplus-security-jwt-restful/tree/dev-all/pic)  
++ [前端源码](https://github.com/MissThee/vue-elementui-admin-sample)   
 
 (原`springboot-mybatis-shiro-jwt-restful`改为分支`shiro-demo`)
 ## 项目结构总览
@@ -531,6 +542,65 @@ root
 2. 测试socketio需先配置`webrtc`模块中`application-socketio.properties`，设置`socket.io.enable=true`
 3. 直接使用浏览器打开`\main-project\webrtc\src\main\resources\static\socketio-test.html`，依次点击`登录`，`连接`即可测试实时聊天demo
 
+##剔除不想用的模块举例
+1. 我只有一个数据源就够了
+   + main-project中common的src/main/resources/application-common.properties中修改设置
+     ```properties
+     spring.datasource.secondary.enable=false
+     ```
+     
+2. 我用不到flowable工作流
+   + 删除main-project中manage-flow子项目。  
+     + idea操作为选中子项目，点Delete键选Remove（删除子模块），再点Delete键选Remove（彻底删除文件）
+   + 修改main-project根目录中的pom.xml
+      ```xml
+      <modules>
+          <module>common</module>
+          <module>manage-base</module>
+          <module>manage-form</module>
+          <module>manage-flow</module> 删除这一行
+          <module>service-start</module>
+          <module>webrtc</module>
+      </modules>
+       ....
+      删除以下部分
+      <!--flowable依赖-->
+      <dependency>
+          <groupId>org.flowable</groupId>
+          <artifactId>flowable-spring-boot-starter-process</artifactId>
+          <version>6.4.1</version>
+      </dependency>
+      ```
+     
+3. 我用不到socket.io
+   1. 仅停用
+      + main-project中webrtc的src/main/resources/application-socketio.properties中修改设置
+        ```properties
+        socket.io.enable=false
+        ```
+   1. 把相关文件也删了
+      + 删除main-project中webrtc子项目。
+        + idea操作为选中子项目，点Delete键选Remove（删除子模块），再点Delete键选Remove（彻底删除文件）
+      + 修改main-project根目录中的pom.xml
+        ```xml
+        <modules>
+            <module>common</module>
+            <module>manage-base</module>
+            <module>manage-form</module>
+            <module>manage-flow</module> 
+            <module>service-start</module>
+            <module>webrtc</module> 删除这一行
+        </modules>
+         ....
+        删除以下部分
+        <!-- netty-socketio依赖 -->
+        <dependency>
+            <groupId>com.corundumstudio.socketio</groupId>
+            <artifactId>netty-socketio</artifactId>
+            <version>1.7.17</version>
+        </dependency>
+        ```
+        
 ## 返回值格式
 返回值格式 ：  
 返回类型Res.java
@@ -569,3 +639,6 @@ root
 | PUT | INSERT | × | × |  
 | PATCH | UPDATE | √ | × |  
 | DELETE | DELETE | √ | × |   
+
+
+
