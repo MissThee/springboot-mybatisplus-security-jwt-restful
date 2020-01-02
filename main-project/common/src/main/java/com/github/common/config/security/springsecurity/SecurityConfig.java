@@ -16,6 +16,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //在Security的默认拦截器里，默认会开启CSRF处理，判断请求是否携带了_csrf校验值，如果没有就拒绝访问。在请求为(GET|HEAD|TRACE|OPTIONS)时，则不会开启。
         //这里关闭csrf。如果需求需要开启，需要要求前端配合修改来适配。
         http.csrf().disable();
+        http.formLogin().disable();//（非必须）停用security的登录页。
+        http.httpBasic().disable();//（非必须）停用security的弹窗登录
         //禁用session。因为将要改依赖token获取用户信息的逻辑，此处可停用session
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
