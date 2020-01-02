@@ -21,10 +21,12 @@ import java.util.*;
 @Slf4j
 @Component
 public class JavaJWT {
-
+    //实际此值与用户密码（加密后）进行字符串拼接之后，作为jwt签发/验证token时的secret值。此值不会被直接解析，且不应外泄。
     private static final String SECRET = "^@GSF%@#AN";
+    //token的issuer参数，签发/验证时也会使用此值。此值可被直接解析。
+    private final String ISSUER = "spring-project";
+    //约定的，http请求参数中header部分token存放的key。
     public static final String JWT_TOKEN_KEY = "Authorization";
-    private final String issuer = "spring-project";
     private final UserInfoForJWT userInfoForJWT;
 
     @Autowired
@@ -41,15 +43,16 @@ public class JavaJWT {
         }
         JWTCreator.Builder builder = JWT.create();
         //添加发布人信息【可直接解析】
-        builder.withIssuer(issuer);
+        builder.withIssuer(ISSUER);
         builder.withExpiresAt(getExpireDate(expiresDayFromNow));
         //添加claim附加信息【可直接解析】
-        builder.withClaim("id", String.valueOf(userId));
+        builder.withClaim("id", String.valueOf(userId));//用户信息：token中仅携带用户id，服务端要使用用户其他信息（如：姓名，所属单位等），由此id在后台数据库自行查找。因每次访问都需要查找用户信息，用户信息最好使用缓存，避免频繁查询数据库
         builder.withClaim("duration", expiresDayFromNow);
         String token = builder.sign(Algorithm.HMAC256(secretBuilder(userId)));
         log.debug("CREATE TOKEN：" + token);
         return token;
     }
+
     /**
      * 传入一个token，返回一个新的未过期token，并保持原token中所有参数
      */
@@ -63,7 +66,7 @@ public class JavaJWT {
                 throw new Exception("Error when update token, no id.");
             }
             JWTCreator.Builder builder = JWT.create();
-            builder.withIssuer(issuer);
+            builder.withIssuer(ISSUER);
             builder.withExpiresAt(getExpireDate(decodedJWT.getClaim("duration").asInt()));
             builder.withClaim("id", decodedJWT.getClaim("id").asString());
             builder.withClaim("duration", decodedJWT.getClaim("duration").asInt());
@@ -76,12 +79,16 @@ public class JavaJWT {
         }
     }
 
-    //更新一个token，并将其设置到返回值的header中，有效期为Integer.MAX_VALUE分钟。基本等于永不过期了
+    /**
+     * 更新一个token，并将其设置到返回值的header中，有效期为Integer.MAX_VALUE分钟。基本等于永不过期了
+     */
     public void updateTokenAndSetHeader(String token) {
         updateTokenAndSetHeaderWithAvailableMinute(token, Integer.MAX_VALUE);
     }
 
-    //更新一个token，并将其设置到返回值的header中，有效期为minute分钟
+    /**
+     * 更新一个token，并将其设置到返回值的header中，有效期为minute分钟
+     */
     public void updateTokenAndSetHeaderWithAvailableMinute(String token, int minute) {
         long tokenRemainingTime = getTokenRemainingTime(token);
         if (tokenRemainingTime < minute && tokenRemainingTime >= 0) {
@@ -95,8 +102,10 @@ public class JavaJWT {
         }
     }
 
-    //验证token。异常为 JWTVerificationException 时 token 验证未通过。
-    //若出现JWTVerificationException之外的异常则表示验证方法本身出现了错误，此时直接抛出异常，前端会接收到状态为500返回值，应该需要调整后台。
+    /**
+     * 验证token。若验证方法异常为 JWTVerificationException 时， token 验证未通过。
+     * 若出现JWTVerificationException之外的异常则表示验证方法本身出现了错误，此时直接抛出异常，前端表现为会接收到状态为500返回值，应该需要调整后台。
+     */
     public Boolean verifyToken(String token) {
         if (StringUtils.isEmpty(token)) {
             return false; //验证未通过
@@ -115,7 +124,7 @@ public class JavaJWT {
             String id = claims.get("id").asString();
             Algorithm algorithm = Algorithm.HMAC256(secretBuilder(id));
             JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer(issuer)
+                    .withIssuer(ISSUER)
                     .build();
             verifier.verify(token);
         } catch (JWTVerificationException ignored) {
@@ -142,6 +151,9 @@ public class JavaJWT {
         }
     }
 
+    /**
+     * 从token中获取id值
+     */
     public static String getId(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
@@ -151,6 +163,9 @@ public class JavaJWT {
         }
     }
 
+    /**
+     * 从请求参数的header中的token中获取用户id值
+     */
     public static String getId(HttpServletRequest httpServletRequest) {
         try {
             String token = httpServletRequest.getHeader(JWT_TOKEN_KEY);
@@ -160,6 +175,9 @@ public class JavaJWT {
         }
     }
 
+    /**
+     * 从当前线程的请求参数的header中的token中获取用户id值
+     */
     public static String getId() {
         try {
             HttpServletRequest httpServletRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
@@ -169,16 +187,9 @@ public class JavaJWT {
         }
     }
 
-    //    public static List<String> getRoleList(String token) {
-//        DecodedJWT jwt = JWT.decode(token);
-//        return jwt.getClaim("roleList").asList(String.class);
-//    }
-//
-//    public static List<String> getPermissionList(String token) {
-//        DecodedJWT jwt = JWT.decode(token);
-//        return jwt.getClaim("permissionList").asList(String.class);
-//    }
-
+    /**
+     * 以当前时间为基础，获取此时间expireDayFromNow天之后的日期
+     */
     private static Date getExpireDate(int expireDayFromNow) {
         Calendar instance = Calendar.getInstance();
         instance.setTime(new Date());
