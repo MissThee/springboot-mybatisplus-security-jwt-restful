@@ -6,7 +6,7 @@
     <!--自定义日志格式-->
     <property name="CONSOLE" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %easyHighlight(%5.5level) --- [%15.15thread] %cyan(%-40.40logger{39}) : %msg%n"/>
     <!--设置系统日志目录  -->
-    <springProperty scope="context" name="logging.file" source="logging.file"/>
+    <springProperty scope="context" name="logging.file.name" source="logging.file.name"/>
     <appender name="CONSOLE_COLOR" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="com.github.common.config.log.format.EasyPatternLayout">

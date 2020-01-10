@@ -7,7 +7,7 @@
     <property name="CONSOLE" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %easyHighlight(%5.5level) --- [%15.15thread] %cyan(%-40.40logger{39}) : %msg%n"/>
     <property name="PRODUCT" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5.5level --- [%15.15thread] %-40.40logger{39} : %msg%n"/>
     <!--设置系统日志目录  -->
-    <springProperty scope="context" name="logging.file" source="logging.file"/>
+    <springProperty scope="context" name="logging.file.name" source="logging.file.name"/>
 
     <!--  以下appender，FILE开头的是将日志输出到文件，不打印到控制台；CONSOLE开头的，仅打印到控制台  -->
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">

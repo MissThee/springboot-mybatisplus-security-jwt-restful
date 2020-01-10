@@ -12,9 +12,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 //若同时与devtool使用需做额外配置，否则反序列化会因classloader不同导致异常。所以没使用devtool进行热加载
 public class RedisCache implements Cache {
+    //配置过期时间，分钟
     private final Integer EXPIRE_MINUTES = 6 * 60;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    private final String id;
+    //此处的id将会是限定类名
+    private String id;
+    //单例模式加载RedisTemplate，使用springboot 的 RedisTemplate操作redis数据库
     private static RedisTemplate<Serializable, Serializable> redisTemplate;
 
     public RedisCache(String id) {
@@ -23,7 +26,7 @@ public class RedisCache implements Cache {
 
     private void initRedisTemplate() {
         if (redisTemplate == null) {
-            redisTemplate = ApplicationContextHolder.getBean("DBRedisTemplate",RedisTemplate.class);
+            redisTemplate = ApplicationContextHolder.getBean("MybatisCacheRedisTemplate", RedisTemplate.class);
         }
     }
 
@@ -70,6 +73,7 @@ public class RedisCache implements Cache {
         initRedisTemplate();
         return readWriteLock;
     }
+
     @Override
     public int hashCode() {
         if (getId() == null) {
