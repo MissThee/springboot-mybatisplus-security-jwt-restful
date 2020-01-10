@@ -38,7 +38,7 @@ public class RedisCache implements Cache {
     @Override
     public void putObject(Object key, Object value) {
         initRedisTemplate();
-        redisTemplate.boundHashOps(getId()).put(key, value);
+        redisTemplate.opsForHash().put(getId(), key, value);
         redisTemplate.expire(getId(), EXPIRE_MINUTES, TimeUnit.MINUTES);
     }
 
@@ -46,13 +46,13 @@ public class RedisCache implements Cache {
     public Object getObject(Object key) {
         initRedisTemplate();
         redisTemplate.expire(getId(), EXPIRE_MINUTES, TimeUnit.MINUTES);
-        return redisTemplate.boundHashOps(getId()).get(key);
+        return redisTemplate.opsForHash().get(getId(), key);
     }
 
     @Override
     public Object removeObject(Object key) {
         initRedisTemplate();
-        return redisTemplate.boundHashOps(getId()).delete(key);
+        return redisTemplate.opsForHash().delete(getId(), key);
     }
 
     @Override
@@ -64,8 +64,8 @@ public class RedisCache implements Cache {
     @Override
     public int getSize() {
         initRedisTemplate();
-        Long size = redisTemplate.boundHashOps(getId()).size();
-        return size == null ? 0 : size.intValue();
+        Long size = redisTemplate.opsForHash().size(getId());
+        return size.intValue();
     }
 
     @Override
