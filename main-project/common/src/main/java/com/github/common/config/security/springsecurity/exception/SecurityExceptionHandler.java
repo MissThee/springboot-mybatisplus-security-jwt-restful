@@ -14,13 +14,13 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 
-//controller异常捕捉返回
+//捕获未授权访问引起的异常，返回固定格式json返回值
 @ApiIgnore
 @RestControllerAdvice
 @Order(1)
 @Slf4j
 public class SecurityExceptionHandler {
-    //访问无权限接口。返回状态403
+    //无访问权限。返回状态403。约定前端任何时候接收403状态码时需给用户提示无权访问提示
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
     public Object unauthorizedException(HttpServletRequest request, AccessDeniedException e) {
@@ -28,7 +28,7 @@ public class SecurityExceptionHandler {
         return new ExceptionResultModel(e.getClass().getSimpleName() + ":" + e.getMessage());
     }
 
-    //需要登录。返回状态401。约定前端任何时候接收403状态码时需给用户提供登录页面
+    //需要登录。返回状态401。约定前端任何时候接收401状态码时需给用户提供登录页面
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public Object unauthenticatedException(HttpServletRequest request, BadCredentialsException e) {

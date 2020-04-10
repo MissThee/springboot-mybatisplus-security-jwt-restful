@@ -4,7 +4,6 @@ import com.github.common.config.security.jwt.JavaJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+//这个filter则是每次验证身份的过滤器
 @Component
 public class MyJWTVerificationFilter extends OncePerRequestFilter {
     private final UserInfoForSecurity userInfoForSecurity;
@@ -33,18 +33,20 @@ public class MyJWTVerificationFilter extends OncePerRequestFilter {
         String token = httpServletRequest.getHeader(JavaJWT.JWT_TOKEN_KEY);
         Authentication authentication;
         Boolean verifyToken = javaJWT.verifyToken(token);
+
         //验证token成功与失败时，都会给当前用户创建一个UsernamePasswordAuthenticationToken对象，此处不阻止访问继续进行，而是仅构建存有用户权限描述的对象，供security后续逻辑使用
-        //成功时，创建的UsernamePasswordAuthenticationToken附带了权限值，构造函数中会将isAuthenticated自动设置为true，认为此用户是登录的用户
-        //失败时，创建的UsernamePasswordAuthenticationToken未权限值，isAuthenticated为false，认为此用户是未登录的用户
+        //成功时，创建的UsernamePasswordAuthenticationToken附带了权限值，isAuthenticated为true（见UsernamePasswordAuthenticationToken构造函数源码），认为此用户是登录的用户
+        //失败时，创建的UsernamePasswordAuthenticationToken未赋予权限值，isAuthenticated为false，认为此用户是未登录的用户
         if (verifyToken) {
             String userId = JavaJWT.getId();
-            //此处选择UserDetails来传递用户信息，仅因为UserDetails的属性正好包含了要用的三个属性:username,password,authorities。所以直接用它了，不用自己再写一个新的类了
             UserDetails userDetails = userInfoForSecurity.loadUserById(userId);
             authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
-            javaJWT.updateTokenAndSetHeaderWithAvailableMinute(token, 4 * 24 * 60);
+            //检查请求中携带的token是否快过期了，如果是就返回新的到header中
+            javaJWT.updateTokenAndSetHeader(4 * 60 * 24);
         } else {
             authentication = new UsernamePasswordAuthenticationToken(null, null);
         }
+
         //将身份信息设置到Security当前上下文，即让配置的身份信息在本次请求中生效
         SecurityContextHolder.setContext(new SecurityContextImpl() {{
             setAuthentication(authentication);

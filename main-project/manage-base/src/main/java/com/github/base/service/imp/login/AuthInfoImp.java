@@ -173,7 +173,7 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
             addAll(authDTO.getPermissionValueList());
         }};
         addSpecialPermission(authList, authDTO.getIsAdmin(), authDTO.getIsBasic());
-        //权限如果前缀是ROLE_，security就会认为这是个角色信息，而不是权限，例如ROLE_MENBER就是MENBER角色，CAN_SEND就是CAN_SEND权限
+        //权限如果前缀是ROLE_，security就会认为这是个角色信息，而不是权限，例如"ROLE_MANAGER"就是"MANAGER角色"，"VIEW_PAGE1"就是"VIEW_PAGE1"权限
         Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet = authList.stream().filter(e -> !StringUtils.isEmpty(e)).map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
         return new org.springframework.security.core.userdetails.User(String.valueOf(authDTO.getId()), "", simpleGrantedAuthoritySet);//返回包括权限角色的User(此User为security提供的类)给security;
     }

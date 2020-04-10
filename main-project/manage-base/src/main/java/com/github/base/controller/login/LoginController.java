@@ -58,10 +58,11 @@ public class LoginController {
         if (!new BCryptPasswordEncoder().matches(loginModel.getPassword(), authDTO.getPassword())) {
             return Res.failure("密码错误");
         }
-        httpServletResponse.setHeader(JavaJWT.JWT_TOKEN_KEY, javaJWT.createToken(authDTO.getId(), loginModel.getIsLongLogin() ? 7 : 2));  //添加token
+        Long id = authDTO.getId();
+        Integer availableMinutes = (loginModel.getIsLongLogin() ? 7 : 2) * 24 * 60;
+        javaJWT.createTokenAndSetHeader(id, availableMinutes);//添加token
         return Res.success(new LoginVO.LoginRes().setUser(authDTO), "登录成功");
     }
-
 
     @ApiOperation(value = "获取用户信息", notes = "token获取用户信息")
     @PostMapping("/info")
