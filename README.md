@@ -533,7 +533,7 @@ root
 **服务端运行**：
 1. 克隆本项目到本地
 2. 使用`\main-project\service-start\src\main\resources\static`目录中`mybatis_test_db.sql`与`mybatis_test_db_2.sql`文件可导入项目所需基础表到mysql数据库；
-3. 修改`\main-project\common\src\main\resources\application-common.properties`中数据库连接参数: 地址，用户名，密码
+3. 修改数据库连接参数: 地址，用户名，密码
    + 默认有三个连接配置要修改
      1. main-project/common/src/main/resources/application-common.properties 有两个
      2. main-project/manage-flow/src/main/resources/application-flow.properties 有一个，这个的数据库名，即mybatis_test_db_act，可以是不存在的库，会自动创建
