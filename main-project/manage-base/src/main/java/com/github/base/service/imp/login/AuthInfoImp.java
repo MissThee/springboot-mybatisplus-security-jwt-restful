@@ -15,10 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,21 +104,38 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
             List<SysRolePermission> rolePermissionList = rolePermissionMapper.selectList(rolePermissionQW);
             rolePermissionList.forEach(e -> permissionIdList.add(e.getPermissionId()));
         }
-        //查找权限信息集(权限表)
-        List<SysPermission> permissionList;
-        List<String> permissionValueList = new ArrayList<>();
+//        //查找权限信息集(权限表)。不再使用，改用下面的部分
+//        List<SysPermission> permissionList;
+//        List<String> permissionValueList = new ArrayList<>();
+//        if (permissionIdList.size() > 0) {
+//            QueryWrapper<SysPermission> permissionQW = new QueryWrapper<>();
+//            permissionQW.in(SysPermission.ID, permissionIdList)
+//                    .eq(SysPermission.IS_ENABLE, true)
+//                    .eq(SysPermission.IS_DELETE, false);
+//            permissionList = permissionMapper.selectList(permissionQW);
+//            permissionList.forEach(e -> {
+//                if (!StringUtils.isEmpty(e.getPermission())) {
+//                    permissionValueList.add(e.getPermission());
+//                }
+//            });
+//        }
+        //查找权限值集和(权限表)
+        Set<String> permissionValueList = new HashSet<>();
         if (permissionIdList.size() > 0) {
-            QueryWrapper<SysPermission> permissionQW = new QueryWrapper<>();
-            permissionQW.in(SysPermission.ID, permissionIdList)
-                    .eq(SysPermission.IS_ENABLE, true)
-                    .eq(SysPermission.IS_DELETE, false);
-            permissionList = permissionMapper.selectList(permissionQW);
-            permissionList.forEach(e -> {
-                if (!StringUtils.isEmpty(e.getPermission())) {
-                    permissionValueList.add(e.getPermission());
+            //因权限为树形结构，此处不仅要查询用户所拥有的权限值，还要查询这些权限值，一直到根节点的所有权限值
+            //此处先查询全部权限条目(因为这个总数据量不大，也容易做缓存，选择先查出所有再筛选)
+            List<SysPermission> allPermissionList = permissionMapper.selectList(new QueryWrapper<>());
+            //筛选出用户拥有的可用权限值
+            List<SysPermission> userPermissionList = allPermissionList.stream().filter(e -> permissionIdList.indexOf(e.getId()) >= 0 && e.getIsEnable() && !e.getIsDelete()).collect(Collectors.toList());
+            for (SysPermission permission : userPermissionList) {
+                if (!StringUtils.isEmpty(permission.getPermission())) {
+                    permissionValueList.add(permission.getPermission());
                 }
-            });
+                //递归寻找父节点，将其权限值加入到结果集合中
+                addPermissionParentValue(permission,allPermissionList,permissionValueList);
+            }
         }
+
         //查询user_unit关系集合
         List<SysUserUnit> userUnitList;
         {
@@ -151,6 +165,19 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
         authDTO.setUnitId(unit.getId());
         authDTO.setUnitName(unit.getName());
         return authDTO;
+    }
+
+    //从List中递归查找parent节点，加到指定集合中
+    private void addPermissionParentValue(SysPermission permission,List<SysPermission> allPermissionList,Set<String> permissionValueList) {
+        Long permissionParentId = permission.getParentId();
+        Optional<SysPermission> parentPermissionOp = allPermissionList.stream().filter(e -> e.getId().equals(permissionParentId)).findFirst();
+        if (parentPermissionOp.isPresent()) {
+            SysPermission parentPermission = parentPermissionOp.get();
+            if (!StringUtils.isEmpty(parentPermission.getPermission())) {
+                permissionValueList.add(parentPermission.getPermission());
+            }
+            addPermissionParentValue(parentPermission, allPermissionList, permissionValueList);
+        }
     }
 
     @Override
