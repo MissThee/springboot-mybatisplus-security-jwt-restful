@@ -16,3 +16,5 @@ target/
 *.lck
 
 *.log
+
+*.iml
