@@ -180,6 +180,7 @@ public class MybatisPlusGen {
                 .setSkipView(true)//跳过视图
                 .setEntityColumnConstant(true)//跳过视图
                 .setEntityTableFieldAnnotationEnable(true)//属性上加字段注解
+                .setRestControllerStyle(true)//使用@RestController注解
                 .setInclude(tableName.toArray(new String[0]));
         mpg.setStrategy(strategy);
         // 配置模板
