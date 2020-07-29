@@ -535,18 +535,21 @@ root
 2. 使用`\main-project\service-start\src\main\resources\static`目录中`mybatis_test_db.sql`与`mybatis_test_db_2.sql`文件可导入项目所需基础表到mysql数据库；
 3. 修改数据库连接参数: 地址，用户名，密码
    + 默认有三个连接配置要修改
-     1. main-project/common/src/main/resources/application-common.properties 有两个
-     2. main-project/manage-flow/src/main/resources/application-flow.properties 有一个，这个的数据库名，即mybatis_test_db_act，可以是不存在的库，会自动创建
-4. 运行`\main-project\service-start\src\main\java\com\github\WebApplication.java`（若需修改端口号，修改`application-localtest.properties`即可，或自行寻找配置字段修改，均为springboot配置方法，各个子项目配置文件由`service-start`启动模块中`application.properties`的`spring.profiles.include`包含）
+     1. main-project/common/src/main/resources/application-common.properties 有两个，用给出的sql文件导入的
+     2. main-project/manage-flow/src/main/resources/application-flow.properties 有一个，这个的数据库名可任意修改（暂为mybatis_test_db_act），可以是不存在的库，会自动创建
+4. 运行`\main-project\service-start\src\main\java\com\github\WebApplication.java`
+5. 若需修改端口号，
+   + 后台服务端口暂为`8098`，于`service-start`子项目中`application-localtest.properties`配置文件修改
+   + socket端口暂为`8090`，于`webrtc`子项目中`application-socketio.properties`配置文件修改
+   + （各个子项目配置文件由`service-start`启动模块中`application.properties`的`spring.profiles.include`包含）
 
 **页面访问（成功启动以上服务后）**
 1. 浏览器访问`http://localhost:8098/webpage/index.html`，账号admin，密码123
 2. api文档查看，`http://localhost:8098/doc.html`或`http://localhost:8098/swagger-ui.html`
 
 **测试socket.io**：
-1. socketio尚未在以上页面中进行使用，仅有独立的交互测试demo。
-2. 测试socketio需先配置`webrtc`模块中`application-socketio.properties`，设置`socket.io.enable=true`
-3. 直接使用浏览器打开`\main-project\webrtc\src\main\resources\static\socketio-test.html`，依次点击`登录`，`连接`即可测试实时聊天demo
+1. demo中仅做了广播消息的收发实例，其他监听方法的测试可使用`socketio-test.html`文件测试：
+   + 直接使用浏览器打开`\main-project\webrtc\src\main\resources\static\socketio-test.html`，依次点击`登录`，`连接`即可测试实时聊天demo
 
 ## 剔除不想用的模块
 **我只有一个数据源就够了**
