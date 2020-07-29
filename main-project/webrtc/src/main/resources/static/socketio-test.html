@@ -4484,7 +4484,12 @@
             socket.close();
             socket.removeAllListeners();
         }
-        socket = io('http://localhost:'+socketPortEl.value+'?token=' + tokenEl.value, {forceNew: true});
+        socket = io(
+            'http://localhost:'+socketPortEl.value+'?token=' + tokenEl.value,
+            {
+                forceNew: true,
+                transports:['websocket','xhr-polling','jsonp-polling'],
+            },);
         socket.on('connect', function () {
             console.log('socket连接成功');
             changeColor("lightgreen");

@@ -1,6 +1,7 @@
 package com.github.socketio;
 
 import com.corundumstudio.socketio.SocketIOServer;
+import com.corundumstudio.socketio.Transport;
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
 import com.github.common.config.security.jwt.JavaJWT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class SocketIOServerConfig {
         this.javaJWT = javaJWT;
     }
 
-    @Value("${socket.io.host:localhost}")
+    @Value("${socket.io.host:0.0.0.0}")
     public void setHostname(String a) {
         hostname = a;
     }
@@ -34,6 +35,8 @@ public class SocketIOServerConfig {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setHostname(hostname);
         config.setPort(port);
+        config.setTransports(Transport.POLLING, Transport.WEBSOCKET);
+        config.setOrigin(":*:");
         config.setAuthorizationListener(data -> {//身份验证，直接使用jwt验证token
 //            String token = data.getHttpHeaders().get(JavaJWT.JWT_TOKEN_KEY);
             String token = data.getSingleUrlParam("token");
