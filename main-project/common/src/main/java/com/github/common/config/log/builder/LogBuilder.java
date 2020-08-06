@@ -10,6 +10,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -121,22 +122,19 @@ public class LogBuilder {
         StringBuilder stringBuilder = new StringBuilder();
         StringBuilder resContent = new StringBuilder();
         try {
-            Field[] declaredFields = returnObj.getClass().getDeclaredFields();
-            for (Field field : declaredFields) {
-
-                String propertyName = field.getName();
-                Object value = GetterAndSetter.invokeGetMethod(returnObj, field.getName());
+            BeanMap beanMap = BeanMap.create(returnObj);
+            for (Object key : beanMap.keySet()) {
+                Object valueObj = beanMap.get(key);
                 String valueStr;
-                try {
-                    valueStr = objectMapper.writeValueAsString(value);
-                } catch (Exception ignord) {
-                    valueStr = String.valueOf(value);
+                if (objectMapper.canSerialize(valueObj.getClass())) {
+                    valueStr = objectMapper.writeValueAsString(valueObj);
+                } else {
+                    valueStr = String.valueOf(valueObj);
                 }
-                resContent.append(paramFormatter(propertyName.toUpperCase(), valueStr));
-
+                resContent.append(paramFormatter(String.valueOf(key).toUpperCase(), valueStr));
             }
         } catch (Exception ignored) {
-            resContent = new StringBuilder(paramFormatter("RES", returnObj));
+            resContent = new StringBuilder(paramFormatter("RES(DeserializeFailed)", returnObj));
         }
         stringBuilder.append(resContent);
         //添加分隔行
