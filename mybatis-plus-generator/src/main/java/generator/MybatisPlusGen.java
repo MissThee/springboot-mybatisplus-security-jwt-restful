@@ -28,12 +28,15 @@ public class MybatisPlusGen {
         final String dbTagName = getDbTagName();
         final String subProjectName = getSubProjectName();
         final String functionPackageName = scanner(
-                "输入生成的文件所属包名（可写多层包名，点分隔）：" +
-                        "\n\r附加说明：" +
-                        "\n\r生成时创建包：controller；db.mapper.primary；service.imp；service.interf " +
+                "输入生成的文件所属包名（可写多层包名）：" +
+                        "\n\r将生成在以下包中：" +
+                        "\n\r   controller.[输入的包名]" +
+                        "\n\r   db.mapper." + dbTagName + ".[输入的包名]" +
+                        "\n\r   service.imp.[输入的包名]" +
+                        "\n\r   service.interf.[输入的包名]" +
                         "\n\r例如：可观察子项目manage-base中，以上包中均有名为manage的包，“manage”为此步骤输入的字符串");
         updateConsole("已输入包名：" + functionPackageName);
-        updateConsole("┕━预期输出目录(entity举例)：" + System.getProperty("user.dir") + "/" + (StringUtils.isEmpty(projectSubPath) ? "" : projectSubPath + "/") + subProjectName + "/src/main/java  " + basePackageName + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName) + ".db.entity." + functionPackageName);
+        updateConsole("预期输出目录(entity)：" + System.getProperty("user.dir") + "/" + (StringUtils.isEmpty(projectSubPath) ? "" : projectSubPath + "/") + subProjectName + "/src/main/java  " + basePackageName + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName) + ".db.entity." + functionPackageName);
 
         String tableNameStr = getTableNameStr();
         final List<String> tableName = Arrays.stream(tableNameStr.split(",")).filter(e -> !e.equals("")).collect(Collectors.toList());
@@ -144,11 +147,11 @@ public class MybatisPlusGen {
 
         // 数据源配置
         String propertiesKeyPrefix = "spring.datasource." + dbSelect + ".";
-        DataSourceConfig dsc = new DataSourceConfig()
-                .setUrl(properties.getProperty(propertiesKeyPrefix + "jdbc-url"))
-                .setDriverName(properties.getProperty(propertiesKeyPrefix + "driver-class-name"))
-                .setUsername(properties.getProperty(propertiesKeyPrefix + "username"))
-                .setPassword(properties.getProperty(propertiesKeyPrefix + "password"));
+        DataSourceConfig dsc = new DataSourceConfig();
+        dsc.setUrl(properties.getProperty(propertiesKeyPrefix + "jdbc-url"));
+        dsc.setDriverName(properties.getProperty(propertiesKeyPrefix + "driver-class-name"));
+        dsc.setUsername(properties.getProperty(propertiesKeyPrefix + "username"));
+        dsc.setPassword(properties.getProperty(propertiesKeyPrefix + "password"));
         if (dsc.getUrl() == null) {
             dsc.setUrl(properties.getProperty(propertiesKeyPrefix + "url"));
         }
