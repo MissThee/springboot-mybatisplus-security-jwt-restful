@@ -45,9 +45,9 @@ public class MyErrorController extends BasicErrorController {
             eStr = String.valueOf(body);
             resultMap.put("msg", body);
         }
-        String str = LogBuilder.requestLogBuilder(request, new Exception(eStr), new HashMap<String, Object>() {{
-            put("PATH", uri);
-        }});
+        Map<String, Object> extraMap = new HashMap<>();
+        extraMap.put("PATH", uri);
+        String str = LogBuilder.requestLogBuilder(request, new Exception(eStr), extraMap);
         log.error(str);
         return new ResponseEntity<>(resultMap, status);
     }

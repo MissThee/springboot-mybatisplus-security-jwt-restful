@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Api(tags = "基础管理-权限管理")
 @ApiSort(1001)
@@ -90,15 +91,15 @@ public class PermissionController {
     @PostMapping("/tree")
     public Res<SysPermissionVO.SelectTreeRes> selectList(@RequestBody SysPermissionVO.SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
         List<SysPermission> permissionList = sysPermissionService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
-        List<Object> tree = TreeData.tree(permissionList, selectListReq.getRootId(), false, new HashMap<String, String>() {{
-            put("type", "type");
-            put("name", "name");
-            put("permission", "permission");
-            put("isEnable", "isEnable");
-            put("isDelete", "isDelete");
-            put("indexNum", "indexNum");
-            put("parentId", "parentId");
-        }});
+        Map<String, String> map = new HashMap<>();
+        map.put("type", "type");
+        map.put("name", "name");
+        map.put("permission", "permission");
+        map.put("isEnable", "isEnable");
+        map.put("isDelete", "isDelete");
+        map.put("indexNum", "indexNum");
+        map.put("parentId", "parentId");
+        List<Object> tree = TreeData.tree(permissionList, selectListReq.getRootId(), false, map);
         SysPermissionVO.SelectTreeRes selectTreeRes = new SysPermissionVO.SelectTreeRes().setPermissionTree(tree);
         return Res.success(selectTreeRes);
     }

@@ -48,9 +48,9 @@
                 authentication = new UsernamePasswordAuthenticationToken(null, null);
             }
             //主要方法2：将身份信息对象设置到Security当前上下文，即让配置的身份信息在本次请求中生效
-            SecurityContextHolder.setContext(new SecurityContextImpl() {{
-                setAuthentication(authentication);
-            }});
+            SecurityContextImpl securityContextImpl = new SecurityContextImpl();
+            securityContextImpl.setAuthentication(authentication);
+            SecurityContextHolder.setContext(securityContextImpl);
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         }
     

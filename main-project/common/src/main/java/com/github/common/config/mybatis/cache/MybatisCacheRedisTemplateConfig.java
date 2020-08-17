@@ -34,13 +34,14 @@ public class MybatisCacheRedisTemplateConfig {
 
         //设置自定义key序列化方法
         Jackson2JsonRedisSerializer<Serializable> serializer = new Jackson2JsonRedisSerializer<>(Serializable.class);
-        serializer.setObjectMapper(new ObjectMapper() {{
-            //PropertyAccessor.ALL指定要序列化的访问器getXxx(),setXxx(),构造函数等。all是所有
-            //JsonAutoDetect.Visibility.ANY指定哪些访问修饰符的对象要序列化。any是所有
-            setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-            //ObjectMapper.DefaultTyping.NON_FINAL指定序列化输入的类型，类必须是非final修饰的，final修饰的类会抛出出异常
-            activateDefaultTyping(this.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
-        }});
+        ObjectMapper objectMapper = new ObjectMapper();
+        //PropertyAccessor.ALL指定要序列化的访问器getXxx(),setXxx(),构造函数等。all是所有
+        //JsonAutoDetect.Visibility.ANY指定哪些访问修饰符的对象要序列化。any是所有
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        //ObjectMapper.DefaultTyping.NON_FINAL指定序列化输入的类型，类必须是非final修饰的，final修饰的类会抛出出异常
+        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
+
+        serializer.setObjectMapper(objectMapper);
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());

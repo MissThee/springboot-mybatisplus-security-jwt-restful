@@ -60,6 +60,7 @@ public class PrimaryDBConfig {
     public DataSourceTransactionManager transactionManager(@Qualifier("primaryDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
+
     //创建 MybatisSqlSessionFactoryBean对象。通过加载器读取mybatis.xml 和 myabtis-spring.xml生成 SqlSessionFactory。读取XxxMapper.xml生成对象
     @Bean(name = "primarySqlSessionFactory")
     public MybatisSqlSessionFactoryBean sqlSessionFactory(
@@ -72,9 +73,9 @@ public class PrimaryDBConfig {
         bean.setObjectWrapperFactory(mapWrapperFactory);
         bean.setDataSource(dataSource);
         bean.setGlobalConfig(globalConfiguration);
-        bean.setTransactionFactory(new SpringManagedTransactionFactory() {{
-            newTransaction(dataSource, TransactionIsolationLevel.REPEATABLE_READ, true);
-        }});
+        SpringManagedTransactionFactory springManagedTransactionFactory = new SpringManagedTransactionFactory();
+        springManagedTransactionFactory.newTransaction(dataSource, TransactionIsolationLevel.REPEATABLE_READ, true);
+        bean.setTransactionFactory(springManagedTransactionFactory);
         try {
             bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/primary/**/*.xml"));
         } catch (FileNotFoundException e) {

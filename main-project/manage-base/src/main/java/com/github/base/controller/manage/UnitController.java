@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Api(tags = "基础管理-组织结构管理")
 @ApiSort(1000)
@@ -28,6 +29,7 @@ public class UnitController {
 
     private final SysUnitService sysUnitService;
     private final MapperFacade mapperFacade;
+
     @Autowired
     public UnitController(SysUnitService sysUnitService, MapperFacade mapperFacade) {
         this.sysUnitService = sysUnitService;
@@ -83,12 +85,12 @@ public class UnitController {
     @PostMapping("/tree")
     public Res<SysUnitVO.SelectTreeRes> selectTree(@RequestBody SysUnitVO.SelectTreeReq selectListReq) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, InvalidAttributeValueException {
         List<SysUnit> unitList = sysUnitService.selectList(selectListReq.getIsDelete(), selectListReq.getOrderBy());
-        List<Object> tree = TreeData.tree(unitList, selectListReq.getRootId(), false, new HashMap<String, String>() {{
-            put("type", "type");
-            put("name", "name");
-            put("parentId", "parentId");
-            put("indexNum", "indexNum");
-        }});
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("type", "type");
+        map.put("name", "name");
+        map.put("parentId", "parentId");
+        map.put("indexNum", "indexNum");
+        List<Object> tree = TreeData.tree(unitList, selectListReq.getRootId(), false, map);
         return Res.success(new SysUnitVO.SelectTreeRes().setUnitTree(tree));
     }
 

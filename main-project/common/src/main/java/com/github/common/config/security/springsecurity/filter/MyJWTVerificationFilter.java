@@ -48,9 +48,9 @@ public class MyJWTVerificationFilter extends OncePerRequestFilter {
         }
 
         //将身份信息设置到Security当前上下文，即让配置的身份信息在本次请求中生效
-        SecurityContextHolder.setContext(new SecurityContextImpl() {{
-            setAuthentication(authentication);
-        }});
+        SecurityContextImpl securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 

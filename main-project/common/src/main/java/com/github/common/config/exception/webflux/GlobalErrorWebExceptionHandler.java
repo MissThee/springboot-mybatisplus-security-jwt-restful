@@ -15,6 +15,7 @@
 //
 //import java.util.HashMap;
 //import java.util.Map;
+//
 ////webflux异常处理
 //@Component
 //@Order(-2)
@@ -36,12 +37,12 @@
 //
 //        final Map<String, Object> errorPropertiesMap = getErrorAttributes(request, false);
 //        int status = Integer.parseInt(errorPropertiesMap.getOrDefault("status", 500).toString());
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("msg", errorPropertiesMap.get("message"));
 //        return ServerResponse
 //                .status(status)
 //                .contentType(MediaType.APPLICATION_JSON_UTF8)
-//                .body(BodyInserters.fromObject(new HashMap<String, Object>() {{
-//                    put("msg", errorPropertiesMap.get("message"));
-//                }}));
+//                .body(BodyInserters.fromObject(map));
 //    }
 //
 //}

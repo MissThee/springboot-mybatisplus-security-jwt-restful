@@ -43,7 +43,7 @@ public class MessageEventHandler {
         log.debug("客户端:  " + client.getSessionId() + "  已连接");
         String userId = JavaJWT.getId(client.getHandshakeData().getSingleUrlParam("token"));
 //        String userId=client.getHandshakeData().getHttpHeaders().get("token");
-        if(userId!=null) {
+        if (userId != null) {
             AuthDTO authDTO = authInfoService.selectUserById(userId);
             addUserInfo(authDTO, client.getSessionId());
             broadcastUserList();
@@ -143,9 +143,9 @@ public class MessageEventHandler {
             if (userIdUUIDsMap.containsKey(userId)) {
                 userIdUUIDsMap.get(userId).add(uuid);
             } else {
-                userIdUUIDsMap.put(userId, new ArrayList<UUID>() {{
-                    add(uuid);
-                }});
+                List<UUID> list = new ArrayList<>();
+                list.add(uuid);
+                userIdUUIDsMap.put(userId, list);
             }
         }
         //更新userIdNicknameMap

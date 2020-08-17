@@ -132,7 +132,7 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
                     permissionValueList.add(permission.getPermission());
                 }
                 //递归寻找父节点，将其权限值加入到结果集合中
-                addPermissionParentValue(permission,allPermissionList,permissionValueList);
+                addPermissionParentValue(permission, allPermissionList, permissionValueList);
             }
         }
 
@@ -168,7 +168,7 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
     }
 
     //从List中递归查找parent节点，加到指定集合中
-    private void addPermissionParentValue(SysPermission permission,List<SysPermission> allPermissionList,Set<String> permissionValueList) {
+    private void addPermissionParentValue(SysPermission permission, List<SysPermission> allPermissionList, Set<String> permissionValueList) {
         Long permissionParentId = permission.getParentId();
         Optional<SysPermission> parentPermissionOp = allPermissionList.stream().filter(e -> e.getId().equals(permissionParentId)).findFirst();
         if (parentPermissionOp.isPresent()) {
@@ -195,10 +195,9 @@ public class AuthInfoImp implements AuthInfoService, UserInfoForSecurity {
         if (authDTO == null) {
             throw new BadCredentialsException("User not found");
         }
-        List<String> authList = new ArrayList<String>() {{
-            addAll(authDTO.getRoleValueList().stream().map(e -> "ROLE_" + e).collect(Collectors.toSet()));
-            addAll(authDTO.getPermissionValueList());
-        }};
+        List<String> authList = new ArrayList<>();
+        authList.addAll(authDTO.getRoleValueList().stream().map(e -> "ROLE_" + e).collect(Collectors.toSet()));
+        authList.addAll(authDTO.getPermissionValueList());
         addSpecialPermission(authList, authDTO.getIsAdmin(), authDTO.getIsBasic());
         //权限如果前缀是ROLE_，security就会认为这是个角色信息，而不是权限，例如"ROLE_MANAGER"就是"MANAGER角色"，"VIEW_PAGE1"就是"VIEW_PAGE1"权限
         Set<SimpleGrantedAuthority> simpleGrantedAuthoritySet = authList.stream().filter(e -> !StringUtils.isEmpty(e)).map(SimpleGrantedAuthority::new).collect(Collectors.toSet());

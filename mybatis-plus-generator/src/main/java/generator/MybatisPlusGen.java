@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +20,8 @@ public class MybatisPlusGen {
     private static StringBuilder ShowInConsole = new StringBuilder();
     //main-project开始的配置文件路径
     private static final String propertiesFilePath = "/common/src/main/resources/application-common.properties";
-    private static final String packageNameAfterCom = "github";
+    private static final String basePackageName = "com.github";
+    private static final String projectSubPath = "main-project";
 
     public static void main(String[] args) throws IOException {
         //配置文件数据源选择
@@ -30,11 +30,10 @@ public class MybatisPlusGen {
         final String functionPackageName = scanner(
                 "输入生成的文件所属包名（可写多层包名，点分隔）：" +
                         "\n\r附加说明：" +
-                        "\n\r如选择的子项目为manage-base，则文件会生成在com.github.base中。其中com.github为固定值，最后的值为子项目名最后一个“-”之后的字符串，若没有“-”，则直接使用子项目名" +
-                        "\n\r文件会输出到目录下的 controller、db/mapper/primary、service/imp、service/interf等下面" +
-                        "\n\r可观察现在子项目manage-base中，以上路径均有名为manage的包，“manage”为生成时此步骤输入的字符串");
+                        "\n\r生成时创建包：controller；db.mapper.primary；service.imp；service.interf " +
+                        "\n\r例如：可观察子项目manage-base中，以上包中均有名为manage的包，“manage”为此步骤输入的字符串");
         updateConsole("已输入包名：" + functionPackageName);
-        updateConsole("    ┕━预期输出目录(entity举例)：" + System.getProperty("user.dir") + "/main-project/" + subProjectName + "/src/main/java  com." + packageNameAfterCom + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName) + ".db.entity." + functionPackageName);
+        updateConsole("┕━预期输出目录(entity举例)：" + System.getProperty("user.dir") + "/" + (StringUtils.isEmpty(projectSubPath) ? "" : projectSubPath + "/") + subProjectName + "/src/main/java  " + basePackageName + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName) + ".db.entity." + functionPackageName);
 
         String tableNameStr = getTableNameStr();
         final List<String> tableName = Arrays.stream(tableNameStr.split(",")).filter(e -> !e.equals("")).collect(Collectors.toList());
@@ -45,8 +44,7 @@ public class MybatisPlusGen {
     private static String getTableNameStr() {
         String tableNameStr = null;
         while (tableNameStr == null) {
-            String input = scanner("表名，多表个英文逗号分割").replace(" ", "");
-            tableNameStr = input;
+            tableNameStr = scanner("表名，多表个英文逗号分割").replace(" ", "");
         }
         updateConsole("已输入表名：" + tableNameStr);
         return tableNameStr;
@@ -75,7 +73,7 @@ public class MybatisPlusGen {
     private static String getSubProjectName() {
         List<String> subProjectPathNameList = new ArrayList<>();
         {
-            File f = new File("./main-project/");
+            File f = new File("./" + (StringUtils.isEmpty(projectSubPath) ? "" : projectSubPath + "/"));
             if (f.isDirectory() && Objects.requireNonNull(f.listFiles()).length > 0) {
                 for (File file : Objects.requireNonNull(f.listFiles())) {
                     if (file.isDirectory()) {
@@ -91,7 +89,9 @@ public class MybatisPlusGen {
         }
         String subProjectName = null;
         while (subProjectName == null) {
-            String input = scanner("选择生成代码存放的子项目，输入序号：" + subProjectPathNameStr.toString());
+            String input = scanner("选择生成代码存放的子项目，输入序号：" +
+                    "\n\r如选择的子项目为manage-base，则生成在com.github.base中。com.github为预设值，base是子项目名最后一个“-”之后的字符串，若没有“-”，则直接使用子项目名" +
+                    subProjectPathNameStr.toString());
             try {
                 subProjectName = subProjectPathNameList.get(Integer.parseInt(input) - 1);
             } catch (Exception ignored) {
@@ -117,8 +117,8 @@ public class MybatisPlusGen {
     private static void GenerateCodeExcludeModel(String subProjectName, String functionPackageName, List<String> tableName, String templateSelect, String dbSelectTmp) throws IOException {
         final String dbSelect = dbSelectTmp;
 
-        //获取main-project路径
-        String projectPath = System.getProperty("user.dir") + "/main-project";
+        //获取第一层路径
+        String projectPath = System.getProperty("user.dir") + (StringUtils.isEmpty(projectSubPath) ? "" : "/" + projectSubPath) + "";
         //读取main-project中的配置文件
         Properties properties = new Properties();
         properties.load(new FileInputStream(new File(projectPath + propertiesFilePath)));
@@ -126,7 +126,7 @@ public class MybatisPlusGen {
         Map<String, String> map = System.getenv();
         String userName = map.get("USERNAME");// 获取用户名
         String computerName = map.get("COMPUTERNAME");// 获取计算机名
-        String userDomain = map.get("USERDOMAIN");// 获取计算机域名
+//        String userDomain = map.get("USERDOMAIN");// 获取计算机域名
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
         // 全局配置
@@ -159,12 +159,11 @@ public class MybatisPlusGen {
                 return;
             }
         }
-        File file = new File(projectPath + "/" + subProjectName + "/src/main/java");
-        File packageName = Objects.requireNonNull(file.listFiles())[0];
-        String aa = packageName.getName();
+//        File file = new File(projectPath + "/" + subProjectName + "/src/main/java");
+//        File packageName = Objects.requireNonNull(file.listFiles())[0];
         // 包配置
         PackageConfig pc = new PackageConfig()
-                .setParent(packageName.getName() + "." + packageNameAfterCom + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName))
+                .setParent(basePackageName + "." + (subProjectName.contains("-") ? subProjectName.substring(subProjectName.lastIndexOf("-") + 1) : subProjectName))
                 .setEntity("db.entity." + dbSelect + "." + functionPackageName)
                 .setMapper("db.mapper." + dbSelect + "." + functionPackageName)
                 .setService("service.interf" + "." + functionPackageName)
@@ -178,7 +177,7 @@ public class MybatisPlusGen {
                 .setColumnNaming(NamingStrategy.underline_to_camel)//下划线转驼峰
                 .setEntityLombokModel(true)//lombok注解，无get、set
                 .setSkipView(true)//跳过视图
-                .setEntityColumnConstant(true)//跳过视图
+                .setEntityColumnConstant(true)//常量字段
                 .setEntityTableFieldAnnotationEnable(true)//属性上加字段注解
                 .setRestControllerStyle(true)//使用@RestController注解
                 .setInclude(tableName.toArray(new String[0]));

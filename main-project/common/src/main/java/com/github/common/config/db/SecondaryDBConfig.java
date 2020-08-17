@@ -40,7 +40,7 @@ public class SecondaryDBConfig {
     @Bean(name = "secondaryDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.secondary")
     public DataSource dataSource(@Qualifier("secondaryDataSourceHikari") HikariConfig hikariConfig) {
-        HikariDataSource build =new HikariDataSource();
+        HikariDataSource build = new HikariDataSource();
         hikariConfig.copyStateTo(build);
         return build;
     }
@@ -57,9 +57,9 @@ public class SecondaryDBConfig {
         MybatisSqlSessionFactoryBean bean = new MybatisSqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setGlobalConfig(globalConfiguration);
-        bean.setTransactionFactory(new SpringManagedTransactionFactory() {{
-            newTransaction(dataSource, TransactionIsolationLevel.REPEATABLE_READ, true);
-        }});
+        SpringManagedTransactionFactory springManagedTransactionFactory = new SpringManagedTransactionFactory();
+        springManagedTransactionFactory.newTransaction(dataSource, TransactionIsolationLevel.REPEATABLE_READ, true);
+        bean.setTransactionFactory(springManagedTransactionFactory);
         try {
             bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mapper/secondary/**/*.xml"));
         } catch (FileNotFoundException e) {

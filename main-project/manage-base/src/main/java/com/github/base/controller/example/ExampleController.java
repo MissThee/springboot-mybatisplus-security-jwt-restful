@@ -44,7 +44,6 @@ public class ExampleController {
     }
 
 
-
     @RLimit(minTime = 10000)
     @RequestMapping("limit")
     public Res limit() {
@@ -68,23 +67,22 @@ public class ExampleController {
         String userIdByToken = JavaJWT.getId();//通过token解析获得
 //        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();//通过Security的SecurityContextHolder获得
 //        Object principal = SecurityUtils.getSubject().getPrincipal();//通过shiro的subject获得
-        Map<String, Object> map = new HashMap<String, Object>() {{
-            put("userIdByToken", userIdByToken);
-//            put("userIdBySubject", userIdBySubject);
-        }};
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("userIdByToken", userIdByToken);
+//      map.put("userIdBySubject", userIdBySubject);
         return Res.success(map);
     }
 
     @GetMapping("tree")
     public Res<Object> getTree(@RequestParam("c") Boolean compareSelfId, @RequestParam("r") Integer rootId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        List<TreeItem> li = new ArrayList<TreeItem>() {{
-            add(new TreeItem(1, "name1", null));
-            add(new TreeItem(2, "name2", 1));
-            add(new TreeItem(3, "name3", 2));
-            add(new TreeItem(4, "name4", 2));
-            add(new TreeItem(5, "name5", null));
-            add(new TreeItem(6, "name6", 2));
-        }};
+        List<TreeItem> li = new ArrayList<>();
+        li.add(new TreeItem(1, "name1", null));
+        li.add(new TreeItem(2, "name2", 1));
+        li.add(new TreeItem(3, "name3", 2));
+        li.add(new TreeItem(4, "name4", 2));
+        li.add(new TreeItem(5, "name5", null));
+        li.add(new TreeItem(6, "name6", 2));
         List<Object> objects = TreeData.tree(li, rootId, compareSelfId == null ? false : compareSelfId, new HashMap<>());
         return Res.success(objects);
     }
@@ -123,10 +121,10 @@ public class ExampleController {
     //上传excel转为POJO
     @PostMapping(value = "/upload2")
     public Res fileUpload2(MultipartFile file) throws IOException, NoSuchMethodException, InvalidFormatException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException {
-        List<Object> objects = ExcelImport.excel2POJOList(file.getInputStream(), SysUser.class, new ArrayList<String>() {{
-            add("nickname");
-            add("username");
-        }});
+        List<String> list = new ArrayList<>();
+        list.add("nickname");
+        list.add("username");
+        List<Object> objects = ExcelImport.excel2POJOList(file.getInputStream(), SysUser.class, list);
         return Res.success(objects);
     }
 

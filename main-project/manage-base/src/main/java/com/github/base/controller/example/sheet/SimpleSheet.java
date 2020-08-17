@@ -24,21 +24,21 @@ public class SimpleSheet {
         //前端网页数据所需的列，与后台导出excel所需的列统一在此设置
         //前端数据列，取map的id集合
         //excel数据列，取value非空值
-        return new LinkedHashMap<String, String>() {{
-            put("id", "");
-            put("report_hour", "时间");
-            put("report_loop_name", "掺水阀组");
-            put("temp_out", "出站温度(℃)");
-            put("press_out", "出站压力（MPa）");
-            put("flow_inst_out", "瞬时流量（m³/h）");
-            put("flow_totle_out", "流量计读数");
-            put("water_val", "水量（m³）");
-            put("temp_in", "入站温度(℃)");
-            put("press_in", "入站压力（MPa）");
-            put("flow_inst_in", "瞬时流量（m³/h）");
-            put("flow_totle_in", "流量计读数");
-            put("liquid_val", "液量（m³）");
-        }};
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("id", "");
+        map.put("report_hour", "时间");
+        map.put("report_loop_name", "掺水阀组");
+        map.put("temp_out", "出站温度(℃)");
+        map.put("press_out", "出站压力（MPa）");
+        map.put("flow_inst_out", "瞬时流量（m³/h）");
+        map.put("flow_totle_out", "流量计读数");
+        map.put("water_val", "水量（m³）");
+        map.put("temp_in", "入站温度(℃)");
+        map.put("press_in", "入站压力（MPa）");
+        map.put("flow_inst_in", "瞬时流量（m³/h）");
+        map.put("flow_totle_in", "流量计读数");
+        map.put("liquid_val", "液量（m³）");
+        return map;
     }
 
     @PostMapping("/excel")
@@ -48,11 +48,10 @@ public class SimpleSheet {
         Date searchDate = bodyJO.getDate("searchDate");
         String searchDateStr = sdf.format(searchDate == null ? new Date() : searchDate);
         String fileName = "简单报表（" + searchDateStr + "）";
-        List<SimpleCell> extraHeaderCell = new ArrayList<SimpleCell>() {{
-            add(new SimpleCell("", 3));
-            add(new SimpleCell("掺水汇管（出站）", 5));
-            add(new SimpleCell("集油汇管（进站）", 5));
-        }};
+        List<SimpleCell> extraHeaderCell = new ArrayList<>();
+        extraHeaderCell.add(new SimpleCell("", 3));
+        extraHeaderCell.add(new SimpleCell("掺水汇管（出站）", 5));
+        extraHeaderCell.add(new SimpleCell("集油汇管（进站）", 5));
         Workbook wb = ExcelExport.buildWorkBookAndInsertData(WorkBookVersion.Excel97_2003, 0, 0, 0, fileName, getColumnMap(), true, reportData, true, extraHeaderCell);
         ExcelExport.exportToResponse(response, wb, fileName);
     }
