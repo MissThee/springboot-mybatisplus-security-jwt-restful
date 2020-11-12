@@ -1,3 +1,5 @@
+![springboot-mybatisplus-security-jwt-restful](https://socialify.git.ci/MissThee/springboot-mybatisplus-security-jwt-restful/image?description=1&descriptionEditable=RBAC%E7%AE%A1%E7%90%86demo%EF%BC%8C%E5%90%AB%E9%A1%B5%E9%9D%A2%E3%80%82springboot%E5%A4%9A%E6%A8%A1%E5%9D%97%EF%BC%8Cmybatis-plus%E9%9D%99%E6%80%81%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%EF%BC%8Cjwt%E3%80%81security%E7%AE%80%E5%8D%95%E6%95%B4%E5%90%88%EF%BC%8CRESTful%20API%EF%BC%8Csocketio%E5%AE%9E%E6%97%B6%E6%B6%88%E6%81%AF&font=Inter&forks=1&language=1&owner=1&pattern=Signal&stargazers=1&theme=Light)
+
 # 简介
 基于RBAC管理系统，基础功能demo，集成了前端页面。
 
