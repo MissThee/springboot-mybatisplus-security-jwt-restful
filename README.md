@@ -532,7 +532,7 @@ root
 ```
 
 ## 快速部署运行
-**服务端运行**：
+**服务端运行**：（需要安装ORACLE-JDK-1.8）
 1. 克隆本项目到本地
 2. 使用`\main-project\service-start\src\main\resources\static`目录中`mybatis_test_db.sql`与`mybatis_test_db_2.sql`文件可导入项目所需基础表到mysql数据库；
 3. 修改数据库连接参数: 地址，用户名，密码
