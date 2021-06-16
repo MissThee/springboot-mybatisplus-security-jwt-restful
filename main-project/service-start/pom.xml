@@ -39,6 +39,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.2.2.RELEASE</version>
                 <configuration>
                     <!--区分普通jar包与可执行jar包的别名配置。打包会生成两个包，一个原来的，一个可执行的-exec-->
                     <classifier>exec</classifier>
